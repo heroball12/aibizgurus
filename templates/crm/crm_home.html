@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}CRM Command Center | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="staff-hero">
+  <div>
+    <span class="ops-label">Revenue Control</span>
+    <h1>Internal CRM</h1>
+    <p>This pipeline is for AI Business Gurus prospects, consultations, demos, and sales follow-up. Client-captured leads live inside each client workspace.</p>
+  </div>
+  <a class="btn neon" href="{% url 'lead_create' %}">Create Lead</a>
+</section>
+<section class="ops-panel">
+  <table><tr><th>Name</th><th>Business</th><th>Type</th><th>Status</th><th>Value</th><th></th></tr>{% for l in leads %}<tr><td>{{ l.name }}</td><td>{{ l.business_name }}</td><td>{{ l.lead_type }}</td><td><span class="ops-chip">{{ l.status }}</span></td><td>${{ l.value }}</td><td><a href="{% url 'lead_detail' l.pk %}">Open</a></td></tr>{% empty %}<tr><td colspan="6">No internal leads yet.</td></tr>{% endfor %}</table>
+</section>
+{% endblock %}

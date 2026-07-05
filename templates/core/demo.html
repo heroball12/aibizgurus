@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Demo Center | AI Business Gurus{% endblock %}
+{% block meta_description %}Explore AI Business Gurus demos for industry AI chatbot templates and role-based AI Employees including reception, sales, appointment setting, support, follow-up, and reviews.{% endblock %}
+{% block content %}
+<section class="growth-page-hero">
+  <span class="mini-label">Demo Center</span>
+  <h1>Experience industry AI and role-based AI Employees.</h1>
+  <p>Start with an industry chatbot demo, then see how AI Employees can handle reception, sales, appointments, support, follow-up, and reviews as part of a larger growth system.</p>
+  <div class="actions">
+    <a class="btn" href="#industry-demos">Industry Chatbot Demos</a>
+    <a class="btn ghost" href="#employee-demos">AI Employee Demos</a>
+  </div>
+</section>
+
+<section id="industry-demos" class="demo-category">
+  <div class="section-head simple">
+    <div>
+      <span class="mini-label">Tab 1</span>
+      <h2>Industry AI Chatbot Demos</h2>
+      <p>These reuse the existing database-backed industry template flow: choose an industry, sign up, and your demo assistant is created from that template.</p>
+    </div>
+    <a href="{% url 'industries' %}">View all industries →</a>
+  </div>
+  <div class="demo-card-grid">
+    {% for item in industry_demos %}
+      <a class="growth-card demo-card" href="{% url 'signup' %}?industry_slug={{ item.slug }}">
+        <span>{{ item.category|default:"Industry" }}</span>
+        <h3>{{ item.name }}</h3>
+        <p>{{ item.summary|default:"Launch a tailored AI chatbot demo for this industry and preview the customer experience." }}</p>
+        <em>Start {{ item.name }} demo →</em>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="employee-demos" class="demo-category">
+  <div class="section-head simple">
+    <div>
+      <span class="mini-label">Tab 2</span>
+      <h2>AI Employee Demos</h2>
+      <p>Role-specific demos show how an AI Employee helps recover revenue, speed up response times, and reduce manual work.</p>
+    </div>
+    <a href="{% url 'ai_employees' %}">Meet the workforce →</a>
+  </div>
+  <div class="demo-card-grid">
+    {% for employee in employee_demos %}
+      <article class="growth-card demo-card employee-demo-card">
+        <span>{{ employee.name }}</span>
+        <h3>{{ employee.description }}</h3>
+        <div class="mini-transcript">
+          <p><strong>Customer:</strong> {{ employee.example }}</p>
+          <p><strong>{{ employee.name }}:</strong> I’ll collect the details, qualify urgency, and route the next step to the right person.</p>
+        </div>
+        <em>{{ employee.workflow }}</em>
+        <div class="card-actions">
+          <a href="{% url 'growth_assessment' %}">Book consultation</a>
+          <a href="{% url 'signup' %}">Build chatbot demo</a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="luxury-cta">
+  <span>Ready for your own demo?</span>
+  <h2>Start with a chatbot. Grow into an AI workforce.</h2>
+  <p>Your free demo creates a real client workspace, assistant, widget preview, conversation history, and lead capture path.</p>
+  <a class="btn" href="{% url 'signup' %}">Start Free Demo</a>
+</section>
+{% endblock %}

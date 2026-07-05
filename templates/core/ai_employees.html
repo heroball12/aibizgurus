@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}AI Employees | AI Business Gurus{% endblock %}
+{% block meta_description %}Meet the AI Business Gurus AI Workforce: AI Receptionist, Sales Representative, Appointment Setter, Customer Support, Follow-Up Specialist, Review Manager, and Marketing Assistant.{% endblock %}
+{% block content %}
+<section class="growth-page-hero">
+  <span class="mini-label">Flagship offer</span>
+  <h1>Meet Your AI Workforce.</h1>
+  <p>AI Employees are role-based assistants built around business outcomes: recovering missed opportunities, responding faster, booking more appointments, supporting customers, generating reviews, and keeping follow-up moving.</p>
+  <div class="actions">
+    <a class="btn" href="{% url 'demo' %}#employee-demos">View AI Employee Demos</a>
+    <a class="btn ghost" href="{% url 'growth_assessment' %}">Book Consultation</a>
+  </div>
+</section>
+
+<section class="employee-full-grid">
+  {% for employee in employees %}
+    {% include "includes/employee_card.html" %}
+  {% endfor %}
+</section>
+
+<section class="clean-panel workforce-architecture">
+  <span class="mini-label">Future-proof architecture</span>
+  <h2>Easy to expand as your business grows.</h2>
+  <p>Start with one AI Employee, then add role-specific workflows over time. Reception, sales, support, follow-up, reviews, and marketing can share business knowledge while staying organized by role.</p>
+  <div class="timeline-cards">
+    <div><strong>01</strong><span>Start with the highest revenue leak</span></div>
+    <div><strong>02</strong><span>Train the role on your business</span></div>
+    <div><strong>03</strong><span>Connect chat, phone, SMS, CRM, or forms</span></div>
+    <div><strong>04</strong><span>Add more AI Employees as workflows mature</span></div>
+  </div>
+</section>
+
+<section class="luxury-cta">
+  <span>Build the team behind the team</span>
+  <h2>Which AI Employee should you launch first?</h2>
+  <p>The answer depends on where your business loses the most money: missed calls, slow response, weak follow-up, repetitive support, or low review volume.</p>
+  <a class="btn" href="{% url 'growth_assessment' %}">Find My Best AI Employee</a>
+</section>
+{% endblock %}

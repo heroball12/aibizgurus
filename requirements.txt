@@ -1,0 +1,11 @@
+Django>=5.2.15,<5.3
+python-dotenv==1.0.1
+dj-database-url==2.2.0
+whitenoise[brotli]==6.7.0
+psycopg[binary]>=3.2,<4
+openai>=2.43.0,<3
+twilio==9.2.3
+gunicorn==22.0.0
+
+cryptography==43.0.0
+stripe==10.12.0

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Pricing | AI Business Gurus{% endblock %}
+{% block meta_description %}Premium AI Business Gurus pricing for Starter, Growth, and AI Workforce implementations. Pricing depends on usage, integrations, workflow complexity, and business needs.{% endblock %}
+{% block content %}
+<section class="growth-page-hero">
+  <span class="mini-label">Premium pricing</span>
+  <h1>AI growth systems priced around outcomes and complexity.</h1>
+  <p>Every business has different workflows, usage, integrations, and implementation needs. These starting points help you understand the investment before we map the exact growth plan.</p>
+  <div class="actions">
+    <a class="btn" href="{% url 'growth_assessment' %}">Book Growth Assessment</a>
+    <a class="btn ghost" href="{% url 'solutions' %}">Explore Solutions</a>
+  </div>
+</section>
+
+<section class="premium-pricing-grid">
+  {% for plan in plans %}
+    {% include "includes/pricing_card.html" with eyebrow=plan.eyebrow name=plan.name setup=plan.setup monthly=plan.monthly features=plan.features featured=plan.featured %}
+  {% endfor %}
+</section>
+
+<section class="clean-panel comparison-panel">
+  <span class="mini-label">Important</span>
+  <h2>Pricing depends on the business system we build.</h2>
+  <div class="comparison-grid">
+    <div><strong>Usage</strong><p>Conversation volume, channels, and operational load.</p></div>
+    <div><strong>Integrations</strong><p>OpenAI, Twilio, CRM, forms, website, payments, and internal tools.</p></div>
+    <div><strong>Workflow complexity</strong><p>Qualification logic, routing, escalations, follow-up, and reporting.</p></div>
+    <div><strong>Business needs</strong><p>Industry requirements, team handoffs, compliance, and growth priorities.</p></div>
+  </div>
+  <p class="pricing-note">No unlimited minutes claim here. We design around realistic usage, clean workflows, and sustainable economics.</p>
+</section>
+{% endblock %}

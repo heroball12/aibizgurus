@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Lead Detail | AI Business Gurus CRM{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div><span class="ops-label">Lead profile</span><h1>{{ lead }}</h1><p>{{ lead.lead_type }} · {{ lead.status }} · ${{ lead.value }}</p></div>
+  <a class="btn neon" href="{% url 'lead_edit' lead.pk %}">Edit Lead</a>
+</section>
+<section class="ops-panel">
+  <h2>Contact</h2>
+  <p><strong>Phone:</strong> {{ lead.phone }} &nbsp; <strong>Email:</strong> {{ lead.email }}</p>
+  <p>{{ lead.notes }}</p>
+</section>
+<section class="ops-panel">
+  <h2>Notes</h2>
+  {% for n in lead.lead_notes.all %}<div class="ops-note">{{ n.note }}<br><small>{{ n.created_at }}</small></div>{% empty %}<p>No notes yet.</p>{% endfor %}
+  <form method="post" class="form dark-form">{% csrf_token %}{{ note_form.as_p }}<button class="btn neon">Add Note</button></form>
+</section>
+{% endblock %}

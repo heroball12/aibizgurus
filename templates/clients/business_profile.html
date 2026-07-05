@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Business Info | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="client-overview">
+  <div>
+    <span class="mini-label">Business info</span>
+    <h1>Keep your assistant accurate.</h1>
+    <p>Add the details customers ask for most: hours, services, FAQs, service area, policies, and booking instructions.</p>
+  </div>
+  <a class="btn ghost" href="{% url 'portal_home' %}">Back to Dashboard</a>
+</section>
+
+<section class="clean-panel form-clean">
+  <form method="post" class="form gridform">{% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn">Save Business Info</button>
+  </form>
+</section>
+{% endblock %}

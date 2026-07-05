@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ instance.name }}</title>
+  <style>
+    :root{--brand:{{ instance.widget_primary_color|default:"#7c3aed" }};--brand-dark:#4c1d95;--gold:#f5c451;--ink:#0f172a;--muted:#64748b;--line:#ede9fe;--soft:#f8f5ff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Arial,sans-serif;background:#f8f5ff;color:var(--ink)}
+    .widget{max-width:760px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:white;box-shadow:0 28px 80px rgba(76,29,149,.16)}
+    .head{padding:22px;background:radial-gradient(circle at 92% 0, color-mix(in srgb, var(--brand) 32%, transparent), transparent 34%),linear-gradient(135deg,#050617,#18033c);border-bottom:1px solid rgba(255,255,255,.14);color:white}
+    .head h2{margin:0;font-size:24px}.head p{margin:7px 0 0;color:var(--muted)}.preview-banner{display:inline-block;margin-top:12px;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:800}
+    .head p{color:#ddd6fe}.preview-banner{background:rgba(245,196,81,.16);color:#fde68a;border-color:rgba(245,196,81,.36)}
+    .body{flex:1;padding:18px;overflow:auto;background:linear-gradient(#fff,#faf7ff)}
+    .msg{padding:12px 14px;border-radius:16px;margin:10px 0;line-height:1.45;box-shadow:0 8px 24px rgba(15,23,42,.06)}
+    .assistant{background:#fff;border:1px solid var(--line);max-width:82%}
+    .visitor{background:var(--brand);color:white;margin-left:auto;max-width:82%}
+    .leadbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px;background:#fff;border-top:1px solid var(--line)}
+    .leadbar input,.composer input{padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+    .leadbar input:focus,.composer input:focus{outline:3px solid color-mix(in srgb, var(--brand) 20%, transparent);border-color:var(--brand)}
+    .composer{display:flex;gap:8px;padding:14px;border-top:1px solid var(--line);background:#fff}.composer input{flex:1}.composer button{width:96px;background:var(--brand);border:0;border-radius:12px;color:white;font-weight:800;box-shadow:0 14px 28px color-mix(in srgb, var(--brand) 24%, transparent)}
+  </style>
+</head>
+<body>
+<div class="widget">
+  <div class="head"><h2>{{ instance.name }}</h2><p>{{ instance.client.business_name }} · {{ instance.industry }}</p>{% if not instance.client.is_paid_active %}<div class="preview-banner">Demo preview · Activate to publish live</div>{% endif %}</div>
+  <div class="body" id="body"><div class="msg assistant">{{ instance.greeting }}</div></div>
+  <div class="leadbar"><input id="name" placeholder="Name"><input id="phone" placeholder="Phone"><input id="email" placeholder="Email" style="grid-column:1/3"></div>
+  <div class="composer"><input id="message" placeholder="Type your question..." onkeydown="if(event.key==='Enter')sendMsg()"><button onclick="sendMsg()">Send</button></div>
+</div>
+<script>
+let visitorId=localStorage.getItem("abg_visitor_id")||"";let conversationId="";
+function addMsg(text,who){const d=document.createElement("div");d.className="msg "+who;d.textContent=text;document.getElementById("body").appendChild(d);document.getElementById("body").scrollTop=999999;}
+async function sendMsg(){const input=document.getElementById("message");const text=input.value.trim();if(!text)return;input.value="";addMsg(text,"visitor");const form=new FormData();form.append("message",text);form.append("visitor_id",visitorId);form.append("conversation_id",conversationId);form.append("name",document.getElementById("name").value);form.append("phone",document.getElementById("phone").value);form.append("email",document.getElementById("email").value);try{const res=await fetch("{% url 'widget_chat_api' instance.slug %}",{method:"POST",body:form});const data=await res.json();visitorId=data.visitor_id||visitorId;conversationId=data.conversation_id||conversationId;localStorage.setItem("abg_visitor_id",visitorId);addMsg(data.reply||"Thanks. The team will follow up.","assistant");}catch(e){addMsg("Sorry, something went wrong. Please contact the business directly.","assistant");}}
+</script>
+</body>
+</html>

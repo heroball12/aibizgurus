@@ -1,0 +1,15 @@
+<article class="growth-card employee-card">
+  <span>AI Employee</span>
+  <h3>{{ employee.name }}</h3>
+  <p>{{ employee.description }}</p>
+  <ul>
+    {% for benefit in employee.benefits %}
+      <li>{{ benefit }}</li>
+    {% endfor %}
+  </ul>
+  <div class="card-note"><strong>Workflow:</strong> {{ employee.workflow }}</div>
+  <div class="card-actions">
+    <a href="{% url 'demo' %}#employee-demos">View demo</a>
+    <a href="{% url 'growth_assessment' %}">Book consultation</a>
+  </div>
+</article>

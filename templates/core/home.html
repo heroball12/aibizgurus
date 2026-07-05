@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}AI Business Gurus | Build Your AI Workforce{% endblock %}
+{% block meta_description %}AI Business Gurus helps businesses increase revenue, recover missed opportunities, respond faster, automate repetitive work, and scale with AI Employees, AI Chatbots, Voice AI, automation, websites, and growth marketing.{% endblock %}
+{% block body_class %}landing-page light-mode{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/landing.css' %}?v=14">
+{% endblock %}
+{% block content %}
+<div class="landing-shell growth-home">
+  <section class="landing-hero workforce-hero">
+    <div class="hero-orb hero-orb-one"></div>
+    <div class="hero-orb hero-orb-two"></div>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="kicker">The AI Growth Platform for businesses</div>
+        <h1>Build Your<br><span>AI Workforce</span></h1>
+        <p>AI Business Gurus helps businesses increase revenue, recover missed opportunities, respond faster, automate repetitive work, and scale using custom AI Employees, AI Chatbots, Voice AI, Automation, Websites, and Growth Marketing.</p>
+
+        <div class="hero-actions">
+          <a class="hero-btn primary" href="{% url 'growth_assessment' %}">Book AI Growth Assessment →</a>
+          <a class="hero-btn secondary" href="{% url 'solutions' %}">Explore Solutions</a>
+          <a class="hero-btn secondary" href="{% url 'demo' %}">Watch Live Demos ◯</a>
+        </div>
+
+        <div class="hero-perks">
+          <span>Revenue-first strategy</span>
+          <span>AI Employees + chatbots</span>
+          <span>Built for real operations</span>
+        </div>
+      </div>
+
+      <div class="hero-media">
+        <div class="executive-card ai-agent-visual">
+          <div class="agent-portrait">
+            <span class="agent-face"></span>
+            <span class="agent-core">AI</span>
+          </div>
+          <div class="hud-card hud-card-one">AI Receptionist</div>
+          <div class="hud-card hud-card-two">Voice AI</div>
+          <div class="hud-card hud-card-three">Lead Follow-Up</div>
+          <div class="exec-grid">
+            <div class="exec-panel gold"><span>Missed calls</span><strong>Recovered</strong></div>
+            <div class="exec-panel"><span>Lead follow-up</span><strong>Instant</strong></div>
+            <div class="exec-panel wide"><span>AI Workforce</span><strong>Receptionist · Sales Rep · Appointment Setter · Support</strong></div>
+          </div>
+          <div class="growth-chat-card">
+            <div class="chat-head">
+              <div class="chat-avatar"></div>
+              <div><strong>AI Growth Assistant</strong><small>● Online</small></div>
+            </div>
+            <div class="chat-bubble bot">I can recover missed calls, qualify leads, book appointments, and route hot opportunities.</div>
+            <div class="chat-bubble user">Show me where we are losing revenue.</div>
+            <div class="chat-bubble bot">Let’s review your lead flow, response speed, and follow-up gaps.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-stats-premium">
+      <div><strong>101+</strong><span>Industry chatbot templates</span></div>
+      <div><strong>7</strong><span>AI Employee roles</span></div>
+      <div><strong>24/7</strong><span>Lead capture coverage</span></div>
+      <div><strong>1</strong><span>Growth platform</span></div>
+    </div>
+  </section>
+
+  <section class="trusted-premium">
+    <span>Built for revenue-focused operators, founders, and local teams</span>
+    <div class="logo-row-premium">
+      <b>Home<br>Services</b>
+      <b>Medical +<br>Wellness</b>
+      <b>Legal +<br>Finance</b>
+      <b>Retail +<br>Cannabis</b>
+      <b>Real<br>Estate</b>
+      <b>B2B<br>Services</b>
+    </div>
+  </section>
+
+  <section class="premium-section-compact problem-solution">
+    <span class="premium-kicker">Businesses buy growth, not software</span>
+    <h2>Turn revenue leaks into AI-powered workflows.</h2>
+    <div class="problem-grid">
+      <div><i>☎</i><span>Missing phone calls?</span><strong>AI Receptionist</strong></div>
+      <div><i>↗</i><span>Slow lead follow-up?</span><strong>AI Sales Representative</strong></div>
+      <div><i>▦</i><span>Need more appointments?</span><strong>AI Appointment Setter</strong></div>
+      <div><i>◌</i><span>Answering repeat questions?</span><strong>AI Chatbot</strong></div>
+      <div><i>★</i><span>Need more reviews?</span><strong>AI Review Manager</strong></div>
+      <div><i>◆</i><span>Need more customers?</span><strong>Marketing + SEO</strong></div>
+      <div><i>⚙</i><span>Too much manual work?</span><strong>Automation</strong></div>
+    </div>
+  </section>
+
+  <section class="premium-section-compact neon-section">
+    <span class="premium-kicker">Solutions that work together</span>
+    <h2>One platform for the full customer journey.</h2>
+    <div class="growth-card-grid">
+      {% for solution in solutions %}
+        {% include "includes/solution_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="premium-section-compact ai-workforce-preview neon-section">
+    <span class="premium-kicker">Flagship offer</span>
+    <h2>Meet Your AI Workforce</h2>
+    <div class="employee-preview-grid">
+      {% for employee in ai_employees %}
+        {% include "includes/employee_card.html" %}
+      {% endfor %}
+    </div>
+    <a class="hero-btn primary" href="{% url 'ai_employees' %}">Explore AI Employees →</a>
+  </section>
+
+  <section class="premium-section-compact industry-gallery neon-section">
+    <span class="premium-kicker">Industry AI Chatbot Demos</span>
+    <h2>Start with your industry. Expand into an AI workforce.</h2>
+    <div class="gallery-row">
+      <a class="gallery-card" href="{% url 'signup' %}?industry_slug=insurance-agency"><div class="gallery-img hvac-bg"></div><strong>Insurance</strong></a>
+      <a class="gallery-card" href="{% url 'signup' %}?industry_slug=cannabis-dispensary"><div class="gallery-img land-bg"></div><strong>Cannabis</strong></a>
+      <a class="gallery-card" href="{% url 'signup' %}?industry_slug=real-estate"><div class="gallery-img plumb-bg"></div><strong>Real Estate</strong></a>
+      <a class="gallery-card" href="{% url 'signup' %}?industry_slug=law-firm"><div class="gallery-img law-bg"></div><strong>Law Firm</strong></a>
+      <a class="gallery-card" href="{% url 'signup' %}?industry_slug=med-spa"><div class="gallery-img dental-bg"></div><strong>Med Spa</strong></a>
+      <a class="gallery-card" href="{% url 'signup' %}?industry_slug=restaurant"><div class="gallery-img fit-bg"></div><strong>Restaurant</strong></a>
+    </div>
+    <div class="hero-actions centered-actions">
+      <a class="hero-btn primary" href="{% url 'demo' %}">Open Demo Center →</a>
+      <a class="hero-btn secondary light-hero-btn" href="{% url 'industries' %}">View All {{ industry_count }} Industries</a>
+    </div>
+  </section>
+
+  <section class="bottom-cta growth-assessment-cta">
+    <div class="phone">
+      <div class="mini-message">Where are we losing revenue?</div>
+      <div class="mini-message alt">Missed calls, slow follow-up, and manual handoffs are the first places we review.</div>
+      <div style="color:#f5c451;font-weight:900">● ● ●</div>
+    </div>
+
+    <div>
+      <h2>Find the hidden revenue opportunities AI can unlock.</h2>
+      <p>Book a no-obligation AI Business Growth Assessment. We will review your lead flow, customer journey, missed opportunities, and best-fit AI workflows.</p>
+      <div class="hero-actions">
+        <a class="hero-btn cta-white" href="{% url 'growth_assessment' %}">Book Growth Assessment →</a>
+        <a class="watch" href="{% url 'case_studies' %}">View Case Studies</a>
+      </div>
+    </div>
+
+    <ul>
+      <li>✓ Business review</li>
+      <li>✓ Lead flow review</li>
+      <li>✓ Missed opportunity analysis</li>
+      <li>✓ 15–30 minute consultation</li>
+    </ul>
+  </section>
+</div>
+{% endblock %}

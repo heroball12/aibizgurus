@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Server Error | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="section hero-slim">
+  <div class="section-heading">
+    <span class="eyebrow">500</span>
+    <h1>Something misfired behind the scenes.</h1>
+    <p>Our system hit an unexpected error. Please try again in a moment, or contact the team if it continues.</p>
+    <div class="hero-actions">
+      <a class="btn" href="{% url 'home' %}">Back Home</a>
+      <a class="btn secondary" href="{% url 'growth_assessment' %}">Get Help</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Demo Setup Guide | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="client-overview">
+  <div>
+    <span class="mini-label">Demo setup</span>
+    <h1>Get your demo working.</h1>
+    <p>Follow these steps to make the assistant feel like it was built specifically for your business.</p>
+  </div>
+  <a class="btn ghost" href="{% url 'portal_home' %}">Dashboard</a>
+</section>
+
+<section class="setup-steps">
+  <div class="setup-step">
+    <span>01</span>
+    <h2>Add your platform OpenAI key</h2>
+    <p>On your local machine, open the <code>.env</code> file and set <code>PLATFORM_OPENAI_API_KEY</code>. Every client demo uses this key by default unless they add their own key later.</p>
+  </div>
+  <div class="setup-step">
+    <span>02</span>
+    <h2>Add business information</h2>
+    <p>Enter hours, services, service area, booking process, pricing notes, policies, and FAQs.</p>
+    <a class="btn small" href="{% url 'business_profile' %}">Open Business Info</a>
+  </div>
+  <div class="setup-step">
+    <span>03</span>
+    <h2>Set assistant instructions</h2>
+    <p>Tell the assistant how to greet customers, what tone to use, what information to collect, and when to tell someone your team will follow up.</p>
+    {% if assistant %}<a class="btn small" href="{% url 'assistant_settings' assistant.pk %}">Open Assistant</a>{% endif %}
+  </div>
+  <div class="setup-step">
+    <span>04</span>
+    <h2>Test as a customer</h2>
+    <p>Ask real questions your customers ask: pricing, availability, service area, booking, delivery, refunds, and urgent requests.</p>
+    {% if assistant %}<a class="btn small" href="{% url 'widget' assistant.slug %}" target="_blank">Preview Demo</a>{% endif %}
+  </div>
+</section>
+
+<section class="clean-panel">
+  <h2>Copy/paste starter instructions</h2>
+  <p>Use this as your first assistant instruction set, then customize it for the business.</p>
+  <textarea class="codebox compact-code" rows="10" readonly>You are the AI receptionist for this business. Greet customers warmly, answer questions using the business profile, and collect the customer’s name, phone number, email, service needed, location, urgency, and preferred follow-up time. If you are unsure, do not guess. Tell the customer a team member will follow up. Keep responses short, helpful, and professional. Your goal is to turn interested visitors into qualified leads.</textarea>
+</section>
+{% endblock %}

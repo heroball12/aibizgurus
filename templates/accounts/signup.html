@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Start Your AI Receptionist Demo{% endblock %}
+{% block content %}
+<section class="signup-shell">
+  <div class="signup-copy">
+    <span class="mini-label">Start your demo</span>
+    <h1>Build your AI receptionist workspace.</h1>
+    <p>Create your account, choose your industry, and generate a starter assistant customized around your business type.</p>
+    {% if selected_template %}
+      <div class="selected-card">
+        <strong>{{ selected_template.name }} template selected</strong>
+        <p>{{ selected_template.summary }}</p>
+      </div>
+    {% endif %}
+    <div class="selected-card subtle">
+      <strong>{{ template_count }} industry templates loaded</strong>
+      <p>If you do not see your exact business type, choose the closest match. You can customize the assistant after signup.</p><small>Source: {{ template_source }}</small>
+    </div>
+  </div>
+
+  <div class="panel form-panel">
+    <form method="post" class="form">{% csrf_token %}
+      <p><label>Industry template</label>
+        <select name="industry_slug" required>
+          {% for t in templates %}
+            <option value="{{ t.slug }}" {% if selected_industry_slug == t.slug or not selected_industry_slug and forloop.first %}selected{% endif %}>
+              {{ t.category }} — {{ t.name }}
+            </option>
+          {% empty %}
+            <option value="generic-local-service">General — Generic Local Service</option>
+          {% endfor %}
+        </select>
+      </p>
+      <p><label>Username</label>{{ form.username }}</p>
+      <p><label>Email</label>{{ form.email }}</p>
+      <p><label>Business name</label>{{ form.business_name }}</p>
+      <p><label>Password</label>{{ form.password1 }}</p>
+      <p><label>Confirm password</label>{{ form.password2 }}</p>
+      {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
+      <button class="btn full">Create My Demo</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

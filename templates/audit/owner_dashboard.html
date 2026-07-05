@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Owner Control Room | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="staff-hero">
+  <div>
+    <span class="ops-label">Owner Access</span>
+    <h1>Control room</h1>
+    <p>Complete visibility across users, clients, operations, sales, assistants, and activity.</p>
+  </div>
+  <div class="actions">
+    <a class="btn neon" href="{% url 'owner_activity_logs' %}">View Activity Logs</a>
+    <a class="btn ghost" href="/admin/">Django Admin</a>
+  </div>
+</section>
+
+{% if not audit_ready %}
+<section class="activation-banner"><div><strong>Audit table is not ready.</strong><p>Run migrations to enable activity history. Other owner tools remain available.</p></div></section>
+{% endif %}
+
+<section class="ops-metrics owner-metrics">
+  <div class="ops-metric"><span>Users</span><strong>{{ user_count }}</strong></div>
+  <div class="ops-metric"><span>Ops Users</span><strong>{{ ops_count }}</strong></div>
+  <div class="ops-metric"><span>Clients</span><strong>{{ client_count }}</strong></div>
+  <div class="ops-metric"><span>Assistants</span><strong>{{ assistant_count }}</strong></div>
+  <div class="ops-metric"><span>Internal Leads</span><strong>{{ internal_lead_count }}</strong></div>
+  <div class="ops-metric"><span>Client Leads</span><strong>{{ client_lead_count }}</strong></div>
+</section>
+
+<section class="ops-grid">
+  <div class="ops-panel">
+    <div class="section-head"><div><span class="ops-label">Access</span><h2>Owner shortcuts</h2></div></div>
+    <div class="owner-shortcuts">
+      <a href="{% url 'owner_users' %}">Users & roles →</a>
+      <a href="{% url 'owner_clients' %}">Clients →</a>
+      <a href="{% url 'ops_dashboard' %}">OPS dashboard →</a>
+      <a href="{% url 'crm_home' %}">Internal CRM →</a>
+      <a href="/admin/audit/activitylog/">Admin activity table →</a>
+    </div>
+  </div>
+  <div class="ops-panel">
+    <div class="section-head"><div><span class="ops-label">Latest activity</span><h2>Recent moves</h2></div><a href="{% url 'owner_activity_logs' %}">Full log →</a></div>
+    <table>
+      <tr><th>Time</th><th>User</th><th>Action</th><th>Target</th></tr>
+      {% for log in logs %}
+        <tr><td>{{ log.created_at|date:"M j, g:i A" }}</td><td>{{ log.actor_username|default:"System" }}</td><td><span class="ops-chip">{{ log.action }}</span></td><td>{{ log.object_repr|default:log.path|truncatechars:45 }}</td></tr>
+      {% empty %}
+        <tr><td colspan="4">No activity yet.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Assistant Settings | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="client-overview">
+  <div>
+    <span class="mini-label">Assistant</span>
+    <h1>{{ instance.name }}</h1>
+    <p>Set the tone, greeting, instructions, channels, and publishing options for your AI receptionist.</p>
+  </div>
+  <div class="actions">
+    <a class="btn ghost" href="{% url 'portal_home' %}">Dashboard</a>
+    <a class="btn" href="{% url 'widget' instance.slug %}" target="_blank">Preview</a>
+  </div>
+</section>
+
+{% if not can_publish %}
+<section class="activation-banner">
+  <div><strong>Publishing is locked.</strong><p>You can configure and preview this assistant now. Activate your full version to publish the embed, connect voice/SMS, and capture production leads.</p></div>
+  <a class="btn" href="{% url 'billing_home' %}">Activate Full Version</a>
+</section>
+{% endif %}
+
+<section class="clean-layout">
+  <div class="clean-main">
+    <section class="clean-panel form-clean">
+      <h2>Assistant settings</h2>
+      <div class="brand-preview" style="--client-widget-color: {{ instance.widget_primary_color }};">
+        <span></span>
+        <div>
+          <strong>Website chat color</strong>
+          <p>Use the color picker below to match the chat box to your website brand.</p>
+        </div>
+      </div>
+      <form method="post" class="form gridform">{% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn">Save Changes</button>
+      </form>
+    </section>
+  </div>
+
+  <aside class="clean-side">
+    <section class="clean-panel">
+      <h3>{% if can_publish %}Website embed{% else %}🔒 Website embed{% endif %}</h3>
+      <p>{% if can_publish %}Copy this code into your website builder or send it to your web designer.{% else %}Your embed code is prepared. Activation unlocks copying and live publishing.{% endif %}</p>
+      {% if can_publish %}
+        <textarea class="codebox compact-code" rows="5" readonly>{{ iframe }}</textarea>
+      {% else %}
+        <a class="locked-code-card" href="{% url 'billing_home' %}"><span>🔒</span><code>{{ iframe }}</code><strong>Activate to copy live embed</strong></a>
+      {% endif %}
+    </section>
+
+    <section class="clean-panel soft-note">
+      <h3>{% if can_publish %}Voice/SMS webhooks{% else %}🔒 Voice/SMS webhooks{% endif %}</h3>
+      <p>{% if can_publish %}Use these URLs when connecting a Twilio number.{% else %}Voice and SMS setup unlock after activation.{% endif %}</p>
+      {% if can_publish %}
+        <div class="mini-webhook"><strong>Voice</strong><code>{{ base_url }}/voice/incoming/{{ instance.slug }}/</code></div>
+        <div class="mini-webhook"><strong>SMS</strong><code>{{ base_url }}/voice/sms/{{ instance.slug }}/</code></div>
+      {% else %}
+        <a class="feature-lock-card locked compact" href="{% url 'billing_home' %}"><span class="lock-icon">🔒</span><div><strong>Unlock Voice AI + SMS</strong><p>Activate the full version to connect Twilio.</p></div></a>
+      {% endif %}
+    </section>
+  </aside>
+</section>
+{% endblock %}

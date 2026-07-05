@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Integrations | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="client-overview">
+  <div>
+    <span class="mini-label">Integrations</span>
+    <h1>Connect your tools.</h1>
+    <p>Your account uses the AI Business Gurus OpenAI key by default. Add your own key only if you want billing and usage under your account.</p>
+  </div>
+  <a class="btn ghost" href="{% url 'portal_home' %}">Back to Dashboard</a>
+</section>
+
+<section class="clean-layout">
+  <div class="clean-main">
+    <section class="clean-panel form-clean">
+      <h2>Add or update an integration</h2>
+      <p class="help-copy">Choose the integration type. Only fill in the fields that apply. For OpenAI, the API key is optional.</p>
+      <form method="post" class="form integration-form">{% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        <p><label for="{{ form.integration_type.id_for_label }}">Integration type</label>{{ form.integration_type }}{{ form.integration_type.errors }}</p>
+        <p><label for="{{ form.name.id_for_label }}">Connection name</label>{{ form.name }}{{ form.name.errors }}</p>
+        <div class="integration-fields openai-fields">
+          <p><label for="{{ form.api_key.id_for_label }}">{{ form.api_key.label }}</label>{{ form.api_key }}<small>{{ form.api_key.help_text }}</small>{{ form.api_key.errors }}</p>
+        </div>
+        <div class="integration-fields twilio-fields">
+          <p><label for="{{ form.account_sid.id_for_label }}">{{ form.account_sid.label }}</label>{{ form.account_sid }}{{ form.account_sid.errors }}</p>
+          <p><label for="{{ form.auth_token.id_for_label }}">{{ form.auth_token.label }}</label>{{ form.auth_token }}{{ form.auth_token.errors }}</p>
+          <p><label for="{{ form.phone_number.id_for_label }}">{{ form.phone_number.label }}</label>{{ form.phone_number }}{{ form.phone_number.errors }}</p>
+        </div>
+        <p><label for="{{ form.notes.id_for_label }}">Notes</label>{{ form.notes }}{{ form.notes.errors }}</p>
+        <p class="check-row">{{ form.is_active }} <label for="{{ form.is_active.id_for_label }}">Active</label>{{ form.is_active.errors }}</p>
+        <button class="btn">Save Integration</button>
+      </form>
+    </section>
+  </div>
+  <aside class="clean-side">
+    <section class="clean-panel">
+      <h3>Saved connections</h3>
+      <div class="connection-list">
+        {% for i in items %}
+          <div class="connection-row">
+            <strong>{{ i.integration_type|title }}</strong>
+            <span>{{ i.is_active|yesno:"Active,Inactive" }}</span>
+            <small>{{ i.name }}</small>
+            {% if i.integration_type == "openai" and i.uses_platform_openai %}
+              <em>Using AI Business Gurus platform key</em>
+            {% else %}
+              <em>{{ i.masked_credentials }}</em>
+            {% endif %}
+          </div>
+        {% empty %}
+          <div class="empty-state"><strong>No client-owned integrations yet</strong><p>OpenAI will use the platform key until you add your own.</p></div>
+        {% endfor %}
+      </div>
+    </section>
+    <section class="clean-panel soft-note">
+      <h3>OpenAI default</h3>
+      <p>Every client starts on the platform OpenAI key. To switch, create an OpenAI integration and paste the client’s API key.</p>
+    </section>
+  </aside>
+</section>
+<script>
+(() => {
+  const type = document.getElementById("id_integration_type");
+  const sync = () => {
+    document.querySelectorAll(".integration-fields").forEach((el) => el.hidden = true);
+    const target = document.querySelector(`.${type.value}-fields`);
+    if (target) target.hidden = false;
+  };
+  type.addEventListener("change", sync);
+  sync();
+})();
+</script>
+{% endblock %}

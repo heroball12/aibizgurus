@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ solution.name }} | AI Business Gurus{% endblock %}
+{% block meta_description %}{{ solution.summary }}{% endblock %}
+{% block content %}
+<section class="growth-page-hero">
+  <span class="mini-label">{{ solution.name }}</span>
+  <h1>{{ solution.headline }}</h1>
+  <p>{{ solution.summary }}</p>
+  <div class="actions">
+    <a class="btn" href="{% url 'growth_assessment' %}">Book AI Growth Assessment</a>
+    <a class="btn ghost" href="{% url 'solutions' %}">All Solutions</a>
+  </div>
+</section>
+
+<section class="detail-grid">
+  <article class="clean-panel growth-detail-panel">
+    <span class="mini-label">Benefits</span>
+    <h2>How this helps you grow</h2>
+    <ul class="premium-list">
+      {% for item in solution.benefits %}
+        <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </article>
+  <article class="clean-panel growth-detail-panel">
+    <span class="mini-label">Use cases</span>
+    <h2>Where it fits</h2>
+    <ul class="premium-list">
+      {% for item in solution.use_cases %}
+        <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </article>
+  <article class="clean-panel growth-detail-panel wide">
+    <span class="mini-label">How it works</span>
+    <h2>From revenue problem to working AI workflow</h2>
+    <div class="timeline-cards">
+      {% for step in solution.how_it_works %}
+        <div><strong>0{{ forloop.counter }}</strong><span>{{ step }}</span></div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="luxury-cta">
+  <span>{{ solution.name }}</span>
+  <h2>Want to know if this is the right move?</h2>
+  <p>We’ll review your business model, lead flow, and customer journey before recommending the best-fit AI system.</p>
+  <a class="btn" href="{% url 'growth_assessment' %}">Book Growth Assessment</a>
+</section>
+{% endblock %}

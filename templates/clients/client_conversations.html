@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Conversations | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="client-overview">
+  <div><span class="mini-label">Conversations</span><h1>Customer conversations</h1><p>Review recent interactions from your AI receptionist.</p></div>
+  <a class="btn ghost" href="{% url 'portal_home' %}">Dashboard</a>
+</section>
+{% if not paid_active %}
+<section class="activation-banner">
+  <div>
+    <strong>Demo conversations are visible.</strong>
+    <p>You can review every test chat now. Activate when you are ready for live website publishing, production lead alerts, exports, voice, and SMS.</p>
+  </div>
+  <a class="btn" href="{% url 'billing_home' %}">Activate Full Version</a>
+</section>
+{% endif %}
+<section class="clean-panel">
+  <div class="lead-list full">
+    {% for c in conversations %}
+      <a class="lead-row clickable-row" href="{% url 'client_conversation_detail' c.pk %}">
+        <div>
+          <strong>{{ c.ai_instance.name }}</strong>
+          <p>{{ c.customer_name|default:"Visitor" }}{% if c.customer_phone %} · {{ c.customer_phone }}{% endif %} · {{ c.channel|title }}</p>
+        </div>
+        <span>{{ c.updated_at|date:"M j, g:i A" }}</span>
+      </a>
+    {% empty %}
+      <div class="empty-state"><strong>No conversations yet</strong><p>Conversation history will appear here once visitors start chatting.</p></div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

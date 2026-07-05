@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Ops Command Center | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="staff-hero">
+  <div>
+    <span class="ops-label">Command Center</span>
+    <h1>Operations cockpit</h1>
+    <p>Manage clients, demos, activations, and AI Business Gurus sales leads.</p>
+  </div>
+  <div class="ops-glow-card"><strong>Live Platform</strong><span>Systems online</span></div>
+</section>
+
+<section class="ops-metrics">
+  <div class="ops-metric"><span>Clients</span><strong>{{ client_count }}</strong></div>
+  <div class="ops-metric"><span>AI Instances</span><strong>{{ assistant_count }}</strong></div>
+  <div class="ops-metric"><span>Internal Leads</span><strong>{{ lead_count }}</strong></div>
+</section>
+
+<section class="ops-grid">
+  <div class="ops-panel">
+    <div class="section-head"><div><span class="ops-label">Client network</span><h2>Recent clients</h2></div></div>
+    <table>
+      <tr><th>Business</th><th>Industry</th><th>Status</th><th></th></tr>
+      {% for c in clients %}
+        <tr>
+          <td><a href="{% url 'ops_client_detail' c.pk %}">{{ c.business_name }}</a></td>
+          <td>{{ c.industry }}</td>
+          <td><span class="ops-chip">{{ c.activation_status|default:c.status }}</span></td>
+          <td><a href="{% url 'ops_client_detail' c.pk %}">Manage →</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4">No clients yet.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="ops-panel">
+    <div class="section-head"><div><span class="ops-label">Sales radar</span><h2>AI Business Gurus leads</h2></div><a href="{% url 'crm_home' %}">Open CRM →</a></div>
+    <table>
+      <tr><th>Name</th><th>Business</th><th>Status</th><th></th></tr>
+      {% for l in new_leads %}
+        <tr><td>{{ l.name }}</td><td>{{ l.business_name }}</td><td><span class="ops-chip">{{ l.status }}</span></td><td><a href="{% url 'lead_detail' l.pk %}">Open →</a></td></tr>
+      {% empty %}
+        <tr><td colspan="4">No internal leads yet.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</section>
+{% endblock %}

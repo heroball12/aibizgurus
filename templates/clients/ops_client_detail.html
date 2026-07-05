@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Client Detail | AI Business Gurus Ops{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div>
+    <span class="ops-label">Client Workspace</span>
+    <h1>{{ client.business_name }}</h1>
+    <p>{{ client.industry }} · {{ client.activation_status|title }} · {{ client.plan|title }}</p>
+  </div>
+  <a class="btn neon" href="/admin/clients/clientaccount/{{ client.pk }}/change/">Edit Client</a>
+</section>
+
+<section class="ops-metrics">
+  <div class="ops-metric"><span>Assistants</span><strong>{{ assistants|length }}</strong></div>
+  <div class="ops-metric"><span>Captured Leads</span><strong>{{ leads|length }}</strong></div>
+  <div class="ops-metric"><span>Conversations</span><strong>{{ conversations|length }}</strong></div>
+</section>
+
+<section class="ops-grid">
+  <div class="ops-panel">
+    <div class="section-head"><div><span class="ops-label">AI stack</span><h2>Assistants</h2></div></div>
+    <table><tr><th>Name</th><th>Status</th><th>Channels</th><th></th></tr>
+    {% for a in assistants %}
+      <tr><td>{{ a.name }}</td><td><span class="ops-chip">{{ a.status }}</span></td><td>Web {{ a.embed_enabled|yesno:"On,Off" }} · Voice {{ a.voice_enabled|yesno:"On,Off" }} · SMS {{ a.sms_enabled|yesno:"On,Off" }}</td><td><a href="/admin/clients/aiinstance/{{ a.pk }}/change/">Edit →</a></td></tr>
+    {% empty %}<tr><td colspan="4">No assistants.</td></tr>{% endfor %}
+    </table>
+  </div>
+
+  <div class="ops-panel">
+    <div class="section-head"><div><span class="ops-label">Client leads</span><h2>Captured leads</h2></div></div>
+    <table><tr><th>Name</th><th>Phone</th><th>Status</th><th>Source</th></tr>
+    {% for l in leads %}
+      <tr><td>{{ l.name|default:"New lead" }}</td><td>{{ l.phone }}</td><td><span class="ops-chip">{{ l.status }}</span></td><td>{{ l.source }}</td></tr>
+    {% empty %}<tr><td colspan="4">No captured leads.</td></tr>{% endfor %}
+    </table>
+  </div>
+</section>
+
+<section class="ops-panel">
+  <div class="section-head"><div><span class="ops-label">Conversation history</span><h2>Recent conversations</h2></div></div>
+  <table><tr><th>Assistant</th><th>Customer</th><th>Phone</th><th>Channel</th><th>Last Activity</th><th></th></tr>
+  {% for c in conversations %}
+    <tr>
+      <td>{{ c.ai_instance.name }}</td>
+      <td>{{ c.customer_name|default:"Website visitor" }}</td>
+      <td>{{ c.customer_phone }}</td>
+      <td>{{ c.channel }}</td>
+      <td>{{ c.updated_at }}</td>
+      <td><a href="{% url 'ops_conversation_detail' client.pk c.pk %}">Open transcript →</a></td>
+    </tr>
+  {% empty %}<tr><td colspan="6">No conversations yet.</td></tr>{% endfor %}
+  </table>
+</section>
+{% endblock %}

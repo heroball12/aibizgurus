@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Users | Owner{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div><span class="ops-label">Users</span><h1>All users</h1><p>View every Owner, admin, employee, and client account.</p></div>
+  <a class="btn neon" href="/admin/accounts/user/add/">Create User</a>
+</section>
+<section class="ops-panel">
+  <table><tr><th>Username</th><th>Email</th><th>Role</th><th>Staff</th><th>Superuser</th><th></th></tr>
+  {% for u in users %}
+    <tr><td>{{ u.username }}</td><td>{{ u.email }}</td><td><span class="ops-chip">{{ u.role }}</span></td><td>{{ u.is_staff }}</td><td>{{ u.is_superuser }}</td><td><a href="/admin/accounts/user/{{ u.pk }}/change/">Edit →</a></td></tr>
+  {% endfor %}
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Login | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="login-shell">
+  <div class="panel form-panel narrow clean-login">
+    <span class="mini-label">Secure login</span>
+    <h1>Welcome back.</h1>
+    <p>Clients manage assistants and leads. Team members are routed to the operations command center after login.</p>
+    <form method="post" class="form">{% csrf_token %}{{ form.as_p }}<button class="btn full">Login</button></form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,12 @@
+<article class="growth-card pricing-card-premium {% if featured %}featured{% endif %}">
+  <span>{{ eyebrow }}</span>
+  <h3>{{ name }}</h3>
+  <strong>{{ setup }}</strong>
+  <p>{{ monthly }}</p>
+  <ul>
+    {% for item in features %}
+      <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+  <a class="btn" href="{% url 'growth_assessment' %}">Discuss {{ name }}</a>
+</article>

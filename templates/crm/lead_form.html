@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Lead | AI Business Gurus CRM{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div><span class="ops-label">CRM record</span><h1>{% if lead %}Edit lead{% else %}Create lead{% endif %}</h1><p>Keep the pipeline clean, current, and ready for follow-up.</p></div>
+</section>
+<section class="ops-panel"><form method="post" class="form gridform dark-form">{% csrf_token %}{{ form.as_p }}<button class="btn neon">Save Lead</button></form></section>
+{% endblock %}

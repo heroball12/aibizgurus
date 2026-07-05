@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Solutions | AI Business Gurus{% endblock %}
+{% block meta_description %}Explore AI Business Gurus solutions: AI Employees, AI Chatbots, Voice AI, automation, websites, marketing, CRM integrations, and AI consulting for revenue growth.{% endblock %}
+{% block content %}
+<section class="growth-page-hero">
+  <span class="mini-label">Solutions</span>
+  <h1>AI growth systems for every revenue bottleneck.</h1>
+  <p>AI Business Gurus combines AI Employees, industry chatbots, voice AI, automation, websites, marketing, CRM integrations, and consulting into practical workflows that help businesses make more money.</p>
+  <div class="actions">
+    <a class="btn" href="{% url 'growth_assessment' %}">Book Growth Assessment</a>
+    <a class="btn ghost" href="{% url 'demo' %}">Open Demo Center</a>
+  </div>
+</section>
+
+<section class="growth-card-grid">
+  {% for solution in solutions %}
+    {% include "includes/solution_card.html" %}
+  {% endfor %}
+</section>
+
+<section class="luxury-cta">
+  <span>Not sure where to start?</span>
+  <h2>We’ll find the revenue leaks first.</h2>
+  <p>Book an AI Business Growth Assessment and we’ll map the highest-impact workflows for your business before recommending any technology.</p>
+  <a class="btn" href="{% url 'growth_assessment' %}">Find Hidden Revenue Opportunities</a>
+</section>
+{% endblock %}

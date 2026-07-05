@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Supported Industries | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="pagehead clean-head">
+  <span class="mini-label">Supported industries</span>
+  <h1>Choose your business type.</h1>
+  <p>Select an industry to start a demo with the right template preloaded. If you do not see your exact category, request a consultation and we will map the workflow for you.</p>
+  <div class="industry-meta">
+    <strong>{{ industry_count }} supported templates</strong>
+    <small>Source: {{ industry_source }}</small>
+  </div>
+  <a class="btn ghost" href="{% url 'consultation_request' %}">Request a Custom Industry</a>
+</section>
+
+{% if groups %}
+  {% for category, items in groups.items %}
+  <section class="industry-list-section">
+    <h2>{{ category }}</h2>
+    <div class="industry-list">
+      {% for item in items %}
+        <a class="industry-list-item" href="{% url 'signup' %}?industry_slug={{ item.slug }}">
+          <span>{{ item.name }}</span>
+          <small>Start demo →</small>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+{% else %}
+  <section class="clean-panel">
+    <h2>No industries loaded yet.</h2>
+    <p>Run the seed command and refresh this page.</p>
+    <code>python manage.py seed_industries --clear</code>
+  </section>
+{% endif %}
+{% endblock %}

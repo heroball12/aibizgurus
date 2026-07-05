@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Activity Logs | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div>
+    <span class="ops-label">Audit Trail</span>
+    <h1>Activity logs</h1>
+    <p>Track user navigation, updates, creates, deletes, account activity, and operational changes.</p>
+  </div>
+  <a class="btn ghost" href="{% url 'owner_dashboard' %}">Owner Dashboard</a>
+</section>
+
+{% if not audit_ready %}
+<section class="ops-panel"><p>Audit history is unavailable until migrations are applied.</p></section>
+{% endif %}
+
+<section class="ops-panel">
+  <form method="get" class="owner-filter">
+    <input name="actor" placeholder="Username" value="{{ request.GET.actor }}">
+    <input name="role" placeholder="Role" value="{{ request.GET.role }}">
+    <input name="action" placeholder="Action" value="{{ request.GET.action }}">
+    <input name="q" placeholder="Search path/object/message" value="{{ request.GET.q }}">
+    <button class="btn neon">Filter</button>
+  </form>
+</section>
+
+<section class="ops-panel">
+  <table>
+    <tr><th>Time</th><th>User</th><th>Role</th><th>Action</th><th>Path / Object</th><th>Status</th><th>IP</th></tr>
+    {% for log in logs %}
+      <tr>
+        <td>{{ log.created_at|date:"M j, Y g:i:s A" }}</td>
+        <td>{{ log.actor_username|default:"System" }}</td>
+        <td>{{ log.actor_role }}</td>
+        <td><span class="ops-chip">{{ log.action }}</span></td>
+        <td><strong>{{ log.object_repr|default:log.path|truncatechars:70 }}</strong><br><small>{{ log.message|truncatechars:110 }}</small></td>
+        <td>{{ log.status_code }}</td>
+        <td>{{ log.ip_address }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7">No logs found.</td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<link rel="preconnect" href="https://assets.calendly.com">
+<link rel="preconnect" href="https://calendly.com">
+{% endblock %}
+{% block title %}AI Business Growth Assessment | AI Business Gurus{% endblock %}
+{% block meta_description %}Book an AI Business Growth Assessment to find hidden revenue opportunities through business review, lead-flow review, missed-opportunity analysis, AI recommendations, and customer journey review.{% endblock %}
+{% block content %}
+<section class="assessment-hero">
+  <div>
+    <span class="mini-label">AI Business Growth Assessment</span>
+    <h1>Find the hidden revenue opportunities AI can unlock.</h1>
+    <p>We review how your business captures demand, follows up, books appointments, supports customers, and turns conversations into revenue — then recommend practical AI workflows.</p>
+    <div class="assessment-list">
+      <span>Business Review</span>
+      <span>Lead Flow Review</span>
+      <span>Missed Opportunity Analysis</span>
+      <span>AI Recommendations</span>
+      <span>Customer Journey Review</span>
+      <span>15–30 Minute Consultation</span>
+      <span>No Obligation</span>
+    </div>
+  </div>
+  <section class="clean-panel assessment-form calendly-panel">
+    <span class="mini-label">Schedule online</span>
+    <h2>Book your 15-minute AI intro.</h2>
+    <p>Choose a time that works for you. Calendly will confirm the meeting and send the calendar invite.</p>
+    <div
+      class="calendly-inline-widget"
+      data-url="https://calendly.com/theaibizguru/15-minute-intro-to-ai?hide_gdpr_banner=1&primary_color=7c3aed"
+      aria-label="Calendly scheduler for a 15-minute intro to AI"
+    ></div>
+    <noscript>
+      <p class="calendly-fallback">
+        JavaScript is required to load the scheduler.
+        <a href="https://calendly.com/theaibizguru/15-minute-intro-to-ai">Open Calendly to book your call.</a>
+      </p>
+    </noscript>
+    <p class="calendly-fallback">
+      Having trouble seeing the calendar?
+      <a href="https://calendly.com/theaibizguru/15-minute-intro-to-ai" target="_blank" rel="noopener">Open Calendly in a new tab.</a>
+    </p>
+  </section>
+</section>
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+{% endblock %}

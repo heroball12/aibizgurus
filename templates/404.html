@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="section hero-slim">
+  <div class="section-heading">
+    <span class="eyebrow">404</span>
+    <h1>That page slipped out of the pipeline.</h1>
+    <p>The link may be old, moved, or mistyped. Let’s get you back to the AI growth engine.</p>
+    <div class="hero-actions">
+      <a class="btn" href="{% url 'home' %}">Back Home</a>
+      <a class="btn secondary" href="{% url 'growth_assessment' %}">Book Growth Assessment</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

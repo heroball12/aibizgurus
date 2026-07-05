@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Conversation Transcript | AI Business Gurus{% endblock %}
+{% block content %}
+{% if is_staff_view %}
+<section class="staff-hero compact">
+  <div>
+    <span class="ops-label">Conversation Transcript</span>
+    <h1>{{ conversation.customer_name|default:"Website visitor" }}</h1>
+    <p>{{ client.business_name }} · {{ conversation.ai_instance.name }} · {{ conversation.channel|title }}</p>
+  </div>
+  <div class="actions">
+    <a class="btn ghost" href="{% url 'ops_client_detail' client.pk %}">Back to Client</a>
+    <a class="btn neon" href="/admin/assistant_ai/conversation/{{ conversation.pk }}/change/">Edit in Admin</a>
+  </div>
+</section>
+{% else %}
+<section class="client-overview">
+  <div>
+    <span class="mini-label">Conversation Transcript</span>
+    <h1>{{ conversation.customer_name|default:"Website visitor" }}</h1>
+    <p>{{ conversation.ai_instance.name }} · {{ conversation.channel|title }} · Last activity {{ conversation.updated_at|date:"M j, Y g:i A" }}</p>
+  </div>
+  <a class="btn ghost" href="{% url 'client_conversations' %}">Back to Conversations</a>
+</section>
+{% endif %}
+
+{% if not is_staff_view and not paid_active %}
+<section class="activation-banner">
+  <div>
+    <strong>Saved demo transcript.</strong>
+    <p>This full chat history is available during demo mode. Activation unlocks live publishing, production alerts, exports, voice, and SMS.</p>
+  </div>
+  <a class="btn" href="{% url 'billing_home' %}">Activate Full Version</a>
+</section>
+{% endif %}
+
+<section class="{% if is_staff_view %}ops-grid{% else %}clean-layout{% endif %}">
+  <div class="{% if is_staff_view %}ops-panel{% else %}clean-panel{% endif %}">
+    <div class="section-head simple">
+      <div>
+        <h2>Full conversation</h2>
+        <p>{{ conversation_messages|length }} saved message{{ conversation_messages|length|pluralize }} from this customer interaction.</p>
+      </div>
+    </div>
+    <div class="transcript">
+      {% for m in conversation_messages %}
+        <div class="transcript-message {{ m.sender }}">
+          <div class="message-meta">
+            <strong>{{ m.get_sender_display }}</strong>
+            <span>{{ m.created_at|date:"M j, Y g:i A" }}</span>
+          </div>
+          <p>{{ m.content|linebreaksbr }}</p>
+        </div>
+      {% empty %}
+        <div class="empty-state"><strong>No messages yet</strong><p>The conversation record exists, but no message rows were saved.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <aside class="{% if is_staff_view %}ops-panel{% else %}clean-side{% endif %}">
+    <section class="{% if is_staff_view %}ops-note{% else %}clean-panel{% endif %}">
+      <h3>Customer details</h3>
+      <p><strong>Name:</strong> {{ conversation.customer_name|default:"Not provided" }}</p>
+      <p><strong>Phone:</strong> {{ conversation.customer_phone|default:"Not provided" }}</p>
+      <p><strong>Email:</strong> {{ conversation.customer_email|default:"Not provided" }}</p>
+      <p><strong>Visitor ID:</strong> {{ conversation.visitor_id|default:"Not captured" }}</p>
+    </section>
+    <section class="{% if is_staff_view %}ops-note{% else %}clean-panel soft-note{% endif %}">
+      <h3>Assistant</h3>
+      <p><strong>{{ conversation.ai_instance.name }}</strong></p>
+      <p>{{ conversation.ai_instance.industry }} · {{ conversation.ai_instance.status|title }}</p>
+      {% if is_staff_view %}
+        <a href="/admin/clients/aiinstance/{{ conversation.ai_instance.pk }}/change/">Edit assistant →</a>
+      {% else %}
+        <a href="{% url 'assistant_settings' conversation.ai_instance.pk %}">Manage assistant →</a>
+      {% endif %}
+    </section>
+  </aside>
+</section>
+{% endblock %}

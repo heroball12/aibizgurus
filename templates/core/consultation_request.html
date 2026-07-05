@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Request Custom Industry Integration{% endblock %}
+{% block content %}
+<section class="panel narrow form-panel">
+  <span class="mini-label">Custom integration</span>
+  <h1>Do not see your industry?</h1>
+  <p>Tell us what your business does and what your customers usually ask for. We will review the workflow and help build the right AI receptionist template.</p>
+  <form method="post" class="form">{% csrf_token %}{{ form.as_p }}<button class="btn">Request Consultation</button></form>
+</section>
+{% endblock %}

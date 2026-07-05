@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Leads | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="client-overview">
+  <div><span class="mini-label">Lead inbox</span><h1>Captured leads</h1><p>Review customer opportunities captured by web chat, SMS, and voice.</p></div>
+  <a class="btn ghost" href="{% url 'portal_home' %}">Dashboard</a>
+</section>
+<section class="clean-panel">
+  <div class="lead-list full">
+    {% for l in leads %}
+      <div class="lead-row">
+        <div><strong>{{ l.name|default:"New lead" }}</strong><p>{{ l.phone }} · {{ l.email }} · {{ l.source }}</p><small>{{ l.notes|truncatechars:180 }}</small></div>
+        <span>{{ l.status|title }}</span>
+      </div>
+    {% empty %}
+      <div class="empty-state"><strong>No leads yet</strong><p>Leads will appear here once your assistant is active.</p></div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

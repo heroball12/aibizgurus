@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Activate Full Version | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="client-overview">
+  <div>
+    <span class="mini-label">Activate full version</span>
+    <h1>Launch your AI growth system.</h1>
+    <p>Unlock live website publishing, OpenAI-powered production responses, voice/SMS workflows, lead alerts, production lead management, and growth automation.</p>
+  </div>
+  <a class="btn ghost" href="{% url 'portal_home' %}">Back to Dashboard</a>
+</section>
+
+{% if placeholder_mode %}
+<section class="activation-banner">
+  <div>
+    <strong>Stripe placeholder mode is on.</strong>
+    <p>Checkout is wired, but payment will not process until real Stripe test/live keys and price IDs are added to your .env file.</p>
+  </div>
+</section>
+{% endif %}
+
+<section class="pricing-grid">
+  <div class="price-card"><span class="mini-label">Starter</span><h3>Website AI</h3><strong>$2,500 setup</strong><p>Starting at $997/month for website assistant, lead capture, business knowledge, dashboard, and embed publishing.</p><a class="btn small" href="{% url 'create_checkout_session' 'starter' %}">Activate Starter</a></div>
+  <div class="price-card featured-price"><span class="mini-label">Most popular</span><h3>Growth</h3><strong>$5,000 setup</strong><p>Starting at $1,997/month for advanced workflows, CRM tracking, lead alerts, and optimization support.</p><a class="btn small" href="{% url 'create_checkout_session' 'growth' %}">Activate Growth</a></div>
+  <div class="price-card"><span class="mini-label">AI Workforce</span><h3>Voice + Automation</h3><strong>$10,000 setup</strong><p>Starting at $3,997/month for multiple AI Employees, phone, SMS, automations, routing, and priority strategy.</p><a class="btn small" href="{% url 'create_checkout_session' 'pro' %}">Activate AI Workforce</a></div>
+</section>
+<section class="clean-panel" style="margin-top:18px">
+  <p><strong>Note:</strong> final pricing depends on usage, integrations, workflow complexity, and business needs. Stripe checkout is safe in placeholder mode until real keys and price IDs are configured.</p>
+</section>
+{% endblock %}
