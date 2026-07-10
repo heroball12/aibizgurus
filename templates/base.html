@@ -7,7 +7,7 @@
   <meta name="description" content="{% block meta_description %}AI Business Gurus builds AI Employees, AI Chatbots, Voice AI, automation, websites, and growth systems that help businesses recover missed revenue and scale faster.{% endblock %}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=15">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=16">
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
@@ -17,11 +17,6 @@
     <span class="sr-only">AI Business Gurus</span>
   </a>
   <div class="navlinks">
-    <a href="{% url 'solutions' %}">Solutions</a>
-    <a href="{% url 'ai_employees' %}">AI Employees</a>
-    <a href="{% url 'industries' %}">Industries</a>
-    <a href="{% url 'demo' %}">Demo Center</a>
-    <a href="{% url 'pricing' %}">Pricing</a>
     {% if user.is_authenticated %}
       {% if user.is_employee_or_admin %}
         {% if user.is_owner %}<a href="{% url 'owner_dashboard' %}">Owner</a>{% endif %}
@@ -29,8 +24,18 @@
       {% else %}
         <a href="{% url 'portal_home' %}">Dashboard</a>
       {% endif %}
+      <a href="{% url 'solutions' %}">Solutions</a>
+      <a href="{% url 'ai_employees' %}">AI Employees</a>
+      <a href="{% url 'industries' %}">Industries</a>
+      <a href="{% url 'demo' %}">Demo Center</a>
+      <a href="{% url 'pricing' %}">Pricing</a>
       <a href="{% url 'logout' %}">Logout</a>
     {% else %}
+      <a href="{% url 'solutions' %}">Solutions</a>
+      <a href="{% url 'ai_employees' %}">AI Employees</a>
+      <a href="{% url 'industries' %}">Industries</a>
+      <a href="{% url 'demo' %}">Demo Center</a>
+      <a href="{% url 'pricing' %}">Pricing</a>
       <a href="{% url 'login' %}">Login</a>
       <a class="btn small" href="{% url 'growth_assessment' %}">Book Growth Assessment</a>
     {% endif %}

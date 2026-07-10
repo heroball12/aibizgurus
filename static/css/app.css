@@ -719,3 +719,91 @@ html{scroll-behavior:smooth}
 .showcase-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;margin-bottom:28px}.industry-tile{color:#111827}.industry-tile div{height:130px;border-radius:14px;margin-bottom:12px;box-shadow:0 14px 34px rgba(15,23,42,.12)}.industry-tile.hvac div{background:linear-gradient(135deg,#475569,#cbd5e1)}.industry-tile.plumbing div{background:linear-gradient(135deg,#1e3a8a,#93c5fd)}.industry-tile.landscaping div{background:linear-gradient(135deg,#166534,#86efac)}.industry-tile.dental div{background:linear-gradient(135deg,#0e7490,#cffafe)}.industry-tile.fitness div{background:linear-gradient(135deg,#111827,#94a3b8)}.industry-tile.law div{background:linear-gradient(135deg,#7c2d12,#fed7aa)}
 .premium-cta{max-width:1100px;margin:20px auto 60px;display:grid;grid-template-columns:230px 1fr 260px;gap:28px;align-items:center;background:linear-gradient(135deg,#7c3aed,#4c1d95);border-radius:28px;padding:36px 44px;color:white;overflow:hidden}.premium-cta h2{font-size:34px;color:white;margin:0 0 10px}.premium-cta p,.premium-cta li{color:#ede9fe}.premium-cta ul{list-style:none;padding:0;margin:0;display:grid;gap:12px}.cta-white{background:white!important;color:#6d28d9!important;border-radius:12px}.watch-link{color:white;font-weight:850}.phone-mock{width:190px;height:250px;border:10px solid #1f1147;border-bottom:0;border-radius:28px 28px 0 0;background:#f8fafc;padding:18px}.mini-chat{border-radius:14px;padding:11px;margin:12px 0;font-size:12px}.mini-chat.bot{background:#ede9fe;color:#111827}.mini-chat.ai{background:white;color:#111827}.typing{color:#7c3aed}
 @media(max-width:980px){.premium-hero{padding:42px 22px}.premium-hero-grid,.premium-cta{grid-template-columns:1fr}.hero-stats,.how-cards,.showcase-grid,.logo-row{grid-template-columns:1fr 1fr}.chat-demo-card{position:relative;right:auto;top:auto;margin-left:auto}.video-card{min-height:520px}.premium-copy h1{font-size:48px}.hero-stats div{border-right:0;border-bottom:1px solid rgba(255,255,255,.12)}}@media(max-width:620px){.hero-stats,.how-cards,.showcase-grid,.logo-row{grid-template-columns:1fr}.premium-hero{margin:-34px -22px 0}.premium-cta{padding:28px}.video-card{min-height:560px}.chat-demo-card{width:auto;margin:250px 8px 0}.play-button{top:165px}}
+
+/* Mobile experience foundation: keeps every public, client, and staff page usable on phones */
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,video,iframe{max-width:100%}
+button,input,select,textarea{font:inherit}
+.btn,.hero-btn,.premium-btn,.premium-outline{min-height:44px}
+.navlinks{display:flex;align-items:center;gap:14px}
+.navlinks a{margin-left:0;white-space:nowrap}
+.section-head,.section-head.simple{min-width:0}
+.ops-panel:has(table),.clean-panel:has(table),.panel:has(table){overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ops-panel table,.clean-panel table,.panel table{min-width:680px}
+.codebox,.locked-code-card code,.mini-webhook code,pre,code{overflow-wrap:anywhere;word-break:break-word}
+
+@media(max-width:1180px){
+  main{max-width:100%}
+  .growth-card-grid,.employee-full-grid,.premium-pricing-grid,.demo-card-grid,.case-study-grid,.comparison-grid,.timeline-cards,.industry-list,.showcase-grid,.how-cards,.logo-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .value-grid{grid-template-columns:1fr 1fr}
+  .clean-layout,.assessment-hero{grid-template-columns:1fr}
+  .clean-side{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .assessment-form{position:static}
+  .featured-price,.pricing-card-premium.featured{transform:none}
+  .premium-cta{grid-template-columns:1fr}
+}
+
+@media(max-width:860px){
+  .nav{position:sticky;top:0;display:grid;grid-template-columns:1fr;gap:10px;align-items:start;padding:12px 16px}
+  .nav .brand{min-width:0}
+  .nav .brand-logo{width:92px;margin:-4px 0}
+  .navlinks{width:100%;max-width:100%;overflow-x:auto;padding:2px 0 8px;gap:8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .navlinks::-webkit-scrollbar{display:none}
+  .navlinks a{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);font-size:13px}
+  .light-mode .navlinks a{color:#f8f5ff}
+  .staff-mode .navlinks a{background:rgba(96,165,250,.08);border-color:rgba(96,165,250,.18)}
+  .navlinks .btn.small,.navlinks a.btn.small{min-height:38px;padding:8px 12px;font-size:13px}
+  main{padding:22px 16px 64px}
+  .messages{padding:0 16px}
+  h1,.clean-head h1,.staff-hero h1,.staff-hero.compact h1,.client-overview h1,.growth-page-hero h1{font-size:clamp(34px,10vw,46px);line-height:1.03;letter-spacing:-1.7px}
+  h2,.luxury-cta h2,.premium-section h2{font-size:clamp(26px,8vw,34px);line-height:1.1}
+  .hero p,.growth-page-hero p,.assessment-hero p,.client-overview p{font-size:16px}
+  .actions,.hero-actions,.card-actions{width:100%;gap:10px}
+  .actions .btn,.hero-actions .btn,.hero-actions .hero-btn,.client-overview .btn,.activation-banner .btn,.staff-hero .btn{width:100%}
+  .section-head,.section-head.simple,.client-overview,.activation-banner,.assistant-row,.lead-row,.locked-list-row,.staff-hero{flex-direction:column;align-items:stretch}
+  .section-head>a,.section-head.simple>a{align-self:flex-start}
+  .client-overview,.activation-banner,.growth-page-hero,.pagehead.clean-head,.assessment-hero>div:first-child,.clean-panel,.panel,.price-card,.growth-card,.ops-panel,.ops-metric,.setup-step{border-radius:22px;padding:20px}
+  .growth-page-hero,.pagehead.clean-head{margin:0 0 22px}
+  .signup-shell,.split,.detail-grid,.value-grid,.dashboard-grid,.pricing-grid,.demo-flow,.ops-grid,.ops-metrics,.simple-stats,.locked-grid,.setup-steps,.owner-metrics,.owner-filter,.gridform,.comparison-grid,.timeline-cards,.growth-card-grid,.employee-full-grid,.premium-pricing-grid,.demo-card-grid,.case-study-grid,.industry-list,.showcase-grid,.how-cards,.logo-row,.clean-side{grid-template-columns:1fr}
+  .detail-grid .wide,.gridform p:has(textarea),.gridform button{grid-column:auto}
+  .signup-shell{min-height:auto;gap:18px}
+  .signup-copy h1{font-size:clamp(34px,10vw,46px)}
+  .form-clean{padding:20px}
+  .form input,.form select,.form textarea,textarea,input,select{font-size:16px;max-width:100%}
+  .brand-preview{align-items:flex-start}
+  .assistant-row,.lead-row,.connection-row{display:grid;grid-template-columns:1fr}
+  .assistant-actions,.assistant-actions .btn,.lead-row span{width:100%}
+  .assistant-actions .btn,.lead-row span{justify-content:center;text-align:center}
+  .connection-row small,.connection-row em{grid-column:auto}
+  .feature-lock-card{min-height:96px}
+  .transcript-message{max-width:100%;padding:14px}
+  .message-meta{flex-direction:column;gap:2px}
+  .calendly-panel{padding:18px}
+  .calendly-inline-widget{min-width:0;width:100%;height:680px;margin:14px 0 8px;border-radius:18px}
+  .luxury-cta,.final-cta{padding:26px 20px;border-radius:24px}
+  .site-footer{grid-template-columns:1fr;padding:28px 16px 42px}
+  .site-footer .brand-logo.footer-logo{width:132px}
+}
+
+@media(max-width:520px){
+  main{padding:18px 12px 56px}
+  .messages{padding:0 12px}
+  .client-overview,.activation-banner,.growth-page-hero,.pagehead.clean-head,.assessment-hero>div:first-child,.clean-panel,.panel,.price-card,.growth-card,.ops-panel,.ops-metric,.setup-step{padding:16px;border-radius:18px}
+  .mini-label,.eyebrow,.ops-label{font-size:10px;letter-spacing:.1em}
+  .btn,.hero-btn,.premium-btn,.premium-outline{width:100%;padding:12px 14px;text-align:center}
+  .status-line{align-items:flex-start}
+  .dash-card strong,.simple-stats strong,.ops-metric strong{font-size:34px}
+  .industry-list-item{display:grid;gap:6px;align-items:start}
+  .industry-meta{display:grid;gap:4px;border-radius:16px}
+  .assessment-list span,.feature-row span,.chip,.industry-pill{width:100%;text-align:center}
+  .lead-row p,.assistant-row p{overflow-wrap:anywhere}
+  .ops-panel table,.clean-panel table,.panel table{min-width:620px}
+}
+
+@media(max-width:380px){
+  .nav{padding:10px 12px}
+  .nav .brand-logo{width:82px}
+  main{padding-left:10px;padding-right:10px}
+  h1,.clean-head h1,.staff-hero h1,.staff-hero.compact h1,.client-overview h1,.growth-page-hero h1{font-size:32px}
+  .client-overview,.activation-banner,.growth-page-hero,.pagehead.clean-head,.assessment-hero>div:first-child,.clean-panel,.panel,.price-card,.growth-card,.ops-panel,.ops-metric,.setup-step{padding:14px}
+}

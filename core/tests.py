@@ -2,6 +2,7 @@ from unittest.mock import patch
 from types import SimpleNamespace
 
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -50,7 +51,7 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Build Your")
         self.assertContains(response, "AI Workforce")
-        self.assertContains(response, '/static/css/landing.css?v=14')
+        self.assertContains(response, '/static/css/landing.css?v=15')
         self.assertContains(response, "img/ai-business-gurus-logo-nav.png")
         self.assertContains(response, 'class="landing-page light-mode"')
 
@@ -242,6 +243,50 @@ class PlatformFlowTests(TestCase):
         self.assertContains(response, internal.name)
         self.assertNotContains(response, customer.name)
         self.assertEqual(self.client.get(reverse("lead_detail", args=[customer.pk])).status_code, 404)
+
+    def test_employee_can_bulk_upload_internal_sales_leads_csv(self):
+        employee = User.objects.create_user(username="csv-ops", password="OpsPass123!", role="employee")
+        self.client.force_login(employee)
+        response = self.client.get(reverse("lead_upload"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Upload leads from CSV")
+        self.assertContains(self.client.get(reverse("crm_home")), reverse("lead_upload"))
+
+        upload = SimpleUploadedFile(
+            "leads.csv",
+            (
+                "name,business_name,industry,phone,email,source,status,notes,value,follow_up_date,assigned_to\n"
+                "Ada Buyer,Ada Co,Home Services,555-1111,ada@example.com,CSV List,new,Interested in AI receptionist,2500.00,2026-08-01,csv-ops\n"
+                "Ben Founder,Ben Studio,Med Spa,555-2222,ben@example.com,CSV List,follow_up,Needs follow up,1200.50,,\n"
+            ).encode(),
+            content_type="text/csv",
+        )
+        response = self.client.post(reverse("lead_upload"), {"csv_file": upload})
+        self.assertRedirects(response, reverse("crm_home"))
+
+        ada = Lead.objects.get(name="Ada Buyer")
+        ben = Lead.objects.get(name="Ben Founder")
+        self.assertEqual(ada.lead_type, "internal_sales")
+        self.assertIsNone(ada.client)
+        self.assertIsNone(ada.ai_instance)
+        self.assertEqual(ada.assigned_to, employee)
+        self.assertEqual(ben.status, "follow_up")
+        self.assertEqual(Lead.objects.filter(lead_type="client_customer", name__in=["Ada Buyer", "Ben Founder"]).count(), 0)
+
+    def test_csv_upload_validation_is_all_or_nothing(self):
+        employee = User.objects.create_user(username="csv-ops-invalid", password="OpsPass123!", role="employee")
+        self.client.force_login(employee)
+        before = Lead.objects.count()
+        upload = SimpleUploadedFile(
+            "bad.csv",
+            b"name,business_name,email\nBroken Lead,Broken Co,not-an-email\n",
+            content_type="text/csv",
+        )
+        response = self.client.post(reverse("lead_upload"), {"csv_file": upload})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Import stopped. No leads were created.")
+        self.assertContains(response, "not-an-email")
+        self.assertEqual(Lead.objects.count(), before)
 
     def test_owner_role_and_admin_changelists_work(self):
         owner = User.objects.create_superuser(

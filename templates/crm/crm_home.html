@@ -7,7 +7,10 @@
     <h1>Internal CRM</h1>
     <p>This pipeline is for AI Business Gurus prospects, consultations, demos, and sales follow-up. Client-captured leads live inside each client workspace.</p>
   </div>
-  <a class="btn neon" href="{% url 'lead_create' %}">Create Lead</a>
+  <div class="actions">
+    <a class="btn neon" href="{% url 'lead_create' %}">Create Lead</a>
+    <a class="btn ghost" href="{% url 'lead_upload' %}">Upload CSV List</a>
+  </div>
 </section>
 <section class="ops-panel">
   <table><tr><th>Name</th><th>Business</th><th>Type</th><th>Status</th><th>Value</th><th></th></tr>{% for l in leads %}<tr><td>{{ l.name }}</td><td>{{ l.business_name }}</td><td>{{ l.lead_type }}</td><td><span class="ops-chip">{{ l.status }}</span></td><td>${{ l.value }}</td><td><a href="{% url 'lead_detail' l.pk %}">Open</a></td></tr>{% empty %}<tr><td colspan="6">No internal leads yet.</td></tr>{% endfor %}</table>

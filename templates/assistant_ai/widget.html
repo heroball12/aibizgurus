@@ -20,13 +20,26 @@
     .leadbar input,.composer input{padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
     .leadbar input:focus,.composer input:focus{outline:3px solid color-mix(in srgb, var(--brand) 20%, transparent);border-color:var(--brand)}
     .composer{display:flex;gap:8px;padding:14px;border-top:1px solid var(--line);background:#fff}.composer input{flex:1}.composer button{width:96px;background:var(--brand);border:0;border-radius:12px;color:white;font-weight:800;box-shadow:0 14px 28px color-mix(in srgb, var(--brand) 24%, transparent)}
+    @media(max-width:520px){
+      .widget{max-width:none;min-height:100svh;box-shadow:none}
+      .head{padding:18px}.head h2{font-size:20px;line-height:1.15}
+      .body{padding:14px}
+      .msg{max-width:94%;font-size:15px}
+      .assistant,.visitor{max-width:94%}
+      .leadbar{grid-template-columns:minmax(0,1fr)!important;padding:12px}.leadbar input#email{grid-column:auto!important}
+      .leadbar input,.composer input{font-size:16px}
+      .composer{padding:12px;gap:7px}.composer button{width:78px}
+    }
+    @media(max-width:360px){
+      .composer{display:grid;grid-template-columns:1fr}.composer button{width:100%;min-height:44px}
+    }
   </style>
 </head>
 <body>
 <div class="widget">
   <div class="head"><h2>{{ instance.name }}</h2><p>{{ instance.client.business_name }} · {{ instance.industry }}</p>{% if not instance.client.is_paid_active %}<div class="preview-banner">Demo preview · Activate to publish live</div>{% endif %}</div>
   <div class="body" id="body"><div class="msg assistant">{{ instance.greeting }}</div></div>
-  <div class="leadbar"><input id="name" placeholder="Name"><input id="phone" placeholder="Phone"><input id="email" placeholder="Email" style="grid-column:1/3"></div>
+  <div class="leadbar"><input id="name" placeholder="Name"><input id="phone" placeholder="Phone"><input id="email" placeholder="Email"></div>
   <div class="composer"><input id="message" placeholder="Type your question..." onkeydown="if(event.key==='Enter')sendMsg()"><button onclick="sendMsg()">Send</button></div>
 </div>
 <script>
