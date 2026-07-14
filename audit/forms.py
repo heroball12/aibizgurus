@@ -7,6 +7,10 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+def active_staff_queryset():
+    return User.objects.filter(role__in=["employee", "admin", "owner"], is_active=True).order_by("first_name", "username")
+
+
 class StaffUserForm(forms.ModelForm):
     password = forms.CharField(
         required=False,
@@ -58,3 +62,56 @@ class StaffUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class StaffMessageThreadForm(forms.Form):
+    title = forms.CharField(
+        required=False,
+        max_length=180,
+        help_text="Optional for group chats. One-on-one chats can stay unnamed.",
+    )
+    participants = forms.ModelMultipleChoiceField(
+        queryset=User.objects.none(),
+        label="Send to",
+        widget=forms.CheckboxSelectMultiple,
+        help_text="Choose one or more staff members.",
+    )
+    message = forms.CharField(
+        label="Message",
+        widget=forms.Textarea(attrs={"rows": 4, "placeholder": "Type the first message…"}),
+    )
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        queryset = active_staff_queryset()
+        if user and user.pk:
+            queryset = queryset.exclude(pk=user.pk)
+        self.fields["participants"].queryset = queryset
+
+    def clean_message(self):
+        message = self.cleaned_data["message"].strip()
+        if not message:
+            raise forms.ValidationError("Message is required.")
+        return message
+
+
+class StaffMessageForm(forms.Form):
+    body = forms.CharField(
+        label="Message",
+        widget=forms.Textarea(attrs={"rows": 3, "placeholder": "Write a reply…"}),
+    )
+
+    def clean_body(self):
+        body = self.cleaned_data["body"].strip()
+        if not body:
+            raise forms.ValidationError("Message cannot be blank.")
+        return body
+
+
+class TimeClockNoteForm(forms.Form):
+    note = forms.CharField(
+        required=False,
+        max_length=255,
+        label="Note",
+        widget=forms.TextInput(attrs={"placeholder": "Optional note for this shift"}),
+    )

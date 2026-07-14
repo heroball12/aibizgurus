@@ -27,6 +27,9 @@
         <div><strong>{{ card.overdue }}</strong><span>Overdue</span></div>
       </div>
       <p>{{ card.emails }} email requests · {{ card.callbacks }} callbacks · {{ card.appointments }} appointments</p>
+      {% if card.user and user.role == "admin" or card.user and user.is_owner %}
+        <a class="btn ghost small" href="{% url 'staff_performance' card.user.pk %}">Open KPI Details →</a>
+      {% endif %}
     </article>
   {% empty %}
     <section class="sales-panel">

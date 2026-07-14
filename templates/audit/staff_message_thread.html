@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}{{ thread.display_title }} | Staff Messages{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div>
+    <span class="ops-label">{% if is_observer %}Owner Oversight{% else %}Team Messaging{% endif %}</span>
+    <h1>{{ thread.display_title }}</h1>
+    <p>{{ thread.participant_names|default:"No participants" }} · {{ thread.messages.count }} message{{ thread.messages.count|pluralize }}</p>
+  </div>
+  <div class="actions">
+    <a class="btn ghost" href="{% url 'staff_messages' %}">Back to Messages</a>
+    <a class="btn neon" href="{% url 'staff_message_create' %}">New Message</a>
+  </div>
+</section>
+
+{% if is_observer %}
+<section class="ops-panel oversight-note">
+  <strong>Viewing as Owner</strong>
+  <p>You are viewing this internal thread through Owner oversight. Staff are not notified by the view itself. If you reply, your message is visible in the thread.</p>
+</section>
+{% endif %}
+
+<section class="chat-shell ops-panel" data-feed-url="{% url 'staff_message_feed' thread.pk %}">
+  <div id="chatMessages" class="chat-messages">
+    {% for message in thread_messages %}
+      <div class="chat-message {% if message.sender == user %}mine{% endif %}">
+        <div class="message-meta">
+          <strong>{% if message.sender %}{{ message.sender.get_full_name|default:message.sender.username }}{% else %}System{% endif %}</strong>
+          <span>{{ message.created_at|date:"M j, Y g:i A" }}</span>
+        </div>
+        <p>{{ message.body|linebreaksbr }}</p>
+      </div>
+    {% empty %}
+      <div class="sales-empty">No messages yet.</div>
+    {% endfor %}
+  </div>
+
+  <form method="post" class="form dark-form chat-reply-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn neon">Send</button>
+  </form>
+</section>
+
+<script>
+(() => {
+  const shell = document.querySelector(".chat-shell");
+  const container = document.getElementById("chatMessages");
+  if (!shell || !container) return;
+  const feedUrl = shell.dataset.feedUrl;
+  let lastRender = "";
+
+  function render(messages) {
+    const html = messages.map((message) => {
+      const mine = message.mine ? " mine" : "";
+      const sender = document.createElement("div");
+      sender.textContent = message.sender;
+      const body = document.createElement("div");
+      body.textContent = message.body;
+      return `<div class="chat-message${mine}"><div class="message-meta"><strong>${sender.innerHTML}</strong><span>${message.created}</span></div><p>${body.innerHTML.replace(/\n/g, "<br>")}</p></div>`;
+    }).join("") || '<div class="sales-empty">No messages yet.</div>';
+    if (html !== lastRender) {
+      const nearBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 80;
+      container.innerHTML = html;
+      lastRender = html;
+      if (nearBottom) container.scrollTop = container.scrollHeight;
+    }
+  }
+
+  async function poll() {
+    try {
+      const response = await fetch(feedUrl, {headers: {"X-Requested-With": "fetch"}});
+      if (!response.ok) return;
+      const data = await response.json();
+      render(data.messages || []);
+    } catch (error) {
+      // Best-effort polling only; normal form submit still works.
+    }
+  }
+
+  container.scrollTop = container.scrollHeight;
+  setInterval(poll, 7000);
+})();
+</script>
+{% endblock %}

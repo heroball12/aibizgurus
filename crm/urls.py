@@ -10,4 +10,5 @@ urlpatterns = [
     path("scorecards/", views.scorecards, name="sales_scorecards"),
     path("leads/<int:pk>/", views.lead_detail, name="lead_detail"),
     path("leads/<int:pk>/edit/", views.lead_edit, name="lead_edit"),
+    path("leads/<int:pk>/delete/", views.lead_delete, name="lead_delete"),
 ]

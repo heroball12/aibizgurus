@@ -8,6 +8,7 @@ urlpatterns = [
     path("clients/", views.owner_clients, name="owner_clients"),
     path("staff/", views.staff_users, name="staff_users"),
     path("staff/new/", views.staff_user_create, name="staff_user_create"),
+    path("staff/<int:pk>/performance/", views.staff_performance, name="staff_performance"),
     path("staff/<int:pk>/edit/", views.staff_user_edit, name="staff_user_edit"),
     path("staff/<int:pk>/deactivate/", views.staff_user_deactivate, name="staff_user_deactivate"),
 ]

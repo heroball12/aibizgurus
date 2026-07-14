@@ -1,0 +1,232 @@
+from datetime import timedelta
+
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Count, Max, Q
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+
+from .forms import StaffMessageForm, StaffMessageThreadForm, TimeClockNoteForm
+from .models import StaffMessage, StaffMessageParticipant, StaffMessageThread, TimeClockEntry
+from .utils import get_client_ip, log_activity
+
+
+User = get_user_model()
+
+
+def team_member_required(view_func):
+    @login_required
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_employee_or_admin():
+            messages.error(request, "Staff access required.")
+            return redirect("portal_home")
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
+def can_view_all_staff_messages(user):
+    return user.is_authenticated and user.is_owner()
+
+
+def can_manage_time_clock(user):
+    return user.is_authenticated and (user.is_owner() or getattr(user, "role", "") == "admin")
+
+
+def team_threads_for_user(user):
+    queryset = StaffMessageThread.objects.prefetch_related("participants__user").annotate(
+        message_count=Count("messages", distinct=True),
+        last_message_at=Max("messages__created_at"),
+    )
+    if can_view_all_staff_messages(user):
+        return queryset.order_by("-updated_at", "-created_at")
+    return queryset.filter(participants__user=user, participants__is_active=True).distinct().order_by("-updated_at", "-created_at")
+
+
+def get_thread_for_user(user, pk):
+    return get_object_or_404(team_threads_for_user(user), pk=pk)
+
+
+def paginate(request, queryset, per_page=25):
+    return Paginator(queryset, per_page).get_page(request.GET.get("page"))
+
+
+@team_member_required
+def staff_messages(request):
+    threads = team_threads_for_user(request.user)
+    return render(request, "audit/staff_messages.html", {
+        "page_obj": paginate(request, threads, 30),
+        "can_view_all": can_view_all_staff_messages(request.user),
+    })
+
+
+@team_member_required
+def staff_message_create(request):
+    if request.method == "POST":
+        form = StaffMessageThreadForm(request.POST, user=request.user)
+        if form.is_valid():
+            selected = list(form.cleaned_data["participants"])
+            participants = {user.pk: user for user in selected}
+            participants[request.user.pk] = request.user
+            title = form.cleaned_data.get("title", "").strip()
+            thread = StaffMessageThread.objects.create(
+                title=title,
+                is_group=len(participants) > 2,
+                created_by=request.user,
+            )
+            StaffMessageParticipant.objects.bulk_create([
+                StaffMessageParticipant(thread=thread, user=user)
+                for user in participants.values()
+            ])
+            StaffMessage.objects.create(thread=thread, sender=request.user, body=form.cleaned_data["message"])
+            thread.save(update_fields=["updated_at"])
+            log_activity(
+                user=request.user,
+                request=request,
+                action="create",
+                model_label="audit.StaffMessageThread",
+                object_id=thread.pk,
+                object_repr=thread.display_title(),
+                message="Created internal staff message thread.",
+            )
+            messages.success(request, "Message thread created.")
+            return redirect("staff_message_thread", pk=thread.pk)
+    else:
+        form = StaffMessageThreadForm(user=request.user)
+    return render(request, "audit/staff_message_form.html", {"form": form})
+
+
+@team_member_required
+def staff_message_thread(request, pk):
+    thread = get_thread_for_user(request.user, pk)
+    form = StaffMessageForm()
+    if request.method == "POST":
+        form = StaffMessageForm(request.POST)
+        if form.is_valid():
+            StaffMessageParticipant.objects.get_or_create(thread=thread, user=request.user)
+            StaffMessage.objects.create(thread=thread, sender=request.user, body=form.cleaned_data["body"])
+            thread.save(update_fields=["updated_at"])
+            log_activity(
+                user=request.user,
+                request=request,
+                action="create",
+                model_label="audit.StaffMessage",
+                object_id=thread.pk,
+                object_repr=thread.display_title(),
+                message="Sent internal staff message.",
+            )
+            return redirect("staff_message_thread", pk=thread.pk)
+    messages_qs = thread.messages.select_related("sender").order_by("created_at")
+    return render(request, "audit/staff_message_thread.html", {
+        "thread": thread,
+        "thread_messages": messages_qs,
+        "form": form,
+        "can_view_all": can_view_all_staff_messages(request.user),
+        "is_observer": can_view_all_staff_messages(request.user) and not thread.participants.filter(user=request.user).exists(),
+    })
+
+
+@team_member_required
+def staff_message_feed(request, pk):
+    thread = get_thread_for_user(request.user, pk)
+    items = []
+    for message in thread.messages.select_related("sender").order_by("created_at"):
+        sender = message.sender
+        items.append({
+            "id": message.pk,
+            "sender": sender.get_full_name() or sender.username if sender else "System",
+            "sender_id": sender.pk if sender else None,
+            "mine": sender == request.user,
+            "body": message.body,
+            "created": timezone.localtime(message.created_at).strftime("%b %-d, %Y %-I:%M %p"),
+        })
+    return JsonResponse({"messages": items, "thread_updated": thread.updated_at.isoformat()})
+
+
+@team_member_required
+def staff_time_clock(request):
+    open_entry = TimeClockEntry.objects.filter(employee=request.user, clock_out__isnull=True).order_by("-clock_in").first()
+    form = TimeClockNoteForm(request.POST or None)
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "clock_in":
+            if open_entry:
+                messages.info(request, "You are already clocked in.")
+            elif form.is_valid():
+                open_entry = TimeClockEntry.objects.create(
+                    employee=request.user,
+                    note=form.cleaned_data.get("note", ""),
+                    clock_in_ip=get_client_ip(request),
+                )
+                log_activity(
+                    user=request.user,
+                    request=request,
+                    action="create",
+                    model_label="audit.TimeClockEntry",
+                    object_id=open_entry.pk,
+                    object_repr=str(open_entry),
+                    message="Clocked in.",
+                )
+                messages.success(request, "You are clocked in.")
+                return redirect("staff_time_clock")
+        elif action == "clock_out":
+            if not open_entry:
+                messages.info(request, "You are not clocked in.")
+            elif form.is_valid():
+                if form.cleaned_data.get("note"):
+                    open_entry.note = form.cleaned_data["note"]
+                open_entry.clock_out = timezone.now()
+                open_entry.clock_out_ip = get_client_ip(request)
+                open_entry.save(update_fields=["note", "clock_out", "clock_out_ip", "updated_at"])
+                log_activity(
+                    user=request.user,
+                    request=request,
+                    action="update",
+                    model_label="audit.TimeClockEntry",
+                    object_id=open_entry.pk,
+                    object_repr=str(open_entry),
+                    message="Clocked out.",
+                )
+                messages.success(request, f"Clocked out. Shift length: {open_entry.duration_hours} hours.")
+                return redirect("staff_time_clock")
+    recent_entries = TimeClockEntry.objects.filter(employee=request.user).order_by("-clock_in")[:20]
+    week_start = timezone.now() - timedelta(days=7)
+    weekly_hours = sum(
+        entry.duration_hours
+        for entry in TimeClockEntry.objects.filter(employee=request.user, clock_in__gte=week_start, clock_out__isnull=False)
+    )
+    return render(request, "audit/staff_time_clock.html", {
+        "form": form,
+        "open_entry": open_entry,
+        "recent_entries": recent_entries,
+        "weekly_hours": round(weekly_hours, 2),
+        "can_manage_time_clock": can_manage_time_clock(request.user),
+    })
+
+
+@team_member_required
+def staff_time_clock_admin(request):
+    if not can_manage_time_clock(request.user):
+        messages.error(request, "Owner or admin access required.")
+        return redirect("staff_time_clock")
+    staff = list(User.objects.filter(role__in=["employee", "admin"], is_active=True).order_by("first_name", "username"))
+    open_entries = {
+        entry.employee_id: entry
+        for entry in TimeClockEntry.objects.filter(clock_out__isnull=True, employee__in=staff).select_related("employee")
+    }
+    rows = []
+    for employee in staff:
+        last_entry = TimeClockEntry.objects.filter(employee=employee).order_by("-clock_in").first()
+        rows.append({
+            "employee": employee,
+            "open_entry": open_entries.get(employee.pk),
+            "last_entry": last_entry,
+        })
+    recent_entries = TimeClockEntry.objects.select_related("employee").order_by("-clock_in")[:80]
+    return render(request, "audit/staff_time_clock_admin.html", {
+        "rows": rows,
+        "recent_entries": recent_entries,
+        "open_count": len(open_entries),
+    })

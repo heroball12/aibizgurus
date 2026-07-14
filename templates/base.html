@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="{% static 'css/app.css' %}?v=16">
   {% block extra_head %}{% endblock %}
 </head>
-<body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
+<body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' or request.path|slice:':6' == '/team/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
 <nav class="nav">
   <a class="brand" href="{% url 'home' %}">
     <img class="brand-logo" src="{% static 'img/ai-business-gurus-logo-nav.png' %}" alt="AI Business Gurus">
@@ -21,6 +21,7 @@
       {% if user.is_employee_or_admin %}
         {% if user.is_owner %}<a href="{% url 'owner_dashboard' %}">Owner</a>{% endif %}
         <a href="{% url 'ops_dashboard' %}">Ops</a><a href="{% url 'crm_home' %}">Sales Intelligence</a>
+        <a href="{% url 'staff_messages' %}">Messages</a><a href="{% url 'staff_time_clock' %}">Time Clock</a>
       {% else %}
         <a href="{% url 'portal_home' %}">Dashboard</a>
       {% endif %}

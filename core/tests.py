@@ -10,7 +10,7 @@ from django.urls import reverse
 
 from assistant_ai.models import AssistantRole, Conversation, Message, UsageRecord
 from assistant_ai.services import choose_openai_key
-from audit.models import ActivityLog
+from audit.models import ActivityLog, StaffMessage, StaffMessageThread, TimeClockEntry
 from audit.utils import log_activity
 from clients.models import AIInstance, BusinessProfile, ClientAccount, Integration
 from core.models import IndustryTemplate
@@ -425,6 +425,130 @@ class PlatformFlowTests(TestCase):
         self.assertRedirects(response, reverse("staff_users"))
         kaitlyn.refresh_from_db()
         self.assertFalse(kaitlyn.is_active)
+
+    def test_admin_can_assign_upload_view_sdr_kpis_and_delete_lead(self):
+        admin = User.objects.create_user(username="lead-admin", password="OpsPass123!", role="admin")
+        sdr = User.objects.create_user(
+            username="kpi-sdr@aibiz.guru",
+            email="kpi-sdr@aibiz.guru",
+            password="OpsPass123!",
+            role="employee",
+            first_name="KPI",
+            last_name="SDR",
+        )
+        self.client.force_login(admin)
+        upload_page = self.client.get(reverse("lead_upload"))
+        self.assertContains(upload_page, "Who should own these leads?")
+        self.assertContains(upload_page, "Assign this upload to")
+
+        upload = SimpleUploadedFile(
+            "assigned.csv",
+            (
+                "name,business_name,industry,phone,email,status,notes\n"
+                "Casey Contact,KPI Test Co,Home Services,555-7777,casey@example.com,new,send info and call back tomorrow\n"
+            ).encode(),
+            content_type="text/csv",
+        )
+        response = self.client.post(reverse("lead_upload"), {"csv_file": upload, "default_assigned_to": str(sdr.pk)})
+        lead_import = LeadImport.objects.get(original_filename="assigned.csv")
+        self.assertRedirects(response, reverse("lead_import_detail", args=[lead_import.pk]))
+        lead = Lead.objects.get(business_name="KPI Test Co")
+        self.assertEqual(lead.assigned_to, sdr)
+
+        staff_list = self.client.get(reverse("staff_users"))
+        self.assertContains(staff_list, reverse("staff_performance", args=[sdr.pk]))
+        performance = self.client.get(reverse("staff_performance", args=[sdr.pk]))
+        self.assertEqual(performance.status_code, 200)
+        self.assertContains(performance, "SDR Performance")
+        self.assertContains(performance, "KPI Test Co")
+        self.assertContains(performance, "Contact Rate")
+
+        detail = self.client.get(reverse("lead_detail", args=[lead.pk]))
+        self.assertContains(detail, reverse("lead_delete", args=[lead.pk]))
+        response = self.client.post(reverse("lead_delete", args=[lead.pk]))
+        self.assertRedirects(response, reverse("crm_home"))
+        lead.refresh_from_db()
+        self.assertTrue(lead.archived)
+        self.assertEqual(self.client.get(reverse("lead_detail", args=[lead.pk])).status_code, 404)
+
+    def test_staff_messaging_owner_oversight_and_group_messages(self):
+        owner = User.objects.create_user(username="msg-owner", password="OwnerPass123!", role="owner")
+        alice = User.objects.create_user(username="alice@aibiz.guru", password="OpsPass123!", role="employee", first_name="Alice")
+        bob = User.objects.create_user(username="bob@aibiz.guru", password="OpsPass123!", role="employee", first_name="Bob")
+        charlie = User.objects.create_user(username="charlie@aibiz.guru", password="OpsPass123!", role="employee", first_name="Charlie")
+
+        self.client.force_login(alice)
+        response = self.client.get(reverse("staff_messages"))
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse("staff_message_create"), {
+            "title": "",
+            "participants": [str(bob.pk)],
+            "message": "Can you follow up with the HVAC lead?",
+        })
+        thread = StaffMessageThread.objects.get()
+        self.assertRedirects(response, reverse("staff_message_thread", args=[thread.pk]))
+        self.assertEqual(thread.messages.count(), 1)
+        self.assertFalse(thread.is_group)
+
+        self.client.force_login(bob)
+        bob_view = self.client.get(reverse("staff_message_thread", args=[thread.pk]))
+        self.assertEqual(bob_view.status_code, 200)
+        self.assertContains(bob_view, "Can you follow up")
+
+        self.client.force_login(charlie)
+        self.assertEqual(self.client.get(reverse("staff_message_thread", args=[thread.pk])).status_code, 404)
+
+        self.client.force_login(owner)
+        owner_view = self.client.get(reverse("staff_message_thread", args=[thread.pk]))
+        self.assertEqual(owner_view.status_code, 200)
+        self.assertContains(owner_view, "Owner Oversight")
+        feed = self.client.get(reverse("staff_message_feed", args=[thread.pk]))
+        self.assertEqual(feed.status_code, 200)
+        self.assertEqual(feed.json()["messages"][0]["body"], "Can you follow up with the HVAC lead?")
+
+        response = self.client.post(reverse("staff_message_thread", args=[thread.pk]), {"body": "Loop me in if this gets hot."})
+        self.assertRedirects(response, reverse("staff_message_thread", args=[thread.pk]))
+        self.assertTrue(StaffMessage.objects.filter(thread=thread, sender=owner, body__icontains="Loop me in").exists())
+
+        response = self.client.post(reverse("staff_message_create"), {
+            "title": "Ops group",
+            "participants": [str(alice.pk), str(bob.pk), str(charlie.pk)],
+            "message": "Morning team — post updates here.",
+        })
+        group = StaffMessageThread.objects.get(title="Ops group")
+        self.assertRedirects(response, reverse("staff_message_thread", args=[group.pk]))
+        self.assertTrue(group.is_group)
+        self.assertEqual(group.participants.count(), 4)
+
+    def test_staff_time_clock_and_owner_admin_visibility(self):
+        admin = User.objects.create_user(username="clock-admin", password="OpsPass123!", role="admin")
+        employee = User.objects.create_user(username="clock-employee", password="OpsPass123!", role="employee", first_name="Clock", last_name="Employee")
+
+        self.client.force_login(employee)
+        response = self.client.get(reverse("staff_time_clock"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Clock in")
+        response = self.client.post(reverse("staff_time_clock"), {"action": "clock_in", "note": "Starting outreach block"})
+        self.assertRedirects(response, reverse("staff_time_clock"))
+        entry = TimeClockEntry.objects.get(employee=employee)
+        self.assertIsNone(entry.clock_out)
+        self.assertEqual(entry.note, "Starting outreach block")
+
+        response = self.client.post(reverse("staff_time_clock"), {"action": "clock_out", "note": "Finished outreach block"})
+        self.assertRedirects(response, reverse("staff_time_clock"))
+        entry.refresh_from_db()
+        self.assertIsNotNone(entry.clock_out)
+        self.assertEqual(entry.note, "Finished outreach block")
+
+        self.client.force_login(admin)
+        admin_view = self.client.get(reverse("staff_time_clock_admin"))
+        self.assertEqual(admin_view.status_code, 200)
+        self.assertContains(admin_view, "Team Time Clock")
+        self.assertContains(admin_view, "Clock Employee")
+        performance = self.client.get(reverse("staff_performance", args=[employee.pk]))
+        self.assertEqual(performance.status_code, 200)
+        self.assertContains(performance, "Time Clock")
+        self.assertContains(performance, "Hours / 7 days")
 
     @override_settings(PLATFORM_OPENAI_API_KEY="", OPENAI_DAILY_USAGE_LIMIT=500)
     def test_shared_ai_service_missing_key_records_fallback(self):

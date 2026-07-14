@@ -40,12 +40,13 @@ class LeadCSVUploadForm(forms.Form):
     default_assigned_to = forms.ModelChoiceField(
         queryset=User.objects.none(),
         required=False,
-        label="Default SDR",
-        help_text="Optional. Assign imported rows to this SDR when the sheet does not include an assigned_to column.",
+        label="Assign this upload to",
+        help_text="Optional. Rows with an assigned_to/SDR column keep that row value; every other imported row goes to this SDR.",
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["default_assigned_to"].empty_label = "Leave unassigned / use sheet column"
         self.fields["default_assigned_to"].queryset = User.objects.filter(role__in=["employee", "admin"], is_active=True).order_by("first_name", "username")
 
     def clean_csv_file(self):

@@ -29,7 +29,24 @@
     </div>
     <form method="post" enctype="multipart/form-data" class="form dark-form import-form">
       {% csrf_token %}
-      {{ form.as_p }}
+      <p>
+        {{ form.csv_file.label_tag }}
+        {{ form.csv_file }}
+        <small>{{ form.csv_file.help_text }}</small>
+      </p>
+      <p>
+        {{ form.sheet_name.label_tag }}
+        {{ form.sheet_name }}
+        <small>{{ form.sheet_name.help_text }}</small>
+      </p>
+      <div class="assignment-callout">
+        <span class="ops-label">Assignment</span>
+        <h3>Who should own these leads?</h3>
+        <p>Choose an SDR here to assign the whole upload. If a row already has an <strong>assigned_to</strong> or <strong>SDR</strong> value, that row-level owner is preserved.</p>
+        {{ form.default_assigned_to.label_tag }}
+        {{ form.default_assigned_to }}
+        <small>{{ form.default_assigned_to.help_text }}</small>
+      </div>
       {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
       {% if import_errors %}
         <div class="form-errors">

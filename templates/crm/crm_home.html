@@ -139,6 +139,9 @@
         <strong>{{ card.user.get_full_name|default:card.user.username }}</strong>
         <span>{{ card.total }} assigned</span>
         <p>{{ card.warm_hot }} warm/hot · {{ card.followups }} follow-ups · {{ card.appointments }} appointments</p>
+        {% if card.user and user.role == "admin" or card.user and user.is_owner %}
+          <a href="{% url 'staff_performance' card.user.pk %}">Open KPIs →</a>
+        {% endif %}
       </div>
     {% empty %}
       <div class="sales-empty">Assign leads to SDRs to populate scorecards.</div>

@@ -1,14 +1,17 @@
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from core.permissions import owner_required
 from clients.models import ClientAccount, AIInstance
-from crm.models import Lead
+from crm.models import Lead, LeadActivity, LeadImport
 from .forms import StaffUserForm
-from .models import ActivityLog
+from .models import ActivityLog, TimeClockEntry
 from .utils import activity_table_exists, log_activity
 
 User = get_user_model()
@@ -93,6 +96,82 @@ def staff_users(request):
         "username", "email", "first_name", "last_name", "role", "is_active", "is_staff"
     ).order_by("role", "first_name", "username")
     return render(request, "audit/staff_users.html", {"staff_users": staff})
+
+
+@staff_admin_required
+def staff_performance(request, pk):
+    staff_user = get_object_or_404(User, pk=pk, role__in=["employee", "admin"])
+    leads = Lead.objects.filter(lead_type="internal_sales", archived=False, assigned_to=staff_user)
+    today = timezone.localdate()
+    closed_statuses = ["closed_won", "closed_lost", "not_interested", "do_not_contact", "permanently_closed"]
+    data = leads.aggregate(
+        total=Count("id"),
+        worked=Count("id", filter=~Q(notes="") | ~Q(cleaned_notes="")),
+        warm=Count("id", filter=Q(lead_temperature="warm")),
+        hot=Count("id", filter=Q(lead_temperature="hot")),
+        cold=Count("id", filter=Q(lead_temperature="cold")),
+        closed=Count("id", filter=Q(lead_temperature="closed")),
+        followups_due=Count(
+            "id",
+            filter=(Q(follow_up_date__lte=today) | Q(status__in=["callback_requested", "follow_up", "email_requested", "information_requested"]))
+            & ~Q(status__in=closed_statuses),
+        ),
+        overdue=Count("id", filter=Q(follow_up_date__lt=today) & ~Q(status__in=closed_statuses)),
+        callbacks=Count("id", filter=Q(status="callback_requested")),
+        emails=Count("id", filter=Q(status="email_requested")),
+        info_requested=Count("id", filter=Q(status="information_requested")),
+        appointments=Count("id", filter=Q(status__in=["appointment_scheduled", "appointment_completed"])),
+        proposals=Count("id", filter=Q(status__in=["proposal_requested", "proposal_sent"])),
+        closed_won=Count("id", filter=Q(status="closed_won")),
+        closed_lost=Count("id", filter=Q(status="closed_lost")),
+        needs_review=Count("id", filter=Q(needs_review=True)),
+    )
+    total = data["total"] or 0
+    worked = data["worked"] or 0
+    performance = {
+        **{key: value or 0 for key, value in data.items()},
+        "contact_rate": round((worked / total) * 100) if total else 0,
+        "warm_hot": (data["warm"] or 0) + (data["hot"] or 0),
+        "close_rate": round(((data["closed_won"] or 0) / total) * 100) if total else 0,
+    }
+    status_labels = dict(Lead.STATUS_CHOICES)
+    temperature_labels = dict(Lead._meta.get_field("lead_temperature").choices)
+    status_breakdown = [
+        {"status": row["status"], "label": status_labels.get(row["status"], row["status"]), "count": row["count"]}
+        for row in leads.values("status").annotate(count=Count("id")).order_by("-count", "status")
+    ]
+    temperature_breakdown = [
+        {"temperature": row["lead_temperature"], "label": temperature_labels.get(row["lead_temperature"], row["lead_temperature"]), "count": row["count"]}
+        for row in leads.values("lead_temperature").annotate(count=Count("id")).order_by("-count", "lead_temperature")
+    ]
+    recent_activities = (
+        LeadActivity.objects.filter(Q(user=staff_user) | Q(lead__assigned_to=staff_user), lead__lead_type="internal_sales")
+        .select_related("lead")
+        .order_by("-created_at")[:20]
+    )
+    recent_imports = LeadImport.objects.filter(uploaded_by=staff_user).order_by("-created_at")[:10]
+    open_time_entry = TimeClockEntry.objects.filter(employee=staff_user, clock_out__isnull=True).order_by("-clock_in").first()
+    recent_time_entries = TimeClockEntry.objects.filter(employee=staff_user).order_by("-clock_in")[:10]
+    week_start = timezone.now() - timedelta(days=7)
+    weekly_hours = sum(
+        entry.duration_hours
+        for entry in TimeClockEntry.objects.filter(employee=staff_user, clock_in__gte=week_start, clock_out__isnull=False)
+    )
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
+    return render(request, "audit/staff_performance.html", {
+        "staff_user": staff_user,
+        "performance": performance,
+        "status_breakdown": status_breakdown,
+        "temperature_breakdown": temperature_breakdown,
+        "recent_activities": recent_activities,
+        "recent_imports": recent_imports,
+        "open_time_entry": open_time_entry,
+        "recent_time_entries": recent_time_entries,
+        "weekly_hours": round(weekly_hours, 2),
+        "page_obj": paginate(request, leads.select_related("assigned_to").order_by("-created_at"), 50),
+        "query_string": query_params.urlencode(),
+    })
 
 
 @staff_admin_required

@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 class ActivityLog(models.Model):
     ACTION_CHOICES = [
@@ -47,3 +50,107 @@ class ActivityLog(models.Model):
         who = self.actor_username or "System"
         target = self.object_repr or self.path or self.model_label or "activity"
         return f"{who} {self.action} {target}"
+
+
+class StaffMessageThread(models.Model):
+    title = models.CharField(max_length=180, blank=True)
+    is_group = models.BooleanField(default=False)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_staff_message_threads",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at", "-created_at"]
+        indexes = [
+            models.Index(fields=["updated_at"]),
+            models.Index(fields=["created_by", "updated_at"]),
+            models.Index(fields=["is_group", "updated_at"]),
+        ]
+
+    def __str__(self):
+        return self.title or f"Staff thread #{self.pk}"
+
+    def participant_names(self):
+        names = []
+        for participant in self.participants.select_related("user").all():
+            user = participant.user
+            names.append(user.get_full_name() or user.username)
+        return ", ".join(names)
+
+    def display_title(self):
+        return self.title or self.participant_names() or str(self)
+
+
+class StaffMessageParticipant(models.Model):
+    thread = models.ForeignKey(StaffMessageThread, on_delete=models.CASCADE, related_name="participants")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="staff_message_participations")
+    joined_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = [("thread", "user")]
+        indexes = [
+            models.Index(fields=["user", "is_active"]),
+            models.Index(fields=["thread", "is_active"]),
+        ]
+
+    def __str__(self):
+        return f"{self.user} in {self.thread}"
+
+
+class StaffMessage(models.Model):
+    thread = models.ForeignKey(StaffMessageThread, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="sent_staff_messages")
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=["thread", "created_at"]),
+            models.Index(fields=["sender", "created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.sender or 'System'} · {self.created_at:%Y-%m-%d %H:%M}"
+
+
+class TimeClockEntry(models.Model):
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="time_clock_entries")
+    clock_in = models.DateTimeField(default=timezone.now)
+    clock_out = models.DateTimeField(null=True, blank=True)
+    note = models.CharField(max_length=255, blank=True)
+    clock_in_ip = models.GenericIPAddressField(null=True, blank=True)
+    clock_out_ip = models.GenericIPAddressField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-clock_in"]
+        indexes = [
+            models.Index(fields=["employee", "clock_in"]),
+            models.Index(fields=["employee", "clock_out"]),
+            models.Index(fields=["clock_out", "clock_in"]),
+        ]
+
+    @property
+    def is_open(self):
+        return self.clock_out is None
+
+    @property
+    def duration(self):
+        end = self.clock_out or timezone.now()
+        return max(end - self.clock_in, timedelta())
+
+    @property
+    def duration_hours(self):
+        return round(self.duration.total_seconds() / 3600, 2)
+
+    def __str__(self):
+        return f"{self.employee} · {self.clock_in:%Y-%m-%d %H:%M}"

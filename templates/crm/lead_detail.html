@@ -10,6 +10,12 @@
       <a class="btn neon" href="?draft=email">Generate Follow-Up Email</a>
       <a class="btn ghost" href="{% url 'lead_edit' lead.pk %}">Edit Lead</a>
       <a class="btn ghost" href="{% url 'crm_home' %}">Back</a>
+      {% if can_delete_lead %}
+        <form method="post" action="{% url 'lead_delete' lead.pk %}" class="inline-form" onsubmit="return confirm('Delete this lead from the active CRM? This archives the record and removes it from queues.');">
+          {% csrf_token %}
+          <button type="submit" class="btn danger">Delete Lead</button>
+        </form>
+      {% endif %}
     </div>
   </div>
   <div class="lead-pulse-card">

@@ -33,6 +33,10 @@ def is_sales_manager(user):
     return user.is_superuser or user.is_staff or getattr(user, "role", "") in {"admin", "owner"}
 
 
+def can_delete_internal_leads(user):
+    return user.is_superuser or getattr(user, "role", "") in {"admin", "owner"}
+
+
 def internal_leads_for_user(user):
     qs = Lead.objects.filter(lead_type="internal_sales", archived=False)
     if is_sales_manager(user):
@@ -302,6 +306,7 @@ def lead_detail(request, pk):
         "intelligence_form": intelligence_form,
         "activities": lead.activities.select_related("user", "original_import")[:25],
         "email_draft": draft_follow_up_email(lead) if request.GET.get("draft") == "email" else "",
+        "can_delete_lead": can_delete_internal_leads(request.user),
     })
 
 @employee_required
@@ -397,3 +402,39 @@ def lead_edit(request, pk):
     else:
         form = LeadForm(instance=lead)
     return render(request, "crm/lead_form.html", {"form": form, "lead": lead})
+
+
+@employee_required
+def lead_delete(request, pk):
+    lead = get_object_or_404(Lead.objects.filter(lead_type="internal_sales", archived=False), pk=pk)
+    if not can_delete_internal_leads(request.user):
+        messages.error(request, "Only admins and owners can delete internal leads.")
+        return redirect("lead_detail", pk=lead.pk)
+    if request.method != "POST":
+        messages.error(request, "Use the delete button on the lead page to remove a lead.")
+        return redirect("lead_detail", pk=lead.pk)
+
+    lead.archived = True
+    lead.save(update_fields=["archived"])
+    LeadActivity.objects.create(
+        lead=lead,
+        user=request.user,
+        raw_note="Lead deleted from active CRM.",
+        cleaned_note="Lead deleted from active CRM.",
+        inferred_status=lead.status,
+        lead_temperature=lead.lead_temperature,
+        activity_type="status_change",
+        classification_source="manual",
+        manually_reviewed=True,
+    )
+    log_activity(
+        user=request.user,
+        request=request,
+        action="delete",
+        model_label="crm.Lead",
+        object_id=lead.pk,
+        object_repr=str(lead),
+        message="Archived internal sales lead from active CRM.",
+    )
+    messages.success(request, "Lead deleted from active CRM.")
+    return redirect("crm_home")

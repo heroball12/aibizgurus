@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Time Clock | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div>
+    <span class="ops-label">Time Clock</span>
+    <h1>{% if open_entry %}You are clocked in{% else %}Clock in{% endif %}</h1>
+    <p>Track your shifts for AI Business Gurus operations.</p>
+  </div>
+  <div class="actions">
+    <a class="btn ghost" href="{% url 'staff_messages' %}">Messages</a>
+    {% if can_manage_time_clock %}<a class="btn ghost" href="{% url 'staff_time_clock_admin' %}">Team Clock</a>{% endif %}
+  </div>
+</section>
+
+<section class="ops-grid">
+  <div class="ops-panel clock-card">
+    <span class="ops-label">Current Status</span>
+    {% if open_entry %}
+      <h2>Clocked in since {{ open_entry.clock_in|date:"M j, g:i A" }}</h2>
+      <p>Current shift duration: <strong>{{ open_entry.duration_hours }} hours</strong></p>
+      <form method="post" class="form dark-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="clock_out">
+        {{ form.as_p }}
+        <button class="btn danger">Clock Out</button>
+      </form>
+    {% else %}
+      <h2>Ready to start?</h2>
+      <p>Clock in when your shift starts. You can add an optional note.</p>
+      <form method="post" class="form dark-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="clock_in">
+        {{ form.as_p }}
+        <button class="btn neon">Clock In</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <div class="ops-panel">
+    <span class="ops-label">This Week</span>
+    <h2>{{ weekly_hours }} hours</h2>
+    <p>Completed clocked hours in the last 7 days. Open shifts are counted after clock-out.</p>
+  </div>
+</section>
+
+<section class="ops-panel">
+  <div class="section-head">
+    <div>
+      <span class="ops-label">Recent Shifts</span>
+      <h2>Your time clock history</h2>
+    </div>
+  </div>
+  <table>
+    <tr><th>Clock In</th><th>Clock Out</th><th>Hours</th><th>Note</th></tr>
+    {% for entry in recent_entries %}
+      <tr>
+        <td>{{ entry.clock_in|date:"M j, Y g:i A" }}</td>
+        <td>{% if entry.clock_out %}{{ entry.clock_out|date:"M j, Y g:i A" }}{% else %}<span class="ops-chip">Open</span>{% endif %}</td>
+        <td>{{ entry.duration_hours }}</td>
+        <td>{{ entry.note|default:"—" }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4">No time clock entries yet.</td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endblock %}

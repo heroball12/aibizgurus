@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}New Staff Message | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div>
+    <span class="ops-label">Team Messaging</span>
+    <h1>Start a message</h1>
+    <p>Create a one-on-one conversation or group message with staff members.</p>
+  </div>
+  <a class="btn ghost" href="{% url 'staff_messages' %}">Back to Messages</a>
+</section>
+
+<section class="ops-panel">
+  <form method="post" class="form dark-form team-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
+    <button class="btn neon">Create Thread</button>
+  </form>
+</section>
+{% endblock %}

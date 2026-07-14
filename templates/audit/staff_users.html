@@ -22,12 +22,13 @@
     <tr><th>Name</th><th>Username / Email</th><th>Role</th><th>Active</th><th>Staff</th><th></th></tr>
     {% for staff in staff_users %}
       <tr>
-        <td>{{ staff.get_full_name|default:staff.username }}</td>
+        <td><a href="{% url 'staff_performance' staff.pk %}">{{ staff.get_full_name|default:staff.username }}</a></td>
         <td>{{ staff.email }}</td>
         <td><span class="ops-chip">{{ staff.role }}</span></td>
         <td>{{ staff.is_active }}</td>
         <td>{{ staff.is_staff }}</td>
         <td>
+          <a href="{% url 'staff_performance' staff.pk %}">KPIs →</a>
           <a href="{% url 'staff_user_edit' staff.pk %}">Edit →</a>
           {% if staff.role != "owner" and staff.is_active %}
             <form method="post" action="{% url 'staff_user_deactivate' staff.pk %}" class="inline-form">
