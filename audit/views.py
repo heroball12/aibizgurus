@@ -1,18 +1,43 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.core.paginator import Paginator
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
 from core.permissions import owner_required
 from clients.models import ClientAccount, AIInstance
 from crm.models import Lead
+from .forms import StaffUserForm
 from .models import ActivityLog
-from .utils import activity_table_exists
+from .utils import activity_table_exists, log_activity
 
 User = get_user_model()
+
+
+def paginate(request, queryset, per_page=100):
+    return Paginator(queryset, per_page).get_page(request.GET.get("page"))
+
+
+def staff_admin_required(view_func):
+    @login_required
+    def wrapper(request, *args, **kwargs):
+        allowed = request.user.is_superuser or getattr(request.user, "role", "") in {"admin", "owner"}
+        if not allowed:
+            messages.error(request, "Admin access required.")
+            return redirect("ops_dashboard" if request.user.is_employee_or_admin() else "portal_home")
+        return view_func(request, *args, **kwargs)
+    return wrapper
 
 @owner_required
 def owner_dashboard(request):
     audit_ready = activity_table_exists()
-    logs = ActivityLog.objects.select_related("actor").order_by("-created_at")[:50] if audit_ready else ActivityLog.objects.none()
+    logs = (
+        ActivityLog.objects.select_related("actor")
+        .only("actor", "actor_username", "actor_role", "action", "path", "message", "status_code", "created_at", "object_repr")
+        .order_by("-created_at")[:50]
+        if audit_ready
+        else ActivityLog.objects.none()
+    )
     context = {
         "user_count": User.objects.count(),
         "ops_count": User.objects.filter(role__in=["employee", "admin", "owner"]).count(),
@@ -43,14 +68,92 @@ def owner_activity_logs(request):
     if q:
         logs = logs.filter(Q(message__icontains=q) | Q(path__icontains=q) | Q(object_repr__icontains=q))
 
-    return render(request, "audit/activity_logs.html", {"logs": logs[:500], "audit_ready": audit_ready})
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
+    return render(request, "audit/activity_logs.html", {
+        "page_obj": paginate(request, logs, 100),
+        "audit_ready": audit_ready,
+        "query_string": query_params.urlencode(),
+    })
 
 @owner_required
 def owner_users(request):
-    users = User.objects.order_by("role", "username")
-    return render(request, "audit/owner_users.html", {"users": users})
+    users = User.objects.only("username", "email", "role", "is_staff", "is_superuser").order_by("role", "username")
+    return render(request, "audit/owner_users.html", {"page_obj": paginate(request, users, 100)})
 
 @owner_required
 def owner_clients(request):
-    clients = ClientAccount.objects.order_by("-created_at")
-    return render(request, "audit/owner_clients.html", {"clients": clients})
+    clients = ClientAccount.objects.select_related("user").order_by("-created_at")
+    return render(request, "audit/owner_clients.html", {"page_obj": paginate(request, clients, 100)})
+
+
+@staff_admin_required
+def staff_users(request):
+    staff = User.objects.filter(role__in=["employee", "admin"]).only(
+        "username", "email", "first_name", "last_name", "role", "is_active", "is_staff"
+    ).order_by("role", "first_name", "username")
+    return render(request, "audit/staff_users.html", {"staff_users": staff})
+
+
+@staff_admin_required
+def staff_user_create(request):
+    if request.method == "POST":
+        form = StaffUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            log_activity(
+                user=request.user,
+                request=request,
+                action="create",
+                model_label="accounts.User",
+                object_id=user.pk,
+                object_repr=user.username,
+                message="Created staff user.",
+            )
+            messages.success(request, f"Staff account created for {user.get_full_name() or user.username}.")
+            return redirect("staff_users")
+    else:
+        form = StaffUserForm(initial={"role": "employee", "is_active": True, "password": "AIBG123"})
+    return render(request, "audit/staff_user_form.html", {"form": form, "staff_user": None})
+
+
+@staff_admin_required
+def staff_user_edit(request, pk):
+    staff_user = get_object_or_404(User, pk=pk, role__in=["employee", "admin"])
+    if request.method == "POST":
+        form = StaffUserForm(request.POST, instance=staff_user)
+        if form.is_valid():
+            user = form.save()
+            log_activity(
+                user=request.user,
+                request=request,
+                action="update",
+                model_label="accounts.User",
+                object_id=user.pk,
+                object_repr=user.username,
+                message="Updated staff user.",
+            )
+            messages.success(request, "Staff account updated.")
+            return redirect("staff_users")
+    else:
+        form = StaffUserForm(instance=staff_user)
+    return render(request, "audit/staff_user_form.html", {"form": form, "staff_user": staff_user})
+
+
+@staff_admin_required
+def staff_user_deactivate(request, pk):
+    staff_user = get_object_or_404(User, pk=pk, role__in=["employee", "admin"])
+    if request.method == "POST":
+        staff_user.is_active = False
+        staff_user.save(update_fields=["is_active"])
+        log_activity(
+            user=request.user,
+            request=request,
+            action="update",
+            model_label="accounts.User",
+            object_id=staff_user.pk,
+            object_repr=staff_user.username,
+            message="Deactivated staff user.",
+        )
+        messages.success(request, f"{staff_user.username} was deactivated.")
+    return redirect("staff_users")

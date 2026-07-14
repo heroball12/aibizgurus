@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from core.permissions import employee_required
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import ClientAccount, BusinessProfile, AIInstance, Integration
@@ -9,7 +10,11 @@ from crm.models import Lead
 from assistant_ai.models import Conversation
 
 def get_client_for_user(user):
-    return user.client_accounts.order_by("-created_at").first()
+    return user.client_accounts.select_related("industry_template").order_by("-created_at").first()
+
+
+def paginate(request, queryset, per_page=25):
+    return Paginator(queryset, per_page).get_page(request.GET.get("page"))
 
 @login_required
 def portal_home(request):
@@ -30,8 +35,8 @@ def portal_home(request):
     ]
     return render(request, "clients/portal_home.html", {
         "client": client,
-        "assistants": client.ai_instances.all(),
-        "leads": Lead.objects.filter(client=client, lead_type="client_customer").order_by("-created_at")[:10],
+        "assistants": client.ai_instances.select_related("industry_template").order_by("-created_at"),
+        "leads": Lead.objects.filter(client=client, lead_type="client_customer").select_related("ai_instance").order_by("-created_at")[:10],
         "conversations": Conversation.objects.filter(ai_instance__client=client).select_related("ai_instance").order_by("-updated_at", "-created_at")[:10],
         "paid_active": paid_active,
         "locked_features": locked_features,
@@ -109,7 +114,11 @@ def client_leads(request):
         return redirect("billing_home")
     return render(request, "clients/client_leads.html", {
         "client": client,
-        "leads": Lead.objects.filter(client=client, lead_type="client_customer"),
+        "page_obj": paginate(
+            request,
+            Lead.objects.filter(client=client, lead_type="client_customer").select_related("ai_instance").order_by("-created_at"),
+            50,
+        ),
     })
 
 @login_required
@@ -125,7 +134,7 @@ def client_conversations(request):
     )
     return render(request, "clients/client_conversations.html", {
         "client": client,
-        "conversations": conversations,
+        "page_obj": paginate(request, conversations, 25),
         "paid_active": client.is_paid_active,
     })
 
@@ -144,7 +153,7 @@ def client_conversation_detail(request, pk):
     return render(request, "clients/conversation_detail.html", {
         "client": client,
         "conversation": conversation,
-        "conversation_messages": conversation.messages.order_by("created_at"),
+        "conversation_messages": conversation.messages.only("conversation_id", "sender", "content", "created_at").order_by("created_at"),
         "is_staff_view": False,
         "paid_active": client.is_paid_active,
     })
@@ -161,15 +170,17 @@ def demo_setup_guide(request):
 
 @employee_required
 def ops_client_detail(request, client_id):
-    client = get_object_or_404(ClientAccount, pk=client_id)
-    assistants = client.ai_instances.order_by("-created_at")
-    leads = Lead.objects.filter(client=client, lead_type="client_customer").order_by("-created_at")
+    client = get_object_or_404(ClientAccount.objects.select_related("user", "industry_template"), pk=client_id)
+    assistants = client.ai_instances.select_related("industry_template").order_by("-created_at")
+    leads = Lead.objects.filter(client=client, lead_type="client_customer").select_related("ai_instance").order_by("-created_at")
     conversations = Conversation.objects.filter(ai_instance__client=client).select_related("ai_instance").order_by("-updated_at", "-created_at")
     return render(request, "clients/ops_client_detail.html", {
         "client": client,
         "assistants": assistants,
-        "leads": leads,
-        "conversations": conversations,
+        "lead_count": leads.count(),
+        "conversation_count": conversations.count(),
+        "leads": leads[:50],
+        "conversations": conversations[:50],
     })
 
 
@@ -184,7 +195,7 @@ def ops_conversation_detail(request, client_id, conversation_id):
     return render(request, "clients/conversation_detail.html", {
         "client": client,
         "conversation": conversation,
-        "conversation_messages": conversation.messages.order_by("created_at"),
+        "conversation_messages": conversation.messages.only("conversation_id", "sender", "content", "created_at").order_by("created_at"),
         "is_staff_view": True,
         "paid_active": client.is_paid_active,
     })

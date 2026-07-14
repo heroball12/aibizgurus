@@ -27,7 +27,7 @@
 <section class="ops-panel">
   <table>
     <tr><th>Time</th><th>User</th><th>Role</th><th>Action</th><th>Path / Object</th><th>Status</th><th>IP</th></tr>
-    {% for log in logs %}
+    {% for log in page_obj %}
       <tr>
         <td>{{ log.created_at|date:"M j, Y g:i:s A" }}</td>
         <td>{{ log.actor_username|default:"System" }}</td>
@@ -41,5 +41,16 @@
       <tr><td colspan="7">No logs found.</td></tr>
     {% endfor %}
   </table>
+  {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pager" aria-label="Activity log pages">
+      {% if page_obj.has_previous %}
+        <a href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}">← Previous</a>
+      {% endif %}
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}">Next →</a>
+      {% endif %}
+    </nav>
+  {% endif %}
 </section>
 {% endblock %}

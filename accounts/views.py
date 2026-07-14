@@ -14,10 +14,10 @@ from clients.models import ClientAccount, BusinessProfile, AIInstance
 def signup(request):
     # Real path: industries live in the database and are used to create the demo assistant.
     # If the table is empty, seed it immediately for this local/dev request.
-    if IndustryTemplate.objects.count() == 0:
+    db_templates = list(IndustryTemplate.objects.order_by("category", "name"))
+    if not db_templates:
         safe_seed_industries()
-
-    db_templates = list(IndustryTemplate.objects.all().order_by("category", "name"))
+        db_templates = list(IndustryTemplate.objects.order_by("category", "name"))
 
     # Emergency fallback only: the selected signup still creates a real DB template
     # before the assistant is created.

@@ -146,7 +146,7 @@ AI_EMPLOYEES = [
 ]
 
 def home(request):
-    if IndustryTemplate.objects.count() == 0:
+    if not IndustryTemplate.objects.exists():
         safe_seed_industries()
     industries, industry_source = get_industry_options()
     return render(request, "core/home.html", {
@@ -203,7 +203,7 @@ def server_error(request):
     return render(request, "500.html", status=500)
 
 def industries(request):
-    if IndustryTemplate.objects.count() == 0:
+    if not IndustryTemplate.objects.exists():
         safe_seed_industries()
     industry_items, industry_source = get_industry_options()
     groups = {}
@@ -216,7 +216,7 @@ def industries(request):
     })
 
 def demo(request):
-    if IndustryTemplate.objects.count() == 0:
+    if not IndustryTemplate.objects.exists():
         safe_seed_industries()
     industries, _ = get_industry_options()
     return render(request, "core/demo.html", {
@@ -318,10 +318,10 @@ def ops_dashboard(request):
         messages.error(request, "Employee access required.")
         return redirect("portal_home")
     context = {
-        "clients": ClientAccount.objects.order_by("-created_at")[:20],
+        "clients": ClientAccount.objects.select_related("user").order_by("-created_at")[:20],
         "client_count": ClientAccount.objects.count(),
         "assistant_count": AIInstance.objects.count(),
         "lead_count": Lead.objects.filter(lead_type="internal_sales").count(),
-        "new_leads": Lead.objects.filter(lead_type="internal_sales", status="new").order_by("-created_at")[:15],
+        "new_leads": Lead.objects.filter(lead_type="internal_sales", status="new").select_related("assigned_to").order_by("-created_at")[:15],
     }
     return render(request, "core/ops_dashboard.html", context)

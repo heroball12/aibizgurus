@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Staff Accounts | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div>
+    <span class="ops-label">Access Control</span>
+    <h1>Staff & SDR accounts</h1>
+    <p>Create, update, and deactivate internal AI Business Gurus users. New accounts use first-name email format and default password <strong>AIBG123</strong>.</p>
+  </div>
+  <div class="actions">
+    <a class="btn neon" href="{% url 'staff_user_create' %}">Add Staff Member</a>
+    {% if user.is_owner %}
+      <a class="btn ghost" href="{% url 'owner_dashboard' %}">Owner Dashboard</a>
+    {% else %}
+      <a class="btn ghost" href="{% url 'ops_dashboard' %}">OPS Dashboard</a>
+    {% endif %}
+  </div>
+</section>
+
+<section class="ops-panel">
+  <table>
+    <tr><th>Name</th><th>Username / Email</th><th>Role</th><th>Active</th><th>Staff</th><th></th></tr>
+    {% for staff in staff_users %}
+      <tr>
+        <td>{{ staff.get_full_name|default:staff.username }}</td>
+        <td>{{ staff.email }}</td>
+        <td><span class="ops-chip">{{ staff.role }}</span></td>
+        <td>{{ staff.is_active }}</td>
+        <td>{{ staff.is_staff }}</td>
+        <td>
+          <a href="{% url 'staff_user_edit' staff.pk %}">Edit →</a>
+          {% if staff.role != "owner" and staff.is_active %}
+            <form method="post" action="{% url 'staff_user_deactivate' staff.pk %}" class="inline-form">
+              {% csrf_token %}
+              <button type="submit" class="link-button">Deactivate</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">No staff users yet.</td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endblock %}

@@ -41,12 +41,38 @@ CSV_ALIASES = {
     "follow_up_date": ["follow_up_date", "followup_date", "follow_up", "next_follow_up", "callback_date"],
     "last_contact": ["last_contact", "last_contacted", "last_call", "called_at"],
 }
+NOTE_EXTRA_ALIASES = ["follow_up_notes", "follow_up_note", "followup_notes", "follow_up_notes_", "calendly", "verification_status"]
 
 STATUS_VALUES = {choice[0] for choice in Lead.STATUS_CHOICES}
 STATUS_LABELS = {
     label.lower().replace("-", "_").replace(" ", "_"): value
     for value, label in Lead.STATUS_CHOICES
 }
+STATUS_ALIASES = {
+    "appointment": "appointment_scheduled",
+    "appointments": "appointment_scheduled",
+    "appt": "appointment_scheduled",
+    "calendar": "appointment_scheduled",
+    "calendly": "appointment_scheduled",
+    "call_back": "callback_requested",
+    "callback": "callback_requested",
+    "cb": "callback_requested",
+    "email": "email_requested",
+    "send_email": "email_requested",
+    "info": "information_requested",
+    "information": "information_requested",
+    "follow_up": "follow_up",
+    "followup": "follow_up",
+    "not_interested": "not_interested",
+    "closed": "closed_lost",
+    "won": "closed_won",
+    "lost": "closed_lost",
+    "do_not_call": "do_not_contact",
+    "dnc": "do_not_contact",
+    "bad_number": "wrong_number",
+}
+EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+PHONEISH_RE = re.compile(r"^\+?[\d\s().-]{7,}$")
 
 
 @dataclass
@@ -79,6 +105,17 @@ def csv_value(row, field):
     return ""
 
 
+def csv_values(row, aliases):
+    values = []
+    for alias in aliases:
+        value = row.get(alias)
+        if value not in (None, ""):
+            text = str(value).strip()
+            if text and text not in values:
+                values.append(text)
+    return values
+
+
 def parse_decimal(value, row_number, errors):
     if not value:
         return Decimal("0")
@@ -98,16 +135,36 @@ def parse_status(value, row_number, errors):
         return normalized
     if normalized in STATUS_LABELS:
         return STATUS_LABELS[normalized]
-    errors.append(f"Row {row_number}: status '{value}' is not valid.")
+    if normalized in STATUS_ALIASES:
+        return STATUS_ALIASES[normalized]
     return ""
 
 
 def parse_date_value(value, row_number, errors, field_name="date"):
     if not value:
         return None
+    cleaned = str(value).strip()
+    if re.fullmatch(r"\d+(?:\.0+)?", cleaned):
+        try:
+            serial = int(float(cleaned))
+            if 30000 <= serial <= 60000:
+                from datetime import date, timedelta
+                return date(1899, 12, 30) + timedelta(days=serial)
+        except (TypeError, ValueError):
+            return None
     parsed = parse_date(value)
     if not parsed:
-        errors.append(f"Row {row_number}: {field_name} must be YYYY-MM-DD.")
+        match = re.search(r"\b(\d{1,2})[/-](\d{1,2})(?:[/-](\d{2,4}))?\b", cleaned)
+        if match:
+            month, day, year = match.groups()
+            year = int(year) if year else timezone.localdate().year
+            if year < 100:
+                year += 2000
+            try:
+                from datetime import date
+                return date(year, int(month), int(day))
+            except ValueError:
+                return None
     return parsed
 
 
@@ -118,6 +175,30 @@ def parse_assigned_to(value, row_number, errors):
     if not user:
         errors.append(f"Row {row_number}: assigned_to user '{value}' was not found.")
     return user
+
+
+def normalize_phone_cell(value):
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    try:
+        if re.fullmatch(r"\d+(?:\.\d+)?E\d+", text, re.IGNORECASE):
+            return str(int(float(text)))
+    except ValueError:
+        pass
+    if text.endswith(".0") and text[:-2].isdigit():
+        return text[:-2]
+    return text
+
+
+def clean_email_cell(value):
+    text = str(value or "").strip()
+    if not text:
+        return "", ""
+    match = EMAIL_RE.search(text)
+    if match:
+        return match.group(0), ""
+    return "", text
 
 
 def normalize_rows_from_dicts(dict_rows, source_sheet="CSV", starting_row=2):
@@ -134,29 +215,52 @@ def normalize_rows_from_dicts(dict_rows, source_sheet="CSV", starting_row=2):
         parsed = build_parsed_row(row, row_number, source_sheet, result.errors)
         if parsed:
             result.rows.append(parsed)
-    if not result.rows and not result.errors:
-        result.errors.append("File did not contain any lead rows.")
+        else:
+            result.skipped_count += 1
     return result
+
+
+def temperature_for_status(status, fallback):
+    if status in {"appointment_scheduled", "proposal_requested", "hot_lead"}:
+        return "hot"
+    if status in {
+        "information_requested", "email_requested", "callback_requested", "follow_up",
+        "warm_lead", "decision_maker_reached", "corporate_referral",
+    }:
+        return "warm"
+    if status in {"not_interested", "do_not_contact", "wrong_number", "disconnected_number", "permanently_closed", "closed_won", "closed_lost"}:
+        return "closed"
+    return fallback
 
 
 def build_parsed_row(row, row_number, source_sheet, errors):
     name = csv_value(row, "name")
     business_name = csv_value(row, "business_name")
-    email = csv_value(row, "email")
-    phone = csv_value(row, "phone")
+    email, rejected_email = clean_email_cell(csv_value(row, "email"))
+    phone = normalize_phone_cell(csv_value(row, "phone"))
     website = csv_value(row, "website")
     address = csv_value(row, "address")
-    notes = csv_value(row, "notes")
+    note_parts = csv_values(row, CSV_ALIASES["notes"] + NOTE_EXTRA_ALIASES)
+    if rejected_email:
+        if rejected_email.lower().startswith(("http://", "https://", "www.")) and not website:
+            website = rejected_email
+        elif PHONEISH_RE.match(rejected_email) and not phone:
+            phone = normalize_phone_cell(rejected_email)
+        else:
+            note_parts.append(f"Importer note: email column contained non-email value '{rejected_email}'.")
+    notes = "\n".join(note_parts)
     imported_status = parse_status(csv_value(row, "status"), row_number, errors)
 
     if not any([name, business_name, email, phone]):
-        errors.append(f"Row {row_number}: include at least one of name, business_name, email, or phone.")
+        return None
 
     if email:
         try:
             validate_email(email)
         except ValidationError:
-            errors.append(f"Row {row_number}: email '{email}' is not valid.")
+            note_parts.append(f"Importer note: invalid email value ignored '{email}'.")
+            email = ""
+            notes = "\n".join(note_parts)
 
     classification = classify_sales_note(notes, imported_status=imported_status)
     if notes and getattr(settings, "AI_SALES_INTELLIGENCE_ENABLED", False) and classification.confidence < Decimal("0.72"):
@@ -171,13 +275,10 @@ def build_parsed_row(row, row_number, source_sheet, errors):
         email=email,
         address=address,
     )
-    duplicate_detected = bool(duplicate_key and Lead.objects.filter(lead_type="internal_sales", duplicate_key=duplicate_key).exists())
-    if duplicate_detected:
-        classification.status = "duplicate_review"
-        classification.temperature = "cold"
-        classification.needs_review = True
+    duplicate_detected = False
 
     final_status = imported_status if imported_status and imported_status not in {"new", "not_contacted"} else classification.status
+    final_temperature = temperature_for_status(final_status, classification.temperature)
     data = {
         "lead_type": "internal_sales",
         "client": None,
@@ -198,7 +299,7 @@ def build_parsed_row(row, row_number, source_sheet, errors):
         "source_file": "",
         "source_sheet": source_sheet,
         "status": final_status,
-        "lead_temperature": classification.temperature,
+        "lead_temperature": final_temperature,
         "notes": notes,
         "cleaned_notes": classification.cleaned_note,
         "value": parse_decimal(csv_value(row, "value"), row_number, errors),
@@ -275,7 +376,10 @@ def parse_csv_file(uploaded_file):
     normalized_headers = [csv_key(header) for header in reader.fieldnames]
     if not any(alias in normalized_headers for aliases in CSV_ALIASES.values() for alias in aliases):
         return ImportParseResult(errors=["CSV headers were not recognized. Use headers like business_name, phone, email, notes, status."])
-    return normalize_rows_from_dicts(reader, source_sheet="CSV", starting_row=2)
+    result = normalize_rows_from_dicts(reader, source_sheet="CSV", starting_row=2)
+    if not result.rows and not result.errors:
+        result.errors.append("CSV did not contain any usable lead rows.")
+    return result
 
 
 def _cell_index(cell_ref):
@@ -385,13 +489,14 @@ def parse_xlsx_file(uploaded_file, selected_sheet=""):
         header_index = _find_header_row(rows)
         if header_index is None:
             result.skipped_count += len(rows)
-            result.errors.append(f"Sheet '{sheet_name}': no recognizable header row found.")
             continue
         headers = [csv_key(value) for value in rows[header_index]]
         dict_rows = []
         for values in rows[header_index + 1:]:
             row = {headers[i]: values[i] if i < len(values) else "" for i in range(len(headers)) if headers[i]}
             dict_rows.append(row)
+        if not dict_rows:
+            continue
         parsed = normalize_rows_from_dicts(dict_rows, source_sheet=sheet_name, starting_row=header_index + 2)
         result.rows.extend(parsed.rows)
         result.errors.extend(parsed.errors)
@@ -405,51 +510,61 @@ def parse_xlsx_file(uploaded_file, selected_sheet=""):
     return result
 
 
-def parse_lead_file(uploaded_file, selected_sheet=""):
+def parse_lead_file(uploaded_file, selected_sheet="", default_assigned_to=None):
     filename = uploaded_file.name.lower()
     if filename.endswith(".csv"):
-        return parse_csv_file(uploaded_file)
-    if filename.endswith(".xlsx"):
-        return parse_xlsx_file(uploaded_file, selected_sheet=selected_sheet)
-    return ImportParseResult(errors=["Unsupported file type. Upload .csv or .xlsx."])
+        result = parse_csv_file(uploaded_file)
+    elif filename.endswith(".xlsx"):
+        result = parse_xlsx_file(uploaded_file, selected_sheet=selected_sheet)
+    else:
+        return ImportParseResult(errors=["Unsupported file type. Upload .csv or .xlsx."])
+    if default_assigned_to:
+        for row in result.rows:
+            if row.data.get("assigned_to") is None:
+                row.data["assigned_to"] = default_assigned_to
+    return result
 
 
-def import_lead_file(uploaded_file, *, uploaded_by=None, selected_sheet=""):
+def merge_imported_lead(existing, data):
+    changed_fields = []
+    append_note = data.get("notes", "")
+    if append_note and append_note not in (existing.notes or ""):
+        existing.notes = (existing.notes + "\n\n" + append_note).strip() if existing.notes else append_note
+        changed_fields.append("notes")
+    for field in [
+        "name", "business_name", "industry", "phone", "email", "website", "address", "city",
+        "state", "zip_code", "point_of_contact", "contact_role", "source", "source_file",
+        "source_sheet", "cleaned_notes", "status", "lead_temperature", "follow_up_date",
+        "classification_confidence", "classification_source", "needs_review", "assigned_to",
+        "imported_at",
+    ]:
+        value = data.get(field)
+        if value in ("", None) and field not in {"follow_up_date", "assigned_to", "needs_review"}:
+            continue
+        if getattr(existing, field) != value:
+            setattr(existing, field, value)
+            changed_fields.append(field)
+    if changed_fields:
+        existing.save(update_fields=sorted(set(changed_fields)))
+    return changed_fields
+
+
+def import_lead_file(uploaded_file, *, uploaded_by=None, selected_sheet="", default_assigned_to=None):
     original_filename = uploaded_file.name
     file_type = original_filename.rsplit(".", 1)[-1].lower() if "." in original_filename else "csv"
-    parsed = parse_lead_file(uploaded_file, selected_sheet=selected_sheet)
+    parsed = parse_lead_file(uploaded_file, selected_sheet=selected_sheet, default_assigned_to=default_assigned_to)
     if parsed.errors:
         return None, parsed
 
-    existing_keys = set(
-        Lead.objects.filter(lead_type="internal_sales")
-        .exclude(duplicate_key="")
-        .values_list("duplicate_key", flat=True)
-    )
-    import_seen = set()
-    duplicate_count = 0
-    for row in parsed.rows:
-        row.data["source_file"] = original_filename
-        key = row.data.get("duplicate_key", "")
-        if key and (key in existing_keys or key in import_seen):
-            row.data["status"] = "duplicate_review"
-            row.data["needs_review"] = True
-            row.duplicate_detected = True
-            duplicate_count += 1
-        if key:
-            import_seen.add(key)
-    parsed.duplicate_count = duplicate_count
-
     with transaction.atomic():
+        duplicate_count = 0
         lead_import = LeadImport.objects.create(
             original_filename=original_filename[:255],
             uploaded_by=uploaded_by,
             file_type=file_type,
             sheet_names=parsed.sheet_names,
             row_count=len(parsed.rows) + parsed.skipped_count,
-            imported_count=len(parsed.rows),
             skipped_count=parsed.skipped_count,
-            duplicate_count=duplicate_count,
             error_count=0,
             notes_analyzed_count=sum(1 for row in parsed.rows if row.data.get("notes")),
             high_confidence_count=sum(1 for row in parsed.rows if row.data.get("classification_confidence", 0) >= Decimal("0.80")),
@@ -461,7 +576,28 @@ def import_lead_file(uploaded_file, *, uploaded_by=None, selected_sheet=""):
                 "classification": "rule-first with optional AI extension",
             },
         )
-        leads = [Lead.objects.create(**row.data) for row in parsed.rows]
+        leads = []
+        created_count = 0
+        updated_count = 0
+        import_seen = {}
+        for row in parsed.rows:
+            row.data["source_file"] = original_filename
+            key = row.data.get("duplicate_key", "")
+            existing = None
+            if key:
+                existing = import_seen.get(key) or Lead.objects.filter(lead_type="internal_sales", duplicate_key=key).order_by("-created_at").first()
+            if existing:
+                duplicate_count += 1
+                updated_count += 1
+                merge_imported_lead(existing, row.data)
+                lead = existing
+                row.duplicate_detected = True
+            else:
+                lead = Lead.objects.create(**row.data)
+                created_count += 1
+            if key:
+                import_seen[key] = lead
+            leads.append(lead)
         activities = []
         for lead, row in zip(leads, parsed.rows):
             activities.append(LeadActivity(
@@ -483,4 +619,14 @@ def import_lead_file(uploaded_file, *, uploaded_by=None, selected_sheet=""):
                 metadata={"source_sheet": row.source_sheet, "duplicate_detected": row.duplicate_detected},
             ))
         LeadActivity.objects.bulk_create(activities)
+        lead_import.imported_count = created_count
+        lead_import.updated_count = updated_count
+        lead_import.duplicate_count = duplicate_count
+        lead_import.import_summary = {
+            **(lead_import.import_summary or {}),
+            "created": created_count,
+            "updated": updated_count,
+            "duplicates_matched": duplicate_count,
+        }
+        lead_import.save(update_fields=["imported_count", "updated_count", "duplicate_count", "import_summary"])
     return lead_import, parsed

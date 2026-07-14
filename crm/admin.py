@@ -24,7 +24,7 @@ class LeadAdmin(admin.ModelAdmin):
 
 @admin.register(LeadImport)
 class LeadImportAdmin(admin.ModelAdmin):
-    list_display = ("original_filename", "uploaded_by", "status", "imported_count", "duplicate_count", "review_count", "created_at")
+    list_display = ("original_filename", "uploaded_by", "status", "imported_count", "updated_count", "duplicate_count", "review_count", "created_at")
     search_fields = ("original_filename", "uploaded_by__username", "uploaded_by__email")
     list_filter = ("status", "file_type", "created_at")
     readonly_fields = ("created_at",)

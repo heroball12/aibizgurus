@@ -2,7 +2,9 @@ import csv
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q
+from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator
+from django.db.models import Count, Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -12,6 +14,13 @@ from .forms import LeadCSVUploadForm, LeadForm, LeadIntelligenceForm, LeadNoteFo
 from .importers import import_lead_file, parse_csv_file
 from .intelligence import csv_safe, draft_follow_up_email
 from .models import ClassificationCorrection, Lead, LeadActivity, LeadImport
+
+
+User = get_user_model()
+
+
+def paginate(request, queryset, per_page=50):
+    return Paginator(queryset, per_page).get_page(request.GET.get("page"))
 
 
 def parse_internal_lead_csv(uploaded_file):
@@ -38,23 +47,83 @@ def get_internal_lead_or_404(user, pk):
 def sales_metrics(qs):
     today = timezone.localdate()
     closed_statuses = ["closed_won", "closed_lost", "not_interested", "do_not_contact", "permanently_closed"]
-    total = qs.count()
-    worked = qs.exclude(notes="").count()
+    data = qs.aggregate(
+        total=Count("id"),
+        worked=Count("id", filter=~Q(notes="")),
+        unique_businesses=Count("business_name", filter=~Q(business_name=""), distinct=True),
+        warm=Count("id", filter=Q(lead_temperature="warm")),
+        hot=Count("id", filter=Q(lead_temperature="hot")),
+        followups_due=Count(
+            "id",
+            filter=(Q(follow_up_date__lte=today) | Q(status__in=["callback_requested", "follow_up"])) & ~Q(status__in=closed_statuses),
+        ),
+        needs_review=Count("id", filter=Q(needs_review=True)),
+        emails_requested=Count("id", filter=Q(status="email_requested")),
+        callbacks_requested=Count("id", filter=Q(status="callback_requested")),
+        appointments=Count("id", filter=Q(status__in=["appointment_scheduled", "appointment_completed"])),
+        closed_won=Count("id", filter=Q(status="closed_won")),
+        closed_lost=Count("id", filter=Q(status="closed_lost")),
+    )
+    total = data["total"] or 0
+    worked = data["worked"] or 0
     return {
         "total": total,
         "worked": worked,
-        "unique_businesses": qs.exclude(business_name="").values("business_name").distinct().count(),
-        "warm": qs.filter(lead_temperature="warm").count(),
-        "hot": qs.filter(lead_temperature="hot").count(),
-        "followups_due": qs.filter(Q(follow_up_date__lte=today) | Q(status__in=["callback_requested", "follow_up"])).exclude(status__in=closed_statuses).count(),
-        "needs_review": qs.filter(needs_review=True).count(),
-        "emails_requested": qs.filter(status="email_requested").count(),
-        "callbacks_requested": qs.filter(status="callback_requested").count(),
-        "appointments": qs.filter(status__in=["appointment_scheduled", "appointment_completed"]).count(),
-        "closed_won": qs.filter(status="closed_won").count(),
-        "closed_lost": qs.filter(status="closed_lost").count(),
+        "unique_businesses": data["unique_businesses"] or 0,
+        "warm": data["warm"] or 0,
+        "hot": data["hot"] or 0,
+        "followups_due": data["followups_due"] or 0,
+        "needs_review": data["needs_review"] or 0,
+        "emails_requested": data["emails_requested"] or 0,
+        "callbacks_requested": data["callbacks_requested"] or 0,
+        "appointments": data["appointments"] or 0,
+        "closed_won": data["closed_won"] or 0,
+        "closed_lost": data["closed_lost"] or 0,
         "contact_rate": round((worked / total) * 100) if total else 0,
     }
+
+
+def build_scorecards(leads, limit=None):
+    today = timezone.localdate()
+    rows = list(
+        leads.exclude(assigned_to__isnull=True)
+        .values("assigned_to")
+        .annotate(
+            total=Count("id"),
+            worked=Count("id", filter=~Q(notes="")),
+            warm=Count("id", filter=Q(lead_temperature="warm")),
+            hot=Count("id", filter=Q(lead_temperature="hot")),
+            warm_hot=Count("id", filter=Q(lead_temperature__in=["warm", "hot"])),
+            emails=Count("id", filter=Q(status="email_requested")),
+            callbacks=Count("id", filter=Q(status="callback_requested")),
+            appointments=Count("id", filter=Q(status__in=["appointment_scheduled", "appointment_completed"])),
+            followups=Count("id", filter=Q(follow_up_date__lte=today)),
+            overdue=Count("id", filter=Q(follow_up_date__lt=today)),
+        )
+        .order_by("-warm_hot", "-total")
+    )
+    if limit:
+        rows = rows[:limit]
+    users = User.objects.in_bulk([row["assigned_to"] for row in rows])
+    cards = []
+    for row in rows:
+        total = row["total"] or 0
+        worked = row["worked"] or 0
+        cards.append({
+            "user": users.get(row["assigned_to"]),
+            "total": total,
+            "worked": worked,
+            "contact_rate": round((worked / total) * 100) if total else 0,
+            "warm": row["warm"],
+            "hot": row["hot"],
+            "warm_hot": row["warm_hot"],
+            "emails": row["emails"],
+            "callbacks": row["callbacks"],
+            "appointments": row["appointments"],
+            "followups": row["followups"],
+            "overdue": row["overdue"],
+        })
+    return cards
 
 def employee_required(view):
     @login_required
@@ -70,19 +139,9 @@ def crm_home(request):
     leads = internal_leads_for_user(request.user).select_related("assigned_to")
     today = timezone.localdate()
     imports = LeadImport.objects.select_related("uploaded_by").order_by("-created_at")[:6]
-    scorecards = []
-    for user_id in leads.exclude(assigned_to__isnull=True).values_list("assigned_to", flat=True).distinct()[:8]:
-        user_leads = leads.filter(assigned_to_id=user_id)
-        rep = user_leads.first().assigned_to
-        scorecards.append({
-            "user": rep,
-            "total": user_leads.count(),
-            "warm_hot": user_leads.filter(lead_temperature__in=["warm", "hot"]).count(),
-            "followups": user_leads.filter(follow_up_date__lte=today).count(),
-            "appointments": user_leads.filter(status__in=["appointment_scheduled", "appointment_completed"]).count(),
-        })
+    scorecards = build_scorecards(leads, limit=8)
     context = {
-        "leads": leads.order_by("-created_at")[:35],
+        "leads": leads.order_by("-created_at")[:25],
         "metrics": sales_metrics(leads),
         "warm_leads": leads.filter(lead_temperature__in=["warm", "hot"]).order_by("-lead_temperature", "follow_up_date", "-created_at")[:10],
         "followups": leads.filter(Q(follow_up_date__lte=today) | Q(status__in=["callback_requested", "follow_up", "email_requested"])).order_by("follow_up_date", "-created_at")[:10],
@@ -151,6 +210,7 @@ def lead_upload(request):
                 form.cleaned_data["csv_file"],
                 uploaded_by=request.user,
                 selected_sheet=form.cleaned_data.get("sheet_name", ""),
+                default_assigned_to=form.cleaned_data.get("default_assigned_to"),
             )
             import_errors = parsed.errors
             if lead_import:
@@ -164,7 +224,7 @@ def lead_upload(request):
                     message=f"Imported {lead_import.imported_count} sales intelligence leads.",
                     metadata={"filename": lead_import.original_filename, "rows": lead_import.imported_count},
                 )
-                messages.success(request, f"Imported {lead_import.imported_count} lead{'s' if lead_import.imported_count != 1 else ''}. Review the import report below.")
+                messages.success(request, f"Import complete: {lead_import.imported_count} created, {lead_import.updated_count} updated. Review the report below.")
                 return redirect("lead_import_detail", pk=lead_import.pk)
     else:
         form = LeadCSVUploadForm()
@@ -251,7 +311,7 @@ def lead_import_detail(request, pk):
     leads = internal_leads_for_user(request.user).filter(pk__in=lead_ids).select_related("assigned_to").order_by("-needs_review", "-created_at")
     return render(request, "crm/import_detail.html", {
         "lead_import": lead_import,
-        "leads": leads[:200],
+        "page_obj": paginate(request, leads, 75),
     })
 
 
@@ -279,34 +339,14 @@ def lead_queue(request, queue_type):
     return render(request, "crm/lead_queue.html", {
         "queue_type": queue_type,
         "title": titles[queue_type],
-        "leads": leads.order_by("follow_up_date", "-lead_temperature", "-created_at")[:250],
+        "page_obj": paginate(request, leads.order_by("follow_up_date", "-lead_temperature", "-created_at"), 50),
     })
 
 
 @employee_required
 def scorecards(request):
     leads = internal_leads_for_user(request.user)
-    today = timezone.localdate()
-    reps = []
-    assigned_ids = leads.exclude(assigned_to__isnull=True).values_list("assigned_to", flat=True).distinct()
-    for user_id in assigned_ids:
-        user_leads = leads.filter(assigned_to_id=user_id)
-        rep = user_leads.first().assigned_to
-        total = user_leads.count()
-        worked = user_leads.exclude(notes="").count()
-        reps.append({
-            "user": rep,
-            "total": total,
-            "worked": worked,
-            "contact_rate": round((worked / total) * 100) if total else 0,
-            "warm": user_leads.filter(lead_temperature="warm").count(),
-            "hot": user_leads.filter(lead_temperature="hot").count(),
-            "emails": user_leads.filter(status="email_requested").count(),
-            "callbacks": user_leads.filter(status="callback_requested").count(),
-            "appointments": user_leads.filter(status__in=["appointment_scheduled", "appointment_completed"]).count(),
-            "overdue": user_leads.filter(follow_up_date__lt=today).count(),
-        })
-    return render(request, "crm/scorecards.html", {"scorecards": reps})
+    return render(request, "crm/scorecards.html", {"scorecards": build_scorecards(leads)})
 
 
 @employee_required

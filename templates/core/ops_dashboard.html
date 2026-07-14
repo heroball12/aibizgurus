@@ -10,6 +10,7 @@
   <div class="actions">
     <a class="btn neon" href="{% url 'lead_upload' %}">Upload Lead Tracker</a>
     <a class="btn ghost" href="{% url 'lead_create' %}">Create Lead</a>
+    {% if user.role == "admin" or user.is_owner %}<a class="btn ghost" href="{% url 'staff_users' %}">Manage Staff</a>{% endif %}
   </div>
 </section>
 

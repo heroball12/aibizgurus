@@ -7,9 +7,20 @@
 </section>
 <section class="ops-panel">
   <table><tr><th>Username</th><th>Email</th><th>Role</th><th>Staff</th><th>Superuser</th><th></th></tr>
-  {% for u in users %}
+  {% for u in page_obj %}
     <tr><td>{{ u.username }}</td><td>{{ u.email }}</td><td><span class="ops-chip">{{ u.role }}</span></td><td>{{ u.is_staff }}</td><td>{{ u.is_superuser }}</td><td><a href="/admin/accounts/user/{{ u.pk }}/change/">Edit →</a></td></tr>
   {% endfor %}
   </table>
+  {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pager" aria-label="User pages">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">← Previous</a>
+      {% endif %}
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next →</a>
+      {% endif %}
+    </nav>
+  {% endif %}
 </section>
 {% endblock %}

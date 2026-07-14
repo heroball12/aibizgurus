@@ -160,7 +160,7 @@ def classify_sales_note(raw_note, imported_status=""):
         status, temperature, confidence = "callback_requested", "warm", Decimal("0.90")
         action = "Call back at the requested time."
         labels.append("callback")
-    elif _contains(text, "send email", "leave an email", "email info", "asked for email", "told me to email"):
+    elif _contains(text, "send email", "leave an email", "leave email", "email info", "asked for email", "told me to email", "gave gm email"):
         status, temperature, confidence = "email_requested", "warm", Decimal("0.90")
         action = "Send a concise follow-up email and schedule a call-back."
         labels.append("email_requested")

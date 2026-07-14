@@ -97,6 +97,9 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;border-bottom:1p
 .owner-metrics{grid-template-columns:repeat(6,1fr)}
 .owner-shortcuts{display:grid;gap:12px}
 .owner-shortcuts a{display:block;border:1px solid rgba(96,165,250,.22);background:rgba(255,255,255,.06);border-radius:16px;padding:14px;color:#bfdbfe;font-weight:850}
+.inline-form{display:inline;margin-left:10px}
+.link-button{border:0;background:transparent;color:#fde68a;font:inherit;font-weight:850;cursor:pointer;padding:0}
+.link-button:hover{text-decoration:underline}
 .owner-filter{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
 .owner-filter input{background:rgba(2,6,23,.6);border:1px solid rgba(96,165,250,.22);border-radius:14px;color:white;padding:12px}
 .staff-mode small{color:#93a9ca}
@@ -1110,6 +1113,33 @@ button,input,select,textarea{font:inherit}
 .dark-form.import-form input[type=file]{
   padding:18px;
   border-style:dashed;
+}
+.pager{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:18px;
+  color:#c4b5fd;
+  font-size:14px;
+  font-weight:850;
+}
+.pager a,.pager span{
+  border:1px solid rgba(168,85,247,.24);
+  border-radius:999px;
+  padding:10px 14px;
+  background:rgba(255,255,255,.055);
+  box-shadow:0 14px 34px rgba(8,3,30,.18);
+}
+.pager a{
+  color:#fff;
+  text-decoration:none;
+}
+.pager a:hover{
+  border-color:rgba(245,196,81,.46);
+  color:#fde68a;
+  transform:translateY(-1px);
 }
 @media(max-width:1100px){
   .sales-hero,.sales-hero.compact,.sales-grid,.lead-intel-layout{grid-template-columns:1fr}

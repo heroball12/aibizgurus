@@ -16,7 +16,7 @@
 {% endif %}
 <section class="clean-panel">
   <div class="lead-list full">
-    {% for c in conversations %}
+    {% for c in page_obj %}
       <a class="lead-row clickable-row" href="{% url 'client_conversation_detail' c.pk %}">
         <div>
           <strong>{{ c.ai_instance.name }}</strong>
@@ -28,5 +28,16 @@
       <div class="empty-state"><strong>No conversations yet</strong><p>Conversation history will appear here once visitors start chatting.</p></div>
     {% endfor %}
   </div>
+  {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pager" aria-label="Conversation pages">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">← Previous</a>
+      {% endif %}
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next →</a>
+      {% endif %}
+    </nav>
+  {% endif %}
 </section>
 {% endblock %}

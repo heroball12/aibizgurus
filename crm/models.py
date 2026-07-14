@@ -100,6 +100,11 @@ class Lead(models.Model):
         indexes = [
             models.Index(fields=["lead_type", "status"]),
             models.Index(fields=["lead_type", "lead_temperature"]),
+            models.Index(fields=["lead_type", "archived", "created_at"]),
+            models.Index(fields=["lead_type", "assigned_to", "created_at"]),
+            models.Index(fields=["lead_type", "source_file"]),
+            models.Index(fields=["client", "lead_type", "created_at"]),
+            models.Index(fields=["ai_instance", "created_at"]),
             models.Index(fields=["assigned_to", "follow_up_date"]),
             models.Index(fields=["needs_review", "created_at"]),
         ]
@@ -128,6 +133,7 @@ class LeadImport(models.Model):
     sheet_names = models.JSONField(default=list, blank=True)
     row_count = models.PositiveIntegerField(default=0)
     imported_count = models.PositiveIntegerField(default=0)
+    updated_count = models.PositiveIntegerField(default=0)
     skipped_count = models.PositiveIntegerField(default=0)
     duplicate_count = models.PositiveIntegerField(default=0)
     error_count = models.PositiveIntegerField(default=0)
@@ -140,6 +146,10 @@ class LeadImport(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["status", "created_at"]),
+            models.Index(fields=["uploaded_by", "created_at"]),
+        ]
 
     def __str__(self):
         return self.original_filename

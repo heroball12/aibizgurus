@@ -1,5 +1,9 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from .models import Lead, LeadNote
+
+
+User = get_user_model()
 
 class LeadForm(forms.ModelForm):
     class Meta:
@@ -33,6 +37,16 @@ class LeadCSVUploadForm(forms.Form):
         label="Sheet name",
         help_text="Optional for Excel files. Leave blank to import all visible sheets.",
     )
+    default_assigned_to = forms.ModelChoiceField(
+        queryset=User.objects.none(),
+        required=False,
+        label="Default SDR",
+        help_text="Optional. Assign imported rows to this SDR when the sheet does not include an assigned_to column.",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["default_assigned_to"].queryset = User.objects.filter(role__in=["employee", "admin"], is_active=True).order_by("first_name", "username")
 
     def clean_csv_file(self):
         uploaded = self.cleaned_data["csv_file"]

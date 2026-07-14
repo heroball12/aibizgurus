@@ -325,19 +325,19 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(LeadActivity.objects.filter(original_import=lead_import).count(), 2)
         self.assertEqual(Lead.objects.filter(lead_type="client_customer", name__in=["Ada Buyer", "Ben Founder"]).count(), 0)
 
-    def test_csv_upload_validation_is_all_or_nothing(self):
+    def test_csv_upload_validation_blocks_unusable_files(self):
         employee = User.objects.create_user(username="csv-ops-invalid", password="OpsPass123!", role="employee")
         self.client.force_login(employee)
         before = Lead.objects.count()
         upload = SimpleUploadedFile(
             "bad.csv",
-            b"name,business_name,email\nBroken Lead,Broken Co,not-an-email\n",
+            b"random,spreadsheet\nnot,a lead\n",
             content_type="text/csv",
         )
         response = self.client.post(reverse("lead_upload"), {"csv_file": upload})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Import stopped. No leads were created.")
-        self.assertContains(response, "not-an-email")
+        self.assertContains(response, "headers were not recognized")
         self.assertEqual(Lead.objects.count(), before)
 
     def test_sales_intelligence_rules_and_queues(self):
@@ -396,7 +396,35 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(callback.status, "callback_requested")
         self.assertEqual(callback.lead_temperature, "warm")
         self.assertEqual(lead_import.sheet_names, ["Tracker"])
+        self.assertEqual(lead_import.imported_count, 1)
+        self.assertEqual(lead_import.updated_count, 1)
         self.assertGreaterEqual(lead_import.review_count, 1)
+
+    def test_owner_or_admin_can_manage_staff_users(self):
+        admin = User.objects.create_user(username="staff-admin", password="OpsPass123!", role="admin")
+        self.client.force_login(admin)
+        response = self.client.get(reverse("staff_users"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Staff & SDR accounts")
+
+        response = self.client.post(reverse("staff_user_create"), {
+            "first_name": "Kaitlyn",
+            "last_name": "Bonilla",
+            "role": "employee",
+            "is_active": "on",
+            "password": "AIBG123",
+        })
+        self.assertRedirects(response, reverse("staff_users"))
+        kaitlyn = User.objects.get(username="kaitlyn@aibiz.guru")
+        self.assertEqual(kaitlyn.email, "kaitlyn@aibiz.guru")
+        self.assertEqual(kaitlyn.role, "employee")
+        self.assertTrue(kaitlyn.is_staff)
+        self.assertTrue(kaitlyn.check_password("AIBG123"))
+
+        response = self.client.post(reverse("staff_user_deactivate", args=[kaitlyn.pk]))
+        self.assertRedirects(response, reverse("staff_users"))
+        kaitlyn.refresh_from_db()
+        self.assertFalse(kaitlyn.is_active)
 
     @override_settings(PLATFORM_OPENAI_API_KEY="", OPENAI_DAILY_USAGE_LIMIT=500)
     def test_shared_ai_service_missing_key_records_fallback(self):

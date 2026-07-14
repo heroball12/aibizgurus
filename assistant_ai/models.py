@@ -84,6 +84,11 @@ class Conversation(models.Model):
 
     class Meta:
         ordering = ["-updated_at", "-created_at"]
+        indexes = [
+            models.Index(fields=["ai_instance", "updated_at"]),
+            models.Index(fields=["channel", "updated_at"]),
+            models.Index(fields=["customer_email"]),
+        ]
 
     def __str__(self):
         return f"{self.ai_instance.name} conversation {self.pk}"
@@ -95,9 +100,21 @@ class Message(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=["conversation", "created_at"]),
+            models.Index(fields=["sender", "created_at"]),
+        ]
+
 class KnowledgeDocument(models.Model):
     ai_instance = models.ForeignKey("clients.AIInstance", on_delete=models.CASCADE, related_name="knowledge_documents")
     title = models.CharField(max_length=200)
     content = models.TextField()
     processed_status = models.CharField(max_length=50, default="ready")
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["ai_instance", "processed_status"]),
+        ]

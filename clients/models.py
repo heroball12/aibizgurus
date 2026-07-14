@@ -43,6 +43,13 @@ class ClientAccount(models.Model):
     paid_until = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["user", "created_at"]),
+            models.Index(fields=["activation_status", "created_at"]),
+            models.Index(fields=["status", "created_at"]),
+        ]
+
     def save(self, *args, **kwargs):
         if not self.slug:
             base = slugify(self.business_name) or "client"
@@ -180,6 +187,13 @@ class AIInstance(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     objects = AIInstanceManager()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["client", "status"]),
+            models.Index(fields=["status", "created_at"]),
+            models.Index(fields=["industry", "status"]),
+        ]
 
     def save(self, *args, **kwargs):
         if not self.slug:

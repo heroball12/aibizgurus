@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{% if staff_user %}Edit Staff{% else %}Add Staff{% endif %} | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div>
+    <span class="ops-label">Staff Access</span>
+    <h1>{% if staff_user %}Edit staff member{% else %}Add staff member{% endif %}</h1>
+    <p>The platform automatically sets username and email to <strong>firstname@aibiz.guru</strong>. New staff can log in with <strong>AIBG123</strong> and change it later.</p>
+  </div>
+  <a class="btn ghost" href="{% url 'staff_users' %}">Back to Staff</a>
+</section>
+
+<section class="ops-grid">
+  <div class="ops-panel">
+    <form method="post" class="form dark-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
+      <button class="btn neon">Save Staff Account</button>
+    </form>
+  </div>
+  <aside class="ops-panel">
+    <h2>Account rule</h2>
+    <p>Examples:</p>
+    <div class="ops-note">
+      <code>Kaitlyn → kaitlyn@aibiz.guru</code><br>
+      <code>Amelia → amelia@aibiz.guru</code><br>
+      <code>Saige → saige@aibiz.guru</code>
+    </div>
+    <p>Use role <strong>Employee / SDR</strong> for callers and <strong>Admin</strong> for managers.</p>
+  </aside>
+</section>
+{% endblock %}

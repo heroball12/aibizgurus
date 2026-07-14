@@ -1,5 +1,12 @@
+import time
+
 from django.db import connection, transaction
 from .models import ActivityLog
+
+_ACTIVITY_TABLE_EXISTS = None
+_ACTIVITY_TABLE_CHECKED_AT = 0
+_ACTIVITY_TABLE_CACHE_SECONDS = 60
+
 
 def get_client_ip(request):
     if not request:
@@ -15,10 +22,19 @@ def safe_user_data(user):
     return user, getattr(user, "username", "") or "", getattr(user, "role", "") or ""
 
 def activity_table_exists():
+    global _ACTIVITY_TABLE_EXISTS, _ACTIVITY_TABLE_CHECKED_AT
+    now = time.monotonic()
+    if (
+        _ACTIVITY_TABLE_EXISTS is not None
+        and now - _ACTIVITY_TABLE_CHECKED_AT < _ACTIVITY_TABLE_CACHE_SECONDS
+    ):
+        return _ACTIVITY_TABLE_EXISTS
     try:
-        return ActivityLog._meta.db_table in connection.introspection.table_names()
+        _ACTIVITY_TABLE_EXISTS = ActivityLog._meta.db_table in connection.introspection.table_names()
     except Exception:
-        return False
+        _ACTIVITY_TABLE_EXISTS = False
+    _ACTIVITY_TABLE_CHECKED_AT = now
+    return _ACTIVITY_TABLE_EXISTS
 
 def log_activity(*, user=None, request=None, action="other", message="", model_label="", object_id="", object_repr="", metadata=None, status_code=None):
     if not activity_table_exists():

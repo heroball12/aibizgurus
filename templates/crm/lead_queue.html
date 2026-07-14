@@ -16,7 +16,7 @@
 <section class="sales-panel">
   <table class="sales-table">
     <tr><th>Business</th><th>Contact</th><th>Status</th><th>Temp</th><th>Phone</th><th>Email</th><th>Follow-up</th><th></th></tr>
-    {% for lead in leads %}
+    {% for lead in page_obj %}
       <tr>
         <td>{{ lead.business_name|default:"—" }}</td>
         <td>{{ lead.name|default:lead.point_of_contact|default:"—" }}</td>
@@ -31,5 +31,16 @@
       <tr><td colspan="8">Nothing in this queue yet.</td></tr>
     {% endfor %}
   </table>
+  {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pager" aria-label="Lead queue pages">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">← Previous</a>
+      {% endif %}
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next →</a>
+      {% endif %}
+    </nav>
+  {% endif %}
 </section>
 {% endblock %}

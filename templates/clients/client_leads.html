@@ -7,7 +7,7 @@
 </section>
 <section class="clean-panel">
   <div class="lead-list full">
-    {% for l in leads %}
+    {% for l in page_obj %}
       <div class="lead-row">
         <div><strong>{{ l.name|default:"New lead" }}</strong><p>{{ l.phone }} · {{ l.email }} · {{ l.source }}</p><small>{{ l.notes|truncatechars:180 }}</small></div>
         <span>{{ l.status|title }}</span>
@@ -16,5 +16,16 @@
       <div class="empty-state"><strong>No leads yet</strong><p>Leads will appear here once your assistant is active.</p></div>
     {% endfor %}
   </div>
+  {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pager" aria-label="Lead inbox pages">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">← Previous</a>
+      {% endif %}
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next →</a>
+      {% endif %}
+    </nav>
+  {% endif %}
 </section>
 {% endblock %}
