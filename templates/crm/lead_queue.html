@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | Sales Intelligence{% endblock %}
+{% block content %}
+<section class="sales-hero compact solo">
+  <div>
+    <span class="ops-label">Action Queue</span>
+    <h1>{{ title }}</h1>
+    <p>Prioritized internal AI Business Gurus prospects. Client-captured customer leads remain in client workspaces.</p>
+    <div class="sales-hero-actions">
+      <a class="btn ghost" href="{% url 'crm_home' %}">Dashboard</a>
+      <a class="btn ghost" href="{% url 'lead_upload' %}">Upload Tracker</a>
+    </div>
+  </div>
+</section>
+
+<section class="sales-panel">
+  <table class="sales-table">
+    <tr><th>Business</th><th>Contact</th><th>Status</th><th>Temp</th><th>Phone</th><th>Email</th><th>Follow-up</th><th></th></tr>
+    {% for lead in leads %}
+      <tr>
+        <td>{{ lead.business_name|default:"—" }}</td>
+        <td>{{ lead.name|default:lead.point_of_contact|default:"—" }}</td>
+        <td><span class="status-badge">{{ lead.get_status_display }}</span></td>
+        <td><span class="temp-badge {{ lead.lead_temperature }}">{{ lead.get_lead_temperature_display }}</span></td>
+        <td>{% if lead.phone %}<a href="tel:{{ lead.phone }}">{{ lead.phone }}</a>{% else %}—{% endif %}</td>
+        <td>{% if lead.email %}<a href="mailto:{{ lead.email }}">Email</a>{% else %}—{% endif %}</td>
+        <td>{{ lead.follow_up_date|default:"—" }}</td>
+        <td><a href="{% url 'lead_detail' lead.pk %}">Open →</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="8">Nothing in this queue yet.</td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endblock %}

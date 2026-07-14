@@ -20,7 +20,7 @@
     {% if user.is_authenticated %}
       {% if user.is_employee_or_admin %}
         {% if user.is_owner %}<a href="{% url 'owner_dashboard' %}">Owner</a>{% endif %}
-        <a href="{% url 'ops_dashboard' %}">Ops</a><a href="{% url 'crm_home' %}">CRM</a>
+        <a href="{% url 'ops_dashboard' %}">Ops</a><a href="{% url 'crm_home' %}">Sales Intelligence</a>
       {% else %}
         <a href="{% url 'portal_home' %}">Dashboard</a>
       {% endif %}

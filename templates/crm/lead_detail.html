@@ -1,18 +1,130 @@
 {% extends "base.html" %}
-{% block title %}Lead Detail | AI Business Gurus CRM{% endblock %}
+{% block title %}{{ lead }} | Sales Intelligence{% endblock %}
 {% block content %}
-<section class="staff-hero compact">
-  <div><span class="ops-label">Lead profile</span><h1>{{ lead }}</h1><p>{{ lead.lead_type }} · {{ lead.status }} · ${{ lead.value }}</p></div>
-  <a class="btn neon" href="{% url 'lead_edit' lead.pk %}">Edit Lead</a>
+<section class="sales-hero compact">
+  <div>
+    <span class="ops-label">Lead Intelligence</span>
+    <h1>{{ lead.business_name|default:lead.name|default:"Unnamed lead" }}</h1>
+    <p>{{ lead.get_status_display }} · {{ lead.get_lead_temperature_display }} · Confidence {{ lead.classification_confidence }} · Source {{ lead.get_classification_source_display }}</p>
+    <div class="sales-hero-actions">
+      <a class="btn neon" href="?draft=email">Generate Follow-Up Email</a>
+      <a class="btn ghost" href="{% url 'lead_edit' lead.pk %}">Edit Lead</a>
+      <a class="btn ghost" href="{% url 'crm_home' %}">Back</a>
+    </div>
+  </div>
+  <div class="lead-pulse-card">
+    <span class="temp-badge {{ lead.lead_temperature }}">{{ lead.get_lead_temperature_display }}</span>
+    <strong>{{ lead.get_status_display }}</strong>
+    <p>{% if lead.needs_review %}Manager review recommended{% else %}Classification reviewed{% endif %}</p>
+  </div>
 </section>
-<section class="ops-panel">
-  <h2>Contact</h2>
-  <p><strong>Phone:</strong> {{ lead.phone }} &nbsp; <strong>Email:</strong> {{ lead.email }}</p>
-  <p>{{ lead.notes }}</p>
+
+<section class="lead-intel-layout">
+  <div class="sales-panel">
+    <div class="section-head">
+      <div>
+        <span class="ops-label">Contact</span>
+        <h2>Business details</h2>
+      </div>
+    </div>
+    <div class="contact-grid">
+      <div><span>Contact</span><strong>{{ lead.name|default:lead.point_of_contact|default:"—" }}</strong></div>
+      <div><span>Role</span><strong>{{ lead.contact_role|default:"—" }}</strong></div>
+      <div><span>Phone</span><strong>{% if lead.phone %}<a href="tel:{{ lead.phone }}">{{ lead.phone }}</a>{% else %}—{% endif %}</strong></div>
+      <div><span>Email</span><strong>{% if lead.email %}<a href="mailto:{{ lead.email }}">{{ lead.email }}</a>{% else %}—{% endif %}</strong></div>
+      <div><span>Website</span><strong>{{ lead.website|default:"—" }}</strong></div>
+      <div><span>Industry</span><strong>{{ lead.industry|default:"—" }}</strong></div>
+      <div><span>Source</span><strong>{{ lead.source|default:"—" }}</strong></div>
+      <div><span>Assigned</span><strong>{{ lead.assigned_to|default:"Unassigned" }}</strong></div>
+    </div>
+  </div>
+
+  <aside class="sales-panel">
+    <span class="ops-label">Next Action</span>
+    <h2>Follow-up</h2>
+    <p><strong>Date:</strong> {{ lead.follow_up_date|default:"No date set" }}</p>
+    <p><strong>Imported from:</strong> {{ lead.source_file|default:"Manual entry" }}{% if lead.source_sheet %} · {{ lead.source_sheet }}{% endif %}</p>
+    {% if lead.phone %}<a class="btn ghost full" href="tel:{{ lead.phone }}">Call Lead</a>{% endif %}
+    {% if lead.email %}<a class="btn ghost full" href="mailto:{{ lead.email }}">Email Lead</a>{% endif %}
+  </aside>
 </section>
-<section class="ops-panel">
-  <h2>Notes</h2>
-  {% for n in lead.lead_notes.all %}<div class="ops-note">{{ n.note }}<br><small>{{ n.created_at }}</small></div>{% empty %}<p>No notes yet.</p>{% endfor %}
-  <form method="post" class="form dark-form">{% csrf_token %}{{ note_form.as_p }}<button class="btn neon">Add Note</button></form>
+
+<section class="sales-grid">
+  <div class="sales-panel">
+    <span class="ops-label">Raw SDR Note</span>
+    <h2>Original note</h2>
+    <div class="note-card raw">{{ lead.notes|default:"No original note captured."|linebreaks }}</div>
+  </div>
+  <div class="sales-panel">
+    <span class="ops-label">Clean CRM Note</span>
+    <h2>Professional summary</h2>
+    <div class="note-card clean">{{ lead.cleaned_notes|default:"No cleaned note yet."|linebreaks }}</div>
+  </div>
+</section>
+
+{% if email_draft %}
+<section class="sales-panel gold-panel">
+  <div class="section-head">
+    <div>
+      <span class="ops-label">Draft Only</span>
+      <h2>Follow-up email draft</h2>
+    </div>
+  </div>
+  <pre class="email-draft">{{ email_draft }}</pre>
+  <p>This draft is for review only. Nothing is sent automatically.</p>
+</section>
+{% endif %}
+
+<section class="sales-grid">
+  <div class="sales-panel">
+    <div class="section-head">
+      <div>
+        <span class="ops-label">Manager Controls</span>
+        <h2>Review classification</h2>
+      </div>
+    </div>
+    <form method="post" class="form dark-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save_intelligence">
+      {{ intelligence_form.as_p }}
+      <button class="btn neon">Save Classification</button>
+    </form>
+  </div>
+
+  <div class="sales-panel">
+    <div class="section-head">
+      <div>
+        <span class="ops-label">Activity</span>
+        <h2>Add note</h2>
+      </div>
+    </div>
+    <form method="post" class="form dark-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add_note">
+      {{ note_form.as_p }}
+      <button class="btn neon">Add Note</button>
+    </form>
+  </div>
+</section>
+
+<section class="sales-panel">
+  <div class="section-head">
+    <div>
+      <span class="ops-label">Timeline</span>
+      <h2>Conversation and classification history</h2>
+    </div>
+  </div>
+  <div class="activity-timeline">
+    {% for item in activities %}
+      <div class="activity-item">
+        <span>{{ item.created_at|date:"M j, Y g:i A" }}</span>
+        <strong>{{ item.get_inferred_status_display }} · {{ item.get_lead_temperature_display }}</strong>
+        <p>{{ item.cleaned_note|default:item.raw_note|default:"Activity recorded." }}</p>
+        <small>{{ item.get_classification_source_display }}{% if item.original_import %} · Import #{{ item.original_import_id }} row {{ item.original_row_number }}{% endif %}</small>
+      </div>
+    {% empty %}
+      <div class="sales-empty">No activity yet.</div>
+    {% endfor %}
+  </div>
 </section>
 {% endblock %}

@@ -1,22 +1,33 @@
 {% extends "base.html" %}
-{% block title %}Upload Leads CSV | AI Business Gurus CRM{% endblock %}
+{% block title %}Upload Lead Tracker | Sales Intelligence{% endblock %}
 {% block content %}
-<section class="staff-hero compact">
+<section class="sales-hero compact">
   <div>
-    <span class="ops-label">Bulk import</span>
-    <h1>Upload leads from CSV.</h1>
-    <p>Add a list of AI Business Gurus prospects to the internal CRM. Imported rows are always saved as internal sales leads, never client-captured leads.</p>
+    <span class="ops-label">Tracker Import</span>
+    <h1>Upload leads from CSV or Excel.</h1>
+    <p>Bring in SDR trackers from Kaitlyn, Amelia, Saige, or future reps. The importer reads common columns, preserves raw notes, creates cleaned CRM notes, and flags warm leads, callbacks, duplicate reviews, and manager-review items.</p>
+    <div class="sales-hero-actions">
+      <a class="btn ghost" href="{% url 'lead_create' %}">Create One Lead</a>
+      <a class="btn ghost" href="{% url 'crm_home' %}">Back to Sales Intelligence</a>
+    </div>
   </div>
-  <div class="actions">
-    <a class="btn ghost" href="{% url 'lead_create' %}">Create One Lead</a>
-    <a class="btn ghost" href="{% url 'crm_home' %}">Back to CRM</a>
+  <div class="sales-radar import-radar">
+    <span>Safe Import</span>
+    <strong>0</strong>
+    <p>silent overwrites — duplicates are flagged for review</p>
+    <div class="radar-ring"></div>
   </div>
 </section>
 
-<section class="ops-grid">
-  <div class="ops-panel">
-    <h2>Upload CSV</h2>
-    <form method="post" enctype="multipart/form-data" class="form dark-form">
+<section class="sales-grid">
+  <div class="sales-panel wide">
+    <div class="section-head">
+      <div>
+        <span class="ops-label">Upload</span>
+        <h2>Import a lead tracker</h2>
+      </div>
+    </div>
+    <form method="post" enctype="multipart/form-data" class="form dark-form import-form">
       {% csrf_token %}
       {{ form.as_p }}
       {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
@@ -30,17 +41,26 @@
           </ul>
         </div>
       {% endif %}
-      <button class="btn neon">Import CSV Leads</button>
+      <button class="btn neon">Analyze + Import Tracker</button>
     </form>
   </div>
 
-  <aside class="ops-panel">
-    <h2>CSV format</h2>
-    <p>Use a header row. These fields are supported:</p>
+  <aside class="sales-panel">
+    <span class="ops-label">Auto-Mapping</span>
+    <h2>Supported columns</h2>
+    <p>Use a header row. The system accepts common aliases like <strong>company</strong>, <strong>agency name</strong>, <strong>dispensary name</strong>, <strong>POC</strong>, <strong>call notes</strong>, and <strong>SDR</strong>.</p>
     <div class="ops-note"><code>{{ sample_headers }}</code></div>
-    <p>Minimum per row: include at least one of <strong>name</strong>, <strong>business_name</strong>, <strong>email</strong>, or <strong>phone</strong>.</p>
-    <p>Status is optional and defaults to <strong>new</strong>. Follow-up dates should use <strong>YYYY-MM-DD</strong>.</p>
-    <p>Common aliases like <strong>company</strong>, <strong>phone_number</strong>, <strong>email_address</strong>, and <strong>comments</strong> also work.</p>
+    <p>Minimum per row: one of <strong>business name</strong>, <strong>contact name</strong>, <strong>phone</strong>, or <strong>email</strong>.</p>
+    <p>Excel support reads visible worksheet data from <strong>.xlsx</strong>. Leave sheet blank to process all readable tabs.</p>
   </aside>
+</section>
+
+<section class="sales-panel">
+  <div class="import-steps">
+    <div><strong>1</strong><span>Read tracker</span><p>CSV and basic XLSX worksheets are parsed server-side.</p></div>
+    <div><strong>2</strong><span>Classify notes</span><p>Raw SDR notes stay untouched while cleaned notes and statuses are generated.</p></div>
+    <div><strong>3</strong><span>Protect data</span><p>Client-captured leads stay separate. Duplicates are flagged, not overwritten.</p></div>
+    <div><strong>4</strong><span>Work queues</span><p>Warm leads, callbacks, and manual reviews land in manager queues.</p></div>
+  </div>
 </section>
 {% endblock %}

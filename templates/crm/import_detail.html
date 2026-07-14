@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Import Report | Sales Intelligence{% endblock %}
+{% block content %}
+<section class="sales-hero compact solo">
+  <div>
+    <span class="ops-label">Import Report</span>
+    <h1>{{ lead_import.original_filename }}</h1>
+    <p>{{ lead_import.imported_count }} imported · {{ lead_import.review_count }} review · {{ lead_import.duplicate_count }} duplicate flags · {{ lead_import.created_at|date:"M j, Y g:i A" }}</p>
+    <div class="sales-hero-actions">
+      <a class="btn neon" href="{% url 'lead_queue' 'review' %}">Open Review Queue</a>
+      <a class="btn ghost" href="{% url 'lead_upload' %}">Import Another</a>
+      <a class="btn ghost" href="{% url 'crm_home' %}">Dashboard</a>
+    </div>
+  </div>
+</section>
+
+<section class="sales-metrics">
+  <div class="sales-metric-card"><span>Total Rows</span><strong>{{ lead_import.row_count }}</strong><small>including skipped blanks</small></div>
+  <div class="sales-metric-card"><span>Imported</span><strong>{{ lead_import.imported_count }}</strong><small>new internal sales records</small></div>
+  <div class="sales-metric-card violet"><span>Review</span><strong>{{ lead_import.review_count }}</strong><small>manager attention needed</small></div>
+  <div class="sales-metric-card gold"><span>High Confidence</span><strong>{{ lead_import.high_confidence_count }}</strong><small>rules engine confidence ≥ .80</small></div>
+</section>
+
+<section class="sales-panel">
+  <div class="section-head">
+    <div>
+      <span class="ops-label">Sheets</span>
+      <h2>Workbook coverage</h2>
+    </div>
+  </div>
+  <div class="chipwrap">
+    {% for sheet in lead_import.sheet_names %}
+      <span class="ops-chip">{{ sheet }}</span>
+    {% empty %}
+      <span class="ops-chip">CSV</span>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sales-panel">
+  <div class="section-head">
+    <div>
+      <span class="ops-label">Imported Leads</span>
+      <h2>Records from this tracker</h2>
+    </div>
+  </div>
+  <table class="sales-table">
+    <tr><th>Business</th><th>Status</th><th>Temp</th><th>Confidence</th><th>Sheet</th><th>Review</th><th></th></tr>
+    {% for lead in leads %}
+      <tr>
+        <td>{{ lead.business_name|default:lead.name|default:"—" }}</td>
+        <td><span class="status-badge">{{ lead.get_status_display }}</span></td>
+        <td><span class="temp-badge {{ lead.lead_temperature }}">{{ lead.get_lead_temperature_display }}</span></td>
+        <td>{{ lead.classification_confidence }}</td>
+        <td>{{ lead.source_sheet|default:"CSV" }}</td>
+        <td>{% if lead.needs_review %}Yes{% else %}No{% endif %}</td>
+        <td><a href="{% url 'lead_detail' lead.pk %}">Open →</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7">No leads found for this import.</td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endblock %}

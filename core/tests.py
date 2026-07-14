@@ -1,21 +1,67 @@
 from unittest.mock import patch
 from types import SimpleNamespace
+import io
+import zipfile
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from assistant_ai.models import Conversation, Message
+from assistant_ai.models import AssistantRole, Conversation, Message, UsageRecord
 from assistant_ai.services import choose_openai_key
 from audit.models import ActivityLog
 from audit.utils import log_activity
 from clients.models import AIInstance, BusinessProfile, ClientAccount, Integration
 from core.models import IndustryTemplate
-from crm.models import Lead
+from crm.intelligence import classify_sales_note
+from crm.models import Lead, LeadActivity, LeadImport
 
 
 User = get_user_model()
+
+
+def build_minimal_xlsx(rows, sheet_name="Tracker"):
+    def cell_ref(col_index, row_index):
+        letters = ""
+        col = col_index + 1
+        while col:
+            col, remainder = divmod(col - 1, 26)
+            letters = chr(65 + remainder) + letters
+        return f"{letters}{row_index}"
+
+    sheet_rows = []
+    for row_index, row in enumerate(rows, start=1):
+        cells = []
+        for col_index, value in enumerate(row):
+            ref = cell_ref(col_index, row_index)
+            cells.append(f'<c r="{ref}" t="inlineStr"><is><t>{value}</t></is></c>')
+        sheet_rows.append(f'<row r="{row_index}">{"".join(cells)}</row>')
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as zf:
+        zf.writestr("[Content_Types].xml", """<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+</Types>""")
+        zf.writestr("_rels/.rels", """<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>""")
+        zf.writestr("xl/workbook.xml", f"""<?xml version="1.0" encoding="UTF-8"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheets><sheet name="{sheet_name}" sheetId="1" r:id="rId1"/></sheets>
+</workbook>""")
+        zf.writestr("xl/_rels/workbook.xml.rels", """<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+</Relationships>""")
+        zf.writestr("xl/worksheets/sheet1.xml", f"""<?xml version="1.0" encoding="UTF-8"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>{''.join(sheet_rows)}</sheetData></worksheet>""")
+    return buffer.getvalue()
 
 
 class PlatformFlowTests(TestCase):
@@ -249,20 +295,21 @@ class PlatformFlowTests(TestCase):
         self.client.force_login(employee)
         response = self.client.get(reverse("lead_upload"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Upload leads from CSV")
+        self.assertContains(response, "Upload leads from CSV or Excel")
         self.assertContains(self.client.get(reverse("crm_home")), reverse("lead_upload"))
 
         upload = SimpleUploadedFile(
             "leads.csv",
             (
                 "name,business_name,industry,phone,email,source,status,notes,value,follow_up_date,assigned_to\n"
-                "Ada Buyer,Ada Co,Home Services,555-1111,ada@example.com,CSV List,new,Interested in AI receptionist,2500.00,2026-08-01,csv-ops\n"
-                "Ben Founder,Ben Studio,Med Spa,555-2222,ben@example.com,CSV List,follow_up,Needs follow up,1200.50,,\n"
+                "Ada Buyer,Ada Co,Home Services,555-1111,ada@example.com,CSV List,new,good interaction told me to leave an email,2500.00,2026-08-01,csv-ops\n"
+                "Ben Founder,Ben Studio,Med Spa,555-2222,ben@example.com,CSV List,follow_up,call back after 4,1200.50,,\n"
             ).encode(),
             content_type="text/csv",
         )
         response = self.client.post(reverse("lead_upload"), {"csv_file": upload})
-        self.assertRedirects(response, reverse("crm_home"))
+        lead_import = LeadImport.objects.get(original_filename="leads.csv")
+        self.assertRedirects(response, reverse("lead_import_detail", args=[lead_import.pk]))
 
         ada = Lead.objects.get(name="Ada Buyer")
         ben = Lead.objects.get(name="Ben Founder")
@@ -270,7 +317,12 @@ class PlatformFlowTests(TestCase):
         self.assertIsNone(ada.client)
         self.assertIsNone(ada.ai_instance)
         self.assertEqual(ada.assigned_to, employee)
+        self.assertEqual(ada.status, "email_requested")
+        self.assertEqual(ada.lead_temperature, "warm")
+        self.assertIn("Standardized outcome", ada.cleaned_notes)
         self.assertEqual(ben.status, "follow_up")
+        self.assertEqual(ben.lead_temperature, "warm")
+        self.assertEqual(LeadActivity.objects.filter(original_import=lead_import).count(), 2)
         self.assertEqual(Lead.objects.filter(lead_type="client_customer", name__in=["Ada Buyer", "Ben Founder"]).count(), 0)
 
     def test_csv_upload_validation_is_all_or_nothing(self):
@@ -288,6 +340,76 @@ class PlatformFlowTests(TestCase):
         self.assertContains(response, "not-an-email")
         self.assertEqual(Lead.objects.count(), before)
 
+    def test_sales_intelligence_rules_and_queues(self):
+        employee = User.objects.create_user(username="queue-ops", password="OpsPass123!", role="employee")
+        self.client.force_login(employee)
+        classification = classify_sales_note("manager handles this and asked me to send info")
+        self.assertEqual(classification.temperature, "warm")
+        self.assertIn(classification.status, {"information_requested", "decision_maker_reached"})
+
+        lead = Lead.objects.create(
+            lead_type="internal_sales",
+            business_name="Warm Demo Co",
+            phone="555-3333",
+            notes="call back after 4",
+            status="callback_requested",
+            lead_temperature="warm",
+            cleaned_notes="The contact requested a callback after 4:00 PM.",
+            assigned_to=employee,
+        )
+        response = self.client.get(reverse("crm_home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "SDR command center")
+        self.assertContains(response, "Warm Demo Co")
+        queue = self.client.get(reverse("lead_queue", args=["warm"]))
+        self.assertContains(queue, "Warm Demo Co")
+        detail = self.client.get(reverse("lead_detail", args=[lead.pk]) + "?draft=email")
+        self.assertContains(detail, "Follow-up email draft")
+        self.assertContains(detail, "Warm Demo Co")
+
+    def test_xlsx_tracker_import_and_duplicate_review(self):
+        employee = User.objects.create_user(username="xlsx-ops", password="OpsPass123!", role="employee")
+        Lead.objects.create(
+            lead_type="internal_sales",
+            business_name="Duplicate Co LLC",
+            phone="(555) 444-0000",
+            duplicate_key="duplicate|5554440000",
+        )
+        self.client.force_login(employee)
+        workbook = build_minimal_xlsx([
+            ["Business Name", "Phone", "Notes", "Assigned To"],
+            ["Duplicate Co", "555-444-0000", "same company", "xlsx-ops"],
+            ["Callback Spa", "555-555-1212", "call back after 4", "xlsx-ops"],
+        ])
+        upload = SimpleUploadedFile(
+            "tracker.xlsx",
+            workbook,
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        response = self.client.post(reverse("lead_upload"), {"csv_file": upload})
+        lead_import = LeadImport.objects.get(original_filename="tracker.xlsx")
+        self.assertRedirects(response, reverse("lead_import_detail", args=[lead_import.pk]))
+        duplicate = Lead.objects.get(business_name="Duplicate Co")
+        callback = Lead.objects.get(business_name="Callback Spa")
+        self.assertEqual(duplicate.status, "duplicate_review")
+        self.assertTrue(duplicate.needs_review)
+        self.assertEqual(callback.status, "callback_requested")
+        self.assertEqual(callback.lead_temperature, "warm")
+        self.assertEqual(lead_import.sheet_names, ["Tracker"])
+        self.assertGreaterEqual(lead_import.review_count, 1)
+
+    @override_settings(PLATFORM_OPENAI_API_KEY="", OPENAI_DAILY_USAGE_LIMIT=500)
+    def test_shared_ai_service_missing_key_records_fallback(self):
+        from assistant_ai.services import PlatformAIService
+
+        service = PlatformAIService(assistant_role="sdr_assistant")
+        reply, meta = service.chat(messages=[{"role": "user", "content": "hello"}], fallback="offline")
+        self.assertEqual(reply, "offline")
+        self.assertEqual(meta["reason"], "missing_api_key")
+        record = UsageRecord.objects.get(assistant_role="sdr_assistant")
+        self.assertEqual(record.status, "fallback")
+        self.assertEqual(record.error_code, "missing_api_key")
+
     def test_owner_role_and_admin_changelists_work(self):
         owner = User.objects.create_superuser(
             username="founder", email="founder@example.com", password="OwnerPass123!", role="owner"
@@ -301,9 +423,14 @@ class PlatformFlowTests(TestCase):
             "/admin/clients/aiinstance/",
             "/admin/core/industrytemplate/",
             "/admin/crm/lead/",
+            "/admin/crm/leadimport/",
+            "/admin/crm/leadactivity/",
+            "/admin/assistant_ai/assistantrole/",
+            "/admin/assistant_ai/usagerecord/",
             "/admin/audit/activitylog/",
         ]:
             self.assertEqual(self.client.get(url).status_code, 200, url)
+        self.assertTrue(AssistantRole.objects.filter(key="sdr_assistant").exists())
 
     @override_settings(STRIPE_WEBHOOK_SECRET="whsec_test")
     def test_stripe_webhook_rejects_invalid_signature_when_configured(self):

@@ -8,7 +8,7 @@
     <p>Manage clients, demos, activations, and AI Business Gurus sales leads.</p>
   </div>
   <div class="actions">
-    <a class="btn neon" href="{% url 'lead_upload' %}">Upload Lead CSV</a>
+    <a class="btn neon" href="{% url 'lead_upload' %}">Upload Lead Tracker</a>
     <a class="btn ghost" href="{% url 'lead_create' %}">Create Lead</a>
   </div>
 </section>
@@ -38,7 +38,7 @@
   </div>
 
   <div class="ops-panel">
-    <div class="section-head"><div><span class="ops-label">Sales radar</span><h2>AI Business Gurus leads</h2></div><a href="{% url 'crm_home' %}">Open CRM →</a></div>
+    <div class="section-head"><div><span class="ops-label">Sales radar</span><h2>AI Business Gurus leads</h2></div><a href="{% url 'crm_home' %}">Open Sales Intelligence →</a></div>
     <table>
       <tr><th>Name</th><th>Business</th><th>Status</th><th></th></tr>
       {% for l in new_leads %}

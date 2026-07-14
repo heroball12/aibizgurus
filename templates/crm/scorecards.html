@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}SDR Scorecards | Sales Intelligence{% endblock %}
+{% block content %}
+<section class="sales-hero compact solo">
+  <div>
+    <span class="ops-label">Performance</span>
+    <h1>SDR scorecards</h1>
+    <p>Track assigned leads, worked records, contact rate, warm lead creation, callbacks, and overdue follow-ups by rep.</p>
+    <div class="sales-hero-actions">
+      <a class="btn ghost" href="{% url 'crm_home' %}">Dashboard</a>
+      <a class="btn ghost" href="{% url 'lead_export' %}">Export Leads</a>
+    </div>
+  </div>
+</section>
+
+<section class="scorecard-grid">
+  {% for card in scorecards %}
+    <article class="sales-panel scorecard-card">
+      <span class="ops-label">SDR</span>
+      <h2>{{ card.user.get_full_name|default:card.user.username }}</h2>
+      <div class="scorecard-numbers">
+        <div><strong>{{ card.total }}</strong><span>Assigned</span></div>
+        <div><strong>{{ card.worked }}</strong><span>Worked</span></div>
+        <div><strong>{{ card.contact_rate }}%</strong><span>Contact Rate</span></div>
+        <div><strong>{{ card.hot }}</strong><span>Hot</span></div>
+        <div><strong>{{ card.warm }}</strong><span>Warm</span></div>
+        <div><strong>{{ card.overdue }}</strong><span>Overdue</span></div>
+      </div>
+      <p>{{ card.emails }} email requests · {{ card.callbacks }} callbacks · {{ card.appointments }} appointments</p>
+    </article>
+  {% empty %}
+    <section class="sales-panel">
+      <h2>No scorecards yet</h2>
+      <p>Assign imported leads to SDR users to generate performance cards.</p>
+    </section>
+  {% endfor %}
+</section>
+{% endblock %}

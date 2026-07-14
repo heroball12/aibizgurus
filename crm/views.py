@@ -1,169 +1,60 @@
 import csv
-import io
-from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
-from django.db import transaction
+from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.dateparse import parse_date
-from .models import Lead
-from .forms import LeadCSVUploadForm, LeadForm, LeadNoteForm
+from django.utils import timezone
 
-
-User = get_user_model()
-
-CSV_ALIASES = {
-    "name": ["name", "contact_name", "full_name", "person"],
-    "business_name": ["business_name", "business", "company", "company_name", "organization"],
-    "industry": ["industry", "category"],
-    "phone": ["phone", "phone_number", "mobile", "cell"],
-    "email": ["email", "email_address"],
-    "source": ["source", "lead_source"],
-    "status": ["status", "stage"],
-    "notes": ["notes", "note", "comments", "description"],
-    "value": ["value", "deal_value", "estimated_value"],
-    "assigned_to": ["assigned_to", "assigned", "owner", "user"],
-    "follow_up_date": ["follow_up_date", "followup_date", "follow_up", "next_follow_up"],
-}
-
-STATUS_VALUES = {choice[0] for choice in Lead.STATUS_CHOICES}
-STATUS_LABELS = {
-    label.lower().replace("-", "_").replace(" ", "_"): value
-    for value, label in Lead.STATUS_CHOICES
-}
-
-
-def _csv_key(value):
-    return str(value or "").strip().lower().replace("-", "_").replace(" ", "_")
-
-
-def _csv_value(row, field):
-    for alias in CSV_ALIASES[field]:
-        value = row.get(alias)
-        if value not in (None, ""):
-            return str(value).strip()
-    return ""
-
-
-def _parse_decimal(value, row_number, errors):
-    if not value:
-        return Decimal("0")
-    cleaned = value.replace("$", "").replace(",", "").strip()
-    try:
-        return Decimal(cleaned)
-    except InvalidOperation:
-        errors.append(f"Row {row_number}: value must be a number.")
-        return Decimal("0")
-
-
-def _parse_status(value, row_number, errors):
-    if not value:
-        return "new"
-    normalized = _csv_key(value)
-    if normalized in STATUS_VALUES:
-        return normalized
-    if normalized in STATUS_LABELS:
-        return STATUS_LABELS[normalized]
-    errors.append(f"Row {row_number}: status '{value}' is not valid.")
-    return "new"
-
-
-def _parse_follow_up_date(value, row_number, errors):
-    if not value:
-        return None
-    parsed = parse_date(value)
-    if not parsed:
-        errors.append(f"Row {row_number}: follow_up_date must be YYYY-MM-DD.")
-    return parsed
-
-
-def _parse_assigned_to(value, row_number, errors):
-    if not value:
-        return None
-    user = User.objects.filter(username=value).first() or User.objects.filter(email=value).first()
-    if not user:
-        errors.append(f"Row {row_number}: assigned_to user '{value}' was not found.")
-    return user
+from audit.utils import log_activity
+from .forms import LeadCSVUploadForm, LeadForm, LeadIntelligenceForm, LeadNoteForm
+from .importers import import_lead_file, parse_csv_file
+from .intelligence import csv_safe, draft_follow_up_email
+from .models import ClassificationCorrection, Lead, LeadActivity, LeadImport
 
 
 def parse_internal_lead_csv(uploaded_file):
-    try:
-        text = uploaded_file.read().decode("utf-8-sig")
-    except UnicodeDecodeError:
-        return [], ["CSV must be UTF-8 encoded."]
+    """Backward-compatible parser used by older tests and admin scripts."""
+    parsed = parse_csv_file(uploaded_file)
+    return [row.data for row in parsed.rows], parsed.errors
 
-    try:
-        reader = csv.DictReader(io.StringIO(text))
-    except csv.Error as exc:
-        return [], [f"CSV could not be read: {exc}"]
 
-    if not reader.fieldnames:
-        return [], ["CSV must include a header row."]
+def is_sales_manager(user):
+    return user.is_superuser or user.is_staff or getattr(user, "role", "") in {"admin", "owner"}
 
-    normalized_headers = [_csv_key(header) for header in reader.fieldnames]
-    rows = []
-    errors = []
 
-    for row_number, raw_row in enumerate(reader, start=2):
-        if row_number > 1001:
-            errors.append("CSV import is limited to 1,000 rows at a time.")
-            break
+def internal_leads_for_user(user):
+    qs = Lead.objects.filter(lead_type="internal_sales", archived=False)
+    if is_sales_manager(user):
+        return qs
+    return qs.filter(Q(assigned_to=user) | Q(assigned_to__isnull=True))
 
-        row = {
-            _csv_key(key): str(value or "").strip()
-            for key, value in raw_row.items()
-            if key is not None
-        }
-        if not any(row.values()):
-            continue
 
-        name = _csv_value(row, "name")
-        business_name = _csv_value(row, "business_name")
-        email = _csv_value(row, "email")
-        phone = _csv_value(row, "phone")
+def get_internal_lead_or_404(user, pk):
+    return get_object_or_404(internal_leads_for_user(user), pk=pk)
 
-        if not any([name, business_name, email, phone]):
-            errors.append(f"Row {row_number}: include at least one of name, business_name, email, or phone.")
 
-        if email:
-            try:
-                validate_email(email)
-            except ValidationError:
-                errors.append(f"Row {row_number}: email '{email}' is not valid.")
-
-        rows.append({
-            "lead_type": "internal_sales",
-            "client": None,
-            "ai_instance": None,
-            "name": name,
-            "business_name": business_name,
-            "industry": _csv_value(row, "industry"),
-            "phone": phone,
-            "email": email,
-            "source": _csv_value(row, "source") or "CSV Upload",
-            "status": _parse_status(_csv_value(row, "status"), row_number, errors),
-            "notes": _csv_value(row, "notes"),
-            "value": _parse_decimal(_csv_value(row, "value"), row_number, errors),
-            "assigned_to": _parse_assigned_to(_csv_value(row, "assigned_to"), row_number, errors),
-            "follow_up_date": _parse_follow_up_date(_csv_value(row, "follow_up_date"), row_number, errors),
-        })
-
-    if not rows and not errors:
-        errors.append("CSV did not contain any lead rows.")
-
-    missing_all_known_headers = not any(
-        alias in normalized_headers
-        for aliases in CSV_ALIASES.values()
-        for alias in aliases
-    )
-    if missing_all_known_headers:
-        errors.append("CSV headers were not recognized. Use headers like name, business_name, phone, email, source, notes.")
-
-    return rows, errors
+def sales_metrics(qs):
+    today = timezone.localdate()
+    closed_statuses = ["closed_won", "closed_lost", "not_interested", "do_not_contact", "permanently_closed"]
+    total = qs.count()
+    worked = qs.exclude(notes="").count()
+    return {
+        "total": total,
+        "worked": worked,
+        "unique_businesses": qs.exclude(business_name="").values("business_name").distinct().count(),
+        "warm": qs.filter(lead_temperature="warm").count(),
+        "hot": qs.filter(lead_temperature="hot").count(),
+        "followups_due": qs.filter(Q(follow_up_date__lte=today) | Q(status__in=["callback_requested", "follow_up"])).exclude(status__in=closed_statuses).count(),
+        "needs_review": qs.filter(needs_review=True).count(),
+        "emails_requested": qs.filter(status="email_requested").count(),
+        "callbacks_requested": qs.filter(status="callback_requested").count(),
+        "appointments": qs.filter(status__in=["appointment_scheduled", "appointment_completed"]).count(),
+        "closed_won": qs.filter(status="closed_won").count(),
+        "closed_lost": qs.filter(status="closed_lost").count(),
+        "contact_rate": round((worked / total) * 100) if total else 0,
+    }
 
 def employee_required(view):
     @login_required
@@ -176,8 +67,31 @@ def employee_required(view):
 
 @employee_required
 def crm_home(request):
-    leads = Lead.objects.filter(lead_type="internal_sales")
-    return render(request, "crm/crm_home.html", {"leads": leads})
+    leads = internal_leads_for_user(request.user).select_related("assigned_to")
+    today = timezone.localdate()
+    imports = LeadImport.objects.select_related("uploaded_by").order_by("-created_at")[:6]
+    scorecards = []
+    for user_id in leads.exclude(assigned_to__isnull=True).values_list("assigned_to", flat=True).distinct()[:8]:
+        user_leads = leads.filter(assigned_to_id=user_id)
+        rep = user_leads.first().assigned_to
+        scorecards.append({
+            "user": rep,
+            "total": user_leads.count(),
+            "warm_hot": user_leads.filter(lead_temperature__in=["warm", "hot"]).count(),
+            "followups": user_leads.filter(follow_up_date__lte=today).count(),
+            "appointments": user_leads.filter(status__in=["appointment_scheduled", "appointment_completed"]).count(),
+        })
+    context = {
+        "leads": leads.order_by("-created_at")[:35],
+        "metrics": sales_metrics(leads),
+        "warm_leads": leads.filter(lead_temperature__in=["warm", "hot"]).order_by("-lead_temperature", "follow_up_date", "-created_at")[:10],
+        "followups": leads.filter(Q(follow_up_date__lte=today) | Q(status__in=["callback_requested", "follow_up", "email_requested"])).order_by("follow_up_date", "-created_at")[:10],
+        "review_leads": leads.filter(needs_review=True).order_by("-created_at")[:10],
+        "imports": imports,
+        "scorecards": scorecards,
+        "is_sales_manager": is_sales_manager(request.user),
+    }
+    return render(request, "crm/crm_home.html", context)
 
 @employee_required
 def lead_create(request):
@@ -188,7 +102,37 @@ def lead_create(request):
             lead.lead_type = "internal_sales"
             lead.client = None
             lead.ai_instance = None
+            if lead.notes and not lead.cleaned_notes:
+                from .intelligence import classify_sales_note, duplicate_fingerprint
+
+                classification = classify_sales_note(lead.notes, imported_status=lead.status)
+                lead.status = classification.status
+                lead.lead_temperature = classification.temperature
+                lead.cleaned_notes = classification.cleaned_note
+                lead.classification_confidence = classification.confidence
+                lead.classification_source = "rule"
+                lead.needs_review = classification.needs_review
+                lead.duplicate_key = duplicate_fingerprint(
+                    business_name=lead.business_name,
+                    phone=lead.phone,
+                    website=lead.website,
+                    email=lead.email,
+                    address=lead.address,
+                )
             lead.save()
+            if lead.notes:
+                LeadActivity.objects.create(
+                    lead=lead,
+                    user=request.user,
+                    raw_note=lead.notes,
+                    cleaned_note=lead.cleaned_notes,
+                    inferred_status=lead.status,
+                    lead_temperature=lead.lead_temperature,
+                    confidence_score=lead.classification_confidence,
+                    activity_type="manual_note",
+                    classification_source=lead.classification_source,
+                )
+            log_activity(user=request.user, request=request, action="create", model_label="crm.Lead", object_id=lead.pk, object_repr=str(lead), message="Created internal sales lead.")
             messages.success(request, "Lead created.")
             return redirect("crm_home")
     else:
@@ -199,42 +143,207 @@ def lead_create(request):
 @employee_required
 def lead_upload(request):
     import_errors = []
+    lead_import = None
     if request.method == "POST":
         form = LeadCSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            rows, import_errors = parse_internal_lead_csv(form.cleaned_data["csv_file"])
-            if not import_errors:
-                with transaction.atomic():
-                    Lead.objects.bulk_create([Lead(**row) for row in rows])
-                messages.success(request, f"Imported {len(rows)} internal sales lead{'s' if len(rows) != 1 else ''}.")
-                return redirect("crm_home")
+            lead_import, parsed = import_lead_file(
+                form.cleaned_data["csv_file"],
+                uploaded_by=request.user,
+                selected_sheet=form.cleaned_data.get("sheet_name", ""),
+            )
+            import_errors = parsed.errors
+            if lead_import:
+                log_activity(
+                    user=request.user,
+                    request=request,
+                    action="create",
+                    model_label="crm.LeadImport",
+                    object_id=lead_import.pk,
+                    object_repr=str(lead_import),
+                    message=f"Imported {lead_import.imported_count} sales intelligence leads.",
+                    metadata={"filename": lead_import.original_filename, "rows": lead_import.imported_count},
+                )
+                messages.success(request, f"Imported {lead_import.imported_count} lead{'s' if lead_import.imported_count != 1 else ''}. Review the import report below.")
+                return redirect("lead_import_detail", pk=lead_import.pk)
     else:
         form = LeadCSVUploadForm()
     return render(request, "crm/lead_upload.html", {
         "form": form,
         "import_errors": import_errors[:25],
-        "sample_headers": "name,business_name,industry,phone,email,source,status,notes,value,follow_up_date,assigned_to",
+        "lead_import": lead_import,
+        "sample_headers": "name,business_name,industry,phone,email,website,address,city,state,poc,source,status,notes,value,follow_up_date,assigned_to",
     })
 
 @employee_required
 def lead_detail(request, pk):
-    lead = get_object_or_404(Lead, pk=pk, lead_type="internal_sales")
+    lead = get_internal_lead_or_404(request.user, pk)
     if request.method == "POST":
-        form = LeadNoteForm(request.POST)
-        if form.is_valid():
-            note = form.save(commit=False)
-            note.lead = lead
-            note.user = request.user
-            note.save()
-            messages.success(request, "Note added.")
-            return redirect("lead_detail", pk=lead.pk)
+        action = request.POST.get("action", "add_note")
+        if action == "save_intelligence":
+            original = {
+                "status": lead.status,
+                "temperature": lead.lead_temperature,
+                "cleaned": lead.cleaned_notes,
+            }
+            intelligence_form = LeadIntelligenceForm(request.POST, instance=lead)
+            note_form = LeadNoteForm()
+            if intelligence_form.is_valid():
+                updated = intelligence_form.save(commit=False)
+                updated.classification_source = "manual"
+                updated.save()
+                ClassificationCorrection.objects.create(
+                    lead=lead,
+                    original_status=original["status"],
+                    corrected_status=updated.status,
+                    original_temperature=original["temperature"],
+                    corrected_temperature=updated.lead_temperature,
+                    original_cleaned_note=original["cleaned"],
+                    corrected_cleaned_note=updated.cleaned_notes,
+                    corrected_by=request.user,
+                    reason=intelligence_form.cleaned_data.get("correction_reason", ""),
+                )
+                log_activity(user=request.user, request=request, action="update", model_label="crm.Lead", object_id=lead.pk, object_repr=str(lead), message="Updated sales intelligence classification.")
+                messages.success(request, "Classification updated.")
+                return redirect("lead_detail", pk=lead.pk)
+        else:
+            form = LeadNoteForm(request.POST)
+            if form.is_valid():
+                note = form.save(commit=False)
+                note.lead = lead
+                note.user = request.user
+                note.save()
+                LeadActivity.objects.create(
+                    lead=lead,
+                    user=request.user,
+                    raw_note=note.note,
+                    cleaned_note=note.note,
+                    inferred_status=lead.status,
+                    lead_temperature=lead.lead_temperature,
+                    activity_type="manual_note",
+                    classification_source="manual",
+                    manually_reviewed=True,
+                )
+                messages.success(request, "Note added.")
+                return redirect("lead_detail", pk=lead.pk)
+            note_form = form
+            intelligence_form = LeadIntelligenceForm(instance=lead)
     else:
-        form = LeadNoteForm()
-    return render(request, "crm/lead_detail.html", {"lead": lead, "note_form": form})
+        note_form = LeadNoteForm()
+        intelligence_form = LeadIntelligenceForm(instance=lead)
+    if request.method == "POST" and request.POST.get("action") == "save_intelligence":
+        pass
+    else:
+        note_form = locals().get("note_form", LeadNoteForm())
+        intelligence_form = locals().get("intelligence_form", LeadIntelligenceForm(instance=lead))
+    return render(request, "crm/lead_detail.html", {
+        "lead": lead,
+        "note_form": note_form,
+        "intelligence_form": intelligence_form,
+        "activities": lead.activities.select_related("user", "original_import")[:25],
+        "email_draft": draft_follow_up_email(lead) if request.GET.get("draft") == "email" else "",
+    })
+
+@employee_required
+def lead_import_detail(request, pk):
+    lead_import = get_object_or_404(LeadImport.objects.select_related("uploaded_by"), pk=pk)
+    lead_ids = lead_import.activities.values_list("lead_id", flat=True)
+    leads = internal_leads_for_user(request.user).filter(pk__in=lead_ids).select_related("assigned_to").order_by("-needs_review", "-created_at")
+    return render(request, "crm/import_detail.html", {
+        "lead_import": lead_import,
+        "leads": leads[:200],
+    })
+
+
+@employee_required
+def lead_queue(request, queue_type):
+    leads = internal_leads_for_user(request.user).select_related("assigned_to")
+    today = timezone.localdate()
+    titles = {
+        "warm": "Warm + Hot Leads",
+        "hot": "Hot Lead Queue",
+        "followups": "Follow-Up Queue",
+        "review": "Manual Review Queue",
+    }
+    if queue_type == "warm":
+        leads = leads.filter(lead_temperature__in=["warm", "hot"])
+    elif queue_type == "hot":
+        leads = leads.filter(lead_temperature="hot")
+    elif queue_type == "followups":
+        leads = leads.filter(Q(follow_up_date__lte=today) | Q(status__in=["callback_requested", "follow_up", "email_requested", "information_requested"]))
+    elif queue_type == "review":
+        leads = leads.filter(needs_review=True)
+    else:
+        messages.error(request, "Unknown queue.")
+        return redirect("crm_home")
+    return render(request, "crm/lead_queue.html", {
+        "queue_type": queue_type,
+        "title": titles[queue_type],
+        "leads": leads.order_by("follow_up_date", "-lead_temperature", "-created_at")[:250],
+    })
+
+
+@employee_required
+def scorecards(request):
+    leads = internal_leads_for_user(request.user)
+    today = timezone.localdate()
+    reps = []
+    assigned_ids = leads.exclude(assigned_to__isnull=True).values_list("assigned_to", flat=True).distinct()
+    for user_id in assigned_ids:
+        user_leads = leads.filter(assigned_to_id=user_id)
+        rep = user_leads.first().assigned_to
+        total = user_leads.count()
+        worked = user_leads.exclude(notes="").count()
+        reps.append({
+            "user": rep,
+            "total": total,
+            "worked": worked,
+            "contact_rate": round((worked / total) * 100) if total else 0,
+            "warm": user_leads.filter(lead_temperature="warm").count(),
+            "hot": user_leads.filter(lead_temperature="hot").count(),
+            "emails": user_leads.filter(status="email_requested").count(),
+            "callbacks": user_leads.filter(status="callback_requested").count(),
+            "appointments": user_leads.filter(status__in=["appointment_scheduled", "appointment_completed"]).count(),
+            "overdue": user_leads.filter(follow_up_date__lt=today).count(),
+        })
+    return render(request, "crm/scorecards.html", {"scorecards": reps})
+
+
+@employee_required
+def export_leads(request):
+    leads = internal_leads_for_user(request.user).select_related("assigned_to")
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = 'attachment; filename="sales-intelligence-leads.csv"'
+    writer = csv.writer(response)
+    writer.writerow([
+        "business_name", "name", "phone", "email", "website", "industry", "status",
+        "temperature", "assigned_to", "follow_up_date", "source_file", "source_sheet",
+        "original_notes", "cleaned_notes", "confidence",
+    ])
+    for lead in leads:
+        writer.writerow([
+            csv_safe(lead.business_name),
+            csv_safe(lead.name),
+            csv_safe(lead.phone),
+            csv_safe(lead.email),
+            csv_safe(lead.website),
+            csv_safe(lead.industry),
+            lead.get_status_display(),
+            lead.get_lead_temperature_display(),
+            csv_safe(getattr(lead.assigned_to, "username", "")),
+            lead.follow_up_date or "",
+            csv_safe(lead.source_file),
+            csv_safe(lead.source_sheet),
+            csv_safe(lead.notes),
+            csv_safe(lead.cleaned_notes),
+            lead.classification_confidence,
+        ])
+    log_activity(user=request.user, request=request, action="export", model_label="crm.Lead", message="Exported sales intelligence leads.")
+    return response
 
 @employee_required
 def lead_edit(request, pk):
-    lead = get_object_or_404(Lead, pk=pk, lead_type="internal_sales")
+    lead = get_internal_lead_or_404(request.user, pk)
     if request.method == "POST":
         form = LeadForm(request.POST, instance=lead)
         if form.is_valid():

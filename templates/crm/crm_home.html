@@ -1,18 +1,173 @@
 {% extends "base.html" %}
-{% block title %}CRM Command Center | AI Business Gurus{% endblock %}
+{% block title %}Sales Intelligence | AI Business Gurus{% endblock %}
 {% block content %}
-<section class="staff-hero">
+<section class="sales-hero">
   <div>
-    <span class="ops-label">Revenue Control</span>
-    <h1>Internal CRM</h1>
-    <p>This pipeline is for AI Business Gurus prospects, consultations, demos, and sales follow-up. Client-captured leads live inside each client workspace.</p>
+    <span class="ops-label">Sales Intelligence</span>
+    <h1>SDR command center</h1>
+    <p>Import lead trackers, understand messy call notes, surface warm opportunities, and keep follow-up moving without mixing client-captured leads into the internal CRM.</p>
+    <div class="sales-hero-actions">
+      <a class="btn neon" href="{% url 'lead_upload' %}">Upload CSV/XLSX Tracker</a>
+      <a class="btn ghost" href="{% url 'lead_create' %}">Create Lead</a>
+      <a class="btn ghost" href="{% url 'lead_export' %}">Export Clean CSV</a>
+    </div>
   </div>
-  <div class="actions">
-    <a class="btn neon" href="{% url 'lead_create' %}">Create Lead</a>
-    <a class="btn ghost" href="{% url 'lead_upload' %}">Upload CSV List</a>
+  <div class="sales-radar">
+    <span>Revenue Radar</span>
+    <strong>{{ metrics.hot }}</strong>
+    <p>hot leads need attention now</p>
+    <div class="radar-ring"></div>
   </div>
 </section>
-<section class="ops-panel">
-  <table><tr><th>Name</th><th>Business</th><th>Type</th><th>Status</th><th>Value</th><th></th></tr>{% for l in leads %}<tr><td>{{ l.name }}</td><td>{{ l.business_name }}</td><td>{{ l.lead_type }}</td><td><span class="ops-chip">{{ l.status }}</span></td><td>${{ l.value }}</td><td><a href="{% url 'lead_detail' l.pk %}">Open</a></td></tr>{% empty %}<tr><td colspan="6">No internal leads yet.</td></tr>{% endfor %}</table>
+
+<section class="sales-metrics">
+  <a href="{% url 'lead_queue' 'warm' %}" class="sales-metric-card">
+    <span>Total Leads</span>
+    <strong>{{ metrics.total }}</strong>
+    <small>{{ metrics.unique_businesses }} unique businesses</small>
+  </a>
+  <a href="{% url 'lead_queue' 'followups' %}" class="sales-metric-card gold">
+    <span>Follow-Ups Due</span>
+    <strong>{{ metrics.followups_due }}</strong>
+    <small>callbacks, emails, and next touches</small>
+  </a>
+  <a href="{% url 'lead_queue' 'review' %}" class="sales-metric-card violet">
+    <span>Needs Review</span>
+    <strong>{{ metrics.needs_review }}</strong>
+    <small>low-confidence or duplicate records</small>
+  </a>
+  <div class="sales-metric-card">
+    <span>Contact Rate</span>
+    <strong>{{ metrics.contact_rate }}%</strong>
+    <small>{{ metrics.worked }} worked leads</small>
+  </div>
+</section>
+
+<section class="sales-grid">
+  <div class="sales-panel wide">
+    <div class="section-head">
+      <div>
+        <span class="ops-label">Priority Queue</span>
+        <h2>Warm and hot opportunities</h2>
+      </div>
+      <a href="{% url 'lead_queue' 'warm' %}">View all →</a>
+    </div>
+    <div class="lead-intel-list">
+      {% for lead in warm_leads %}
+        <a class="lead-intel-row" href="{% url 'lead_detail' lead.pk %}">
+          <div>
+            <strong>{{ lead.business_name|default:lead.name|default:"Unnamed lead" }}</strong>
+            <p>{{ lead.cleaned_notes|default:lead.notes|truncatechars:130 }}</p>
+          </div>
+          <span class="temp-badge {{ lead.lead_temperature }}">{{ lead.get_lead_temperature_display }}</span>
+          <small>{{ lead.get_status_display }}</small>
+        </a>
+      {% empty %}
+        <div class="sales-empty">No warm leads yet. Upload a tracker and the rules engine will surface them here.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <aside class="sales-panel">
+    <div class="section-head">
+      <div>
+        <span class="ops-label">Manager Review</span>
+        <h2>Classification queue</h2>
+      </div>
+      <a href="{% url 'lead_queue' 'review' %}">Review →</a>
+    </div>
+    {% for lead in review_leads %}
+      <a class="mini-intel-row" href="{% url 'lead_detail' lead.pk %}">
+        <strong>{{ lead.business_name|default:lead.name|default:"Unnamed lead" }}</strong>
+        <span>{{ lead.get_status_display }} · {{ lead.classification_confidence }}</span>
+      </a>
+    {% empty %}
+      <p>No classifications need manager review.</p>
+    {% endfor %}
+  </aside>
+</section>
+
+<section class="sales-grid">
+  <div class="sales-panel">
+    <div class="section-head">
+      <div>
+        <span class="ops-label">Follow-Up Engine</span>
+        <h2>Due next</h2>
+      </div>
+      <a href="{% url 'lead_queue' 'followups' %}">Open queue →</a>
+    </div>
+    {% for lead in followups %}
+      <a class="mini-intel-row urgent" href="{% url 'lead_detail' lead.pk %}">
+        <strong>{{ lead.business_name|default:lead.name|default:"Unnamed lead" }}</strong>
+        <span>{{ lead.follow_up_date|default:"No date" }} · {{ lead.get_status_display }}</span>
+      </a>
+    {% empty %}
+      <p>No urgent follow-ups. A rare and beautiful creature.</p>
+    {% endfor %}
+  </div>
+
+  <div class="sales-panel">
+    <div class="section-head">
+      <div>
+        <span class="ops-label">Imports</span>
+        <h2>Recent trackers</h2>
+      </div>
+      <a href="{% url 'lead_upload' %}">New import →</a>
+    </div>
+    {% for item in imports %}
+      <a class="mini-intel-row" href="{% url 'lead_import_detail' item.pk %}">
+        <strong>{{ item.original_filename }}</strong>
+        <span>{{ item.imported_count }} imported · {{ item.review_count }} review · {{ item.created_at|date:"M j" }}</span>
+      </a>
+    {% empty %}
+      <p>No tracker imports yet.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sales-panel">
+  <div class="section-head">
+    <div>
+      <span class="ops-label">Team Performance</span>
+      <h2>SDR scorecard snapshot</h2>
+    </div>
+    <a href="{% url 'sales_scorecards' %}">Full scorecards →</a>
+  </div>
+  <div class="scorecard-strip">
+    {% for card in scorecards %}
+      <div class="scorecard-mini">
+        <strong>{{ card.user.get_full_name|default:card.user.username }}</strong>
+        <span>{{ card.total }} assigned</span>
+        <p>{{ card.warm_hot }} warm/hot · {{ card.followups }} follow-ups · {{ card.appointments }} appointments</p>
+      </div>
+    {% empty %}
+      <div class="sales-empty">Assign leads to SDRs to populate scorecards.</div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sales-panel">
+  <div class="section-head">
+    <div>
+      <span class="ops-label">Lead Universe</span>
+      <h2>Recent internal leads</h2>
+    </div>
+  </div>
+  <table class="sales-table">
+    <tr><th>Business</th><th>Contact</th><th>Status</th><th>Temp</th><th>Follow-up</th><th>Owner</th><th></th></tr>
+    {% for lead in leads %}
+      <tr>
+        <td>{{ lead.business_name|default:"—" }}</td>
+        <td>{{ lead.name|default:lead.point_of_contact|default:"—" }}</td>
+        <td><span class="status-badge">{{ lead.get_status_display }}</span></td>
+        <td><span class="temp-badge {{ lead.lead_temperature }}">{{ lead.get_lead_temperature_display }}</span></td>
+        <td>{{ lead.follow_up_date|default:"—" }}</td>
+        <td>{{ lead.assigned_to|default:"Unassigned" }}</td>
+        <td><a href="{% url 'lead_detail' lead.pk %}">Open →</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7">No internal leads yet.</td></tr>
+    {% endfor %}
+  </table>
 </section>
 {% endblock %}
