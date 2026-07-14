@@ -1,20 +1,27 @@
 from datetime import timedelta
+from pathlib import Path
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Max, Q
-from django.http import JsonResponse
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from .forms import StaffMessageForm, StaffMessageThreadForm, TimeClockNoteForm
-from .models import StaffMessage, StaffMessageParticipant, StaffMessageThread, TimeClockEntry
+from .models import StaffMessage, StaffMessageAttachment, StaffMessageParticipant, StaffMessageThread, TimeClockEntry
 from .utils import get_client_ip, log_activity
 
 
 User = get_user_model()
+ALLOWED_ATTACHMENT_EXTENSIONS = {
+    ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".csv", ".txt", ".rtf",
+    ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ppt", ".pptx", ".zip",
+}
+MAX_ATTACHMENT_BYTES = 15 * 1024 * 1024
+MAX_ATTACHMENTS_PER_MESSAGE = 6
 
 
 def team_member_required(view_func):
@@ -53,6 +60,39 @@ def paginate(request, queryset, per_page=25):
     return Paginator(queryset, per_page).get_page(request.GET.get("page"))
 
 
+def validate_uploaded_attachments(files):
+    errors = []
+    if len(files) > MAX_ATTACHMENTS_PER_MESSAGE:
+        errors.append(f"Attach up to {MAX_ATTACHMENTS_PER_MESSAGE} files per message.")
+    for uploaded in files:
+        name = Path(uploaded.name or "").name
+        extension = Path(name).suffix.lower()
+        if extension not in ALLOWED_ATTACHMENT_EXTENSIONS:
+            errors.append(f"{name or 'Attachment'} is not an allowed file type.")
+        if uploaded.size > MAX_ATTACHMENT_BYTES:
+            errors.append(f"{name or 'Attachment'} is too large. Max size is 15 MB.")
+    return errors
+
+
+def create_staff_message(thread, sender, body, files):
+    message = StaffMessage.objects.create(
+        thread=thread,
+        sender=sender,
+        body=body or ("📎 Sent attachment" if files else ""),
+    )
+    for uploaded in files:
+        StaffMessageAttachment.objects.create(
+            message=message,
+            file=uploaded,
+            original_filename=Path(uploaded.name or "attachment").name[:255],
+            content_type=(getattr(uploaded, "content_type", "") or "")[:120],
+            size=uploaded.size or 0,
+            uploaded_by=sender,
+        )
+    thread.save(update_fields=["updated_at"])
+    return message
+
+
 @team_member_required
 def staff_messages(request):
     threads = team_threads_for_user(request.user)
@@ -66,33 +106,39 @@ def staff_messages(request):
 def staff_message_create(request):
     if request.method == "POST":
         form = StaffMessageThreadForm(request.POST, user=request.user)
-        if form.is_valid():
-            selected = list(form.cleaned_data["participants"])
-            participants = {user.pk: user for user in selected}
-            participants[request.user.pk] = request.user
-            title = form.cleaned_data.get("title", "").strip()
-            thread = StaffMessageThread.objects.create(
-                title=title,
-                is_group=len(participants) > 2,
-                created_by=request.user,
-            )
-            StaffMessageParticipant.objects.bulk_create([
-                StaffMessageParticipant(thread=thread, user=user)
-                for user in participants.values()
-            ])
-            StaffMessage.objects.create(thread=thread, sender=request.user, body=form.cleaned_data["message"])
-            thread.save(update_fields=["updated_at"])
-            log_activity(
-                user=request.user,
-                request=request,
-                action="create",
-                model_label="audit.StaffMessageThread",
-                object_id=thread.pk,
-                object_repr=thread.display_title(),
-                message="Created internal staff message thread.",
-            )
-            messages.success(request, "Message thread created.")
-            return redirect("staff_message_thread", pk=thread.pk)
+        files = request.FILES.getlist("attachments")
+        file_errors = validate_uploaded_attachments(files)
+        if form.is_valid() and not file_errors:
+            if not form.cleaned_data.get("message") and not files:
+                form.add_error("message", "Type a message or attach a file.")
+            else:
+                selected = list(form.cleaned_data["participants"])
+                participants = {user.pk: user for user in selected}
+                participants[request.user.pk] = request.user
+                title = form.cleaned_data.get("title", "").strip()
+                thread = StaffMessageThread.objects.create(
+                    title=title,
+                    is_group=len(participants) > 2,
+                    created_by=request.user,
+                )
+                StaffMessageParticipant.objects.bulk_create([
+                    StaffMessageParticipant(thread=thread, user=user)
+                    for user in participants.values()
+                ])
+                create_staff_message(thread, request.user, form.cleaned_data["message"], files)
+                log_activity(
+                    user=request.user,
+                    request=request,
+                    action="create",
+                    model_label="audit.StaffMessageThread",
+                    object_id=thread.pk,
+                    object_repr=thread.display_title(),
+                    message="Created internal staff message thread.",
+                )
+                messages.success(request, "Message thread created.")
+                return redirect("staff_message_thread", pk=thread.pk)
+        for error in file_errors:
+            form.add_error(None, error)
     else:
         form = StaffMessageThreadForm(user=request.user)
     return render(request, "audit/staff_message_form.html", {"form": form})
@@ -104,24 +150,32 @@ def staff_message_thread(request, pk):
     form = StaffMessageForm()
     if request.method == "POST":
         form = StaffMessageForm(request.POST)
-        if form.is_valid():
-            StaffMessageParticipant.objects.get_or_create(thread=thread, user=request.user)
-            StaffMessage.objects.create(thread=thread, sender=request.user, body=form.cleaned_data["body"])
-            thread.save(update_fields=["updated_at"])
-            log_activity(
-                user=request.user,
-                request=request,
-                action="create",
-                model_label="audit.StaffMessage",
-                object_id=thread.pk,
-                object_repr=thread.display_title(),
-                message="Sent internal staff message.",
-            )
-            return redirect("staff_message_thread", pk=thread.pk)
-    messages_qs = thread.messages.select_related("sender").order_by("created_at")
+        files = request.FILES.getlist("attachments")
+        file_errors = validate_uploaded_attachments(files)
+        if form.is_valid() and not file_errors:
+            if not form.cleaned_data.get("body") and not files:
+                form.add_error("body", "Type a message or attach a file.")
+            else:
+                StaffMessageParticipant.objects.get_or_create(thread=thread, user=request.user)
+                create_staff_message(thread, request.user, form.cleaned_data["body"], files)
+                log_activity(
+                    user=request.user,
+                    request=request,
+                    action="create",
+                    model_label="audit.StaffMessage",
+                    object_id=thread.pk,
+                    object_repr=thread.display_title(),
+                    message="Sent internal staff message.",
+                )
+                return redirect("staff_message_thread", pk=thread.pk)
+        for error in file_errors:
+            form.add_error(None, error)
+    messages_qs = thread.messages.select_related("sender").prefetch_related("attachments").order_by("created_at")
+    sidebar_threads = team_threads_for_user(request.user)[:40]
     return render(request, "audit/staff_message_thread.html", {
         "thread": thread,
         "thread_messages": messages_qs,
+        "sidebar_threads": sidebar_threads,
         "form": form,
         "can_view_all": can_view_all_staff_messages(request.user),
         "is_observer": can_view_all_staff_messages(request.user) and not thread.participants.filter(user=request.user).exists(),
@@ -132,7 +186,7 @@ def staff_message_thread(request, pk):
 def staff_message_feed(request, pk):
     thread = get_thread_for_user(request.user, pk)
     items = []
-    for message in thread.messages.select_related("sender").order_by("created_at"):
+    for message in thread.messages.select_related("sender").prefetch_related("attachments").order_by("created_at"):
         sender = message.sender
         items.append({
             "id": message.pk,
@@ -141,8 +195,43 @@ def staff_message_feed(request, pk):
             "mine": sender == request.user,
             "body": message.body,
             "created": timezone.localtime(message.created_at).strftime("%b %-d, %Y %-I:%M %p"),
+            "attachments": [
+                {
+                    "name": attachment.original_filename,
+                    "size": attachment.size_label,
+                    "url": attachment_url(request, attachment.pk),
+                }
+                for attachment in message.attachments.all()
+            ],
         })
     return JsonResponse({"messages": items, "thread_updated": thread.updated_at.isoformat()})
+
+
+def attachment_url(request, attachment_id):
+    from django.urls import reverse
+
+    return request.build_absolute_uri(reverse("staff_message_attachment", args=[attachment_id]))
+
+
+@team_member_required
+def staff_message_attachment(request, pk):
+    attachment = get_object_or_404(
+        StaffMessageAttachment.objects.select_related("message__thread"),
+        pk=pk,
+    )
+    get_thread_for_user(request.user, attachment.message.thread_id)
+    if not attachment.file:
+        raise Http404("Attachment file not found.")
+    try:
+        file_handle = attachment.file.open("rb")
+    except OSError as exc:
+        raise Http404("Attachment file not found.") from exc
+    return FileResponse(
+        file_handle,
+        as_attachment=True,
+        filename=attachment.original_filename,
+        content_type=attachment.content_type or "application/octet-stream",
+    )
 
 
 @team_member_required

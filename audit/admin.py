@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ActivityLog, StaffMessage, StaffMessageParticipant, StaffMessageThread, TimeClockEntry
+from .models import ActivityLog, StaffMessage, StaffMessageAttachment, StaffMessageParticipant, StaffMessageThread, TimeClockEntry
 
 @admin.register(ActivityLog)
 class ActivityLogAdmin(admin.ModelAdmin):
@@ -25,6 +25,13 @@ class StaffMessageInline(admin.TabularInline):
     readonly_fields = ("created_at",)
 
 
+class StaffMessageAttachmentInline(admin.TabularInline):
+    model = StaffMessageAttachment
+    extra = 0
+    autocomplete_fields = ("uploaded_by",)
+    readonly_fields = ("created_at", "size", "content_type")
+
+
 @admin.register(StaffMessageThread)
 class StaffMessageThreadAdmin(admin.ModelAdmin):
     list_display = ("id", "title", "is_group", "created_by", "updated_at", "created_at")
@@ -40,6 +47,15 @@ class StaffMessageAdmin(admin.ModelAdmin):
     list_filter = ("created_at",)
     search_fields = ("body", "sender__username", "sender__email", "thread__title")
     autocomplete_fields = ("thread", "sender")
+    inlines = [StaffMessageAttachmentInline]
+
+
+@admin.register(StaffMessageAttachment)
+class StaffMessageAttachmentAdmin(admin.ModelAdmin):
+    list_display = ("original_filename", "message", "uploaded_by", "size_label", "content_type", "created_at")
+    list_filter = ("content_type", "created_at")
+    search_fields = ("original_filename", "message__body", "uploaded_by__username", "uploaded_by__email")
+    autocomplete_fields = ("message", "uploaded_by")
 
 
 @admin.register(TimeClockEntry)

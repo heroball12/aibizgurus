@@ -1,6 +1,7 @@
 from unittest.mock import patch
 from types import SimpleNamespace
 import io
+import tempfile
 import zipfile
 
 from django.contrib.auth import get_user_model
@@ -10,7 +11,7 @@ from django.urls import reverse
 
 from assistant_ai.models import AssistantRole, Conversation, Message, UsageRecord
 from assistant_ai.services import choose_openai_key
-from audit.models import ActivityLog, StaffMessage, StaffMessageThread, TimeClockEntry
+from audit.models import ActivityLog, StaffMessage, StaffMessageAttachment, StaffMessageThread, TimeClockEntry
 from audit.utils import log_activity
 from clients.models import AIInstance, BusinessProfile, ClientAccount, Integration
 from core.models import IndustryTemplate
@@ -553,6 +554,49 @@ class PlatformFlowTests(TestCase):
         self.assertRedirects(response, reverse("staff_message_thread", args=[group.pk]))
         self.assertTrue(group.is_group)
         self.assertEqual(group.participants.count(), 4)
+
+    def test_staff_messages_support_attachments_and_secure_downloads(self):
+        owner = User.objects.create_user(username="file-owner", password="OwnerPass123!", role="owner")
+        alice = User.objects.create_user(username="file-alice@aibiz.guru", password="OpsPass123!", role="employee", first_name="Alice")
+        bob = User.objects.create_user(username="file-bob@aibiz.guru", password="OpsPass123!", role="employee", first_name="Bob")
+        outsider = User.objects.create_user(username="file-outsider@aibiz.guru", password="OpsPass123!", role="employee", first_name="Outsider")
+
+        with tempfile.TemporaryDirectory() as media_root, self.settings(MEDIA_ROOT=media_root):
+            self.client.force_login(alice)
+            upload = SimpleUploadedFile("lead-notes.pdf", b"fake pdf bytes", content_type="application/pdf")
+            response = self.client.post(reverse("staff_message_create"), {
+                "title": "File test",
+                "participants": [str(bob.pk)],
+                "message": "Here is the lead document ✅",
+                "attachments": upload,
+            })
+            thread = StaffMessageThread.objects.get(title="File test")
+            self.assertRedirects(response, reverse("staff_message_thread", args=[thread.pk]))
+            attachment = StaffMessageAttachment.objects.get()
+            self.assertEqual(attachment.original_filename, "lead-notes.pdf")
+            self.assertEqual(attachment.uploaded_by, alice)
+
+            thread_view = self.client.get(reverse("staff_message_thread", args=[thread.pk]))
+            self.assertContains(thread_view, "lead-notes.pdf")
+            self.assertContains(thread_view, "📎")
+
+            download = self.client.get(reverse("staff_message_attachment", args=[attachment.pk]))
+            self.assertEqual(download.status_code, 200)
+            self.assertEqual(download.headers["Content-Disposition"], 'attachment; filename="lead-notes.pdf"')
+
+            self.client.force_login(outsider)
+            self.assertEqual(self.client.get(reverse("staff_message_attachment", args=[attachment.pk])).status_code, 404)
+
+            self.client.force_login(owner)
+            owner_download = self.client.get(reverse("staff_message_attachment", args=[attachment.pk]))
+            self.assertEqual(owner_download.status_code, 200)
+
+            self.client.force_login(bob)
+            reply_file = SimpleUploadedFile("reply.csv", b"name,value\nA,1\n", content_type="text/csv")
+            response = self.client.post(reverse("staff_message_thread", args=[thread.pk]), {"body": "", "attachments": reply_file})
+            self.assertRedirects(response, reverse("staff_message_thread", args=[thread.pk]))
+            self.assertTrue(StaffMessage.objects.filter(thread=thread, body="📎 Sent attachment").exists())
+            self.assertEqual(StaffMessageAttachment.objects.count(), 2)
 
     def test_staff_time_clock_and_owner_admin_visibility(self):
         admin = User.objects.create_user(username="clock-admin", password="OpsPass123!", role="admin")

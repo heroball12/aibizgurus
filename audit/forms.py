@@ -78,6 +78,7 @@ class StaffMessageThreadForm(forms.Form):
     )
     message = forms.CharField(
         label="Message",
+        required=False,
         widget=forms.Textarea(attrs={"rows": 4, "placeholder": "Type the first message…"}),
     )
 
@@ -89,23 +90,18 @@ class StaffMessageThreadForm(forms.Form):
         self.fields["participants"].queryset = queryset
 
     def clean_message(self):
-        message = self.cleaned_data["message"].strip()
-        if not message:
-            raise forms.ValidationError("Message is required.")
-        return message
+        return self.cleaned_data.get("message", "").strip()
 
 
 class StaffMessageForm(forms.Form):
     body = forms.CharField(
         label="Message",
+        required=False,
         widget=forms.Textarea(attrs={"rows": 3, "placeholder": "Write a reply…"}),
     )
 
     def clean_body(self):
-        body = self.cleaned_data["body"].strip()
-        if not body:
-            raise forms.ValidationError("Message cannot be blank.")
-        return body
+        return self.cleaned_data.get("body", "").strip()
 
 
 class TimeClockNoteForm(forms.Form):

@@ -20,10 +20,15 @@
 </section>
 {% endif %}
 
-<section class="ops-panel">
+<section class="ops-panel teams-inbox-panel">
+  <div class="teams-inbox-toolbar">
+    <span class="ops-label">Recent Chats</span>
+    <span>Direct messages, groups, files, and Owner-visible internal threads.</span>
+  </div>
   <div class="thread-list">
     {% for thread in page_obj %}
       <a class="thread-card" href="{% url 'staff_message_thread' thread.pk %}">
+        <span class="avatar-dot">{{ thread.display_title|first|upper }}</span>
         <div>
           <strong>{{ thread.display_title }}</strong>
           <p>{{ thread.participant_names|default:"No participants" }}</p>

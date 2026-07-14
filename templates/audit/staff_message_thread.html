@@ -1,50 +1,104 @@
 {% extends "base.html" %}
 {% block title %}{{ thread.display_title }} | Staff Messages{% endblock %}
 {% block content %}
-<section class="staff-hero compact">
-  <div>
-    <span class="ops-label">{% if is_observer %}Owner Oversight{% else %}Team Messaging{% endif %}</span>
-    <h1>{{ thread.display_title }}</h1>
-    <p>{{ thread.participant_names|default:"No participants" }} · {{ thread.messages.count }} message{{ thread.messages.count|pluralize }}</p>
-  </div>
-  <div class="actions">
-    <a class="btn ghost" href="{% url 'staff_messages' %}">Back to Messages</a>
-    <a class="btn neon" href="{% url 'staff_message_create' %}">New Message</a>
-  </div>
-</section>
+<section class="teams-shell" data-feed-url="{% url 'staff_message_feed' thread.pk %}">
+  <aside class="teams-sidebar">
+    <div class="teams-sidebar-head">
+      <span class="ops-label">Teams</span>
+      <a class="btn small neon" href="{% url 'staff_message_create' %}">New</a>
+    </div>
+    <h2>Chats</h2>
+    <div class="teams-thread-list">
+      {% for item in sidebar_threads %}
+        <a class="teams-thread {% if item.pk == thread.pk %}active{% endif %}" href="{% url 'staff_message_thread' item.pk %}">
+          <span class="avatar-dot">{{ item.display_title|first|upper }}</span>
+          <div>
+            <strong>{{ item.display_title }}</strong>
+            <small>{{ item.participant_names|truncatechars:58 }}</small>
+          </div>
+        </a>
+      {% empty %}
+        <p>No chats yet.</p>
+      {% endfor %}
+    </div>
+  </aside>
 
-{% if is_observer %}
-<section class="ops-panel oversight-note">
-  <strong>Viewing as Owner</strong>
-  <p>You are viewing this internal thread through Owner oversight. Staff are not notified by the view itself. If you reply, your message is visible in the thread.</p>
-</section>
-{% endif %}
-
-<section class="chat-shell ops-panel" data-feed-url="{% url 'staff_message_feed' thread.pk %}">
-  <div id="chatMessages" class="chat-messages">
-    {% for message in thread_messages %}
-      <div class="chat-message {% if message.sender == user %}mine{% endif %}">
-        <div class="message-meta">
-          <strong>{% if message.sender %}{{ message.sender.get_full_name|default:message.sender.username }}{% else %}System{% endif %}</strong>
-          <span>{{ message.created_at|date:"M j, Y g:i A" }}</span>
-        </div>
-        <p>{{ message.body|linebreaksbr }}</p>
+  <section class="teams-main">
+    <div class="teams-topbar">
+      <div>
+        <span class="ops-label">{% if is_observer %}Owner Oversight{% elif thread.is_group %}Group Chat{% else %}Direct Chat{% endif %}</span>
+        <h1>{{ thread.display_title }}</h1>
+        <p>{{ thread.participant_names|default:"No participants" }} · {{ thread.messages.count }} message{{ thread.messages.count|pluralize }}</p>
       </div>
-    {% empty %}
-      <div class="sales-empty">No messages yet.</div>
-    {% endfor %}
-  </div>
+      <div class="actions">
+        <a class="btn ghost small" href="{% url 'staff_messages' %}">All Messages</a>
+        <a class="btn ghost small" href="{% url 'ops_dashboard' %}">Ops</a>
+      </div>
+    </div>
 
-  <form method="post" class="form dark-form chat-reply-form">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn neon">Send</button>
-  </form>
+    {% if is_observer %}
+      <div class="teams-banner">
+        <strong>Owner oversight mode</strong>
+        <span>You can review this internal thread. Staff are not notified by viewing. If you reply, your message is visible.</span>
+      </div>
+    {% endif %}
+
+    <div id="chatMessages" class="teams-messages">
+      {% for message in thread_messages %}
+        <div class="teams-message {% if message.sender == user %}mine{% endif %}">
+          <span class="avatar-dot">{% if message.sender %}{{ message.sender.get_full_name|default:message.sender.username|first|upper }}{% else %}S{% endif %}</span>
+          <div class="teams-bubble">
+            <div class="message-meta">
+              <strong>{% if message.sender %}{{ message.sender.get_full_name|default:message.sender.username }}{% else %}System{% endif %}</strong>
+              <span>{{ message.created_at|date:"M j, Y g:i A" }}</span>
+            </div>
+            <p>{{ message.body|linebreaksbr }}</p>
+            {% if message.attachments.all %}
+              <div class="attachment-list">
+                {% for attachment in message.attachments.all %}
+                  <a class="attachment-pill" href="{% url 'staff_message_attachment' attachment.pk %}">
+                    <span>📎</span>
+                    <strong>{{ attachment.original_filename }}</strong>
+                    <small>{{ attachment.size_label }}</small>
+                  </a>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% empty %}
+        <div class="sales-empty">No messages yet.</div>
+      {% endfor %}
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="teams-composer form dark-form">
+      {% csrf_token %}
+      {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
+      <div class="emoji-toolbar" aria-label="Emoji shortcuts">
+        <button type="button" data-emoji="👍">👍</button>
+        <button type="button" data-emoji="🔥">🔥</button>
+        <button type="button" data-emoji="✅">✅</button>
+        <button type="button" data-emoji="🎯">🎯</button>
+        <button type="button" data-emoji="💜">💜</button>
+        <button type="button" data-emoji="😂">😂</button>
+        <button type="button" data-emoji="🚀">🚀</button>
+      </div>
+      {{ form.body }}
+      <div class="composer-actions">
+        <label class="file-chip">
+          📎 Attach files
+          <input id="attachmentInput" type="file" name="attachments" multiple>
+        </label>
+        <span id="fileSummary" class="file-summary">PDF, Office docs, images, CSV, ZIP · max 15 MB each</span>
+        <button class="btn neon">Send</button>
+      </div>
+    </form>
+  </section>
 </section>
 
 <script>
 (() => {
-  const shell = document.querySelector(".chat-shell");
+  const shell = document.querySelector(".teams-shell");
   const container = document.getElementById("chatMessages");
   if (!shell || !container) return;
   const feedUrl = shell.dataset.feedUrl;
@@ -53,11 +107,20 @@
   function render(messages) {
     const html = messages.map((message) => {
       const mine = message.mine ? " mine" : "";
+      const avatarText = document.createElement("div");
+      avatarText.textContent = (message.sender || "S").slice(0, 1).toUpperCase();
       const sender = document.createElement("div");
       sender.textContent = message.sender;
       const body = document.createElement("div");
       body.textContent = message.body;
-      return `<div class="chat-message${mine}"><div class="message-meta"><strong>${sender.innerHTML}</strong><span>${message.created}</span></div><p>${body.innerHTML.replace(/\n/g, "<br>")}</p></div>`;
+      const attachments = (message.attachments || []).map((attachment) => {
+        const name = document.createElement("div");
+        const size = document.createElement("div");
+        name.textContent = attachment.name;
+        size.textContent = attachment.size;
+        return `<a class="attachment-pill" href="${attachment.url}"><span>📎</span><strong>${name.innerHTML}</strong><small>${size.innerHTML}</small></a>`;
+      }).join("");
+      return `<div class="teams-message${mine}"><span class="avatar-dot">${avatarText.innerHTML}</span><div class="teams-bubble"><div class="message-meta"><strong>${sender.innerHTML}</strong><span>${message.created}</span></div><p>${body.innerHTML.replace(/\n/g, "<br>")}</p>${attachments ? `<div class="attachment-list">${attachments}</div>` : ""}</div></div>`;
     }).join("") || '<div class="sales-empty">No messages yet.</div>';
     if (html !== lastRender) {
       const nearBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 80;
@@ -80,6 +143,28 @@
 
   container.scrollTop = container.scrollHeight;
   setInterval(poll, 7000);
+
+  const textarea = document.getElementById("id_body");
+  document.querySelectorAll("[data-emoji]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!textarea) return;
+      const emoji = button.dataset.emoji;
+      const start = textarea.selectionStart || textarea.value.length;
+      const end = textarea.selectionEnd || textarea.value.length;
+      textarea.value = `${textarea.value.slice(0, start)}${emoji} ${textarea.value.slice(end)}`;
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + emoji.length + 1;
+    });
+  });
+
+  const input = document.getElementById("attachmentInput");
+  const summary = document.getElementById("fileSummary");
+  if (input && summary) {
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files || []);
+      summary.textContent = files.length ? files.map((file) => file.name).join(", ") : "PDF, Office docs, images, CSV, ZIP · max 15 MB each";
+    });
+  }
 })();
 </script>
 {% endblock %}

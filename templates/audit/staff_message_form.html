@@ -10,12 +10,52 @@
   <a class="btn ghost" href="{% url 'staff_messages' %}">Back to Messages</a>
 </section>
 
-<section class="ops-panel">
-  <form method="post" class="form dark-form team-form">
+<section class="ops-panel teams-compose-panel">
+  <form method="post" enctype="multipart/form-data" class="form dark-form team-form">
     {% csrf_token %}
-    {{ form.as_p }}
+    <p>{{ form.title.label_tag }}{{ form.title }}<small>{{ form.title.help_text }}</small></p>
+    <p>{{ form.participants.label_tag }}{{ form.participants }}<small>{{ form.participants.help_text }}</small></p>
+    <div class="emoji-toolbar" aria-label="Emoji shortcuts">
+      <button type="button" data-emoji="👍">👍</button>
+      <button type="button" data-emoji="🔥">🔥</button>
+      <button type="button" data-emoji="✅">✅</button>
+      <button type="button" data-emoji="🎯">🎯</button>
+      <button type="button" data-emoji="💜">💜</button>
+      <button type="button" data-emoji="😂">😂</button>
+      <button type="button" data-emoji="🚀">🚀</button>
+    </div>
+    <p>{{ form.message.label_tag }}{{ form.message }}</p>
+    <label class="file-chip compose-file-chip">
+      📎 Attach files
+      <input id="attachmentInput" type="file" name="attachments" multiple>
+    </label>
+    <span id="fileSummary" class="file-summary">PDF, Office docs, images, CSV, ZIP · max 15 MB each</span>
     {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
     <button class="btn neon">Create Thread</button>
   </form>
 </section>
+<script>
+(() => {
+  const textarea = document.getElementById("id_message");
+  document.querySelectorAll("[data-emoji]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!textarea) return;
+      const emoji = button.dataset.emoji;
+      const start = textarea.selectionStart || textarea.value.length;
+      const end = textarea.selectionEnd || textarea.value.length;
+      textarea.value = `${textarea.value.slice(0, start)}${emoji} ${textarea.value.slice(end)}`;
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + emoji.length + 1;
+    });
+  });
+  const input = document.getElementById("attachmentInput");
+  const summary = document.getElementById("fileSummary");
+  if (input && summary) {
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files || []);
+      summary.textContent = files.length ? files.map((file) => file.name).join(", ") : "PDF, Office docs, images, CSV, ZIP · max 15 MB each";
+    });
+  }
+})();
+</script>
 {% endblock %}

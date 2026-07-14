@@ -1,8 +1,17 @@
 from datetime import timedelta
+import uuid
+from pathlib import Path
 
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.utils.text import get_valid_filename
+
+
+def staff_message_attachment_path(instance, filename):
+    safe_name = get_valid_filename(Path(filename).name or "attachment")
+    unique = uuid.uuid4().hex[:12]
+    return f"staff_messages/thread_{instance.message.thread_id}/message_{instance.message_id}/{unique}_{safe_name}"
 
 class ActivityLog(models.Model):
     ACTION_CHOICES = [
@@ -119,6 +128,40 @@ class StaffMessage(models.Model):
 
     def __str__(self):
         return f"{self.sender or 'System'} · {self.created_at:%Y-%m-%d %H:%M}"
+
+
+class StaffMessageAttachment(models.Model):
+    message = models.ForeignKey(StaffMessage, on_delete=models.CASCADE, related_name="attachments")
+    file = models.FileField(upload_to=staff_message_attachment_path)
+    original_filename = models.CharField(max_length=255)
+    content_type = models.CharField(max_length=120, blank=True)
+    size = models.PositiveIntegerField(default=0)
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="uploaded_staff_message_attachments",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=["message", "created_at"]),
+            models.Index(fields=["uploaded_by", "created_at"]),
+        ]
+
+    @property
+    def size_label(self):
+        if self.size >= 1024 * 1024:
+            return f"{self.size / (1024 * 1024):.1f} MB"
+        if self.size >= 1024:
+            return f"{self.size / 1024:.1f} KB"
+        return f"{self.size} B"
+
+    def __str__(self):
+        return self.original_filename
 
 
 class TimeClockEntry(models.Model):
