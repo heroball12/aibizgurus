@@ -340,6 +340,20 @@ class PlatformFlowTests(TestCase):
         self.assertContains(response, "headers were not recognized")
         self.assertEqual(Lead.objects.count(), before)
 
+    @patch("crm.views.import_lead_file", side_effect=RuntimeError("simulated database failure"))
+    def test_lead_upload_import_exception_shows_error_not_500(self, _importer):
+        employee = User.objects.create_user(username="csv-ops-error", password="OpsPass123!", role="employee")
+        self.client.force_login(employee)
+        upload = SimpleUploadedFile(
+            "valid.csv",
+            b"name,business_name,phone\nPat,Failure Co,555-0000\n",
+            content_type="text/csv",
+        )
+        response = self.client.post(reverse("lead_upload"), {"csv_file": upload})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The tracker could not be imported. No leads were saved.")
+        self.assertContains(response, "run migrations on Render")
+
     def test_sales_intelligence_rules_and_queues(self):
         employee = User.objects.create_user(username="queue-ops", password="OpsPass123!", role="employee")
         self.client.force_login(employee)

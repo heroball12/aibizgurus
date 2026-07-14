@@ -1,4 +1,5 @@
 import csv
+import logging
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -17,6 +18,7 @@ from .models import ClassificationCorrection, Lead, LeadActivity, LeadImport
 
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 def paginate(request, queryset, per_page=50):
@@ -210,13 +212,24 @@ def lead_upload(request):
     if request.method == "POST":
         form = LeadCSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            lead_import, parsed = import_lead_file(
-                form.cleaned_data["csv_file"],
-                uploaded_by=request.user,
-                selected_sheet=form.cleaned_data.get("sheet_name", ""),
-                default_assigned_to=form.cleaned_data.get("default_assigned_to"),
-            )
-            import_errors = parsed.errors
+            try:
+                lead_import, parsed = import_lead_file(
+                    form.cleaned_data["csv_file"],
+                    uploaded_by=request.user,
+                    selected_sheet=form.cleaned_data.get("sheet_name", ""),
+                    default_assigned_to=form.cleaned_data.get("default_assigned_to"),
+                )
+            except Exception as exc:
+                logger.exception("Lead import failed for %s", getattr(form.cleaned_data["csv_file"], "name", "uploaded file"))
+                lead_import = None
+                parsed = None
+                import_errors = [
+                    "The tracker could not be imported. No leads were saved.",
+                    "If this happened right after a deploy, run migrations on Render and try again.",
+                    f"Technical detail: {exc.__class__.__name__}",
+                ]
+            else:
+                import_errors = parsed.errors
             if lead_import:
                 log_activity(
                     user=request.user,
