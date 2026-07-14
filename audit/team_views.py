@@ -8,6 +8,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Max, Q
 from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 
 from .forms import StaffMessageForm, StaffMessageThreadForm, TimeClockNoteForm
@@ -54,6 +55,28 @@ def team_threads_for_user(user):
 
 def get_thread_for_user(user, pk):
     return get_object_or_404(team_threads_for_user(user), pk=pk)
+
+
+def thread_unread_count(thread, user):
+    participant = next(
+        (
+            item for item in getattr(thread, "_prefetched_objects_cache", {}).get("participants", [])
+            if item.user_id == user.pk and item.is_active
+        ),
+        None,
+    )
+    if participant is None:
+        participant = StaffMessageParticipant.objects.filter(thread=thread, user=user, is_active=True).first()
+    if participant is None:
+        return 0
+    unread = thread.messages.exclude(sender=user)
+    if participant.last_read_at:
+        unread = unread.filter(created_at__gt=participant.last_read_at)
+    return unread.count()
+
+
+def mark_thread_read(thread, user):
+    StaffMessageParticipant.objects.filter(thread=thread, user=user, is_active=True).update(last_read_at=timezone.now())
 
 
 def paginate(request, queryset, per_page=25):
@@ -121,11 +144,17 @@ def staff_message_create(request):
                     is_group=len(participants) > 2,
                     created_by=request.user,
                 )
+                now = timezone.now()
                 StaffMessageParticipant.objects.bulk_create([
-                    StaffMessageParticipant(thread=thread, user=user)
+                    StaffMessageParticipant(
+                        thread=thread,
+                        user=user,
+                        last_read_at=now if user.pk == request.user.pk else None,
+                    )
                     for user in participants.values()
                 ])
                 create_staff_message(thread, request.user, form.cleaned_data["message"], files)
+                mark_thread_read(thread, request.user)
                 log_activity(
                     user=request.user,
                     request=request,
@@ -158,6 +187,7 @@ def staff_message_thread(request, pk):
             else:
                 StaffMessageParticipant.objects.get_or_create(thread=thread, user=request.user)
                 create_staff_message(thread, request.user, form.cleaned_data["body"], files)
+                mark_thread_read(thread, request.user)
                 log_activity(
                     user=request.user,
                     request=request,
@@ -172,6 +202,7 @@ def staff_message_thread(request, pk):
             form.add_error(None, error)
     messages_qs = thread.messages.select_related("sender").prefetch_related("attachments").order_by("created_at")
     sidebar_threads = team_threads_for_user(request.user)[:40]
+    mark_thread_read(thread, request.user)
     return render(request, "audit/staff_message_thread.html", {
         "thread": thread,
         "thread_messages": messages_qs,
@@ -185,6 +216,7 @@ def staff_message_thread(request, pk):
 @team_member_required
 def staff_message_feed(request, pk):
     thread = get_thread_for_user(request.user, pk)
+    mark_thread_read(thread, request.user)
     items = []
     for message in thread.messages.select_related("sender").prefetch_related("attachments").order_by("created_at"):
         sender = message.sender
@@ -205,6 +237,35 @@ def staff_message_feed(request, pk):
             ],
         })
     return JsonResponse({"messages": items, "thread_updated": thread.updated_at.isoformat()})
+
+
+@team_member_required
+def staff_message_summary(request):
+    threads = list(team_threads_for_user(request.user)[:8])
+    total_unread = 0
+    items = []
+    for thread in threads:
+        unread_count = thread_unread_count(thread, request.user)
+        total_unread += unread_count
+        last_message = thread.messages.select_related("sender").order_by("-created_at").first()
+        sender = last_message.sender if last_message else None
+        sender_name = sender.get_full_name() or sender.username if sender else "System"
+        items.append({
+            "id": thread.pk,
+            "title": thread.display_title(),
+            "participants": thread.participant_names(),
+            "url": request.build_absolute_uri(reverse("staff_message_thread", args=[thread.pk])),
+            "unread_count": unread_count,
+            "updated": timezone.localtime(thread.updated_at).strftime("%b %-d, %-I:%M %p"),
+            "last_sender": sender_name,
+            "last_body": last_message.body[:140] if last_message else "No messages yet.",
+        })
+    return JsonResponse({
+        "unread_count": total_unread,
+        "threads": items,
+        "messages_url": request.build_absolute_uri(reverse("staff_messages")),
+        "new_message_url": request.build_absolute_uri(reverse("staff_message_create")),
+    })
 
 
 def attachment_url(request, attachment_id):

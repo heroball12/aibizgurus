@@ -546,7 +546,7 @@ def parse_xlsx_file(uploaded_file, selected_sheet=""):
     return result
 
 
-def parse_lead_file(uploaded_file, selected_sheet="", default_assigned_to=None):
+def parse_lead_file(uploaded_file, selected_sheet="", default_assigned_to=None, force_assigned_to=None):
     filename = uploaded_file.name.lower()
     if filename.endswith(".csv"):
         result = parse_csv_file(uploaded_file)
@@ -554,14 +554,17 @@ def parse_lead_file(uploaded_file, selected_sheet="", default_assigned_to=None):
         result = parse_xlsx_file(uploaded_file, selected_sheet=selected_sheet)
     else:
         return ImportParseResult(errors=["Unsupported file type. Upload .csv or .xlsx."])
-    if default_assigned_to:
+    if force_assigned_to:
+        for row in result.rows:
+            row.data["assigned_to"] = force_assigned_to
+    elif default_assigned_to:
         for row in result.rows:
             if row.data.get("assigned_to") is None:
                 row.data["assigned_to"] = default_assigned_to
     return result
 
 
-def merge_imported_lead(existing, data):
+def merge_imported_lead(existing, data, *, preserve_assigned_to=False):
     changed_fields = []
     append_note = data.get("notes", "")
     if append_note and append_note not in (existing.notes or ""):
@@ -574,6 +577,8 @@ def merge_imported_lead(existing, data):
         "classification_confidence", "classification_source", "needs_review", "assigned_to",
         "imported_at",
     ]:
+        if preserve_assigned_to and field == "assigned_to":
+            continue
         value = data.get(field)
         if value in ("", None) and field not in {"follow_up_date", "assigned_to", "needs_review"}:
             continue
@@ -585,10 +590,23 @@ def merge_imported_lead(existing, data):
     return changed_fields
 
 
-def import_lead_file(uploaded_file, *, uploaded_by=None, selected_sheet="", default_assigned_to=None):
+def import_lead_file(
+    uploaded_file,
+    *,
+    uploaded_by=None,
+    selected_sheet="",
+    default_assigned_to=None,
+    force_assigned_to=None,
+    protect_existing_assignees_for=None,
+):
     original_filename = uploaded_file.name
     file_type = original_filename.rsplit(".", 1)[-1].lower() if "." in original_filename else "csv"
-    parsed = parse_lead_file(uploaded_file, selected_sheet=selected_sheet, default_assigned_to=default_assigned_to)
+    parsed = parse_lead_file(
+        uploaded_file,
+        selected_sheet=selected_sheet,
+        default_assigned_to=default_assigned_to,
+        force_assigned_to=force_assigned_to,
+    )
     if parsed.errors:
         return None, parsed
 
@@ -625,7 +643,12 @@ def import_lead_file(uploaded_file, *, uploaded_by=None, selected_sheet="", defa
             if existing:
                 duplicate_count += 1
                 updated_count += 1
-                merge_imported_lead(existing, row.data)
+                preserve_assigned_to = (
+                    protect_existing_assignees_for is not None
+                    and existing.assigned_to_id
+                    and existing.assigned_to_id != protect_existing_assignees_for.pk
+                )
+                merge_imported_lead(existing, row.data, preserve_assigned_to=preserve_assigned_to)
                 lead = existing
                 row.duplicate_detected = True
             else:

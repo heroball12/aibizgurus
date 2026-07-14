@@ -32,7 +32,7 @@ def parse_internal_lead_csv(uploaded_file):
 
 
 def is_sales_manager(user):
-    return user.is_superuser or user.is_staff or getattr(user, "role", "") in {"admin", "owner"}
+    return user.is_superuser or getattr(user, "role", "") in {"admin", "owner"}
 
 
 def can_delete_internal_leads(user):
@@ -43,7 +43,7 @@ def internal_leads_for_user(user):
     qs = Lead.objects.filter(lead_type="internal_sales", archived=False)
     if is_sales_manager(user):
         return qs
-    return qs.filter(Q(assigned_to=user) | Q(assigned_to__isnull=True))
+    return qs.filter(assigned_to=user)
 
 
 def get_internal_lead_or_404(user, pk):
@@ -144,7 +144,10 @@ def employee_required(view):
 def crm_home(request):
     leads = internal_leads_for_user(request.user).select_related("assigned_to")
     today = timezone.localdate()
-    imports = LeadImport.objects.select_related("uploaded_by").order_by("-created_at")[:6]
+    imports = LeadImport.objects.select_related("uploaded_by")
+    if not is_sales_manager(request.user):
+        imports = imports.filter(uploaded_by=request.user)
+    imports = imports.order_by("-created_at")[:6]
     scorecards = build_scorecards(leads, limit=8)
     context = {
         "leads": leads.order_by("-created_at")[:25],
@@ -161,12 +164,14 @@ def crm_home(request):
 @employee_required
 def lead_create(request):
     if request.method == "POST":
-        form = LeadForm(request.POST)
+        form = LeadForm(request.POST, user=request.user, is_sales_manager=is_sales_manager(request.user))
         if form.is_valid():
             lead = form.save(commit=False)
             lead.lead_type = "internal_sales"
             lead.client = None
             lead.ai_instance = None
+            if not is_sales_manager(request.user):
+                lead.assigned_to = request.user
             if lead.notes and not lead.cleaned_notes:
                 from .intelligence import classify_sales_note, duplicate_fingerprint
 
@@ -201,7 +206,7 @@ def lead_create(request):
             messages.success(request, "Lead created.")
             return redirect("crm_home")
     else:
-        form = LeadForm()
+        form = LeadForm(user=request.user, is_sales_manager=is_sales_manager(request.user))
     return render(request, "crm/lead_form.html", {"form": form})
 
 
@@ -210,14 +215,17 @@ def lead_upload(request):
     import_errors = []
     lead_import = None
     if request.method == "POST":
-        form = LeadCSVUploadForm(request.POST, request.FILES)
+        form = LeadCSVUploadForm(request.POST, request.FILES, user=request.user, is_sales_manager=is_sales_manager(request.user))
         if form.is_valid():
+            forced_assignee = None if is_sales_manager(request.user) else request.user
             try:
                 lead_import, parsed = import_lead_file(
                     form.cleaned_data["csv_file"],
                     uploaded_by=request.user,
                     selected_sheet=form.cleaned_data.get("sheet_name", ""),
                     default_assigned_to=form.cleaned_data.get("default_assigned_to"),
+                    force_assigned_to=forced_assignee,
+                    protect_existing_assignees_for=forced_assignee,
                 )
             except Exception as exc:
                 logger.exception("Lead import failed for %s", getattr(form.cleaned_data["csv_file"], "name", "uploaded file"))
@@ -244,7 +252,7 @@ def lead_upload(request):
                 messages.success(request, f"Import complete: {lead_import.imported_count} created, {lead_import.updated_count} updated. Review the report below.")
                 return redirect("lead_import_detail", pk=lead_import.pk)
     else:
-        form = LeadCSVUploadForm()
+        form = LeadCSVUploadForm(user=request.user, is_sales_manager=is_sales_manager(request.user))
     return render(request, "crm/lead_upload.html", {
         "form": form,
         "import_errors": import_errors[:25],
@@ -263,11 +271,18 @@ def lead_detail(request, pk):
                 "temperature": lead.lead_temperature,
                 "cleaned": lead.cleaned_notes,
             }
-            intelligence_form = LeadIntelligenceForm(request.POST, instance=lead)
+            intelligence_form = LeadIntelligenceForm(
+                request.POST,
+                instance=lead,
+                user=request.user,
+                is_sales_manager=is_sales_manager(request.user),
+            )
             note_form = LeadNoteForm()
             if intelligence_form.is_valid():
                 updated = intelligence_form.save(commit=False)
                 updated.classification_source = "manual"
+                if not is_sales_manager(request.user):
+                    updated.assigned_to = request.user
                 updated.save()
                 ClassificationCorrection.objects.create(
                     lead=lead,
@@ -304,15 +319,18 @@ def lead_detail(request, pk):
                 messages.success(request, "Note added.")
                 return redirect("lead_detail", pk=lead.pk)
             note_form = form
-            intelligence_form = LeadIntelligenceForm(instance=lead)
+            intelligence_form = LeadIntelligenceForm(instance=lead, user=request.user, is_sales_manager=is_sales_manager(request.user))
     else:
         note_form = LeadNoteForm()
-        intelligence_form = LeadIntelligenceForm(instance=lead)
+        intelligence_form = LeadIntelligenceForm(instance=lead, user=request.user, is_sales_manager=is_sales_manager(request.user))
     if request.method == "POST" and request.POST.get("action") == "save_intelligence":
         pass
     else:
         note_form = locals().get("note_form", LeadNoteForm())
-        intelligence_form = locals().get("intelligence_form", LeadIntelligenceForm(instance=lead))
+        intelligence_form = locals().get(
+            "intelligence_form",
+            LeadIntelligenceForm(instance=lead, user=request.user, is_sales_manager=is_sales_manager(request.user)),
+        )
     return render(request, "crm/lead_detail.html", {
         "lead": lead,
         "note_form": note_form,
@@ -324,7 +342,10 @@ def lead_detail(request, pk):
 
 @employee_required
 def lead_import_detail(request, pk):
-    lead_import = get_object_or_404(LeadImport.objects.select_related("uploaded_by"), pk=pk)
+    imports = LeadImport.objects.select_related("uploaded_by")
+    if not is_sales_manager(request.user):
+        imports = imports.filter(uploaded_by=request.user)
+    lead_import = get_object_or_404(imports, pk=pk)
     lead_ids = lead_import.activities.values_list("lead_id", flat=True)
     leads = internal_leads_for_user(request.user).filter(pk__in=lead_ids).select_related("assigned_to").order_by("-needs_review", "-created_at")
     return render(request, "crm/import_detail.html", {
@@ -403,23 +424,25 @@ def export_leads(request):
 def lead_edit(request, pk):
     lead = get_internal_lead_or_404(request.user, pk)
     if request.method == "POST":
-        form = LeadForm(request.POST, instance=lead)
+        form = LeadForm(request.POST, instance=lead, user=request.user, is_sales_manager=is_sales_manager(request.user))
         if form.is_valid():
             updated = form.save(commit=False)
             updated.lead_type = "internal_sales"
             updated.client = None
             updated.ai_instance = None
+            if not is_sales_manager(request.user):
+                updated.assigned_to = request.user
             updated.save()
             messages.success(request, "Lead updated.")
             return redirect("lead_detail", pk=lead.pk)
     else:
-        form = LeadForm(instance=lead)
+        form = LeadForm(instance=lead, user=request.user, is_sales_manager=is_sales_manager(request.user))
     return render(request, "crm/lead_form.html", {"form": form, "lead": lead})
 
 
 @employee_required
 def lead_delete(request, pk):
-    lead = get_object_or_404(Lead.objects.filter(lead_type="internal_sales", archived=False), pk=pk)
+    lead = get_internal_lead_or_404(request.user, pk)
     if not can_delete_internal_leads(request.user):
         messages.error(request, "Only admins and owners can delete internal leads.")
         return redirect("lead_detail", pk=lead.pk)

@@ -280,19 +280,58 @@ class PlatformFlowTests(TestCase):
             self.client.logout()
 
     def test_internal_crm_excludes_client_customer_leads(self):
-        internal = Lead.objects.create(lead_type="internal_sales", name="Platform prospect")
+        employee = User.objects.create_user(username="ops", password="OpsPass123!", role="employee")
+        internal = Lead.objects.create(lead_type="internal_sales", name="Platform prospect", assigned_to=employee)
         customer = Lead.objects.create(
             lead_type="client_customer", client=self.account, ai_instance=self.assistant, name="Client customer"
         )
-        employee = User.objects.create_user(username="ops", password="OpsPass123!", role="employee")
         self.client.force_login(employee)
         response = self.client.get(reverse("crm_home"))
         self.assertContains(response, internal.name)
         self.assertNotContains(response, customer.name)
         self.assertEqual(self.client.get(reverse("lead_detail", args=[customer.pk])).status_code, 404)
 
+    def test_sdr_sales_intelligence_only_shows_assigned_leads(self):
+        sdr = User.objects.create_user(username="privacy-sdr", password="OpsPass123!", role="employee")
+        other_sdr = User.objects.create_user(username="other-privacy-sdr", password="OpsPass123!", role="employee")
+        admin = User.objects.create_user(username="privacy-admin", password="OpsPass123!", role="admin")
+        mine = Lead.objects.create(lead_type="internal_sales", name="Mine Lead", business_name="Mine Co", assigned_to=sdr, status="new")
+        other = Lead.objects.create(lead_type="internal_sales", name="Other Lead", business_name="Other Co", assigned_to=other_sdr, status="new")
+        unassigned = Lead.objects.create(lead_type="internal_sales", name="Unassigned Lead", business_name="Unassigned Co", status="new")
+
+        self.client.force_login(sdr)
+        dashboard = self.client.get(reverse("crm_home"))
+        self.assertContains(dashboard, "Mine Co")
+        self.assertNotContains(dashboard, "Other Co")
+        self.assertNotContains(dashboard, "Unassigned Co")
+        ops_dashboard = self.client.get(reverse("ops_dashboard"))
+        self.assertContains(ops_dashboard, "Mine Co")
+        self.assertNotContains(ops_dashboard, "Other Co")
+        self.assertNotContains(ops_dashboard, "Unassigned Co")
+        self.assertEqual(self.client.get(reverse("lead_detail", args=[mine.pk])).status_code, 200)
+        self.assertEqual(self.client.get(reverse("lead_detail", args=[other.pk])).status_code, 404)
+        self.assertEqual(self.client.get(reverse("lead_detail", args=[unassigned.pk])).status_code, 404)
+
+        response = self.client.post(reverse("lead_create"), {
+            "name": "Created by SDR",
+            "business_name": "Forced Owner Co",
+            "status": "new",
+            "lead_temperature": "cold",
+            "value": "0",
+            "assigned_to": str(other_sdr.pk),
+        })
+        self.assertRedirects(response, reverse("crm_home"))
+        self.assertEqual(Lead.objects.get(business_name="Forced Owner Co").assigned_to, sdr)
+
+        self.client.force_login(admin)
+        admin_dashboard = self.client.get(reverse("crm_home"))
+        self.assertContains(admin_dashboard, "Mine Co")
+        self.assertContains(admin_dashboard, "Other Co")
+        self.assertContains(admin_dashboard, "Unassigned Co")
+
     def test_employee_can_bulk_upload_internal_sales_leads_csv(self):
         employee = User.objects.create_user(username="csv-ops", password="OpsPass123!", role="employee")
+        other_sdr = User.objects.create_user(username="csv-other", password="OpsPass123!", role="employee")
         self.client.force_login(employee)
         response = self.client.get(reverse("lead_upload"))
         self.assertEqual(response.status_code, 200)
@@ -303,7 +342,7 @@ class PlatformFlowTests(TestCase):
             "leads.csv",
             (
                 "name,business_name,industry,phone,email,source,status,notes,value,follow_up_date,assigned_to\n"
-                "Ada Buyer,Ada Co,Home Services,555-1111,ada@example.com,CSV List,new,good interaction told me to leave an email,2500.00,2026-08-01,csv-ops\n"
+                "Ada Buyer,Ada Co,Home Services,555-1111,ada@example.com,CSV List,new,good interaction told me to leave an email,2500.00,2026-08-01,csv-other\n"
                 "Ben Founder,Ben Studio,Med Spa,555-2222,ben@example.com,CSV List,follow_up,call back after 4,1200.50,,\n"
             ).encode(),
             content_type="text/csv",
@@ -318,6 +357,7 @@ class PlatformFlowTests(TestCase):
         self.assertIsNone(ada.client)
         self.assertIsNone(ada.ai_instance)
         self.assertEqual(ada.assigned_to, employee)
+        self.assertNotEqual(ada.assigned_to, other_sdr)
         self.assertEqual(ada.status, "email_requested")
         self.assertEqual(ada.lead_temperature, "warm")
         self.assertIn("Standardized outcome", ada.cleaned_notes)
@@ -404,11 +444,13 @@ class PlatformFlowTests(TestCase):
 
     def test_xlsx_tracker_import_and_duplicate_review(self):
         employee = User.objects.create_user(username="xlsx-ops", password="OpsPass123!", role="employee")
+        other_sdr = User.objects.create_user(username="xlsx-other", password="OpsPass123!", role="employee")
         Lead.objects.create(
             lead_type="internal_sales",
             business_name="Duplicate Co LLC",
             phone="(555) 444-0000",
             duplicate_key="duplicate|5554440000",
+            assigned_to=other_sdr,
         )
         self.client.force_login(employee)
         workbook = build_minimal_xlsx([
@@ -428,8 +470,11 @@ class PlatformFlowTests(TestCase):
         callback = Lead.objects.get(business_name="Callback Spa")
         self.assertEqual(duplicate.status, "duplicate_review")
         self.assertTrue(duplicate.needs_review)
+        self.assertEqual(duplicate.assigned_to, other_sdr)
+        self.assertEqual(self.client.get(reverse("lead_detail", args=[duplicate.pk])).status_code, 404)
         self.assertEqual(callback.status, "callback_requested")
         self.assertEqual(callback.lead_temperature, "warm")
+        self.assertEqual(callback.assigned_to, employee)
         self.assertEqual(lead_import.sheet_names, ["Tracker"])
         self.assertEqual(lead_import.imported_count, 1)
         self.assertEqual(lead_import.updated_count, 1)
@@ -515,6 +560,7 @@ class PlatformFlowTests(TestCase):
         self.client.force_login(alice)
         response = self.client.get(reverse("staff_messages"))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "team-chat-widget")
         response = self.client.post(reverse("staff_message_create"), {
             "title": "",
             "participants": [str(bob.pk)],
@@ -526,9 +572,14 @@ class PlatformFlowTests(TestCase):
         self.assertFalse(thread.is_group)
 
         self.client.force_login(bob)
+        summary = self.client.get(reverse("staff_message_summary"))
+        self.assertEqual(summary.status_code, 200)
+        self.assertEqual(summary.json()["unread_count"], 1)
+        self.assertEqual(summary.json()["threads"][0]["unread_count"], 1)
         bob_view = self.client.get(reverse("staff_message_thread", args=[thread.pk]))
         self.assertEqual(bob_view.status_code, 200)
         self.assertContains(bob_view, "Can you follow up")
+        self.assertEqual(self.client.get(reverse("staff_message_summary")).json()["unread_count"], 0)
 
         self.client.force_login(charlie)
         self.assertEqual(self.client.get(reverse("staff_message_thread", args=[thread.pk])).status_code, 404)

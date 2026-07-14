@@ -7,7 +7,7 @@
   <meta name="description" content="{% block meta_description %}AI Business Gurus builds AI Employees, AI Chatbots, Voice AI, automation, websites, and growth systems that help businesses recover missed revenue and scale faster.{% endblock %}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=16">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=17">
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' or request.path|slice:':6' == '/team/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
@@ -44,6 +44,101 @@
 </nav>
 {% if messages %}<div class="messages">{% for message in messages %}<div class="alert">{{ message }}</div>{% endfor %}</div>{% endif %}
 <main>{% block content %}{% endblock %}</main>
+{% if user.is_authenticated and user.is_employee_or_admin %}
+<div class="team-chat-widget" data-summary-url="{% url 'staff_message_summary' %}">
+  <section class="team-chat-popover" id="teamChatPopover" aria-hidden="true">
+    <div class="team-chat-head">
+      <div>
+        <span class="ops-label">Team Chat</span>
+        <h2>Messages</h2>
+      </div>
+      <a href="{% url 'staff_message_create' %}" class="team-chat-new">New</a>
+    </div>
+    <div class="team-chat-body" id="teamChatBody">
+      <div class="team-chat-loading">Checking messages…</div>
+    </div>
+    <div class="team-chat-foot">
+      <a href="{% url 'staff_messages' %}">Open full inbox →</a>
+    </div>
+  </section>
+  <button type="button" class="team-chat-fab" id="teamChatFab" aria-expanded="false" aria-controls="teamChatPopover">
+    <span class="team-chat-fab-icon">💬</span>
+    <span class="team-chat-fab-text">Messages</span>
+    <span class="team-chat-badge" id="teamChatBadge" hidden>0</span>
+  </button>
+</div>
+<script>
+(() => {
+  const widget = document.querySelector(".team-chat-widget");
+  if (!widget) return;
+  const button = document.getElementById("teamChatFab");
+  const popover = document.getElementById("teamChatPopover");
+  const body = document.getElementById("teamChatBody");
+  const badge = document.getElementById("teamChatBadge");
+  const summaryUrl = widget.dataset.summaryUrl;
+  let opened = false;
+
+  function escapeHtml(value) {
+    const element = document.createElement("div");
+    element.textContent = value || "";
+    return element.innerHTML;
+  }
+
+  function setOpen(next) {
+    opened = next;
+    widget.classList.toggle("open", opened);
+    button.setAttribute("aria-expanded", opened ? "true" : "false");
+    popover.setAttribute("aria-hidden", opened ? "false" : "true");
+    if (opened) fetchSummary();
+  }
+
+  function render(data) {
+    const unread = Number(data.unread_count || 0);
+    if (unread > 0) {
+      badge.hidden = false;
+      badge.textContent = unread > 99 ? "99+" : String(unread);
+      button.classList.add("has-unread");
+    } else {
+      badge.hidden = true;
+      button.classList.remove("has-unread");
+    }
+    const threads = data.threads || [];
+    body.innerHTML = threads.length ? threads.map((thread) => {
+      const initial = escapeHtml((thread.title || "M").slice(0, 1).toUpperCase());
+      const unreadPill = thread.unread_count ? `<span class="team-chat-thread-badge">${thread.unread_count}</span>` : "";
+      return `<a class="team-chat-thread ${thread.unread_count ? "unread" : ""}" href="${thread.url}">
+        <span class="avatar-dot">${initial}</span>
+        <span class="team-chat-thread-copy">
+          <strong>${escapeHtml(thread.title)}</strong>
+          <small>${escapeHtml(thread.last_sender)} · ${escapeHtml(thread.last_body)}</small>
+        </span>
+        <span class="team-chat-thread-meta">${escapeHtml(thread.updated)}${unreadPill}</span>
+      </a>`;
+    }).join("") : `<div class="team-chat-empty">No team chats yet. Start one when the squad needs a thread.</div>`;
+  }
+
+  async function fetchSummary() {
+    try {
+      const response = await fetch(summaryUrl, {headers: {"X-Requested-With": "fetch"}});
+      if (!response.ok) return;
+      render(await response.json());
+    } catch (error) {
+      // Notification polling is best-effort; the full inbox remains available.
+    }
+  }
+
+  button.addEventListener("click", () => setOpen(!opened));
+  document.addEventListener("click", (event) => {
+    if (opened && !widget.contains(event.target)) setOpen(false);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && opened) setOpen(false);
+  });
+  fetchSummary();
+  setInterval(fetchSummary, 15000);
+})();
+</script>
+{% endif %}
 <footer class="site-footer">
   <div>
     <a class="brand" href="{% url 'home' %}">

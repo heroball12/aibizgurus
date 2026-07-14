@@ -5,6 +5,11 @@ from .models import Lead, LeadNote
 
 User = get_user_model()
 
+
+def sales_staff_queryset():
+    return User.objects.filter(role__in=["employee", "admin"], is_active=True).order_by("first_name", "username")
+
+
 class LeadForm(forms.ModelForm):
     class Meta:
         model = Lead
@@ -19,6 +24,17 @@ class LeadForm(forms.ModelForm):
             "cleaned_notes": forms.Textarea(attrs={"rows": 4}),
             "follow_up_date": forms.DateInput(attrs={"type": "date"}),
         }
+
+    def __init__(self, *args, user=None, is_sales_manager=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        self.is_sales_manager = is_sales_manager
+        self.fields["assigned_to"].queryset = sales_staff_queryset()
+        if user and not is_sales_manager:
+            self.fields["assigned_to"].queryset = User.objects.filter(pk=user.pk)
+            self.fields["assigned_to"].initial = user
+            self.fields["assigned_to"].disabled = True
+            self.fields["assigned_to"].help_text = "SDR leads are automatically assigned to you."
 
 class LeadNoteForm(forms.ModelForm):
     class Meta:
@@ -44,10 +60,19 @@ class LeadCSVUploadForm(forms.Form):
         help_text="Optional. Rows with an assigned_to/SDR column keep that row value; every other imported row goes to this SDR.",
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user=None, is_sales_manager=False, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["default_assigned_to"].empty_label = "Leave unassigned / use sheet column"
-        self.fields["default_assigned_to"].queryset = User.objects.filter(role__in=["employee", "admin"], is_active=True).order_by("first_name", "username")
+        self.user = user
+        self.is_sales_manager = is_sales_manager
+        if user and not is_sales_manager:
+            self.fields["default_assigned_to"].empty_label = None
+            self.fields["default_assigned_to"].queryset = User.objects.filter(pk=user.pk)
+            self.fields["default_assigned_to"].initial = user
+            self.fields["default_assigned_to"].disabled = True
+            self.fields["default_assigned_to"].help_text = "Uploads from SDR accounts are automatically assigned to that SDR. Sheet-level owner columns are ignored for privacy."
+        else:
+            self.fields["default_assigned_to"].empty_label = "Leave unassigned / use sheet column"
+            self.fields["default_assigned_to"].queryset = sales_staff_queryset()
 
     def clean_csv_file(self):
         uploaded = self.cleaned_data["csv_file"]
@@ -76,3 +101,14 @@ class LeadIntelligenceForm(forms.ModelForm):
             "cleaned_notes": forms.Textarea(attrs={"rows": 4}),
             "follow_up_date": forms.DateInput(attrs={"type": "date"}),
         }
+
+    def __init__(self, *args, user=None, is_sales_manager=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        self.is_sales_manager = is_sales_manager
+        self.fields["assigned_to"].queryset = sales_staff_queryset()
+        if user and not is_sales_manager:
+            self.fields["assigned_to"].queryset = User.objects.filter(pk=user.pk)
+            self.fields["assigned_to"].initial = user
+            self.fields["assigned_to"].disabled = True
+            self.fields["assigned_to"].help_text = "Only owner/admin users can reassign SDR leads."

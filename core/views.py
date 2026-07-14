@@ -317,11 +317,14 @@ def ops_dashboard(request):
     if not request.user.is_employee_or_admin():
         messages.error(request, "Employee access required.")
         return redirect("portal_home")
+    internal_leads = Lead.objects.filter(lead_type="internal_sales", archived=False)
+    if not (request.user.is_superuser or getattr(request.user, "role", "") in {"admin", "owner"}):
+        internal_leads = internal_leads.filter(assigned_to=request.user)
     context = {
         "clients": ClientAccount.objects.select_related("user").order_by("-created_at")[:20],
         "client_count": ClientAccount.objects.count(),
         "assistant_count": AIInstance.objects.count(),
-        "lead_count": Lead.objects.filter(lead_type="internal_sales").count(),
-        "new_leads": Lead.objects.filter(lead_type="internal_sales", status="new").select_related("assigned_to").order_by("-created_at")[:15],
+        "lead_count": internal_leads.count(),
+        "new_leads": internal_leads.filter(status="new").select_related("assigned_to").order_by("-created_at")[:15],
     }
     return render(request, "core/ops_dashboard.html", context)
