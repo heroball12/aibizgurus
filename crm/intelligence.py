@@ -63,7 +63,7 @@ def duplicate_fingerprint(*, business_name="", phone="", website="", email="", a
         (email or "").strip().lower(),
         re.sub(r"[^a-z0-9]+", " ", (address or "").lower()).strip(),
     ]
-    return "|".join([part for part in parts if part])
+    return "|".join([part for part in parts if part])[:255]
 
 
 def _contains(text, *phrases):

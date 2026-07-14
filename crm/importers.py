@@ -73,6 +73,27 @@ STATUS_ALIASES = {
 }
 EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 PHONEISH_RE = re.compile(r"^\+?[\d\s().-]{7,}$")
+LEAD_TEXT_LIMITS = {
+    "name": 150,
+    "business_name": 200,
+    "industry": 150,
+    "phone": 80,
+    "email": 254,
+    "website": 200,
+    "address": 255,
+    "city": 120,
+    "state": 80,
+    "zip_code": 20,
+    "point_of_contact": 150,
+    "contact_role": 120,
+    "source": 150,
+    "source_file": 255,
+    "source_sheet": 150,
+    "status": 30,
+    "lead_temperature": 20,
+    "classification_source": 20,
+    "duplicate_key": 255,
+}
 
 
 @dataclass
@@ -114,6 +135,21 @@ def csv_values(row, aliases):
             if text and text not in values:
                 values.append(text)
     return values
+
+
+def truncate_text(value, max_length):
+    text = str(value or "").strip()
+    if max_length and len(text) > max_length:
+        return text[:max_length]
+    return text
+
+
+def sanitize_lead_data(data):
+    cleaned = dict(data)
+    for field, max_length in LEAD_TEXT_LIMITS.items():
+        if field in cleaned:
+            cleaned[field] = truncate_text(cleaned[field], max_length)
+    return cleaned
 
 
 def parse_decimal(value, row_number, errors):
@@ -279,7 +315,7 @@ def build_parsed_row(row, row_number, source_sheet, errors):
 
     final_status = imported_status if imported_status and imported_status not in {"new", "not_contacted"} else classification.status
     final_temperature = temperature_for_status(final_status, classification.temperature)
-    data = {
+    data = sanitize_lead_data({
         "lead_type": "internal_sales",
         "client": None,
         "ai_instance": None,
@@ -311,7 +347,7 @@ def build_parsed_row(row, row_number, source_sheet, errors):
         "classification_source": classification.source,
         "needs_review": duplicate_detected or classification.needs_review,
         "duplicate_key": duplicate_key,
-    }
+    })
     return ParsedLeadRow(row_number=row_number, source_sheet=source_sheet, data=data, raw=row, duplicate_detected=duplicate_detected)
 
 

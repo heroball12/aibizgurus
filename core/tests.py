@@ -354,6 +354,26 @@ class PlatformFlowTests(TestCase):
         self.assertContains(response, "The tracker could not be imported. No leads were saved.")
         self.assertContains(response, "run migrations on Render")
 
+    def test_lead_upload_trims_long_values_for_postgres(self):
+        employee = User.objects.create_user(username="csv-ops-long", password="OpsPass123!", role="employee")
+        self.client.force_login(employee)
+        long_website = "https://example.com/" + ("very-long-path/" * 25)
+        upload = SimpleUploadedFile(
+            "long-values.csv",
+            (
+                "name,business_name,phone,website,notes\n"
+                f"Long Website Lead,Long Website Co,555-9191,{long_website},follow up later\n"
+            ).encode(),
+            content_type="text/csv",
+        )
+        response = self.client.post(reverse("lead_upload"), {"csv_file": upload, "default_assigned_to": str(employee.pk)})
+        lead_import = LeadImport.objects.get(original_filename="long-values.csv")
+        self.assertRedirects(response, reverse("lead_import_detail", args=[lead_import.pk]))
+        lead = Lead.objects.get(business_name="Long Website Co")
+        self.assertEqual(lead.assigned_to, employee)
+        self.assertLessEqual(len(lead.website), 200)
+        self.assertLessEqual(len(lead.duplicate_key), 255)
+
     def test_sales_intelligence_rules_and_queues(self):
         employee = User.objects.create_user(username="queue-ops", password="OpsPass123!", role="employee")
         self.client.force_login(employee)
