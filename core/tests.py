@@ -480,6 +480,33 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(lead_import.updated_count, 1)
         self.assertGreaterEqual(lead_import.review_count, 1)
 
+    def test_admin_can_archive_all_leads_from_imported_sheet(self):
+        admin = User.objects.create_user(username="sheet-admin", password="OpsPass123!", role="admin")
+        self.client.force_login(admin)
+        workbook = build_minimal_xlsx([
+            ["Business Name", "Phone", "Notes"],
+            ["Sheet One Co", "555-1000", "send info"],
+            ["Sheet Two Co", "555-2000", "call back after 4"],
+        ], sheet_name="July Sheet")
+        upload = SimpleUploadedFile(
+            "sheet-delete.xlsx",
+            workbook,
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        response = self.client.post(reverse("lead_upload"), {"csv_file": upload})
+        lead_import = LeadImport.objects.get(original_filename="sheet-delete.xlsx")
+        self.assertRedirects(response, reverse("lead_import_detail", args=[lead_import.pk]))
+        report = self.client.get(reverse("lead_import_detail", args=[lead_import.pk]))
+        self.assertContains(report, "July Sheet")
+        self.assertContains(report, "Archive this sheet")
+        self.assertEqual(Lead.objects.filter(source_file="sheet-delete.xlsx", source_sheet="July Sheet", archived=False).count(), 2)
+
+        response = self.client.post(reverse("lead_import_delete_sheet", args=[lead_import.pk]), {"source_sheet": "July Sheet"})
+        self.assertRedirects(response, reverse("lead_import_detail", args=[lead_import.pk]))
+        self.assertEqual(Lead.objects.filter(source_file="sheet-delete.xlsx", source_sheet="July Sheet", archived=False).count(), 0)
+        self.assertEqual(Lead.objects.filter(source_file="sheet-delete.xlsx", source_sheet="July Sheet", archived=True).count(), 2)
+        self.assertEqual(LeadActivity.objects.filter(metadata__bulk_action="archive_sheet").count(), 2)
+
     def test_owner_or_admin_can_manage_staff_users(self):
         admin = User.objects.create_user(username="staff-admin", password="OpsPass123!", role="admin")
         self.client.force_login(admin)
@@ -561,6 +588,7 @@ class PlatformFlowTests(TestCase):
         response = self.client.get(reverse("staff_messages"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "team-chat-widget")
+        self.assertContains(response, "Enable alerts")
         response = self.client.post(reverse("staff_message_create"), {
             "title": "",
             "participants": [str(bob.pk)],

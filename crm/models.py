@@ -103,6 +103,7 @@ class Lead(models.Model):
             models.Index(fields=["lead_type", "archived", "created_at"]),
             models.Index(fields=["lead_type", "assigned_to", "created_at"]),
             models.Index(fields=["lead_type", "source_file"]),
+            models.Index(fields=["lead_type", "source_file", "source_sheet", "archived"]),
             models.Index(fields=["client", "lead_type", "created_at"]),
             models.Index(fields=["ai_instance", "created_at"]),
             models.Index(fields=["assigned_to", "follow_up_date"]),

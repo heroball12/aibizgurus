@@ -103,6 +103,9 @@
   if (!shell || !container) return;
   const feedUrl = shell.dataset.feedUrl;
   let lastRender = "";
+  let lastThreadUpdated = "";
+  let pollTimer = null;
+  let inFlight = false;
 
   function render(messages) {
     const html = messages.map((message) => {
@@ -131,18 +134,34 @@
   }
 
   async function poll() {
+    if (inFlight) return;
+    inFlight = true;
     try {
       const response = await fetch(feedUrl, {headers: {"X-Requested-With": "fetch"}});
       if (!response.ok) return;
       const data = await response.json();
-      render(data.messages || []);
+      if (data.thread_updated !== lastThreadUpdated) {
+        lastThreadUpdated = data.thread_updated;
+        render(data.messages || []);
+      }
     } catch (error) {
       // Best-effort polling only; normal form submit still works.
+    } finally {
+      inFlight = false;
+      schedulePoll();
     }
   }
 
+  function schedulePoll() {
+    clearTimeout(pollTimer);
+    pollTimer = setTimeout(poll, document.hidden ? 25000 : 6000);
+  }
+
   container.scrollTop = container.scrollHeight;
-  setInterval(poll, 7000);
+  poll();
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) poll();
+  });
 
   const textarea = document.getElementById("id_body");
   document.querySelectorAll("[data-emoji]").forEach((button) => {

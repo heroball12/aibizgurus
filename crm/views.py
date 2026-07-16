@@ -348,10 +348,81 @@ def lead_import_detail(request, pk):
     lead_import = get_object_or_404(imports, pk=pk)
     lead_ids = lead_import.activities.values_list("lead_id", flat=True)
     leads = internal_leads_for_user(request.user).filter(pk__in=lead_ids).select_related("assigned_to").order_by("-needs_review", "-created_at")
+    sheet_groups = list(
+        internal_leads_for_user(request.user)
+        .filter(pk__in=lead_ids)
+        .values("source_sheet")
+        .annotate(
+            total_count=Count("id"),
+            review_count=Count("id", filter=Q(needs_review=True)),
+            warm_hot_count=Count("id", filter=Q(lead_temperature__in=["warm", "hot"])),
+        )
+        .order_by("source_sheet")
+    )
     return render(request, "crm/import_detail.html", {
         "lead_import": lead_import,
         "page_obj": paginate(request, leads, 75),
+        "sheet_groups": sheet_groups,
+        "can_delete_import_sheets": is_sales_manager(request.user),
     })
+
+
+@employee_required
+def lead_import_delete_sheet(request, pk):
+    imports = LeadImport.objects.select_related("uploaded_by")
+    if not is_sales_manager(request.user):
+        imports = imports.filter(uploaded_by=request.user)
+    lead_import = get_object_or_404(imports, pk=pk)
+    if not is_sales_manager(request.user):
+        messages.error(request, "Only owner/admin users can delete leads by sheet.")
+        return redirect("lead_import_detail", pk=lead_import.pk)
+    if request.method != "POST":
+        messages.error(request, "Use the sheet action button on the import report.")
+        return redirect("lead_import_detail", pk=lead_import.pk)
+
+    source_sheet = (request.POST.get("source_sheet") or "CSV").strip() or "CSV"
+    lead_ids = (
+        lead_import.activities
+        .filter(lead__source_sheet=source_sheet, lead__lead_type="internal_sales")
+        .values_list("lead_id", flat=True)
+        .distinct()
+    )
+    leads = list(
+        Lead.objects
+        .filter(pk__in=lead_ids, lead_type="internal_sales", archived=False)
+        .only("pk", "status", "lead_temperature")
+    )
+    count = len(leads)
+    if count:
+        Lead.objects.filter(pk__in=[lead.pk for lead in leads]).update(archived=True)
+        LeadActivity.objects.bulk_create([
+            LeadActivity(
+                lead=lead,
+                user=request.user,
+                raw_note=f"Archived by sheet bulk action from import '{lead_import.original_filename}' / sheet '{source_sheet}'.",
+                cleaned_note=f"Archived by sheet bulk action from import '{lead_import.original_filename}' / sheet '{source_sheet}'.",
+                inferred_status=lead.status,
+                lead_temperature=lead.lead_temperature,
+                activity_type="status_change",
+                classification_source="manual",
+                manually_reviewed=True,
+                original_import=lead_import,
+                metadata={"bulk_action": "archive_sheet", "source_sheet": source_sheet},
+            )
+            for lead in leads
+        ])
+    log_activity(
+        user=request.user,
+        request=request,
+        action="delete",
+        model_label="crm.Lead",
+        object_id=lead_import.pk,
+        object_repr=f"{lead_import.original_filename} · {source_sheet}",
+        message=f"Archived {count} internal leads from imported sheet '{source_sheet}'.",
+        metadata={"lead_import_id": lead_import.pk, "source_sheet": source_sheet, "archived_count": count},
+    )
+    messages.success(request, f"Archived {count} lead{'' if count == 1 else 's'} from sheet '{source_sheet}'.")
+    return redirect("lead_import_detail", pk=lead_import.pk)
 
 
 @employee_required

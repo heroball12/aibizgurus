@@ -7,7 +7,7 @@
   <meta name="description" content="{% block meta_description %}AI Business Gurus builds AI Employees, AI Chatbots, Voice AI, automation, websites, and growth systems that help businesses recover missed revenue and scale faster.{% endblock %}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=17">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=18">
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' or request.path|slice:':6' == '/team/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
@@ -46,6 +46,7 @@
 <main>{% block content %}{% endblock %}</main>
 {% if user.is_authenticated and user.is_employee_or_admin %}
 <div class="team-chat-widget" data-summary-url="{% url 'staff_message_summary' %}">
+  <div class="team-chat-toast" id="teamChatToast" hidden></div>
   <section class="team-chat-popover" id="teamChatPopover" aria-hidden="true">
     <div class="team-chat-head">
       <div>
@@ -59,6 +60,7 @@
     </div>
     <div class="team-chat-foot">
       <a href="{% url 'staff_messages' %}">Open full inbox →</a>
+      <button type="button" class="team-chat-alert-toggle" id="teamChatAlertToggle">Enable alerts</button>
     </div>
   </section>
   <button type="button" class="team-chat-fab" id="teamChatFab" aria-expanded="false" aria-controls="teamChatPopover">
@@ -75,8 +77,17 @@
   const popover = document.getElementById("teamChatPopover");
   const body = document.getElementById("teamChatBody");
   const badge = document.getElementById("teamChatBadge");
+  const toast = document.getElementById("teamChatToast");
+  const alertToggle = document.getElementById("teamChatAlertToggle");
   const summaryUrl = widget.dataset.summaryUrl;
   let opened = false;
+  let initialized = false;
+  let lastUnread = 0;
+  let lastSignature = "";
+  let pollTimer = null;
+  let inFlight = false;
+  let audioContext = null;
+  const soundKey = "aibgTeamChatSound";
 
   function escapeHtml(value) {
     const element = document.createElement("div");
@@ -84,15 +95,107 @@
     return element.innerHTML;
   }
 
+  function alertsEnabled() {
+    return localStorage.getItem(soundKey) !== "off";
+  }
+
+  function updateAlertToggle() {
+    if (!alertToggle) return;
+    const desktopReady = "Notification" in window && Notification.permission === "granted";
+    alertToggle.textContent = alertsEnabled()
+      ? (desktopReady ? "Alerts on" : "Enable desktop alerts")
+      : "Enable alerts";
+    alertToggle.classList.toggle("enabled", alertsEnabled());
+  }
+
+  function ensureAudio() {
+    if (!audioContext) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return null;
+      audioContext = new AudioContext();
+    }
+    if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+    return audioContext;
+  }
+
+  function playDing() {
+    if (!alertsEnabled()) return;
+    const context = ensureAudio();
+    if (!context) return;
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(880, context.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(1320, context.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.0001, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.18, context.currentTime + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.28);
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.3);
+  }
+
+  function showToast(thread) {
+    if (!toast || !thread) return;
+    toast.innerHTML = `<strong>${escapeHtml(thread.title || "New team message")}</strong><span>${escapeHtml(thread.last_sender)} · ${escapeHtml(thread.last_body)}</span>`;
+    toast.hidden = false;
+    widget.classList.add("toast-visible");
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => {
+      widget.classList.remove("toast-visible");
+      toast.hidden = true;
+    }, 6200);
+  }
+
+  function showDesktopNotification(thread) {
+    if (!alertsEnabled() || !("Notification" in window) || Notification.permission !== "granted" || !thread) return;
+    try {
+      const notification = new Notification(thread.title || "New team message", {
+        body: `${thread.last_sender}: ${thread.last_body}`,
+        tag: `aibg-thread-${thread.id}`,
+        icon: "{% static 'img/ai-business-gurus-logo-nav.png' %}",
+      });
+      notification.onclick = () => {
+        window.focus();
+        window.location.href = thread.url;
+      };
+    } catch (error) {
+      // Browser notification support varies; toast + badge still work.
+    }
+  }
+
+  function notifyIfNeeded(data) {
+    const unread = Number(data.unread_count || 0);
+    const threads = data.threads || [];
+    const newestUnread = threads.find((thread) => Number(thread.unread_count || 0) > 0);
+    if (initialized && unread > lastUnread && newestUnread) {
+      playDing();
+      showToast(newestUnread);
+      showDesktopNotification(newestUnread);
+    }
+    initialized = true;
+    lastUnread = unread;
+  }
+
   function setOpen(next) {
     opened = next;
     widget.classList.toggle("open", opened);
     button.setAttribute("aria-expanded", opened ? "true" : "false");
     popover.setAttribute("aria-hidden", opened ? "false" : "true");
-    if (opened) fetchSummary();
+    if (opened) {
+      ensureAudio();
+      fetchSummary({force: true});
+    }
   }
 
   function render(data) {
+    const signature = JSON.stringify({
+      unread: data.unread_count || 0,
+      threads: (data.threads || []).map((thread) => [thread.id, thread.unread_count, thread.last_body, thread.updated]),
+    });
+    if (signature === lastSignature) return;
+    lastSignature = signature;
     const unread = Number(data.unread_count || 0);
     if (unread > 0) {
       badge.hidden = false;
@@ -105,7 +208,7 @@
     const threads = data.threads || [];
     body.innerHTML = threads.length ? threads.map((thread) => {
       const initial = escapeHtml((thread.title || "M").slice(0, 1).toUpperCase());
-      const unreadPill = thread.unread_count ? `<span class="team-chat-thread-badge">${thread.unread_count}</span>` : "";
+      const unreadPill = thread.unread_count ? `<span class="team-chat-thread-badge">${escapeHtml(String(thread.unread_count))}</span>` : "";
       return `<a class="team-chat-thread ${thread.unread_count ? "unread" : ""}" href="${thread.url}">
         <span class="avatar-dot">${initial}</span>
         <span class="team-chat-thread-copy">
@@ -117,25 +220,49 @@
     }).join("") : `<div class="team-chat-empty">No team chats yet. Start one when the squad needs a thread.</div>`;
   }
 
-  async function fetchSummary() {
+  function scheduleNextPoll() {
+    clearTimeout(pollTimer);
+    const delay = document.hidden ? 45000 : (opened ? 12000 : 22000);
+    pollTimer = setTimeout(() => fetchSummary(), delay);
+  }
+
+  async function fetchSummary(options = {}) {
+    if (inFlight && !options.force) return;
+    inFlight = true;
     try {
       const response = await fetch(summaryUrl, {headers: {"X-Requested-With": "fetch"}});
       if (!response.ok) return;
-      render(await response.json());
+      const data = await response.json();
+      notifyIfNeeded(data);
+      render(data);
     } catch (error) {
       // Notification polling is best-effort; the full inbox remains available.
+    } finally {
+      inFlight = false;
+      scheduleNextPoll();
     }
   }
 
   button.addEventListener("click", () => setOpen(!opened));
+  if (alertToggle) {
+    alertToggle.addEventListener("click", async () => {
+      localStorage.setItem(soundKey, "on");
+      ensureAudio();
+      if ("Notification" in window && Notification.permission === "default") {
+        await Notification.requestPermission();
+      }
+      updateAlertToggle();
+    });
+  }
   document.addEventListener("click", (event) => {
     if (opened && !widget.contains(event.target)) setOpen(false);
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && opened) setOpen(false);
   });
+  document.addEventListener("visibilitychange", () => fetchSummary({force: true}));
+  updateAlertToggle();
   fetchSummary();
-  setInterval(fetchSummary, 15000);
 })();
 </script>
 {% endif %}

@@ -5,6 +5,7 @@ urlpatterns = [
     path("leads/new/", views.lead_create, name="lead_create"),
     path("leads/upload/", views.lead_upload, name="lead_upload"),
     path("leads/export/", views.export_leads, name="lead_export"),
+    path("imports/<int:pk>/delete-sheet/", views.lead_import_delete_sheet, name="lead_import_delete_sheet"),
     path("imports/<int:pk>/", views.lead_import_detail, name="lead_import_detail"),
     path("queues/<str:queue_type>/", views.lead_queue, name="lead_queue"),
     path("scorecards/", views.scorecards, name="sales_scorecards"),
