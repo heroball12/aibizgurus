@@ -4,6 +4,7 @@ urlpatterns = [
     path("", views.crm_home, name="crm_home"),
     path("leads/new/", views.lead_create, name="lead_create"),
     path("leads/upload/", views.lead_upload, name="lead_upload"),
+    path("leads/actions/", views.lead_bulk_action, name="lead_bulk_action"),
     path("leads/export/", views.export_leads, name="lead_export"),
     path("imports/<int:pk>/delete-sheet/", views.lead_import_delete_sheet, name="lead_import_delete_sheet"),
     path("imports/<int:pk>/", views.lead_import_detail, name="lead_import_detail"),

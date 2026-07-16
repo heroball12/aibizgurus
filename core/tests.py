@@ -1,5 +1,6 @@
 from unittest.mock import patch
 from types import SimpleNamespace
+from datetime import timedelta
 import io
 import tempfile
 import zipfile
@@ -8,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from assistant_ai.models import AssistantRole, Conversation, Message, UsageRecord
 from assistant_ai.services import choose_openai_key
@@ -480,7 +482,7 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(lead_import.updated_count, 1)
         self.assertGreaterEqual(lead_import.review_count, 1)
 
-    def test_admin_can_archive_all_leads_from_imported_sheet(self):
+    def test_admin_can_hard_delete_all_leads_from_imported_sheet(self):
         admin = User.objects.create_user(username="sheet-admin", password="OpsPass123!", role="admin")
         self.client.force_login(admin)
         workbook = build_minimal_xlsx([
@@ -498,14 +500,92 @@ class PlatformFlowTests(TestCase):
         self.assertRedirects(response, reverse("lead_import_detail", args=[lead_import.pk]))
         report = self.client.get(reverse("lead_import_detail", args=[lead_import.pk]))
         self.assertContains(report, "July Sheet")
-        self.assertContains(report, "Archive this sheet")
+        self.assertContains(report, "Delete this sheet")
         self.assertEqual(Lead.objects.filter(source_file="sheet-delete.xlsx", source_sheet="July Sheet", archived=False).count(), 2)
 
         response = self.client.post(reverse("lead_import_delete_sheet", args=[lead_import.pk]), {"source_sheet": "July Sheet"})
         self.assertRedirects(response, reverse("lead_import_detail", args=[lead_import.pk]))
-        self.assertEqual(Lead.objects.filter(source_file="sheet-delete.xlsx", source_sheet="July Sheet", archived=False).count(), 0)
-        self.assertEqual(Lead.objects.filter(source_file="sheet-delete.xlsx", source_sheet="July Sheet", archived=True).count(), 2)
-        self.assertEqual(LeadActivity.objects.filter(metadata__bulk_action="archive_sheet").count(), 2)
+        self.assertEqual(Lead.objects.filter(source_file="sheet-delete.xlsx", source_sheet="July Sheet").count(), 0)
+        self.assertEqual(LeadActivity.objects.filter(metadata__bulk_action="archive_sheet").count(), 0)
+
+    def test_admin_can_filter_update_and_bulk_hard_delete_leads_from_lists(self):
+        admin = User.objects.create_user(username="bulk-admin", password="OpsPass123!", role="admin")
+        sdr_a = User.objects.create_user(username="bulk-a@aibiz.guru", password="OpsPass123!", role="employee", first_name="BulkA")
+        sdr_b = User.objects.create_user(username="bulk-b@aibiz.guru", password="OpsPass123!", role="employee", first_name="BulkB")
+        keep = Lead.objects.create(
+            lead_type="internal_sales",
+            business_name="Keep Co",
+            assigned_to=sdr_b,
+            source_file="Keep.xlsx",
+            source_sheet="Keep Sheet",
+            status="new",
+        )
+        delete_one = Lead.objects.create(
+            lead_type="internal_sales",
+            business_name="Delete One Co",
+            assigned_to=sdr_a,
+            source_file="Tracker.xlsx",
+            source_sheet="Katie",
+            status="new",
+        )
+        delete_two = Lead.objects.create(
+            lead_type="internal_sales",
+            business_name="Delete Two Co",
+            assigned_to=sdr_a,
+            source_file="Tracker.xlsx",
+            source_sheet="Katie",
+            status="follow_up",
+        )
+        self.client.force_login(admin)
+        filtered = self.client.get(reverse("crm_home"), {"assigned_to": str(sdr_a.pk), "source_sheet": "Katie", "sort": "sheet"})
+        self.assertContains(filtered, "Delete One Co")
+        self.assertContains(filtered, "Delete Two Co")
+        self.assertNotContains(filtered, "Keep Co")
+        self.assertContains(filtered, "Delete selected")
+
+        response = self.client.post(reverse("lead_bulk_action"), {
+            "action": "update_selected",
+            "lead_ids": [str(delete_one.pk)],
+            "status": "hot_lead",
+            "lead_temperature": "hot",
+            "next": reverse("crm_home"),
+        })
+        self.assertRedirects(response, reverse("crm_home"))
+        delete_one.refresh_from_db()
+        self.assertEqual(delete_one.status, "hot_lead")
+        self.assertEqual(delete_one.lead_temperature, "hot")
+
+        response = self.client.post(reverse("lead_bulk_action"), {
+            "action": "delete_selected",
+            "lead_ids": [str(delete_one.pk), str(delete_two.pk)],
+            "next": reverse("crm_home"),
+        })
+        self.assertRedirects(response, reverse("crm_home"))
+        self.assertFalse(Lead.objects.filter(pk__in=[delete_one.pk, delete_two.pk]).exists())
+        self.assertTrue(Lead.objects.filter(pk=keep.pk).exists())
+
+        filter_delete_one = Lead.objects.create(
+            lead_type="internal_sales",
+            business_name="Filter Delete One",
+            assigned_to=sdr_b,
+            source_file="Filter.xlsx",
+            source_sheet="Purge",
+        )
+        filter_delete_two = Lead.objects.create(
+            lead_type="internal_sales",
+            business_name="Filter Delete Two",
+            assigned_to=sdr_b,
+            source_file="Filter.xlsx",
+            source_sheet="Purge",
+        )
+        response = self.client.post(reverse("lead_bulk_action"), {
+            "action": "delete_filtered",
+            "filter_source_sheet": "Purge",
+            "next": reverse("crm_home"),
+        })
+        self.assertRedirects(response, reverse("crm_home"))
+        self.assertFalse(Lead.objects.filter(pk__in=[filter_delete_one.pk, filter_delete_two.pk]).exists())
+        self.assertTrue(Lead.objects.filter(pk=keep.pk).exists())
 
     def test_owner_or_admin_can_manage_staff_users(self):
         admin = User.objects.create_user(username="staff-admin", password="OpsPass123!", role="admin")
@@ -574,8 +654,7 @@ class PlatformFlowTests(TestCase):
         self.assertContains(detail, reverse("lead_delete", args=[lead.pk]))
         response = self.client.post(reverse("lead_delete", args=[lead.pk]))
         self.assertRedirects(response, reverse("crm_home"))
-        lead.refresh_from_db()
-        self.assertTrue(lead.archived)
+        self.assertFalse(Lead.objects.filter(pk=lead.pk).exists())
         self.assertEqual(self.client.get(reverse("lead_detail", args=[lead.pk])).status_code, 404)
 
     def test_staff_messaging_owner_oversight_and_group_messages(self):
@@ -698,10 +777,35 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(entry.note, "Finished outreach block")
 
         self.client.force_login(admin)
+        overdue = TimeClockEntry.objects.create(
+            employee=employee,
+            clock_in=timezone.now() - timedelta(hours=9),
+            note="Forgot to clock out",
+        )
         admin_view = self.client.get(reverse("staff_time_clock_admin"))
         self.assertEqual(admin_view.status_code, 200)
         self.assertContains(admin_view, "Team Time Clock")
         self.assertContains(admin_view, "Clock Employee")
+        overdue.refresh_from_db()
+        self.assertIsNotNone(overdue.clock_out)
+        self.assertIn("Auto clock-out after 8 hours", overdue.note)
+
+        manual = TimeClockEntry.objects.create(employee=employee, clock_in=timezone.now() - timedelta(hours=1))
+        response = self.client.post(reverse("staff_time_clock_entry_clock_out", args=[manual.pk]))
+        self.assertRedirects(response, reverse("staff_time_clock_admin"))
+        manual.refresh_from_db()
+        self.assertIsNotNone(manual.clock_out)
+
+        edit_clock_in = (timezone.localtime(manual.clock_in) - timedelta(minutes=15)).strftime("%Y-%m-%dT%H:%M")
+        edit_clock_out = timezone.localtime(manual.clock_out).strftime("%Y-%m-%dT%H:%M")
+        response = self.client.post(reverse("staff_time_clock_entry_edit", args=[manual.pk]), {
+            "clock_in": edit_clock_in,
+            "clock_out": edit_clock_out,
+            "note": "Corrected punch",
+        })
+        self.assertRedirects(response, reverse("staff_time_clock_admin"))
+        manual.refresh_from_db()
+        self.assertEqual(manual.note, "Corrected punch")
         performance = self.client.get(reverse("staff_performance", args=[employee.pk]))
         self.assertEqual(performance.status_code, 200)
         self.assertContains(performance, "Time Clock")

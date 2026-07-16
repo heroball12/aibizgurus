@@ -10,6 +10,7 @@ from django.utils import timezone
 from core.permissions import owner_required
 from clients.models import ClientAccount, AIInstance
 from crm.models import Lead, LeadActivity, LeadImport
+from crm.views import apply_lead_filters, lead_filter_context, lead_filter_values, order_leads
 from .forms import StaffUserForm
 from .models import ActivityLog, TimeClockEntry
 from .utils import activity_table_exists, log_activity
@@ -102,6 +103,8 @@ def staff_users(request):
 def staff_performance(request, pk):
     staff_user = get_object_or_404(User, pk=pk, role__in=["employee", "admin"])
     leads = Lead.objects.filter(lead_type="internal_sales", archived=False, assigned_to=staff_user)
+    filters = lead_filter_values(request)
+    filtered_leads = order_leads(apply_lead_filters(leads, filters), filters["sort"])
     today = timezone.localdate()
     closed_statuses = ["closed_won", "closed_lost", "not_interested", "do_not_contact", "permanently_closed"]
     data = leads.aggregate(
@@ -169,8 +172,10 @@ def staff_performance(request, pk):
         "open_time_entry": open_time_entry,
         "recent_time_entries": recent_time_entries,
         "weekly_hours": round(weekly_hours, 2),
-        "page_obj": paginate(request, leads.select_related("assigned_to").order_by("-created_at"), 50),
+        "page_obj": paginate(request, filtered_leads.select_related("assigned_to"), 50),
+        "filtered_count": filtered_leads.count(),
         "query_string": query_params.urlencode(),
+        **lead_filter_context(request, leads),
     })
 
 

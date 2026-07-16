@@ -41,10 +41,10 @@
           <span><strong>{{ group.review_count }}</strong> review</span>
         </div>
         {% if can_delete_import_sheets %}
-          <form method="post" action="{% url 'lead_import_delete_sheet' lead_import.pk %}" onsubmit="return confirm('Archive all active leads imported from sheet {{ group.source_sheet|default:"CSV"|escapejs }}? This removes them from active queues but keeps audit history.');">
+          <form method="post" action="{% url 'lead_import_delete_sheet' lead_import.pk %}" onsubmit="return confirm('Permanently delete every active lead imported from sheet {{ group.source_sheet|default:"CSV"|escapejs }}? This scrubs the leads and related CRM history from the system.');">
             {% csrf_token %}
             <input type="hidden" name="source_sheet" value="{{ group.source_sheet|default:"CSV" }}">
-            <button type="submit" class="btn danger">Archive this sheet</button>
+            <button type="submit" class="btn danger">Delete this sheet</button>
           </form>
         {% endif %}
       </article>
@@ -54,39 +54,6 @@
   </div>
 </section>
 
-<section class="sales-panel">
-  <div class="section-head">
-    <div>
-      <span class="ops-label">Imported Leads</span>
-      <h2>Records from this tracker</h2>
-    </div>
-  </div>
-  <table class="sales-table">
-    <tr><th>Business</th><th>Status</th><th>Temp</th><th>Confidence</th><th>Sheet</th><th>Review</th><th></th></tr>
-    {% for lead in page_obj %}
-      <tr>
-        <td>{{ lead.business_name|default:lead.name|default:"—" }}</td>
-        <td><span class="status-badge">{{ lead.get_status_display }}</span></td>
-        <td><span class="temp-badge {{ lead.lead_temperature }}">{{ lead.get_lead_temperature_display }}</span></td>
-        <td>{{ lead.classification_confidence }}</td>
-        <td>{{ lead.source_sheet|default:"CSV" }}</td>
-        <td>{% if lead.needs_review %}Yes{% else %}No{% endif %}</td>
-        <td><a href="{% url 'lead_detail' lead.pk %}">Open →</a></td>
-      </tr>
-    {% empty %}
-      <tr><td colspan="7">No leads found for this import.</td></tr>
-    {% endfor %}
-  </table>
-  {% if page_obj.paginator.num_pages > 1 %}
-    <nav class="pager" aria-label="Import result pages">
-      {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}">← Previous</a>
-      {% endif %}
-      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">Next →</a>
-      {% endif %}
-    </nav>
-  {% endif %}
-</section>
+{% include "crm/_lead_filters.html" %}
+{% include "crm/_lead_table.html" with table_label="Imported Leads" table_title="Records from this tracker" %}
 {% endblock %}

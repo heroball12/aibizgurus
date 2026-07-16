@@ -8,6 +8,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.dateparse import parse_date
 from django.utils import timezone
 
 from audit.utils import log_activity
@@ -48,6 +49,188 @@ def internal_leads_for_user(user):
 
 def get_internal_lead_or_404(user, pk):
     return get_object_or_404(internal_leads_for_user(user), pk=pk)
+
+
+LEAD_SORTS = {
+    "newest": "-created_at",
+    "oldest": "created_at",
+    "assigned": "assigned_to__first_name",
+    "sheet": "source_sheet",
+    "file": "source_file",
+    "status": "status",
+    "temperature": "-lead_temperature",
+    "followup": "follow_up_date",
+    "business": "business_name",
+}
+
+
+def assignable_staff():
+    return User.objects.filter(role__in=["employee", "admin"], is_active=True).order_by("first_name", "username")
+
+
+def lead_filter_values(request):
+    return {
+        "q": request.GET.get("q", "").strip(),
+        "assigned_to": request.GET.get("assigned_to", "").strip(),
+        "source_file": request.GET.get("source_file", "").strip(),
+        "source_sheet": request.GET.get("source_sheet", "").strip(),
+        "status": request.GET.get("status", "").strip(),
+        "temperature": request.GET.get("temperature", "").strip(),
+        "sort": request.GET.get("sort", "newest").strip() or "newest",
+    }
+
+
+def lead_filter_values_from_post(request):
+    return {
+        "q": request.POST.get("filter_q", "").strip(),
+        "assigned_to": request.POST.get("filter_assigned_to", "").strip(),
+        "source_file": request.POST.get("filter_source_file", "").strip(),
+        "source_sheet": request.POST.get("filter_source_sheet", "").strip(),
+        "status": request.POST.get("filter_status", "").strip(),
+        "temperature": request.POST.get("filter_temperature", "").strip(),
+        "sort": request.POST.get("filter_sort", "newest").strip() or "newest",
+    }
+
+
+def apply_lead_filters(leads, filters):
+    if filters["q"]:
+        q = filters["q"]
+        leads = leads.filter(
+            Q(name__icontains=q)
+            | Q(business_name__icontains=q)
+            | Q(phone__icontains=q)
+            | Q(email__icontains=q)
+            | Q(website__icontains=q)
+            | Q(notes__icontains=q)
+            | Q(cleaned_notes__icontains=q)
+        )
+    if filters["assigned_to"]:
+        if filters["assigned_to"] == "unassigned":
+            leads = leads.filter(assigned_to__isnull=True)
+        else:
+            leads = leads.filter(assigned_to_id=filters["assigned_to"])
+    if filters["source_file"]:
+        leads = leads.filter(source_file=filters["source_file"])
+    if filters["source_sheet"]:
+        leads = leads.filter(source_sheet=filters["source_sheet"])
+    if filters["status"]:
+        leads = leads.filter(status=filters["status"])
+    if filters["temperature"]:
+        leads = leads.filter(lead_temperature=filters["temperature"])
+    return leads
+
+
+def order_leads(leads, sort_key):
+    primary = LEAD_SORTS.get(sort_key, "-created_at")
+    ordering = [primary]
+    if primary not in {"-created_at", "created_at"}:
+        ordering.append("-created_at")
+    return leads.order_by(*ordering)
+
+
+def lead_filter_context(request, base_leads):
+    filters = lead_filter_values(request)
+    active = base_leads
+    return {
+        "lead_filters": filters,
+        "assignable_users": assignable_staff(),
+        "source_files": active.exclude(source_file="").values_list("source_file", flat=True).distinct().order_by("source_file")[:250],
+        "source_sheets": active.exclude(source_sheet="").values_list("source_sheet", flat=True).distinct().order_by("source_sheet")[:250],
+        "status_choices": Lead.STATUS_CHOICES,
+        "temperature_choices": Lead._meta.get_field("lead_temperature").choices,
+        "sort_choices": [
+            ("newest", "Newest first"),
+            ("oldest", "Oldest first"),
+            ("assigned", "Assigned person"),
+            ("sheet", "Sheet name"),
+            ("file", "Source file"),
+            ("status", "Status"),
+            ("temperature", "Temperature"),
+            ("followup", "Follow-up date"),
+            ("business", "Business name"),
+        ],
+        "query_string": query_without_page(request),
+        "can_manage_leads": is_sales_manager(request.user),
+    }
+
+
+def query_without_page(request):
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
+    return query_params.urlencode()
+
+
+def safe_next_url(request):
+    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER") or "crm_home"
+    if isinstance(next_url, str) and next_url.startswith("/") and not next_url.startswith("//"):
+        return next_url
+    return "crm_home"
+
+
+def hard_delete_leads(user, request, leads, reason):
+    lead_ids = list(leads.values_list("pk", flat=True))
+    count = len(lead_ids)
+    if not count:
+        return 0
+    sample = list(leads.values_list("business_name", "name")[:10])
+    deleted, _ = leads.delete()
+    log_activity(
+        user=user,
+        request=request,
+        action="delete",
+        model_label="crm.Lead",
+        message=f"Hard-deleted {count} internal sales lead{'' if count == 1 else 's'} ({reason}).",
+        metadata={
+            "lead_ids": lead_ids[:200],
+            "sample": [business or name for business, name in sample],
+            "requested_count": count,
+            "deleted_objects": deleted,
+            "reason": reason,
+        },
+    )
+    return count
+
+
+def update_leads_from_action(user, request, leads):
+    updates = {}
+    status = request.POST.get("status", "").strip()
+    temperature = request.POST.get("lead_temperature", "").strip()
+    follow_up_date = request.POST.get("follow_up_date", "").strip()
+    assigned_to = request.POST.get("assigned_to", "").strip()
+    needs_review = request.POST.get("needs_review", "")
+
+    valid_statuses = {value for value, _ in Lead.STATUS_CHOICES}
+    valid_temperatures = {value for value, _ in Lead._meta.get_field("lead_temperature").choices}
+    if status in valid_statuses:
+        updates["status"] = status
+    if temperature in valid_temperatures:
+        updates["lead_temperature"] = temperature
+    if follow_up_date:
+        parsed_date = parse_date(follow_up_date)
+        if parsed_date:
+            updates["follow_up_date"] = parsed_date
+    if assigned_to and is_sales_manager(user):
+        if assigned_to == "unassigned":
+            updates["assigned_to_id"] = None
+        elif User.objects.filter(pk=assigned_to, role__in=["employee", "admin"], is_active=True).exists():
+            updates["assigned_to_id"] = assigned_to
+    if needs_review in {"on", "true", "1", "yes"}:
+        updates["needs_review"] = True
+    elif needs_review in {"off", "false", "0", "no"}:
+        updates["needs_review"] = False
+
+    if not updates:
+        return 0
+    count = leads.update(**updates)
+    log_activity(
+        user=user,
+        request=request,
+        action="update",
+        model_label="crm.Lead",
+        message=f"Bulk-updated {count} internal sales lead{'' if count == 1 else 's'}.",
+        metadata={"updates": updates, "count": count},
+    )
+    return count
 
 
 def sales_metrics(qs):
@@ -149,8 +332,12 @@ def crm_home(request):
         imports = imports.filter(uploaded_by=request.user)
     imports = imports.order_by("-created_at")[:6]
     scorecards = build_scorecards(leads, limit=8)
+    filters = lead_filter_values(request)
+    filtered_leads = order_leads(apply_lead_filters(leads, filters), filters["sort"])
     context = {
-        "leads": leads.order_by("-created_at")[:25],
+        "leads": filtered_leads[:25],
+        "page_obj": paginate(request, filtered_leads, 100),
+        "filtered_count": filtered_leads.count(),
         "metrics": sales_metrics(leads),
         "warm_leads": leads.filter(lead_temperature__in=["warm", "hot"]).order_by("-lead_temperature", "follow_up_date", "-created_at")[:10],
         "followups": leads.filter(Q(follow_up_date__lte=today) | Q(status__in=["callback_requested", "follow_up", "email_requested"])).order_by("follow_up_date", "-created_at")[:10],
@@ -158,6 +345,7 @@ def crm_home(request):
         "imports": imports,
         "scorecards": scorecards,
         "is_sales_manager": is_sales_manager(request.user),
+        **lead_filter_context(request, leads),
     }
     return render(request, "crm/crm_home.html", context)
 
@@ -347,7 +535,9 @@ def lead_import_detail(request, pk):
         imports = imports.filter(uploaded_by=request.user)
     lead_import = get_object_or_404(imports, pk=pk)
     lead_ids = lead_import.activities.values_list("lead_id", flat=True)
-    leads = internal_leads_for_user(request.user).filter(pk__in=lead_ids).select_related("assigned_to").order_by("-needs_review", "-created_at")
+    base_leads = internal_leads_for_user(request.user).filter(pk__in=lead_ids).select_related("assigned_to")
+    filters = lead_filter_values(request)
+    leads = order_leads(apply_lead_filters(base_leads, filters), filters["sort"])
     sheet_groups = list(
         internal_leads_for_user(request.user)
         .filter(pk__in=lead_ids)
@@ -364,6 +554,8 @@ def lead_import_detail(request, pk):
         "page_obj": paginate(request, leads, 75),
         "sheet_groups": sheet_groups,
         "can_delete_import_sheets": is_sales_manager(request.user),
+        "filtered_count": leads.count(),
+        **lead_filter_context(request, base_leads),
     })
 
 
@@ -387,41 +579,9 @@ def lead_import_delete_sheet(request, pk):
         .values_list("lead_id", flat=True)
         .distinct()
     )
-    leads = list(
-        Lead.objects
-        .filter(pk__in=lead_ids, lead_type="internal_sales", archived=False)
-        .only("pk", "status", "lead_temperature")
-    )
-    count = len(leads)
-    if count:
-        Lead.objects.filter(pk__in=[lead.pk for lead in leads]).update(archived=True)
-        LeadActivity.objects.bulk_create([
-            LeadActivity(
-                lead=lead,
-                user=request.user,
-                raw_note=f"Archived by sheet bulk action from import '{lead_import.original_filename}' / sheet '{source_sheet}'.",
-                cleaned_note=f"Archived by sheet bulk action from import '{lead_import.original_filename}' / sheet '{source_sheet}'.",
-                inferred_status=lead.status,
-                lead_temperature=lead.lead_temperature,
-                activity_type="status_change",
-                classification_source="manual",
-                manually_reviewed=True,
-                original_import=lead_import,
-                metadata={"bulk_action": "archive_sheet", "source_sheet": source_sheet},
-            )
-            for lead in leads
-        ])
-    log_activity(
-        user=request.user,
-        request=request,
-        action="delete",
-        model_label="crm.Lead",
-        object_id=lead_import.pk,
-        object_repr=f"{lead_import.original_filename} · {source_sheet}",
-        message=f"Archived {count} internal leads from imported sheet '{source_sheet}'.",
-        metadata={"lead_import_id": lead_import.pk, "source_sheet": source_sheet, "archived_count": count},
-    )
-    messages.success(request, f"Archived {count} lead{'' if count == 1 else 's'} from sheet '{source_sheet}'.")
+    leads = Lead.objects.filter(pk__in=lead_ids, lead_type="internal_sales", archived=False)
+    count = hard_delete_leads(request.user, request, leads, f"import sheet {lead_import.original_filename}/{source_sheet}")
+    messages.success(request, f"Permanently deleted {count} lead{'' if count == 1 else 's'} from sheet '{source_sheet}'.")
     return redirect("lead_import_detail", pk=lead_import.pk)
 
 
@@ -446,11 +606,63 @@ def lead_queue(request, queue_type):
     else:
         messages.error(request, "Unknown queue.")
         return redirect("crm_home")
+    filters = lead_filter_values(request)
+    filtered_leads = order_leads(apply_lead_filters(leads, filters), filters["sort"])
     return render(request, "crm/lead_queue.html", {
         "queue_type": queue_type,
         "title": titles[queue_type],
-        "page_obj": paginate(request, leads.order_by("follow_up_date", "-lead_temperature", "-created_at"), 50),
+        "page_obj": paginate(request, filtered_leads, 75),
+        "filtered_count": filtered_leads.count(),
+        **lead_filter_context(request, leads),
     })
+
+
+@employee_required
+def lead_bulk_action(request):
+    if request.method != "POST":
+        return redirect("crm_home")
+    next_url = safe_next_url(request)
+    action = request.POST.get("action", "").strip()
+    selected_ids = request.POST.getlist("lead_ids")
+    single_id = request.POST.get("lead_id", "").strip()
+    if single_id:
+        selected_ids = [single_id]
+    leads = internal_leads_for_user(request.user).filter(pk__in=selected_ids, lead_type="internal_sales")
+
+    if action in {"delete", "delete_selected"}:
+        if not selected_ids:
+            messages.error(request, "Select at least one lead first.")
+            return redirect(next_url)
+        if not can_delete_internal_leads(request.user):
+            messages.error(request, "Only owner/admin users can permanently delete leads.")
+            return redirect(next_url)
+        count = hard_delete_leads(request.user, request, leads, "bulk/list action")
+        messages.success(request, f"Permanently deleted {count} lead{'' if count == 1 else 's'}.")
+        return redirect(next_url)
+
+    if action == "delete_filtered":
+        if not can_delete_internal_leads(request.user):
+            messages.error(request, "Only owner/admin users can permanently delete leads.")
+            return redirect(next_url)
+        filters = lead_filter_values_from_post(request)
+        filtered = apply_lead_filters(internal_leads_for_user(request.user), filters)
+        count = hard_delete_leads(request.user, request, filtered, "all matching active filters")
+        messages.success(request, f"Permanently deleted {count} matching lead{'' if count == 1 else 's'}.")
+        return redirect(next_url)
+
+    if action in {"update", "update_selected"}:
+        if not selected_ids:
+            messages.error(request, "Select at least one lead first.")
+            return redirect(next_url)
+        count = update_leads_from_action(request.user, request, leads)
+        if count:
+            messages.success(request, f"Updated {count} lead{'' if count == 1 else 's'}.")
+        else:
+            messages.info(request, "No lead changes were selected.")
+        return redirect(next_url)
+
+    messages.error(request, "Unknown lead action.")
+    return redirect(next_url)
 
 
 @employee_required
@@ -521,27 +733,6 @@ def lead_delete(request, pk):
         messages.error(request, "Use the delete button on the lead page to remove a lead.")
         return redirect("lead_detail", pk=lead.pk)
 
-    lead.archived = True
-    lead.save(update_fields=["archived"])
-    LeadActivity.objects.create(
-        lead=lead,
-        user=request.user,
-        raw_note="Lead deleted from active CRM.",
-        cleaned_note="Lead deleted from active CRM.",
-        inferred_status=lead.status,
-        lead_temperature=lead.lead_temperature,
-        activity_type="status_change",
-        classification_source="manual",
-        manually_reviewed=True,
-    )
-    log_activity(
-        user=request.user,
-        request=request,
-        action="delete",
-        model_label="crm.Lead",
-        object_id=lead.pk,
-        object_repr=str(lead),
-        message="Archived internal sales lead from active CRM.",
-    )
-    messages.success(request, "Lead deleted from active CRM.")
+    hard_delete_leads(request.user, request, Lead.objects.filter(pk=lead.pk), "single lead detail action")
+    messages.success(request, "Lead permanently deleted from the system.")
     return redirect("crm_home")

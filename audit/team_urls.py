@@ -12,4 +12,6 @@ urlpatterns = [
     path("messages/attachments/<int:pk>/", team_views.staff_message_attachment, name="staff_message_attachment"),
     path("time-clock/", team_views.staff_time_clock, name="staff_time_clock"),
     path("time-clock/admin/", team_views.staff_time_clock_admin, name="staff_time_clock_admin"),
+    path("time-clock/admin/entries/<int:pk>/edit/", team_views.staff_time_clock_entry_edit, name="staff_time_clock_entry_edit"),
+    path("time-clock/admin/entries/<int:pk>/clock-out/", team_views.staff_time_clock_entry_clock_out, name="staff_time_clock_entry_clock_out"),
 ]

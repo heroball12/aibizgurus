@@ -1,0 +1,66 @@
+<section class="sales-panel lead-control-panel">
+  <form method="get" class="lead-filter-form">
+    <div>
+      <label for="lead-filter-q">Search</label>
+      <input id="lead-filter-q" type="search" name="q" value="{{ lead_filters.q }}" placeholder="Business, contact, phone, email, notes…">
+    </div>
+    <div>
+      <label for="lead-filter-assigned">Assigned to</label>
+      <select id="lead-filter-assigned" name="assigned_to">
+        <option value="">All assigned</option>
+        {% if can_manage_leads %}<option value="unassigned" {% if lead_filters.assigned_to == "unassigned" %}selected{% endif %}>Unassigned</option>{% endif %}
+        {% for staff_user in assignable_users %}
+          <option value="{{ staff_user.pk }}" {% if lead_filters.assigned_to == staff_user.pk|stringformat:"s" %}selected{% endif %}>{{ staff_user.get_full_name|default:staff_user.username }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="lead-filter-sheet">Sheet</label>
+      <select id="lead-filter-sheet" name="source_sheet">
+        <option value="">All sheets</option>
+        {% for sheet in source_sheets %}
+          <option value="{{ sheet }}" {% if lead_filters.source_sheet == sheet %}selected{% endif %}>{{ sheet }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="lead-filter-file">File</label>
+      <select id="lead-filter-file" name="source_file">
+        <option value="">All files</option>
+        {% for file in source_files %}
+          <option value="{{ file }}" {% if lead_filters.source_file == file %}selected{% endif %}>{{ file }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="lead-filter-status">Status</label>
+      <select id="lead-filter-status" name="status">
+        <option value="">All statuses</option>
+        {% for value,label in status_choices %}
+          <option value="{{ value }}" {% if lead_filters.status == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="lead-filter-temp">Temperature</label>
+      <select id="lead-filter-temp" name="temperature">
+        <option value="">All temps</option>
+        {% for value,label in temperature_choices %}
+          <option value="{{ value }}" {% if lead_filters.temperature == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="lead-filter-sort">Sort by</label>
+      <select id="lead-filter-sort" name="sort">
+        {% for value,label in sort_choices %}
+          <option value="{{ value }}" {% if lead_filters.sort == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="lead-filter-actions">
+      <button class="btn neon" type="submit">Apply controls</button>
+      <a class="btn ghost" href="{{ request.path }}">Reset</a>
+    </div>
+  </form>
+</section>

@@ -13,34 +13,6 @@
   </div>
 </section>
 
-<section class="sales-panel">
-  <table class="sales-table">
-    <tr><th>Business</th><th>Contact</th><th>Status</th><th>Temp</th><th>Phone</th><th>Email</th><th>Follow-up</th><th></th></tr>
-    {% for lead in page_obj %}
-      <tr>
-        <td>{{ lead.business_name|default:"—" }}</td>
-        <td>{{ lead.name|default:lead.point_of_contact|default:"—" }}</td>
-        <td><span class="status-badge">{{ lead.get_status_display }}</span></td>
-        <td><span class="temp-badge {{ lead.lead_temperature }}">{{ lead.get_lead_temperature_display }}</span></td>
-        <td>{% if lead.phone %}<a href="tel:{{ lead.phone }}">{{ lead.phone }}</a>{% else %}—{% endif %}</td>
-        <td>{% if lead.email %}<a href="mailto:{{ lead.email }}">Email</a>{% else %}—{% endif %}</td>
-        <td>{{ lead.follow_up_date|default:"—" }}</td>
-        <td><a href="{% url 'lead_detail' lead.pk %}">Open →</a></td>
-      </tr>
-    {% empty %}
-      <tr><td colspan="8">Nothing in this queue yet.</td></tr>
-    {% endfor %}
-  </table>
-  {% if page_obj.paginator.num_pages > 1 %}
-    <nav class="pager" aria-label="Lead queue pages">
-      {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}">← Previous</a>
-      {% endif %}
-      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">Next →</a>
-      {% endif %}
-    </nav>
-  {% endif %}
-</section>
+{% include "crm/_lead_filters.html" %}
+{% include "crm/_lead_table.html" with table_label="Action Queue" table_title=title %}
 {% endblock %}

@@ -3,6 +3,8 @@ import re
 from django import forms
 from django.contrib.auth import get_user_model
 
+from .models import TimeClockEntry
+
 
 User = get_user_model()
 
@@ -111,3 +113,31 @@ class TimeClockNoteForm(forms.Form):
         label="Note",
         widget=forms.TextInput(attrs={"placeholder": "Optional note for this shift"}),
     )
+
+
+class TimeClockEntryForm(forms.ModelForm):
+    class Meta:
+        model = TimeClockEntry
+        fields = ["clock_in", "clock_out", "note"]
+        widgets = {
+            "clock_in": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "clock_out": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "note": forms.TextInput(attrs={"placeholder": "Optional shift note"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["clock_in"].input_formats = ["%Y-%m-%dT%H:%M"]
+        self.fields["clock_out"].input_formats = ["%Y-%m-%dT%H:%M"]
+        if self.instance and self.instance.pk:
+            self.initial["clock_in"] = self.instance.clock_in.astimezone().strftime("%Y-%m-%dT%H:%M")
+            if self.instance.clock_out:
+                self.initial["clock_out"] = self.instance.clock_out.astimezone().strftime("%Y-%m-%dT%H:%M")
+
+    def clean(self):
+        cleaned = super().clean()
+        clock_in = cleaned.get("clock_in")
+        clock_out = cleaned.get("clock_out")
+        if clock_in and clock_out and clock_out < clock_in:
+            raise forms.ValidationError("Clock out must be after clock in.")
+        return cleaned

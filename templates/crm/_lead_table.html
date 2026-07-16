@@ -1,0 +1,147 @@
+<section class="sales-panel lead-control-panel">
+  <div class="section-head">
+    <div>
+      <span class="ops-label">{{ table_label|default:"Lead Controls" }}</span>
+      <h2>{{ table_title|default:"Manage leads" }}</h2>
+      <p>{{ filtered_count|default:page_obj.paginator.count }} matching lead{{ filtered_count|default:page_obj.paginator.count|pluralize }}. Use filters, bulk actions, or edit rows directly.</p>
+    </div>
+  </div>
+
+  <form id="bulk-lead-form" method="post" action="{% url 'lead_bulk_action' %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <input type="hidden" name="filter_q" value="{{ lead_filters.q }}">
+    <input type="hidden" name="filter_assigned_to" value="{{ lead_filters.assigned_to }}">
+    <input type="hidden" name="filter_source_file" value="{{ lead_filters.source_file }}">
+    <input type="hidden" name="filter_source_sheet" value="{{ lead_filters.source_sheet }}">
+    <input type="hidden" name="filter_status" value="{{ lead_filters.status }}">
+    <input type="hidden" name="filter_temperature" value="{{ lead_filters.temperature }}">
+    <input type="hidden" name="filter_sort" value="{{ lead_filters.sort }}">
+  </form>
+  {% for lead in page_obj %}
+    <form id="lead-row-{{ lead.pk }}" method="post" action="{% url 'lead_bulk_action' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <input type="hidden" name="lead_id" value="{{ lead.pk }}">
+    </form>
+  {% endfor %}
+
+  <div class="lead-bulk-toolbar">
+    <label class="check-row bulk-select-row">
+      <input type="checkbox" id="selectAllLeads">
+      Select all visible
+    </label>
+    <select name="status" form="bulk-lead-form">
+      <option value="">Status…</option>
+      {% for value,label in status_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+    </select>
+    <select name="lead_temperature" form="bulk-lead-form">
+      <option value="">Temp…</option>
+      {% for value,label in temperature_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+    </select>
+    {% if can_manage_leads %}
+      <select name="assigned_to" form="bulk-lead-form">
+        <option value="">Assign…</option>
+        <option value="unassigned">Unassigned</option>
+        {% for staff_user in assignable_users %}
+          <option value="{{ staff_user.pk }}">{{ staff_user.get_full_name|default:staff_user.username }}</option>
+        {% endfor %}
+      </select>
+    {% endif %}
+    <input type="date" name="follow_up_date" form="bulk-lead-form" aria-label="Bulk follow-up date">
+    <button class="btn ghost" type="submit" name="action" value="update_selected" form="bulk-lead-form">Update selected</button>
+    {% if can_manage_leads %}
+      <button class="btn danger" type="submit" name="action" value="delete_selected" form="bulk-lead-form" onclick="return confirm('Permanently delete the selected leads? This scrubs them and their related CRM history from the system.');">Delete selected</button>
+      <button class="btn danger" type="submit" name="action" value="delete_filtered" form="bulk-lead-form" onclick="return confirm('Permanently delete ALL leads matching the current filters, including leads on other pages? This cannot be undone.');">Delete all matching filters</button>
+    {% endif %}
+  </div>
+
+  <div class="lead-control-table-wrap">
+    <table class="sales-table lead-control-table">
+      <tr>
+        <th></th>
+        <th>Business</th>
+        <th>Contact</th>
+        <th>Status</th>
+        <th>Temp</th>
+        <th>Assigned</th>
+        <th>Sheet / File</th>
+        <th>Follow-up</th>
+        <th>Actions</th>
+      </tr>
+      {% for lead in page_obj %}
+        <tr>
+          <td><input class="lead-select" type="checkbox" name="lead_ids" value="{{ lead.pk }}" form="bulk-lead-form" aria-label="Select {{ lead }}"></td>
+          <td>
+            <strong>{{ lead.business_name|default:"—" }}</strong>
+            <small>{{ lead.phone|default:"" }}{% if lead.email %} · {{ lead.email }}{% endif %}</small>
+          </td>
+          <td>{{ lead.name|default:lead.point_of_contact|default:"—" }}</td>
+          <td>
+            <select name="status" form="lead-row-{{ lead.pk }}">
+              {% for value,label in status_choices %}
+                <option value="{{ value }}" {% if lead.status == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            <select name="lead_temperature" form="lead-row-{{ lead.pk }}">
+              {% for value,label in temperature_choices %}
+                <option value="{{ value }}" {% if lead.lead_temperature == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            {% if can_manage_leads %}
+              <select name="assigned_to" form="lead-row-{{ lead.pk }}">
+                <option value="unassigned">Unassigned</option>
+                {% for staff_user in assignable_users %}
+                  <option value="{{ staff_user.pk }}" {% if lead.assigned_to_id == staff_user.pk %}selected{% endif %}>{{ staff_user.get_full_name|default:staff_user.username }}</option>
+                {% endfor %}
+              </select>
+            {% else %}
+              {{ lead.assigned_to|default:"Unassigned" }}
+            {% endif %}
+          </td>
+          <td>
+            <strong>{{ lead.source_sheet|default:"Manual" }}</strong>
+            <small>{{ lead.source_file|default:"Manual entry" }}</small>
+          </td>
+          <td><input type="date" name="follow_up_date" value="{{ lead.follow_up_date|date:'Y-m-d' }}" form="lead-row-{{ lead.pk }}"></td>
+          <td class="lead-row-actions">
+            <button class="btn small ghost" type="submit" name="action" value="update" form="lead-row-{{ lead.pk }}">Save</button>
+            <a class="btn small ghost" href="{% url 'lead_detail' lead.pk %}">Open</a>
+            {% if can_manage_leads %}
+              <button class="btn small danger" type="submit" name="action" value="delete" form="lead-row-{{ lead.pk }}" onclick="return confirm('Permanently delete this lead and scrub its CRM history?');">Delete</button>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="9">No leads match these controls.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pager" aria-label="Lead pages">
+      {% if page_obj.has_previous %}
+        <a href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}">← Previous</a>
+      {% endif %}
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}">Next →</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+</section>
+
+<script>
+(() => {
+  const selectAll = document.getElementById("selectAllLeads");
+  if (!selectAll) return;
+  const boxes = Array.from(document.querySelectorAll(".lead-select"));
+  selectAll.addEventListener("change", () => {
+    boxes.forEach((box) => { box.checked = selectAll.checked; });
+  });
+})();
+</script>

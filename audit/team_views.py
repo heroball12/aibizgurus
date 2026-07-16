@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 
-from .forms import StaffMessageForm, StaffMessageThreadForm, TimeClockNoteForm
+from .forms import StaffMessageForm, StaffMessageThreadForm, TimeClockEntryForm, TimeClockNoteForm
 from .models import StaffMessage, StaffMessageAttachment, StaffMessageParticipant, StaffMessageThread, TimeClockEntry
 from .utils import get_client_ip, log_activity
 
@@ -23,6 +23,7 @@ ALLOWED_ATTACHMENT_EXTENSIONS = {
 }
 MAX_ATTACHMENT_BYTES = 15 * 1024 * 1024
 MAX_ATTACHMENTS_PER_MESSAGE = 6
+AUTO_CLOCK_OUT_AFTER = timedelta(hours=8)
 
 
 def team_member_required(view_func):
@@ -41,6 +42,31 @@ def can_view_all_staff_messages(user):
 
 def can_manage_time_clock(user):
     return user.is_authenticated and (user.is_owner() or getattr(user, "role", "") == "admin")
+
+
+def auto_clock_out_overdue_entries(request=None):
+    now = timezone.now()
+    cutoff = now - AUTO_CLOCK_OUT_AFTER
+    overdue_entries = list(
+        TimeClockEntry.objects
+        .filter(clock_out__isnull=True, clock_in__lte=cutoff)
+        .select_related("employee")
+    )
+    for entry in overdue_entries:
+        entry.clock_out = entry.clock_in + AUTO_CLOCK_OUT_AFTER
+        auto_note = "Auto clock-out after 8 hours."
+        entry.note = f"{entry.note} · {auto_note}" if entry.note and auto_note not in entry.note else (entry.note or auto_note)
+        entry.save(update_fields=["clock_out", "note", "updated_at"])
+        log_activity(
+            user=getattr(request, "user", None) if request else None,
+            request=request,
+            action="update",
+            model_label="audit.TimeClockEntry",
+            object_id=entry.pk,
+            object_repr=str(entry),
+            message=f"Auto clocked out {entry.employee} after 8 hours.",
+        )
+    return len(overdue_entries)
 
 
 def team_threads_for_user(user):
@@ -297,6 +323,7 @@ def staff_message_attachment(request, pk):
 
 @team_member_required
 def staff_time_clock(request):
+    auto_clock_out_overdue_entries(request)
     open_entry = TimeClockEntry.objects.filter(employee=request.user, clock_out__isnull=True).order_by("-clock_in").first()
     form = TimeClockNoteForm(request.POST or None)
     if request.method == "POST":
@@ -361,6 +388,9 @@ def staff_time_clock_admin(request):
     if not can_manage_time_clock(request.user):
         messages.error(request, "Owner or admin access required.")
         return redirect("staff_time_clock")
+    auto_count = auto_clock_out_overdue_entries(request)
+    if auto_count:
+        messages.info(request, f"Auto clocked out {auto_count} overdue shift{'' if auto_count == 1 else 's'} at 8 hours.")
     staff = list(User.objects.filter(role__in=["employee", "admin"], is_active=True).order_by("first_name", "username"))
     open_entries = {
         entry.employee_id: entry
@@ -379,4 +409,63 @@ def staff_time_clock_admin(request):
         "rows": rows,
         "recent_entries": recent_entries,
         "open_count": len(open_entries),
+    })
+
+
+@team_member_required
+def staff_time_clock_entry_clock_out(request, pk):
+    if not can_manage_time_clock(request.user):
+        messages.error(request, "Owner or admin access required.")
+        return redirect("staff_time_clock")
+    entry = get_object_or_404(TimeClockEntry.objects.select_related("employee"), pk=pk)
+    if request.method != "POST":
+        return redirect("staff_time_clock_admin")
+    if entry.clock_out:
+        messages.info(request, "That shift is already clocked out.")
+        return redirect("staff_time_clock_admin")
+    entry.clock_out = timezone.now()
+    entry.clock_out_ip = get_client_ip(request)
+    entry.save(update_fields=["clock_out", "clock_out_ip", "updated_at"])
+    log_activity(
+        user=request.user,
+        request=request,
+        action="update",
+        model_label="audit.TimeClockEntry",
+        object_id=entry.pk,
+        object_repr=str(entry),
+        message=f"Admin clocked out {entry.employee}.",
+    )
+    messages.success(request, f"Clocked out {entry.employee.get_full_name() or entry.employee.username}.")
+    return redirect("staff_time_clock_admin")
+
+
+@team_member_required
+def staff_time_clock_entry_edit(request, pk):
+    if not can_manage_time_clock(request.user):
+        messages.error(request, "Owner or admin access required.")
+        return redirect("staff_time_clock")
+    entry = get_object_or_404(TimeClockEntry.objects.select_related("employee"), pk=pk)
+    if request.method == "POST":
+        form = TimeClockEntryForm(request.POST, instance=entry)
+        if form.is_valid():
+            updated = form.save(commit=False)
+            if updated.clock_out and not updated.clock_out_ip:
+                updated.clock_out_ip = get_client_ip(request)
+            updated.save()
+            log_activity(
+                user=request.user,
+                request=request,
+                action="update",
+                model_label="audit.TimeClockEntry",
+                object_id=entry.pk,
+                object_repr=str(entry),
+                message=f"Edited time clock punch for {entry.employee}.",
+            )
+            messages.success(request, "Time clock punch updated.")
+            return redirect("staff_time_clock_admin")
+    else:
+        form = TimeClockEntryForm(instance=entry)
+    return render(request, "audit/staff_time_clock_entry_form.html", {
+        "form": form,
+        "entry": entry,
     })

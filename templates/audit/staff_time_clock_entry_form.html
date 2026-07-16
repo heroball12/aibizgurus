@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Edit Time Clock Punch | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div>
+    <span class="ops-label">Team Time Clock</span>
+    <h1>Edit punch</h1>
+    <p>{{ entry.employee.get_full_name|default:entry.employee.username }} · adjust clock-in, clock-out, or notes.</p>
+  </div>
+  <div class="actions">
+    <a class="btn ghost" href="{% url 'staff_time_clock_admin' %}">Back to Team Clock</a>
+  </div>
+</section>
+
+<section class="ops-panel teams-compose-panel">
+  <form method="post" class="form dark-form gridform">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
+    <button class="btn neon">Save punch</button>
+  </form>
+</section>
+{% endblock %}

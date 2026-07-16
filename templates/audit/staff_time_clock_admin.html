@@ -21,7 +21,7 @@
     </div>
   </div>
   <table>
-    <tr><th>Employee</th><th>Status</th><th>Clocked In</th><th>Current Hours</th><th>Last Shift</th><th></th></tr>
+    <tr><th>Employee</th><th>Status</th><th>Clocked In</th><th>Current Hours</th><th>Last Shift</th><th>Actions</th></tr>
     {% for row in rows %}
       <tr>
         <td>{{ row.employee.get_full_name|default:row.employee.username }}</td>
@@ -29,7 +29,16 @@
         <td>{% if row.open_entry %}{{ row.open_entry.clock_in|date:"M j, g:i A" }}{% else %}—{% endif %}</td>
         <td>{% if row.open_entry %}{{ row.open_entry.duration_hours }}{% else %}—{% endif %}</td>
         <td>{% if row.last_entry %}{{ row.last_entry.clock_in|date:"M j, g:i A" }}{% else %}—{% endif %}</td>
-        <td><a href="{% url 'staff_performance' row.employee.pk %}">KPIs →</a></td>
+        <td class="table-actions">
+          <a href="{% url 'staff_performance' row.employee.pk %}">KPIs →</a>
+          {% if row.open_entry %}
+            <form method="post" action="{% url 'staff_time_clock_entry_clock_out' row.open_entry.pk %}" class="inline-form" onsubmit="return confirm('Clock this employee out now?');">
+              {% csrf_token %}
+              <button class="link-button" type="submit">Clock out</button>
+            </form>
+            <a href="{% url 'staff_time_clock_entry_edit' row.open_entry.pk %}">Edit punch →</a>
+          {% endif %}
+        </td>
       </tr>
     {% empty %}
       <tr><td colspan="6">No active employees.</td></tr>
@@ -45,7 +54,7 @@
     </div>
   </div>
   <table>
-    <tr><th>Employee</th><th>Clock In</th><th>Clock Out</th><th>Hours</th><th>Note</th></tr>
+    <tr><th>Employee</th><th>Clock In</th><th>Clock Out</th><th>Hours</th><th>Note</th><th></th></tr>
     {% for entry in recent_entries %}
       <tr>
         <td>{{ entry.employee.get_full_name|default:entry.employee.username }}</td>
@@ -53,9 +62,18 @@
         <td>{% if entry.clock_out %}{{ entry.clock_out|date:"M j, Y g:i A" }}{% else %}<span class="ops-chip live">Open</span>{% endif %}</td>
         <td>{{ entry.duration_hours }}</td>
         <td>{{ entry.note|default:"—" }}</td>
+        <td class="table-actions">
+          <a href="{% url 'staff_time_clock_entry_edit' entry.pk %}">Edit →</a>
+          {% if not entry.clock_out %}
+            <form method="post" action="{% url 'staff_time_clock_entry_clock_out' entry.pk %}" class="inline-form" onsubmit="return confirm('Clock this employee out now?');">
+              {% csrf_token %}
+              <button class="link-button" type="submit">Clock out</button>
+            </form>
+          {% endif %}
+        </td>
       </tr>
     {% empty %}
-      <tr><td colspan="5">No time clock entries yet.</td></tr>
+      <tr><td colspan="6">No time clock entries yet.</td></tr>
     {% endfor %}
   </table>
 </section>

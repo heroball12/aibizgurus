@@ -132,40 +132,8 @@
   </div>
 </section>
 
-<section class="ops-panel">
-  <div class="section-head">
-    <div>
-      <span class="ops-label">Assigned Lead List</span>
-      <h2>All active leads for {{ staff_user.first_name|default:staff_user.username }}</h2>
-    </div>
-  </div>
-  <table>
-    <tr><th>Business</th><th>Contact</th><th>Status</th><th>Temp</th><th>Follow-up</th><th></th></tr>
-    {% for lead in page_obj %}
-      <tr>
-        <td>{{ lead.business_name|default:"—" }}</td>
-        <td>{{ lead.name|default:lead.point_of_contact|default:"—" }}</td>
-        <td><span class="ops-chip">{{ lead.get_status_display }}</span></td>
-        <td><span class="temp-badge {{ lead.lead_temperature }}">{{ lead.get_lead_temperature_display }}</span></td>
-        <td>{{ lead.follow_up_date|default:"—" }}</td>
-        <td><a href="{% url 'lead_detail' lead.pk %}">Open →</a></td>
-      </tr>
-    {% empty %}
-      <tr><td colspan="6">No active leads assigned to this SDR.</td></tr>
-    {% endfor %}
-  </table>
-  {% if page_obj.paginator.num_pages > 1 %}
-    <nav class="pager" aria-label="Assigned lead pages">
-      {% if page_obj.has_previous %}
-        <a href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}">← Previous</a>
-      {% endif %}
-      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-      {% if page_obj.has_next %}
-        <a href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}">Next →</a>
-      {% endif %}
-    </nav>
-  {% endif %}
-</section>
+{% include "crm/_lead_filters.html" %}
+{% include "crm/_lead_table.html" with table_label="Assigned Lead List" table_title="Active leads for this SDR" %}
 
 <section class="ops-panel">
   <div class="section-head">
