@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Staff Messages | AI Business Gurus{% endblock %}
+{% block title %}Staff Chat | AI Business Gurus{% endblock %}
 {% block content %}
 <section class="staff-hero compact">
   <div>
-    <span class="ops-label">Team Messaging</span>
-    <h1>{% if can_view_all %}Staff message oversight{% else %}Messages{% endif %}</h1>
-    <p>{% if can_view_all %}Owner view includes all internal employee threads. Staff are not notified when Owner reviews a thread.{% else %}Internal staff conversations and group messages.{% endif %}</p>
+    <span class="ops-label">Team Chat</span>
+    <h1>{% if can_view_all %}Staff chat oversight{% else %}Chat{% endif %}</h1>
+    <p>{% if can_view_all %}Owner view includes all internal employee chats. Staff are not notified when Owner reviews a thread.{% else %}Internal staff conversations, group chats, files, reactions, and announcements.{% endif %}</p>
   </div>
   <div class="actions">
-    <a class="btn neon" href="{% url 'staff_message_create' %}">New Message</a>
+    <a class="btn neon" href="{% url 'staff_message_create' %}">New Chat</a>
     <a class="btn ghost" href="{% url 'ops_dashboard' %}">Ops</a>
   </div>
 </section>
@@ -16,31 +16,31 @@
 {% if can_view_all %}
 <section class="ops-panel oversight-note">
   <strong>Owner oversight mode</strong>
-  <p>You can open any staff thread for operational visibility. Viewing a thread does not add you as a participant; sending a message will show your message as Owner/staff communication.</p>
+  <p>You can open any staff chat for operational visibility. Viewing a chat does not add you as a participant; sending a message will show your message as Owner/staff communication.</p>
 </section>
 {% endif %}
 
 <section class="ops-panel teams-inbox-panel">
   <div class="teams-inbox-toolbar">
-    <span class="ops-label">Recent Chats</span>
-    <span>Direct messages, groups, files, and Owner-visible internal threads.</span>
+    <span class="ops-label">Recent Chat</span>
+    <span>Direct chats, groups, files, reactions, UPDATES, and Owner-visible internal threads.</span>
   </div>
   <div class="thread-list">
     {% for thread in page_obj %}
       <a class="thread-card" href="{% url 'staff_message_thread' thread.pk %}">
-        <span class="avatar-dot">{{ thread.display_title|first|upper }}</span>
+        <span class="avatar-dot">{{ thread.chat_title|first|upper }}</span>
         <div>
-          <strong>{{ thread.display_title }}</strong>
+          <strong>{{ thread.chat_title }}</strong>
           <p>{{ thread.participant_names|default:"No participants" }}</p>
         </div>
         <span>{{ thread.message_count }} message{{ thread.message_count|pluralize }} · {{ thread.updated_at|date:"M j, g:i A" }}</span>
       </a>
     {% empty %}
-      <div class="sales-empty">No message threads yet. Start one with New Message.</div>
+      <div class="sales-empty">No chat threads yet. Start one with New Chat.</div>
     {% endfor %}
   </div>
   {% if page_obj.paginator.num_pages > 1 %}
-    <nav class="pager" aria-label="Message thread pages">
+    <nav class="pager" aria-label="Chat thread pages">
       {% if page_obj.has_previous %}
         <a href="?page={{ page_obj.previous_page_number }}">← Previous</a>
       {% endif %}

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}New Staff Message | AI Business Gurus{% endblock %}
+{% block title %}New Staff Chat | AI Business Gurus{% endblock %}
 {% block content %}
 <section class="staff-hero compact">
   <div>
-    <span class="ops-label">Team Messaging</span>
-    <h1>Start a message</h1>
-    <p>Create a one-on-one conversation or group message with staff members.</p>
+    <span class="ops-label">Team Chat</span>
+    <h1>Start a chat</h1>
+    <p>Create a one-on-one conversation or named group chat with staff members.</p>
   </div>
-  <a class="btn ghost" href="{% url 'staff_messages' %}">Back to Messages</a>
+  <a class="btn ghost" href="{% url 'staff_messages' %}">Back to Chat</a>
 </section>
 
 <section class="ops-panel teams-compose-panel">
@@ -24,20 +24,30 @@
       <button type="button" data-emoji="😂">😂</button>
       <button type="button" data-emoji="🚀">🚀</button>
     </div>
-    <p>{{ form.message.label_tag }}{{ form.message }}</p>
+    <p>{{ form.message.label_tag }}{{ form.message }}<small>Press Enter to create/send · Shift+Enter for a new line</small></p>
     <label class="file-chip compose-file-chip">
       📎 Attach files
       <input id="attachmentInput" type="file" name="attachments" multiple>
     </label>
     <span id="fileSummary" class="file-summary">PDF, Office docs, images, CSV, ZIP · max 15 MB each</span>
     {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
-    <button class="btn neon">Create Thread</button>
+    <button class="btn neon">Create Chat</button>
   </form>
 </section>
 <script>
 (() => {
   const textarea = document.getElementById("id_message");
-  document.querySelectorAll("[data-emoji]").forEach((button) => {
+  const form = document.querySelector(".team-form");
+  if (textarea && form) {
+    textarea.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+        event.preventDefault();
+        if (form.requestSubmit) form.requestSubmit();
+        else form.submit();
+      }
+    });
+  }
+  document.querySelectorAll(".emoji-toolbar [data-emoji]").forEach((button) => {
     button.addEventListener("click", () => {
       if (!textarea) return;
       const emoji = button.dataset.emoji;

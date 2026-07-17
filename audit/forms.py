@@ -94,6 +94,19 @@ class StaffMessageThreadForm(forms.Form):
     def clean_message(self):
         return self.cleaned_data.get("message", "").strip()
 
+    def clean(self):
+        cleaned = super().clean()
+        participants = cleaned.get("participants")
+        title = (cleaned.get("title") or "").strip()
+        cleaned["title"] = title
+        if participants is not None:
+            participant_count = len(participants)
+            if participant_count == 1:
+                cleaned["title"] = ""
+            elif participant_count > 1 and not title:
+                self.add_error("title", "Name group chats so the team knows what the room is for.")
+        return cleaned
+
 
 class StaffMessageForm(forms.Form):
     body = forms.CharField(

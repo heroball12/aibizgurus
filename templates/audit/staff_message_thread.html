@@ -1,19 +1,19 @@
 {% extends "base.html" %}
-{% block title %}{{ thread.display_title }} | Staff Messages{% endblock %}
+{% block title %}{{ chat_title }} | Staff Chat{% endblock %}
 {% block content %}
-<section class="teams-shell" data-feed-url="{% url 'staff_message_feed' thread.pk %}">
+<section class="teams-shell" data-feed-url="{% url 'staff_message_feed' thread.pk %}" data-react-url-template="{% url 'staff_message_react' 0 %}" data-csrf-token="{{ csrf_token }}">
   <aside class="teams-sidebar">
     <div class="teams-sidebar-head">
-      <span class="ops-label">Teams</span>
+      <span class="ops-label">Chat</span>
       <a class="btn small neon" href="{% url 'staff_message_create' %}">New</a>
     </div>
     <h2>Chats</h2>
     <div class="teams-thread-list">
       {% for item in sidebar_threads %}
         <a class="teams-thread {% if item.pk == thread.pk %}active{% endif %}" href="{% url 'staff_message_thread' item.pk %}">
-          <span class="avatar-dot">{{ item.display_title|first|upper }}</span>
+          <span class="avatar-dot">{{ item.chat_title|first|upper }}</span>
           <div>
-            <strong>{{ item.display_title }}</strong>
+            <strong>{{ item.chat_title }}</strong>
             <small>{{ item.participant_names|truncatechars:58 }}</small>
           </div>
         </a>
@@ -26,12 +26,12 @@
   <section class="teams-main">
     <div class="teams-topbar">
       <div>
-        <span class="ops-label">{% if is_observer %}Owner Oversight{% elif thread.is_group %}Group Chat{% else %}Direct Chat{% endif %}</span>
-        <h1>{{ thread.display_title }}</h1>
+        <span class="ops-label">{% if is_updates %}Announcements{% elif is_observer %}Owner Oversight{% elif thread.is_group %}Group Chat{% else %}Direct Chat{% endif %}</span>
+        <h1>{{ chat_title }}</h1>
         <p>{{ thread.participant_names|default:"No participants" }} · {{ thread.messages.count }} message{{ thread.messages.count|pluralize }}</p>
       </div>
       <div class="actions">
-        <a class="btn ghost small" href="{% url 'staff_messages' %}">All Messages</a>
+        <a class="btn ghost small" href="{% url 'staff_messages' %}">All Chat</a>
         <a class="btn ghost small" href="{% url 'ops_dashboard' %}">Ops</a>
       </div>
     </div>
@@ -40,6 +40,13 @@
       <div class="teams-banner">
         <strong>Owner oversight mode</strong>
         <span>You can review this internal thread. Staff are not notified by viewing. If you reply, your message is visible.</span>
+      </div>
+    {% endif %}
+
+    {% if is_updates %}
+      <div class="teams-banner updates-banner">
+        <strong>UPDATES announcement channel</strong>
+        <span>Everyone on staff is included by default. Owner can post announcements; staff can read and react.</span>
       </div>
     {% endif %}
 
@@ -64,6 +71,14 @@
                 {% endfor %}
               </div>
             {% endif %}
+            <div class="message-reactions" data-message-id="{{ message.pk }}">
+              <div class="reaction-counts"></div>
+              <div class="reaction-picker" aria-label="React to message">
+                {% for emoji in reaction_emojis %}
+                  <button type="button" class="reaction-button" data-message-id="{{ message.pk }}" data-emoji="{{ emoji }}">{{ emoji }}</button>
+                {% endfor %}
+              </div>
+            </div>
           </div>
         </div>
       {% empty %}
@@ -71,28 +86,36 @@
       {% endfor %}
     </div>
 
-    <form method="post" enctype="multipart/form-data" class="teams-composer form dark-form">
-      {% csrf_token %}
-      {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
-      <div class="emoji-toolbar" aria-label="Emoji shortcuts">
-        <button type="button" data-emoji="👍">👍</button>
-        <button type="button" data-emoji="🔥">🔥</button>
-        <button type="button" data-emoji="✅">✅</button>
-        <button type="button" data-emoji="🎯">🎯</button>
-        <button type="button" data-emoji="💜">💜</button>
-        <button type="button" data-emoji="😂">😂</button>
-        <button type="button" data-emoji="🚀">🚀</button>
+    {% if can_post %}
+      <form method="post" enctype="multipart/form-data" class="teams-composer form dark-form">
+        {% csrf_token %}
+        {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
+        <div class="emoji-toolbar" aria-label="Emoji shortcuts">
+          <button type="button" data-emoji="👍">👍</button>
+          <button type="button" data-emoji="🔥">🔥</button>
+          <button type="button" data-emoji="✅">✅</button>
+          <button type="button" data-emoji="🎯">🎯</button>
+          <button type="button" data-emoji="💜">💜</button>
+          <button type="button" data-emoji="😂">😂</button>
+          <button type="button" data-emoji="🚀">🚀</button>
+        </div>
+        {{ form.body }}
+        <small class="composer-hint">Press Enter to send · Shift+Enter for a new line</small>
+        <div class="composer-actions">
+          <label class="file-chip">
+            📎 Attach files
+            <input id="attachmentInput" type="file" name="attachments" multiple>
+          </label>
+          <span id="fileSummary" class="file-summary">PDF, Office docs, images, CSV, ZIP · max 15 MB each</span>
+          <button class="btn neon">Send</button>
+        </div>
+      </form>
+    {% else %}
+      <div class="teams-composer read-only-composer">
+        <strong>Read-only announcement channel</strong>
+        <span>Only the owner can post in UPDATES. You can still react to messages.</span>
       </div>
-      {{ form.body }}
-      <div class="composer-actions">
-        <label class="file-chip">
-          📎 Attach files
-          <input id="attachmentInput" type="file" name="attachments" multiple>
-        </label>
-        <span id="fileSummary" class="file-summary">PDF, Office docs, images, CSV, ZIP · max 15 MB each</span>
-        <button class="btn neon">Send</button>
-      </div>
-    </form>
+    {% endif %}
   </section>
 </section>
 
@@ -102,28 +125,44 @@
   const container = document.getElementById("chatMessages");
   if (!shell || !container) return;
   const feedUrl = shell.dataset.feedUrl;
+  const reactionUrlTemplate = shell.dataset.reactUrlTemplate;
+  const csrfToken = shell.dataset.csrfToken;
   let lastRender = "";
   let lastThreadUpdated = "";
   let pollTimer = null;
   let inFlight = false;
 
+  function escapeHtml(value) {
+    const element = document.createElement("div");
+    element.textContent = value || "";
+    return element.innerHTML;
+  }
+
+  function reactionUrl(messageId) {
+    return reactionUrlTemplate.replace("/0/", `/${messageId}/`);
+  }
+
+  function renderReactions(message) {
+    const counts = (message.reactions || []).map((reaction) => {
+      const mine = reaction.mine ? " mine" : "";
+      return `<button type="button" class="reaction-count${mine}" data-message-id="${message.id}" data-emoji="${escapeHtml(reaction.emoji)}">${escapeHtml(reaction.emoji)} <span>${escapeHtml(String(reaction.count))}</span></button>`;
+    }).join("");
+    const picker = ["👍", "❤️", "😂", "🎉", "🔥", "✅", "👀", "💜", "🚀"].map((emoji) => (
+      `<button type="button" class="reaction-button" data-message-id="${message.id}" data-emoji="${emoji}">${emoji}</button>`
+    )).join("");
+    return `<div class="message-reactions" data-message-id="${message.id}">
+      <div class="reaction-counts">${counts}</div>
+      <div class="reaction-picker" aria-label="React to message">${picker}</div>
+    </div>`;
+  }
+
   function render(messages) {
     const html = messages.map((message) => {
       const mine = message.mine ? " mine" : "";
-      const avatarText = document.createElement("div");
-      avatarText.textContent = (message.sender || "S").slice(0, 1).toUpperCase();
-      const sender = document.createElement("div");
-      sender.textContent = message.sender;
-      const body = document.createElement("div");
-      body.textContent = message.body;
       const attachments = (message.attachments || []).map((attachment) => {
-        const name = document.createElement("div");
-        const size = document.createElement("div");
-        name.textContent = attachment.name;
-        size.textContent = attachment.size;
-        return `<a class="attachment-pill" href="${attachment.url}"><span>📎</span><strong>${name.innerHTML}</strong><small>${size.innerHTML}</small></a>`;
+        return `<a class="attachment-pill" href="${attachment.url}"><span>📎</span><strong>${escapeHtml(attachment.name)}</strong><small>${escapeHtml(attachment.size)}</small></a>`;
       }).join("");
-      return `<div class="teams-message${mine}"><span class="avatar-dot">${avatarText.innerHTML}</span><div class="teams-bubble"><div class="message-meta"><strong>${sender.innerHTML}</strong><span>${message.created}</span></div><p>${body.innerHTML.replace(/\n/g, "<br>")}</p>${attachments ? `<div class="attachment-list">${attachments}</div>` : ""}</div></div>`;
+      return `<div class="teams-message${mine}"><span class="avatar-dot">${escapeHtml((message.sender || "S").slice(0, 1).toUpperCase())}</span><div class="teams-bubble"><div class="message-meta"><strong>${escapeHtml(message.sender)}</strong><span>${escapeHtml(message.created)}</span></div><p>${escapeHtml(message.body).replace(/\n/g, "<br>")}</p>${attachments ? `<div class="attachment-list">${attachments}</div>` : ""}${renderReactions(message)}</div></div>`;
     }).join("") || '<div class="sales-empty">No messages yet.</div>';
     if (html !== lastRender) {
       const nearBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 80;
@@ -163,8 +202,42 @@
     if (!document.hidden) poll();
   });
 
+  container.addEventListener("click", async (event) => {
+    const button = event.target.closest(".reaction-button, .reaction-count");
+    if (!button) return;
+    event.preventDefault();
+    const messageId = button.dataset.messageId;
+    const emoji = button.dataset.emoji;
+    if (!messageId || !emoji) return;
+    const data = new FormData();
+    data.append("emoji", emoji);
+    try {
+      const response = await fetch(reactionUrl(messageId), {
+        method: "POST",
+        headers: {"X-CSRFToken": csrfToken, "X-Requested-With": "fetch"},
+        body: data,
+      });
+      if (response.ok) {
+        lastThreadUpdated = "";
+        poll();
+      }
+    } catch (error) {
+      // Reactions are progressive enhancement; regular chat stays usable.
+    }
+  });
+
   const textarea = document.getElementById("id_body");
-  document.querySelectorAll("[data-emoji]").forEach((button) => {
+  const composer = document.querySelector(".teams-composer form, form.teams-composer");
+  if (textarea && composer) {
+    textarea.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+        event.preventDefault();
+        if (composer.requestSubmit) composer.requestSubmit();
+        else composer.submit();
+      }
+    });
+  }
+  document.querySelectorAll(".emoji-toolbar [data-emoji]").forEach((button) => {
     button.addEventListener("click", () => {
       if (!textarea) return;
       const emoji = button.dataset.emoji;

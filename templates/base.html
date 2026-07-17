@@ -7,7 +7,7 @@
   <meta name="description" content="{% block meta_description %}AI Business Gurus builds AI Employees, AI Chatbots, Voice AI, automation, websites, and growth systems that help businesses recover missed revenue and scale faster.{% endblock %}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=18">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=19">
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' or request.path|slice:':6' == '/team/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
@@ -21,7 +21,7 @@
       {% if user.is_employee_or_admin %}
         {% if user.is_owner %}<a href="{% url 'owner_dashboard' %}">Owner</a>{% endif %}
         <a href="{% url 'ops_dashboard' %}">Ops</a><a href="{% url 'crm_home' %}">Sales Intelligence</a>
-        <a href="{% url 'staff_messages' %}">Messages</a><a href="{% url 'staff_time_clock' %}">Time Clock</a>
+        <a href="{% url 'staff_messages' %}">Chat</a><a href="{% url 'staff_time_clock' %}">Time Clock</a>
       {% else %}
         <a href="{% url 'portal_home' %}">Dashboard</a>
       {% endif %}
@@ -51,21 +51,21 @@
     <div class="team-chat-head">
       <div>
         <span class="ops-label">Team Chat</span>
-        <h2>Messages</h2>
+        <h2>Chat</h2>
       </div>
-      <a href="{% url 'staff_message_create' %}" class="team-chat-new">New</a>
+      <a href="{% url 'staff_message_create' %}" class="team-chat-new">New Chat</a>
     </div>
     <div class="team-chat-body" id="teamChatBody">
-      <div class="team-chat-loading">Checking messages…</div>
+      <div class="team-chat-loading">Checking chat…</div>
     </div>
     <div class="team-chat-foot">
-      <a href="{% url 'staff_messages' %}">Open full inbox →</a>
+      <a href="{% url 'staff_messages' %}">Open Chat →</a>
       <button type="button" class="team-chat-alert-toggle" id="teamChatAlertToggle">Enable alerts</button>
     </div>
   </section>
   <button type="button" class="team-chat-fab" id="teamChatFab" aria-expanded="false" aria-controls="teamChatPopover">
     <span class="team-chat-fab-icon">💬</span>
-    <span class="team-chat-fab-text">Messages</span>
+    <span class="team-chat-fab-text">Chat</span>
     <span class="team-chat-badge" id="teamChatBadge" hidden>0</span>
   </button>
 </div>
@@ -87,6 +87,7 @@
   let pollTimer = null;
   let inFlight = false;
   let audioContext = null;
+  let audioUnlocked = false;
   const soundKey = "aibgTeamChatSound";
 
   function escapeHtml(value) {
@@ -118,27 +119,45 @@
     return audioContext;
   }
 
-  function playDing() {
-    if (!alertsEnabled()) return;
+  function unlockAudio() {
+    const context = ensureAudio();
+    if (!context) return;
+    try {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      gain.gain.setValueAtTime(0.00001, context.currentTime);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start();
+      oscillator.stop(context.currentTime + 0.02);
+      audioUnlocked = true;
+    } catch (error) {
+      audioUnlocked = true;
+    }
+  }
+
+  function playDing(force = false) {
+    if (!force && !alertsEnabled()) return;
     const context = ensureAudio();
     if (!context) return;
     const oscillator = context.createOscillator();
     const gain = context.createGain();
     oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(880, context.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(1320, context.currentTime + 0.08);
-    gain.gain.setValueAtTime(0.0001, context.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.18, context.currentTime + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.28);
+    const start = context.currentTime + 0.01;
+    oscillator.frequency.setValueAtTime(784, start);
+    oscillator.frequency.exponentialRampToValueAtTime(1175, start + 0.08);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(0.18, start + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.28);
     oscillator.connect(gain);
     gain.connect(context.destination);
-    oscillator.start();
-    oscillator.stop(context.currentTime + 0.3);
+    oscillator.start(start);
+    oscillator.stop(start + 0.3);
   }
 
   function showToast(thread) {
     if (!toast || !thread) return;
-    toast.innerHTML = `<strong>${escapeHtml(thread.title || "New team message")}</strong><span>${escapeHtml(thread.last_sender)} · ${escapeHtml(thread.last_body)}</span>`;
+    toast.innerHTML = `<strong>New in ${escapeHtml(thread.title || "Chat")}</strong><span>${escapeHtml(thread.last_sender)}: ${escapeHtml(thread.last_body)}</span>`;
     toast.hidden = false;
     widget.classList.add("toast-visible");
     clearTimeout(showToast.timer);
@@ -151,7 +170,7 @@
   function showDesktopNotification(thread) {
     if (!alertsEnabled() || !("Notification" in window) || Notification.permission !== "granted" || !thread) return;
     try {
-      const notification = new Notification(thread.title || "New team message", {
+      const notification = new Notification(thread.title || "New chat message", {
         body: `${thread.last_sender}: ${thread.last_body}`,
         tag: `aibg-thread-${thread.id}`,
         icon: "{% static 'img/ai-business-gurus-logo-nav.png' %}",
@@ -184,7 +203,7 @@
     button.setAttribute("aria-expanded", opened ? "true" : "false");
     popover.setAttribute("aria-hidden", opened ? "false" : "true");
     if (opened) {
-      ensureAudio();
+      unlockAudio();
       fetchSummary({force: true});
     }
   }
@@ -207,7 +226,7 @@
     }
     const threads = data.threads || [];
     body.innerHTML = threads.length ? threads.map((thread) => {
-      const initial = escapeHtml((thread.title || "M").slice(0, 1).toUpperCase());
+      const initial = escapeHtml((thread.title || "C").slice(0, 1).toUpperCase());
       const unreadPill = thread.unread_count ? `<span class="team-chat-thread-badge">${escapeHtml(String(thread.unread_count))}</span>` : "";
       return `<a class="team-chat-thread ${thread.unread_count ? "unread" : ""}" href="${thread.url}">
         <span class="avatar-dot">${initial}</span>
@@ -217,7 +236,7 @@
         </span>
         <span class="team-chat-thread-meta">${escapeHtml(thread.updated)}${unreadPill}</span>
       </a>`;
-    }).join("") : `<div class="team-chat-empty">No team chats yet. Start one when the squad needs a thread.</div>`;
+    }).join("") : `<div class="team-chat-empty">No chats yet. Start one when the squad needs a thread.</div>`;
   }
 
   function scheduleNextPoll() {
@@ -243,17 +262,23 @@
     }
   }
 
-  button.addEventListener("click", () => setOpen(!opened));
+  button.addEventListener("click", () => {
+    unlockAudio();
+    setOpen(!opened);
+  });
   if (alertToggle) {
     alertToggle.addEventListener("click", async () => {
       localStorage.setItem(soundKey, "on");
-      ensureAudio();
+      unlockAudio();
+      playDing(true);
       if ("Notification" in window && Notification.permission === "default") {
         await Notification.requestPermission();
       }
       updateAlertToggle();
     });
   }
+  document.addEventListener("pointerdown", unlockAudio, {once: true, passive: true});
+  document.addEventListener("keydown", unlockAudio, {once: true});
   document.addEventListener("click", (event) => {
     if (opened && !widget.contains(event.target)) setOpen(false);
   });

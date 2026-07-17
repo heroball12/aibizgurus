@@ -13,7 +13,14 @@ from django.utils import timezone
 
 from assistant_ai.models import AssistantRole, Conversation, Message, UsageRecord
 from assistant_ai.services import choose_openai_key
-from audit.models import ActivityLog, StaffMessage, StaffMessageAttachment, StaffMessageThread, TimeClockEntry
+from audit.models import (
+    ActivityLog,
+    StaffMessage,
+    StaffMessageAttachment,
+    StaffMessageReaction,
+    StaffMessageThread,
+    TimeClockEntry,
+)
 from audit.utils import log_activity
 from clients.models import AIInstance, BusinessProfile, ClientAccount, Integration
 from core.models import IndustryTemplate
@@ -668,21 +675,26 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "team-chat-widget")
         self.assertContains(response, "Enable alerts")
+        updates = StaffMessageThread.objects.get(title="UPDATES")
+        self.assertTrue(updates.is_group)
+        self.assertEqual(updates.participants.count(), 4)
         response = self.client.post(reverse("staff_message_create"), {
             "title": "",
             "participants": [str(bob.pk)],
             "message": "Can you follow up with the HVAC lead?",
         })
-        thread = StaffMessageThread.objects.get()
+        thread = StaffMessageThread.objects.exclude(title="UPDATES").get()
         self.assertRedirects(response, reverse("staff_message_thread", args=[thread.pk]))
         self.assertEqual(thread.messages.count(), 1)
         self.assertFalse(thread.is_group)
+        self.assertEqual(thread.title, "")
 
         self.client.force_login(bob)
         summary = self.client.get(reverse("staff_message_summary"))
         self.assertEqual(summary.status_code, 200)
         self.assertEqual(summary.json()["unread_count"], 1)
         self.assertEqual(summary.json()["threads"][0]["unread_count"], 1)
+        self.assertEqual(summary.json()["threads"][0]["title"], "Alice")
         bob_view = self.client.get(reverse("staff_message_thread", args=[thread.pk]))
         self.assertEqual(bob_view.status_code, 200)
         self.assertContains(bob_view, "Can you follow up")
@@ -728,7 +740,7 @@ class PlatformFlowTests(TestCase):
                 "message": "Here is the lead document ✅",
                 "attachments": upload,
             })
-            thread = StaffMessageThread.objects.get(title="File test")
+            thread = StaffMessageThread.objects.exclude(title="UPDATES").get(messages__body__icontains="lead document")
             self.assertRedirects(response, reverse("staff_message_thread", args=[thread.pk]))
             attachment = StaffMessageAttachment.objects.get()
             self.assertEqual(attachment.original_filename, "lead-notes.pdf")
@@ -755,6 +767,50 @@ class PlatformFlowTests(TestCase):
             self.assertRedirects(response, reverse("staff_message_thread", args=[thread.pk]))
             self.assertTrue(StaffMessage.objects.filter(thread=thread, body="📎 Sent attachment").exists())
             self.assertEqual(StaffMessageAttachment.objects.count(), 2)
+
+    def test_chat_updates_channel_reactions_and_clock_announcements(self):
+        owner = User.objects.create_user(username="updates-owner", password="OwnerPass123!", role="owner", first_name="Owner")
+        employee = User.objects.create_user(username="updates-employee", password="OpsPass123!", role="employee", first_name="Taylor")
+        admin = User.objects.create_user(username="updates-admin", password="OpsPass123!", role="admin", first_name="Admin")
+
+        self.client.force_login(owner)
+        response = self.client.get(reverse("staff_messages"))
+        self.assertEqual(response.status_code, 200)
+        updates = StaffMessageThread.objects.get(title="UPDATES")
+        self.assertTrue(updates.is_group)
+        self.assertEqual(set(updates.participants.values_list("user_id", flat=True)), {owner.pk, employee.pk, admin.pk})
+
+        self.client.force_login(employee)
+        response = self.client.get(reverse("staff_message_thread", args=[updates.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Read-only announcement channel")
+        response = self.client.post(reverse("staff_message_thread", args=[updates.pk]), {"body": "Staff should not post here."})
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(StaffMessage.objects.filter(thread=updates, body__icontains="Staff should not post").exists())
+
+        self.client.force_login(owner)
+        response = self.client.post(reverse("staff_message_thread", args=[updates.pk]), {"body": "Daily wins go here."})
+        self.assertRedirects(response, reverse("staff_message_thread", args=[updates.pk]))
+        owner_message = StaffMessage.objects.get(thread=updates, body="Daily wins go here.")
+
+        self.client.force_login(employee)
+        response = self.client.post(reverse("staff_message_react", args=[owner_message.pk]), {"emoji": "👍"})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["toggled_on"])
+        self.assertEqual(response.json()["reactions"][0]["emoji"], "👍")
+        self.assertEqual(response.json()["reactions"][0]["count"], 1)
+        self.assertTrue(StaffMessageReaction.objects.filter(message=owner_message, user=employee, emoji="👍").exists())
+        feed = self.client.get(reverse("staff_message_feed", args=[updates.pk]))
+        self.assertEqual(feed.status_code, 200)
+        self.assertEqual(feed.json()["messages"][0]["reactions"][0]["emoji"], "👍")
+
+        response = self.client.post(reverse("staff_time_clock"), {"action": "clock_in", "note": "Starting outreach block"})
+        self.assertRedirects(response, reverse("staff_time_clock"))
+        response = self.client.post(reverse("staff_time_clock"), {"action": "clock_out", "note": "Finished outreach block"})
+        self.assertRedirects(response, reverse("staff_time_clock"))
+        bodies = list(StaffMessage.objects.filter(thread=updates).values_list("body", flat=True))
+        self.assertTrue(any("Taylor clocked in. Note: Starting outreach block" in body for body in bodies))
+        self.assertTrue(any("Taylor clocked out. Note: Finished outreach block" in body for body in bodies))
 
     def test_staff_time_clock_and_owner_admin_visibility(self):
         admin = User.objects.create_user(username="clock-admin", password="OpsPass123!", role="admin")
