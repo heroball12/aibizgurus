@@ -947,6 +947,111 @@ button,input,select,textarea{font:inherit}
 .sales-panel h2{color:white;margin-top:8px}
 .sales-panel p,.sales-panel li{color:#d8cdf7}
 .sales-panel a{color:#fde68a;font-weight:850}
+.lead-finder-hero{
+  align-items:stretch;
+}
+.finder-generate-card{
+  min-width:min(420px,100%);
+  align-self:stretch;
+}
+.finder-form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.finder-generate-card p{
+  margin:8px 0;
+}
+.finder-hint{
+  display:block;
+  color:#c4b5fd;
+  margin-top:10px;
+  font-weight:850;
+}
+.lead-finder-metrics{
+  grid-template-columns:repeat(5,minmax(0,1fr));
+}
+.lead-finder-home-widget{
+  margin:18px 0;
+}
+.finder-widget-strip{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  margin-top:16px;
+}
+.finder-batch-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.finder-batch-card{
+  display:grid;
+  gap:10px;
+  border:1px solid rgba(168,85,247,.25);
+  border-radius:20px;
+  padding:16px;
+  color:#f8f5ff;
+  background:rgba(255,255,255,.055);
+}
+.finder-batch-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(245,196,81,.46);
+}
+.finder-batch-card strong{
+  color:#fff;
+}
+.finder-batch-card small{
+  color:#c4b5fd;
+}
+.lead-progress{
+  width:100%;
+  height:10px;
+  overflow:hidden;
+  border-radius:999px;
+  border:1px solid rgba(196,181,253,.18);
+  background:rgba(255,255,255,.07);
+}
+.lead-progress.compact{
+  height:7px;
+  margin-top:6px;
+}
+.lead-progress i{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#38bdf8,#a855f7,#f5c451);
+  box-shadow:0 0 18px rgba(168,85,247,.38);
+}
+.live-refresh-note{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:#bbf7d0;
+  font-weight:900;
+  margin-top:10px;
+}
+.live-refresh-note::before{
+  content:"";
+  width:9px;
+  height:9px;
+  border-radius:999px;
+  background:#22c55e;
+  box-shadow:0 0 18px rgba(34,197,94,.55);
+  animation:chatPulse 1.8s ease-in-out infinite;
+}
+.finder-table textarea{
+  min-width:220px;
+  min-height:66px;
+  resize:vertical;
+}
+.inline-assign-form{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:end;
+}
+.inline-assign-form label{
+  grid-column:1/3;
+}
 .gold-panel{
   background:
     radial-gradient(circle at 86% 10%,rgba(245,196,81,.18),transparent 28%),
@@ -1964,7 +2069,7 @@ button,input,select,textarea{font:inherit}
     border-radius:22px;
     padding:18px;
   }
-  .ops-metrics,.owner-metrics,.sales-metrics,.scorecard-strip,.scorecard-grid,.sheet-group-grid{
+  .ops-metrics,.owner-metrics,.sales-metrics,.scorecard-strip,.scorecard-grid,.sheet-group-grid,.finder-batch-grid,.finder-form-grid{
     grid-template-columns:1fr;
   }
   .lead-filter-form,.lead-bulk-toolbar{
@@ -1998,6 +2103,12 @@ button,input,select,textarea{font:inherit}
   }
   .owner-filter{
     grid-template-columns:1fr;
+  }
+  .inline-assign-form{
+    grid-template-columns:1fr;
+  }
+  .inline-assign-form label{
+    grid-column:auto;
   }
   .team-chat-popover{
     max-height:calc(100vh - 116px);
@@ -2037,5 +2148,377 @@ button,input,select,textarea{font:inherit}
   }
   .team-chat-thread{
     padding:10px;
+  }
+}
+
+/* Platform visual polish v21: clean premium brand system for public + client pages */
+body.light-mode:not(.landing-page){
+  background:
+    radial-gradient(circle at 8% -4%,rgba(124,58,237,.16),transparent 30%),
+    radial-gradient(circle at 92% 8%,rgba(245,196,81,.13),transparent 24%),
+    linear-gradient(180deg,#fff 0,#fbf8ff 48%,#f4efff 100%);
+  color:#171327;
+}
+
+body.light-mode:not(.landing-page) main{
+  max-width:1210px;
+}
+
+.light-mode:not(.landing-page) .nav{
+  background:rgba(5,6,23,.92);
+  border-bottom:1px solid rgba(255,255,255,.1);
+  color:#fff;
+  box-shadow:0 18px 58px rgba(5,6,23,.22);
+}
+
+.light-mode:not(.landing-page) .navlinks a{
+  color:#f5f3ff;
+  opacity:.88;
+}
+
+.light-mode:not(.landing-page) .navlinks a:hover{
+  opacity:1;
+  color:#fff;
+}
+
+.btn,
+.growth-card,
+.clean-panel,
+.panel,
+.price-card,
+.client-overview,
+.industry-list-item,
+.lead-row,
+.assistant-row{
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease;
+}
+
+.light-mode:not(.landing-page) .btn{
+  background:linear-gradient(135deg,#6d28d9,#8b5cf6 70%,#d946ef);
+  border:1px solid rgba(124,58,237,.18);
+  box-shadow:0 18px 40px rgba(124,58,237,.22);
+}
+
+.light-mode:not(.landing-page) .btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 24px 54px rgba(124,58,237,.28);
+}
+
+.light-mode:not(.landing-page) .btn.ghost{
+  color:#4c1d95!important;
+  background:#fff;
+  border:1px solid #ddd6fe;
+  box-shadow:0 12px 30px rgba(76,29,149,.08);
+}
+
+.light-mode:not(.landing-page) .growth-page-hero,
+.light-mode:not(.landing-page) .pagehead.clean-head,
+.light-mode:not(.landing-page) .client-overview,
+.light-mode:not(.landing-page) .assessment-hero>div:first-child{
+  position:relative;
+  overflow:hidden;
+  color:white;
+  background:
+    linear-gradient(rgba(167,139,250,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(167,139,250,.045) 1px,transparent 1px),
+    radial-gradient(circle at 86% 15%,rgba(168,85,247,.36),transparent 28%),
+    radial-gradient(circle at 14% 100%,rgba(245,196,81,.15),transparent 24%),
+    linear-gradient(135deg,#050617,#130536 64%,#2e1065);
+  background-size:34px 34px,34px 34px,auto,auto,auto;
+  border:1px solid rgba(245,196,81,.28);
+  box-shadow:0 30px 96px rgba(31,14,59,.24),0 0 54px rgba(124,58,237,.14);
+}
+
+.light-mode:not(.landing-page) .growth-page-hero h1,
+.light-mode:not(.landing-page) .pagehead.clean-head h1,
+.light-mode:not(.landing-page) .client-overview h1,
+.light-mode:not(.landing-page) .assessment-hero h1{
+  color:#fff;
+  text-shadow:0 0 36px rgba(168,85,247,.28);
+}
+
+.light-mode:not(.landing-page) .growth-page-hero p,
+.light-mode:not(.landing-page) .pagehead.clean-head p,
+.light-mode:not(.landing-page) .client-overview p,
+.light-mode:not(.landing-page) .assessment-hero>div:first-child p{
+  color:#eee7ff!important;
+}
+
+.light-mode:not(.landing-page) .mini-label,
+.light-mode:not(.landing-page) .eyebrow{
+  color:#5b21b6;
+  background:#f3e8ff;
+  border-color:#ddd6fe;
+}
+
+.light-mode:not(.landing-page) .growth-page-hero .mini-label,
+.light-mode:not(.landing-page) .pagehead.clean-head .mini-label,
+.light-mode:not(.landing-page) .client-overview .mini-label,
+.light-mode:not(.landing-page) .assessment-hero>div:first-child .mini-label{
+  color:#ffe9a6!important;
+  background:rgba(245,196,81,.12)!important;
+  border-color:rgba(245,196,81,.34)!important;
+}
+
+.light-mode:not(.landing-page) .panel,
+.light-mode:not(.landing-page) .clean-panel,
+.light-mode:not(.landing-page) .value-card,
+.light-mode:not(.landing-page) .price-card,
+.light-mode:not(.landing-page) .dash-card,
+.light-mode:not(.landing-page) .client-assistant-card,
+.light-mode:not(.landing-page) .setup-step,
+.light-mode:not(.landing-page) .flow-card{
+  color:#171327;
+  background:rgba(255,255,255,.94);
+  border-color:#eadfff;
+  box-shadow:0 22px 62px rgba(76,29,149,.08);
+}
+
+.light-mode:not(.landing-page) .panel:hover,
+.light-mode:not(.landing-page) .clean-panel:hover,
+.light-mode:not(.landing-page) .growth-card:hover,
+.light-mode:not(.landing-page) .industry-list-item:hover,
+.light-mode:not(.landing-page) .lead-row:hover,
+.light-mode:not(.landing-page) .assistant-row:hover{
+  transform:translateY(-2px);
+  border-color:#c4b5fd;
+  box-shadow:0 28px 74px rgba(76,29,149,.12);
+}
+
+.light-mode:not(.landing-page) .growth-card{
+  color:#171327;
+  background:
+    radial-gradient(circle at 90% 10%,rgba(124,58,237,.13),transparent 28%),
+    linear-gradient(145deg,#fff,#fbf8ff);
+  border:1px solid #eadfff;
+  box-shadow:0 22px 62px rgba(76,29,149,.08);
+}
+
+.light-mode:not(.landing-page) .growth-card::before{
+  color:#6d28d9;
+  background:#f3e8ff;
+  border-color:#ddd6fe;
+  box-shadow:none;
+}
+
+.light-mode:not(.landing-page) .growth-card span,
+.light-mode:not(.landing-page) .growth-card em,
+.light-mode:not(.landing-page) .growth-card a,
+.light-mode:not(.landing-page) .card-actions a{
+  color:#6d28d9;
+}
+
+.light-mode:not(.landing-page) .growth-card h3,
+.light-mode:not(.landing-page) .pricing-card-premium strong,
+.light-mode:not(.landing-page) .detail-grid .clean-panel h2,
+.light-mode:not(.landing-page) .comparison-panel h2,
+.light-mode:not(.landing-page) .workforce-architecture h2{
+  color:#171327;
+}
+
+.light-mode:not(.landing-page) .growth-card p,
+.light-mode:not(.landing-page) .growth-card li,
+.light-mode:not(.landing-page) .detail-grid .clean-panel p,
+.light-mode:not(.landing-page) .comparison-panel p,
+.light-mode:not(.landing-page) .workforce-architecture p{
+  color:#62586f;
+}
+
+.light-mode:not(.landing-page) .card-note,
+.light-mode:not(.landing-page) .mini-transcript,
+.light-mode:not(.landing-page) .timeline-cards div,
+.light-mode:not(.landing-page) .comparison-grid div{
+  color:#473b5b;
+  background:#fbf8ff;
+  border-color:#eadfff;
+  box-shadow:inset 0 0 0 1px rgba(124,58,237,.03);
+}
+
+.light-mode:not(.landing-page) .timeline-cards strong,
+.light-mode:not(.landing-page) .comparison-grid strong{
+  color:#6d28d9;
+}
+
+.light-mode:not(.landing-page) .timeline-cards span,
+.light-mode:not(.landing-page) .comparison-grid p{
+  color:#62586f!important;
+}
+
+.light-mode:not(.landing-page) .detail-grid .clean-panel,
+.light-mode:not(.landing-page) .comparison-panel,
+.light-mode:not(.landing-page) .workforce-architecture,
+.light-mode:not(.landing-page) .assessment-form.calendly-panel{
+  color:#171327;
+  background:rgba(255,255,255,.94);
+  border-color:#eadfff;
+  box-shadow:0 22px 62px rgba(76,29,149,.08);
+}
+
+.light-mode:not(.landing-page) .industry-list-section h2{
+  color:#171327;
+  text-shadow:none;
+}
+
+.light-mode:not(.landing-page) .industry-list-item{
+  color:#171327;
+  background:linear-gradient(145deg,#fff,#fbf8ff);
+  border-color:#eadfff;
+}
+
+.light-mode:not(.landing-page) .industry-list-item small{
+  color:#6d28d9;
+}
+
+.light-mode:not(.landing-page) .industry-meta,
+.light-mode:not(.landing-page) .industry-pill,
+.light-mode:not(.landing-page) .chip,
+.light-mode:not(.landing-page) .lead-row span{
+  color:#4c1d95;
+  background:#f3e8ff;
+  border-color:#ddd6fe;
+}
+
+.light-mode:not(.landing-page) .industry-meta small{
+  color:#6b617d;
+}
+
+.light-mode:not(.landing-page) .signup-copy{
+  color:white;
+  padding:clamp(24px,4vw,42px);
+  border-radius:34px;
+  background:
+    radial-gradient(circle at 86% 14%,rgba(168,85,247,.32),transparent 28%),
+    radial-gradient(circle at 10% 100%,rgba(245,196,81,.14),transparent 24%),
+    linear-gradient(135deg,#050617,#16053a);
+  border:1px solid rgba(245,196,81,.24);
+  box-shadow:0 28px 88px rgba(31,14,59,.22);
+}
+
+.light-mode:not(.landing-page) .signup-copy h1{
+  color:white;
+}
+
+.light-mode:not(.landing-page) .signup-copy p{
+  color:#eee7ff;
+}
+
+.light-mode:not(.landing-page) .signup-copy .mini-label{
+  color:#ffe9a6;
+  background:rgba(245,196,81,.12);
+  border-color:rgba(245,196,81,.34);
+}
+
+.light-mode:not(.landing-page) .signup-copy .selected-card{
+  color:#f8f5ff;
+  background:rgba(255,255,255,.075);
+  border-color:rgba(255,255,255,.14);
+}
+
+.light-mode:not(.landing-page) .signup-copy .selected-card p,
+.light-mode:not(.landing-page) .signup-copy .selected-card small{
+  color:#ddd6fe;
+}
+
+.light-mode:not(.landing-page) .form input,
+.light-mode:not(.landing-page) .form select,
+.light-mode:not(.landing-page) .form textarea,
+.light-mode:not(.landing-page) textarea{
+  border-color:#ddd6fe;
+  background:#fff;
+  color:#171327;
+}
+
+.light-mode:not(.landing-page) .form input:focus,
+.light-mode:not(.landing-page) .form select:focus,
+.light-mode:not(.landing-page) .form textarea:focus,
+.light-mode:not(.landing-page) textarea:focus{
+  outline:3px solid rgba(124,58,237,.16);
+  border-color:#7c3aed;
+}
+
+.light-mode:not(.landing-page) .assistant-row,
+.light-mode:not(.landing-page) .lead-row,
+.light-mode:not(.landing-page) .connection-row,
+.light-mode:not(.landing-page) .simple-stats div{
+  background:linear-gradient(145deg,#fff,#fbf8ff);
+  border-color:#eadfff;
+}
+
+.light-mode:not(.landing-page) .simple-stats strong{
+  color:#4c1d95;
+}
+
+.light-mode:not(.landing-page) .activation-banner{
+  background:linear-gradient(135deg,#fff7db,#f3e8ff);
+  border-color:#f1d37b;
+}
+
+.light-mode:not(.landing-page) .feature-lock-card.locked,
+.light-mode:not(.landing-page) .locked-list-row{
+  color:#27124d;
+  background:#fbf8ff;
+  border-color:#c4b5fd;
+}
+
+.light-mode:not(.landing-page) .luxury-cta,
+.light-mode:not(.landing-page) .final-cta{
+  border:1px solid rgba(245,196,81,.28);
+  background:
+    radial-gradient(circle at 10% 100%,rgba(245,196,81,.24),transparent 24%),
+    radial-gradient(circle at 90% 0,rgba(217,70,239,.25),transparent 26%),
+    linear-gradient(135deg,#6d28d9,#4c1d95);
+  box-shadow:0 32px 96px rgba(76,29,149,.25);
+}
+
+.light-mode:not(.landing-page) .luxury-cta h2,
+.light-mode:not(.landing-page) .final-cta h2{
+  color:white;
+}
+
+.light-mode:not(.landing-page) .luxury-cta p,
+.light-mode:not(.landing-page) .final-cta p{
+  color:#eee7ff;
+}
+
+.light-mode:not(.landing-page) .site-footer{
+  max-width:1210px;
+  margin:32px auto 0;
+  padding:34px 28px 44px;
+  color:white;
+  border:1px solid rgba(245,196,81,.2);
+  border-radius:34px 34px 0 0;
+  background:
+    radial-gradient(circle at 84% 0,rgba(168,85,247,.22),transparent 30%),
+    linear-gradient(135deg,#050617,#12052e);
+}
+
+.light-mode:not(.landing-page) .site-footer .brand,
+.light-mode:not(.landing-page) .site-footer strong{
+  color:white;
+}
+
+.light-mode:not(.landing-page) .site-footer p{
+  color:#ddd6fe;
+}
+
+.light-mode:not(.landing-page) .site-footer a{
+  color:#f5c451;
+}
+
+@media(max-width:860px){
+  .light-mode:not(.landing-page) .signup-copy,
+  .light-mode:not(.landing-page) .growth-page-hero,
+  .light-mode:not(.landing-page) .pagehead.clean-head,
+  .light-mode:not(.landing-page) .client-overview,
+  .light-mode:not(.landing-page) .assessment-hero>div:first-child{
+    border-radius:24px;
+  }
+
+  .light-mode:not(.landing-page) .growth-card-grid,
+  .light-mode:not(.landing-page) .employee-full-grid,
+  .light-mode:not(.landing-page) .premium-pricing-grid,
+  .light-mode:not(.landing-page) .demo-card-grid,
+  .light-mode:not(.landing-page) .case-study-grid{
+    gap:14px;
   }
 }

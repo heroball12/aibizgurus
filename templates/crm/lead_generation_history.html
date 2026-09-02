@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Lead Generation History | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="staff-hero compact">
+  <div>
+    <span class="ops-label">Lead Finder</span>
+    <h1>Generation history</h1>
+    <p>Review completed, queued, and failed lead-generation batches without mixing staging into the permanent CRM.</p>
+  </div>
+  <div class="actions">
+    <a class="btn neon" href="{% url 'lead_finder' %}">Generate Leads</a>
+    <a class="btn ghost" href="{% url 'crm_home' %}">Sales Intelligence</a>
+  </div>
+</section>
+
+<section class="sales-panel">
+  <form method="get" class="lead-filter-form">
+    {% if can_manage_finder %}
+      <div>
+        <label for="history-employee">Employee</label>
+        <select id="history-employee" name="employee">
+          <option value="">All employees</option>
+          {% for staff_user in assignable_users %}
+            <option value="{{ staff_user.pk }}" {% if history_filters.employee == staff_user.pk|stringformat:"s" %}selected{% endif %}>{{ staff_user.get_full_name|default:staff_user.username }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endif %}
+    <div>
+      <label for="history-industry">Industry</label>
+      <select id="history-industry" name="industry">
+        <option value="">All industries</option>
+        {% for industry in batch_industries %}
+          <option value="{{ industry }}" {% if history_filters.industry == industry %}selected{% endif %}>{{ industry }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="history-status">Status</label>
+      <select id="history-status" name="status">
+        <option value="">All statuses</option>
+        {% for value,label in batch_status_choices %}
+          <option value="{{ value }}" {% if history_filters.status == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="history-date">Date</label>
+      <input id="history-date" type="date" name="date" value="{{ history_filters.date }}">
+    </div>
+    <div class="lead-filter-actions">
+      <button class="btn neon" type="submit">Apply filters</button>
+      <a class="btn ghost" href="{% url 'lead_generation_history' %}">Reset</a>
+    </div>
+  </form>
+</section>
+
+<section class="sales-panel">
+  <div class="section-head">
+    <div>
+      <span class="ops-label">Batches</span>
+      <h2>{{ filtered_count }} matching batch{{ filtered_count|pluralize }}</h2>
+    </div>
+  </div>
+  <div class="lead-control-table-wrap">
+    <table class="sales-table">
+      <tr>
+        <th>Batch</th>
+        <th>Employee</th>
+        <th>Industry</th>
+        <th>Location</th>
+        <th>Requested</th>
+        <th>Generated</th>
+        <th>Duplicates Removed</th>
+        <th>Time Completed</th>
+        <th>Status</th>
+      </tr>
+      {% for batch in page_obj %}
+        <tr>
+          <td><a href="{% url 'lead_generation_batch_detail' batch.pk %}">#{{ batch.pk }}</a></td>
+          <td>{{ batch.employee.get_full_name|default:batch.employee.username|default:"—" }}</td>
+          <td>{{ batch.industry }}</td>
+          <td>{{ batch.location|default:"Any" }}</td>
+          <td>{{ batch.quantity_requested }}</td>
+          <td>{{ batch.quantity_generated }}</td>
+          <td>{{ batch.duplicates_removed }}</td>
+          <td>{% if batch.completed_at %}{{ batch.completed_at|date:"M j, g:i A" }}{% else %}—{% endif %}</td>
+          <td>
+            <span class="status-badge">{{ batch.get_status_display }}</span>
+            <div class="lead-progress compact"><i style="width:{{ batch.progress_percent }}%"></i></div>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="9">No generation batches match these filters.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pager" aria-label="Lead generation history pages">
+      {% if page_obj.has_previous %}<a href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}">← Previous</a>{% endif %}
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}">Next →</a>{% endif %}
+    </nav>
+  {% endif %}
+</section>
+{% endblock %}

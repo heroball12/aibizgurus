@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Lead Finder | AI Business Gurus{% endblock %}
+{% block content %}
+<section class="sales-hero lead-finder-hero">
+  <div>
+    <span class="ops-label">Lead Finder</span>
+    <h1>Generate fresh cold-call leads inside AIBG.</h1>
+    <p>Choose an industry, optional location, and quantity. New leads stay in staging until they are actually called, keeping the CRM clean.</p>
+    <div class="sales-hero-actions">
+      <a class="btn ghost" href="{% url 'lead_generation_history' %}">Generation History</a>
+      <a class="btn ghost" href="{% url 'crm_home' %}">Sales Intelligence</a>
+    </div>
+  </div>
+  <form method="post" class="sales-panel finder-generate-card dark-form">
+    {% csrf_token %}
+    <span class="ops-label">Instant Search</span>
+    <h2>Find leads</h2>
+    {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
+    <div class="finder-form-grid">
+      <p>{{ form.industry.label_tag }}{{ form.industry }}</p>
+      <p class="custom-industry-field">{{ form.custom_industry.label_tag }}{{ form.custom_industry }}</p>
+      <p>{{ form.location.label_tag }}{{ form.location }}</p>
+      <p>{{ form.quantity.label_tag }}{{ form.quantity }}</p>
+    </div>
+    <button class="btn neon" type="submit">Generate Leads</button>
+    <small class="finder-hint">20 or fewer runs immediately. Larger batches are queued for background generation.</small>
+  </form>
+</section>
+
+<section class="sales-metrics lead-finder-metrics">
+  <div class="sales-metric-card">
+    <span>Today's Generated</span>
+    <strong>{{ lead_finder_metrics.today_generated }}</strong>
+    <small>new staging rows today</small>
+  </div>
+  <div class="sales-metric-card gold">
+    <span>Leads Called Today</span>
+    <strong>{{ lead_finder_metrics.called_today }}</strong>
+    <small>moved into CRM after first touch</small>
+  </div>
+  <div class="sales-metric-card violet">
+    <span>Remaining</span>
+    <strong>{{ lead_finder_metrics.remaining }}</strong>
+    <small>new/skipped staging rows</small>
+  </div>
+  <div class="sales-metric-card">
+    <span>Open Batches</span>
+    <strong>{{ lead_finder_metrics.open_batches }}</strong>
+    <small>{{ lead_finder_metrics.background_jobs }} background jobs</small>
+  </div>
+  <div class="sales-metric-card">
+    <span>Total Generated This Week</span>
+    <strong>{{ lead_finder_metrics.total_generated_week }}</strong>
+    <small>completed batch output</small>
+  </div>
+</section>
+
+{% if open_batches %}
+<section class="sales-panel">
+  <div class="section-head">
+    <div>
+      <span class="ops-label">Background Jobs</span>
+      <h2>Queued and running batches</h2>
+    </div>
+    <a href="{% url 'lead_generation_history' %}">View all →</a>
+  </div>
+  <div class="finder-batch-grid">
+    {% for batch in open_batches %}
+      <a class="finder-batch-card" href="{% url 'lead_generation_batch_detail' batch.pk %}">
+        <strong>Batch #{{ batch.pk }} · {{ batch.industry }}</strong>
+        <span class="status-badge">{{ batch.get_status_display }}</span>
+        <div class="lead-progress"><i style="width:{{ batch.progress_percent }}%"></i></div>
+        <small>{{ batch.quantity_generated }}/{{ batch.quantity_requested }} generated · {{ batch.status_message }}</small>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="sales-panel lead-control-panel">
+  <div class="section-head">
+    <div>
+      <span class="ops-label">Today's Generated Leads</span>
+      <h2>Staging bucket</h2>
+      <p>{{ staged_count }} matching staging lead{{ staged_count|pluralize }}. These are not CRM inventory until you mark them called.</p>
+    </div>
+  </div>
+  <form method="get" class="lead-filter-form">
+    <div>
+      <label for="finder-q">Search</label>
+      <input id="finder-q" type="search" name="finder_q" value="{{ finder_filters.q }}" placeholder="Business, phone, industry, city…">
+    </div>
+    {% if can_manage_finder %}
+      <div>
+        <label for="finder-employee">Employee</label>
+        <select id="finder-employee" name="finder_employee">
+          <option value="">All employees</option>
+          {% for staff_user in assignable_users %}
+            <option value="{{ staff_user.pk }}" {% if finder_filters.employee == staff_user.pk|stringformat:"s" %}selected{% endif %}>{{ staff_user.get_full_name|default:staff_user.username }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endif %}
+    <div>
+      <label for="finder-industry">Industry</label>
+      <select id="finder-industry" name="finder_industry">
+        <option value="">All industries</option>
+        {% for industry in finder_industries %}
+          <option value="{{ industry }}" {% if finder_filters.industry == industry %}selected{% endif %}>{{ industry }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="finder-status">Status</label>
+      <select id="finder-status" name="finder_status">
+        <option value="">All statuses</option>
+        {% for value,label in finder_status_choices %}
+          <option value="{{ value }}" {% if finder_filters.status == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="finder-batch">Batch</label>
+      <select id="finder-batch" name="finder_batch">
+        <option value="">All batches</option>
+        {% for batch in finder_batches %}
+          <option value="{{ batch.pk }}" {% if finder_filters.batch == batch.pk|stringformat:"s" %}selected{% endif %}>#{{ batch.pk }} · {{ batch.industry }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="lead-filter-actions">
+      <button class="btn neon" type="submit">Apply filters</button>
+      <a class="btn ghost" href="{% url 'lead_finder' %}">Reset</a>
+    </div>
+  </form>
+
+  <div class="lead-control-table-wrap">
+    <table class="sales-table lead-control-table finder-table">
+      <tr>
+        <th>Business Name</th>
+        <th>Phone Number</th>
+        <th>Industry</th>
+        <th>City</th>
+        <th>Call</th>
+        <th>Notes</th>
+        <th>Actions</th>
+      </tr>
+      {% for lead in staged_leads %}
+        <tr>
+          <td>
+            <strong>{{ lead.business_name }}</strong>
+            <small>Batch #{{ lead.batch_id }} · {{ lead.created_at|date:"M j, g:i A" }}</small>
+          </td>
+          <td>{{ lead.phone_number }}</td>
+          <td>{{ lead.industry }}</td>
+          <td>{{ lead.city|default:"—" }}{% if lead.state %}, {{ lead.state }}{% endif %}</td>
+          <td><a class="btn small neon" href="tel:{{ lead.phone_number }}">Call</a></td>
+          <td>
+            <form id="stage-{{ lead.pk }}" method="post" action="{% url 'lead_staging_action' lead.pk 'mark-called' %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <textarea name="notes" rows="2" placeholder="Call notes…">{{ lead.notes }}</textarea>
+            </form>
+          </td>
+          <td class="lead-row-actions">
+            <button class="btn small ghost" form="stage-{{ lead.pk }}" type="submit">Mark Called</button>
+            <button class="btn small ghost" form="stage-{{ lead.pk }}" type="submit" formaction="{% url 'lead_staging_action' lead.pk 'skip' %}">Skip</button>
+            <button class="btn small danger" form="stage-{{ lead.pk }}" type="submit" formaction="{% url 'lead_staging_action' lead.pk 'delete' %}" onclick="return confirm('Delete this lead from staging only?');">Delete</button>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7">No generated leads in today's staging bucket yet.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</section>
+
+<script>
+(() => {
+  const industry = document.querySelector("[data-lead-finder-industry]");
+  const customWrap = document.querySelector(".custom-industry-field");
+  if (!industry || !customWrap) return;
+  function syncCustomIndustry() {
+    customWrap.hidden = industry.value !== "other";
+  }
+  industry.addEventListener("change", syncCustomIndustry);
+  syncCustomIndustry();
+})();
+</script>
+{% endblock %}

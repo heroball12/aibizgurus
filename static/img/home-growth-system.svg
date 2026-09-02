@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+  <title id="title">AI growth dashboard illustration</title>
+  <desc id="desc">A modern AI growth dashboard with cards, charts, and a rising arrow.</desc>
+  <defs>
+    <radialGradient id="bg" cx="18%" cy="84%" r="84%">
+      <stop offset="0" stop-color="#7c3aed"/>
+      <stop offset=".45" stop-color="#12052e"/>
+      <stop offset="1" stop-color="#050617"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#fff1a8"/>
+      <stop offset=".48" stop-color="#f5c451"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="violet" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#c084fc"/>
+      <stop offset=".52" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#d946ef"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="900" height="620" rx="42" fill="url(#bg)"/>
+  <g opacity=".16" stroke="#c084fc">
+    <path d="M72 100h756M72 520h756M72 100v420M828 100v420"/>
+    <path d="M72 205h756M72 310h756M72 415h756M260 100v420M448 100v420M636 100v420"/>
+  </g>
+  <g filter="url(#glow)">
+    <rect x="112" y="132" width="676" height="366" rx="34" fill="#09031f" stroke="#8b5cf6" stroke-width="3"/>
+    <rect x="152" y="174" width="180" height="94" rx="24" fill="#170735" stroke="#f5c451"/>
+    <rect x="360" y="174" width="180" height="94" rx="24" fill="#170735" stroke="#8b5cf6"/>
+    <rect x="568" y="174" width="180" height="94" rx="24" fill="#170735" stroke="#8b5cf6"/>
+    <path d="M182 230h92M182 204h52M390 230h98M390 204h64M598 230h92M598 204h48" stroke="#fff" stroke-width="12" stroke-linecap="round" opacity=".72"/>
+    <rect x="166" y="392" width="54" height="64" rx="14" fill="url(#violet)"/>
+    <rect x="250" y="350" width="54" height="106" rx="14" fill="url(#violet)"/>
+    <rect x="334" y="314" width="54" height="142" rx="14" fill="url(#violet)"/>
+    <path d="M458 432c72-102 140-124 246-212" stroke="url(#gold)" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M674 214h52v52" stroke="url(#gold)" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

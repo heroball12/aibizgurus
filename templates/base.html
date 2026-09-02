@@ -7,7 +7,7 @@
   <meta name="description" content="{% block meta_description %}AI Business Gurus builds AI Employees, AI Chatbots, Voice AI, automation, websites, and growth systems that help businesses recover missed revenue and scale faster.{% endblock %}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=19">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=21">
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' or request.path|slice:':6' == '/team/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
@@ -20,7 +20,7 @@
     {% if user.is_authenticated %}
       {% if user.is_employee_or_admin %}
         {% if user.is_owner %}<a href="{% url 'owner_dashboard' %}">Owner</a>{% endif %}
-        <a href="{% url 'ops_dashboard' %}">Ops</a><a href="{% url 'crm_home' %}">Sales Intelligence</a>
+        <a href="{% url 'ops_dashboard' %}">Ops</a><a href="{% url 'crm_home' %}">Sales Intelligence</a><a href="{% url 'lead_finder' %}">Lead Finder</a>
         <a href="{% url 'staff_messages' %}">Chat</a><a href="{% url 'staff_time_clock' %}">Time Clock</a>
       {% else %}
         <a href="{% url 'portal_home' %}">Dashboard</a>

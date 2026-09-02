@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
@@ -114,12 +115,13 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"] if (BASE_DIR / "static").exists() else []
 MEDIA_URL = os.getenv("MEDIA_URL", "/media/")
 MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", BASE_DIR / "media"))
+IS_RUNSERVER_PREVIEW = "runserver" in sys.argv
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {
         "BACKEND": (
             "django.contrib.staticfiles.storage.StaticFilesStorage"
-            if DEBUG
+            if DEBUG or IS_RUNSERVER_PREVIEW
             else "whitenoise.storage.CompressedManifestStaticFilesStorage"
         )
     },
@@ -139,6 +141,16 @@ OPENAI_REQUEST_TIMEOUT = float(os.getenv("OPENAI_REQUEST_TIMEOUT", "20"))
 OPENAI_MAX_RETRIES = int(os.getenv("OPENAI_MAX_RETRIES", "1"))
 OPENAI_DAILY_USAGE_LIMIT = int(os.getenv("OPENAI_DAILY_USAGE_LIMIT", "500"))
 AI_SALES_INTELLIGENCE_ENABLED = env_bool("AI_SALES_INTELLIGENCE_ENABLED", default=False)
+LEAD_FINDER_ENABLE_PUBLIC_HTTP = env_bool("LEAD_FINDER_ENABLE_PUBLIC_HTTP", default=False)
+LEAD_FINDER_ENABLE_FALLBACK_PROVIDER = env_bool("LEAD_FINDER_ENABLE_FALLBACK_PROVIDER", default=True)
+LEAD_FINDER_PROVIDER_TIMEOUT = float(os.getenv("LEAD_FINDER_PROVIDER_TIMEOUT", "8"))
+LEAD_FINDER_OVERPASS_URL = os.getenv("LEAD_FINDER_OVERPASS_URL", "https://overpass-api.de/api/interpreter")
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", os.getenv("REDIS_URL", ""))
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", CELERY_BROKER_URL)
+CELERY_TASK_IGNORE_RESULT = env_bool("CELERY_TASK_IGNORE_RESULT", default=False)
+CELERY_TASK_TIME_LIMIT = int(os.getenv("CELERY_TASK_TIME_LIMIT", "600"))
+CELERY_TASK_SOFT_TIME_LIMIT = int(os.getenv("CELERY_TASK_SOFT_TIME_LIMIT", "540"))
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")

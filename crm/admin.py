@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ClassificationCorrection, Lead, LeadActivity, LeadImport, LeadNote
+from .models import ClassificationCorrection, Lead, LeadActivity, LeadGenerationBatch, LeadImport, LeadNote, LeadStaging
 
 class LeadNoteInline(admin.TabularInline):
     model = LeadNote
@@ -12,14 +12,40 @@ class LeadActivityInline(admin.TabularInline):
     fields = ("activity_type", "inferred_status", "lead_temperature", "confidence_score", "classification_source", "created_at")
     readonly_fields = ("created_at",)
 
+
+class LeadStagingInline(admin.TabularInline):
+    model = LeadStaging
+    extra = 0
+    fields = ("business_name", "phone_number", "industry", "city", "state", "status", "confidence_score", "created_at")
+    readonly_fields = ("created_at",)
+
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
-    list_display = ("name", "business_name", "lead_type", "status", "lead_temperature", "assigned_to", "needs_review", "value", "created_at")
+    list_display = ("name", "business_name", "lead_type", "status", "lead_temperature", "assigned_to", "lead_generation_batch", "needs_review", "value", "created_at")
     search_fields = ("name", "business_name", "email", "phone", "notes", "cleaned_notes", "source_file")
-    list_filter = ("lead_type", "status", "lead_temperature", "needs_review", "classification_source", "industry")
+    list_filter = ("lead_type", "status", "lead_temperature", "needs_review", "classification_source", "industry", "lead_generation_batch")
     readonly_fields = ("created_at", "imported_at")
     date_hierarchy = "created_at"
     inlines = [LeadNoteInline, LeadActivityInline]
+
+
+@admin.register(LeadGenerationBatch)
+class LeadGenerationBatchAdmin(admin.ModelAdmin):
+    list_display = ("id", "employee", "industry", "location", "quantity_requested", "quantity_generated", "duplicates_removed", "status", "progress_percent", "created_at")
+    search_fields = ("industry", "location", "employee__username", "employee__email", "employee__first_name", "employee__last_name")
+    list_filter = ("status", "industry", "created_at")
+    readonly_fields = ("created_at", "started_at", "completed_at", "duration_seconds")
+    date_hierarchy = "created_at"
+    inlines = [LeadStagingInline]
+
+
+@admin.register(LeadStaging)
+class LeadStagingAdmin(admin.ModelAdmin):
+    list_display = ("business_name", "phone_number", "industry", "city", "state", "status", "created_by", "batch", "created_at")
+    search_fields = ("business_name", "phone_number", "industry", "city", "state", "created_by__username")
+    list_filter = ("status", "industry", "state", "created_at")
+    readonly_fields = ("created_at",)
+    date_hierarchy = "created_at"
 
 
 @admin.register(LeadImport)

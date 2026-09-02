@@ -10,6 +10,63 @@ def sales_staff_queryset():
     return User.objects.filter(role__in=["employee", "admin"], is_active=True).order_by("first_name", "username")
 
 
+LEAD_FINDER_INDUSTRIES = [
+    "Cannabis",
+    "Law Firm",
+    "Insurance",
+    "Real Estate",
+    "Roofing",
+    "Solar",
+    "HVAC",
+    "Dentist",
+    "Chiropractor",
+    "Medical Spa",
+    "Salon",
+    "Barbershop",
+    "Auto Repair",
+    "Car Dealership",
+    "Restaurant",
+    "Accounting",
+    "Construction",
+    "Financial Advisor",
+    "Mortgage",
+    "Home Services",
+]
+
+LEAD_FINDER_QUANTITIES = [5, 10, 15, 20, 25, 50, 100, 250, 500, 1000]
+
+
+class LeadFinderForm(forms.Form):
+    industry = forms.ChoiceField(
+        choices=[(industry, industry) for industry in LEAD_FINDER_INDUSTRIES] + [("other", "Other…")],
+        widget=forms.Select(attrs={"data-lead-finder-industry": "true"}),
+    )
+    custom_industry = forms.CharField(
+        required=False,
+        max_length=150,
+        label="Custom industry",
+        widget=forms.TextInput(attrs={"placeholder": "Enter industry", "data-custom-industry": "true"}),
+    )
+    location = forms.CharField(
+        required=False,
+        max_length=180,
+        widget=forms.TextInput(attrs={"placeholder": "California, San Diego, Phoenix, Entire United States…"}),
+    )
+    quantity = forms.ChoiceField(choices=[(str(value), str(value)) for value in LEAD_FINDER_QUANTITIES])
+
+    def clean(self):
+        cleaned = super().clean()
+        industry = cleaned.get("industry")
+        custom = (cleaned.get("custom_industry") or "").strip()
+        if industry == "other":
+            if not custom:
+                self.add_error("custom_industry", "Enter the custom industry.")
+            cleaned["industry"] = custom
+        cleaned["location"] = (cleaned.get("location") or "").strip()
+        cleaned["quantity"] = int(cleaned.get("quantity") or 0)
+        return cleaned
+
+
 class LeadForm(forms.ModelForm):
     class Meta:
         model = Lead

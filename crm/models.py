@@ -83,6 +83,13 @@ class Lead(models.Model):
     cleaned_notes = models.TextField(blank=True)
     value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    lead_generation_batch = models.ForeignKey(
+        "LeadGenerationBatch",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="crm_leads",
+    )
     follow_up_date = models.DateField(null=True, blank=True)
     imported_at = models.DateTimeField(null=True, blank=True)
     last_contact_at = models.DateTimeField(null=True, blank=True)
@@ -102,6 +109,7 @@ class Lead(models.Model):
             models.Index(fields=["lead_type", "lead_temperature"]),
             models.Index(fields=["lead_type", "archived", "created_at"]),
             models.Index(fields=["lead_type", "assigned_to", "created_at"]),
+            models.Index(fields=["lead_type", "lead_generation_batch"]),
             models.Index(fields=["lead_type", "source_file"]),
             models.Index(fields=["lead_type", "source_file", "source_sheet", "archived"]),
             models.Index(fields=["client", "lead_type", "created_at"]),
@@ -118,6 +126,81 @@ class LeadNote(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     note = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class LeadGenerationBatch(models.Model):
+    STATUS_CHOICES = [
+        ("queued", "Queued"),
+        ("generating", "Generating"),
+        ("searching", "Searching"),
+        ("deduplicating", "Deduplicating"),
+        ("saving", "Saving"),
+        ("completed", "Completed"),
+        ("failed", "Failed"),
+    ]
+
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="lead_generation_batches")
+    industry = models.CharField(max_length=150)
+    location = models.CharField(max_length=180, blank=True)
+    quantity_requested = models.PositiveIntegerField(default=0)
+    quantity_generated = models.PositiveIntegerField(default=0)
+    duplicates_removed = models.PositiveIntegerField(default=0)
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="queued")
+    progress_percent = models.PositiveSmallIntegerField(default=0)
+    status_message = models.CharField(max_length=255, blank=True)
+    provider_summary = models.JSONField(default=dict, blank=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    duration_seconds = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["employee", "created_at"]),
+            models.Index(fields=["status", "created_at"]),
+            models.Index(fields=["industry", "created_at"]),
+        ]
+
+    @property
+    def is_open(self):
+        return self.status in {"queued", "generating", "searching", "deduplicating", "saving"}
+
+    def __str__(self):
+        return f"Batch #{self.pk or 'new'} · {self.industry}"
+
+
+class LeadStaging(models.Model):
+    STATUS_CHOICES = [
+        ("new", "New"),
+        ("skipped", "Skipped"),
+    ]
+
+    batch = models.ForeignKey(LeadGenerationBatch, on_delete=models.CASCADE, related_name="staged_leads")
+    business_name = models.CharField(max_length=200)
+    phone_number = models.CharField(max_length=80)
+    industry = models.CharField(max_length=150)
+    city = models.CharField(max_length=120, blank=True)
+    state = models.CharField(max_length=80, blank=True)
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="new")
+    notes = models.TextField(blank=True)
+    confidence_score = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    dedupe_key = models.CharField(max_length=255, blank=True, db_index=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="lead_staging_rows")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["created_by", "status", "created_at"]),
+            models.Index(fields=["batch", "status"]),
+            models.Index(fields=["industry", "created_at"]),
+            models.Index(fields=["city", "state"]),
+            models.Index(fields=["phone_number"]),
+        ]
+
+    def __str__(self):
+        return f"{self.business_name} · {self.phone_number}"
 
 
 class LeadImport(models.Model):

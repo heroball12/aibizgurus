@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+  <title id="title">AI receptionist illustration</title>
+  <desc id="desc">A sleek purple and gold AI receptionist scene with chat cards and neon interface details.</desc>
+  <defs>
+    <radialGradient id="g1" cx="74%" cy="24%" r="70%">
+      <stop offset="0" stop-color="#a855f7"/>
+      <stop offset=".45" stop-color="#28104f"/>
+      <stop offset="1" stop-color="#050617"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#fff1a8"/>
+      <stop offset=".45" stop-color="#f5c451"/>
+      <stop offset="1" stop-color="#9a5b09"/>
+    </linearGradient>
+    <linearGradient id="violet" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#d8b4fe"/>
+      <stop offset=".5" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#d946ef"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="900" height="620" rx="42" fill="url(#g1)"/>
+  <g opacity=".18" stroke="#c084fc" stroke-width="1">
+    <path d="M0 110H900M0 220H900M0 330H900M0 440H900M0 550H900"/>
+    <path d="M110 0V620M220 0V620M330 0V620M440 0V620M550 0V620M660 0V620M770 0V620"/>
+  </g>
+  <circle cx="676" cy="224" r="164" fill="#16072d" opacity=".72"/>
+  <circle cx="676" cy="224" r="124" fill="none" stroke="url(#violet)" stroke-width="42" opacity=".8"/>
+  <path d="M710 76l-54 258" stroke="url(#gold)" stroke-width="38" stroke-linecap="round" opacity=".92"/>
+  <g transform="translate(330 96)" filter="url(#glow)">
+    <path d="M154 62c-46 0-82 38-82 88v94h164v-94c0-50-36-88-82-88z" fill="#0d0620"/>
+    <circle cx="154" cy="104" r="56" fill="#e7b8a4"/>
+    <path d="M92 108c8-52 49-88 97-78 46 10 73 47 72 98-42-35-97-44-169-20z" fill="#14071f"/>
+    <path d="M70 244c28-62 57-86 84-86s58 24 90 86v104H70z" fill="url(#violet)"/>
+    <path d="M94 226c44 34 88 34 132 0" fill="none" stroke="#f5c451" stroke-width="5" opacity=".75"/>
+    <path d="M82 122c-32 4-48 26-46 60 1 27 15 45 40 52" fill="none" stroke="#c084fc" stroke-width="8" stroke-linecap="round"/>
+    <path d="M235 122c32 4 48 26 46 60-1 27-15 45-40 52" fill="none" stroke="#c084fc" stroke-width="8" stroke-linecap="round"/>
+    <path d="M250 210h42" stroke="#f5c451" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <g filter="url(#glow)">
+    <rect x="60" y="84" width="245" height="118" rx="28" fill="#0a0618" opacity=".82" stroke="#f5c451"/>
+    <rect x="60" y="240" width="245" height="118" rx="28" fill="#0a0618" opacity=".82" stroke="#8b5cf6"/>
+    <rect x="596" y="420" width="238" height="112" rx="28" fill="#0a0618" opacity=".82" stroke="#f5c451"/>
+    <circle cx="103" cy="126" r="20" fill="url(#violet)"/>
+    <circle cx="103" cy="282" r="20" fill="url(#gold)"/>
+    <circle cx="638" cy="462" r="20" fill="url(#violet)"/>
+    <path d="M136 125h116M136 155h86M136 281h132M136 311h78M671 461h110M671 491h80" stroke="#fff" stroke-width="12" stroke-linecap="round" opacity=".82"/>
+  </g>
+</svg>

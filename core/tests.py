@@ -25,7 +25,7 @@ from audit.utils import log_activity
 from clients.models import AIInstance, BusinessProfile, ClientAccount, Integration
 from core.models import IndustryTemplate
 from crm.intelligence import classify_sales_note
-from crm.models import Lead, LeadActivity, LeadImport
+from crm.models import Lead, LeadActivity, LeadGenerationBatch, LeadImport, LeadStaging
 
 
 User = get_user_model()
@@ -105,9 +105,9 @@ class PlatformFlowTests(TestCase):
     def test_landing_and_industry_pages_load_real_styles_and_data(self):
         response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Build Your")
-        self.assertContains(response, "AI Workforce")
-        self.assertContains(response, '/static/css/landing.css?v=15')
+        self.assertContains(response, "Your AI Assistant")
+        self.assertContains(response, "Your Growth")
+        self.assertContains(response, '/static/css/landing.css?v=17')
         self.assertContains(response, "img/ai-business-gurus-logo-nav.png")
         self.assertContains(response, 'class="landing-page light-mode"')
 
@@ -663,6 +663,102 @@ class PlatformFlowTests(TestCase):
         self.assertRedirects(response, reverse("crm_home"))
         self.assertFalse(Lead.objects.filter(pk=lead.pk).exists())
         self.assertEqual(self.client.get(reverse("lead_detail", args=[lead.pk])).status_code, 404)
+
+    @override_settings(LEAD_FINDER_ENABLE_PUBLIC_HTTP=False, LEAD_FINDER_ENABLE_FALLBACK_PROVIDER=True)
+    def test_lead_finder_immediate_generation_stages_and_mark_called_moves_to_crm(self):
+        employee = User.objects.create_user(username="finder-sdr", password="OpsPass123!", role="employee", first_name="Finder")
+
+        self.client.force_login(employee)
+        response = self.client.post(reverse("lead_finder"), {
+            "industry": "HVAC",
+            "custom_industry": "",
+            "location": "San Diego, CA",
+            "quantity": "5",
+        })
+        batch = LeadGenerationBatch.objects.get()
+        self.assertRedirects(response, reverse("lead_generation_batch_detail", args=[batch.pk]))
+        batch.refresh_from_db()
+        self.assertEqual(batch.status, "completed")
+        self.assertEqual(batch.quantity_requested, 5)
+        self.assertEqual(batch.quantity_generated, 5)
+        self.assertEqual(LeadStaging.objects.filter(batch=batch, created_by=employee).count(), 5)
+        self.assertEqual(Lead.objects.filter(lead_type="internal_sales").count(), 0)
+        status = self.client.get(reverse("lead_generation_batch_status", args=[batch.pk]))
+        self.assertEqual(status.status_code, 200)
+        self.assertEqual(status.json()["batch"]["status"], "completed")
+        self.assertEqual(status.json()["staged_count"], 5)
+        self.assertEqual(len(status.json()["staged_leads"]), 5)
+        self.assertIn("business_name", status.json()["staged_leads"][0])
+        self.assertNotIn("email", status.json()["staged_leads"][0])
+        self.assertNotIn("website", status.json()["staged_leads"][0])
+
+        staged = LeadStaging.objects.filter(batch=batch).first()
+        response = self.client.post(reverse("lead_staging_action", args=[staged.pk, "mark-called"]), {
+            "notes": "Called and left voicemail.",
+            "next": reverse("lead_finder"),
+        })
+        self.assertRedirects(response, reverse("lead_finder"))
+        self.assertFalse(LeadStaging.objects.filter(pk=staged.pk).exists())
+        lead = Lead.objects.get(lead_type="internal_sales")
+        self.assertEqual(lead.business_name, staged.business_name)
+        self.assertEqual(lead.phone, staged.phone_number)
+        self.assertEqual(lead.industry, "HVAC")
+        self.assertEqual(lead.status, "attempted")
+        self.assertEqual(lead.assigned_to, employee)
+        self.assertEqual(lead.lead_generation_batch, batch)
+        self.assertEqual(lead.source, "Lead Finder")
+        self.assertEqual(lead.email, "")
+        self.assertEqual(lead.website, "")
+        self.assertEqual(lead.address, "")
+        activity = LeadActivity.objects.get(lead=lead)
+        self.assertEqual(activity.activity_type, "call")
+        self.assertEqual(activity.metadata["lead_generation_batch_id"], batch.pk)
+
+    @override_settings(LEAD_FINDER_ENABLE_PUBLIC_HTTP=False, LEAD_FINDER_ENABLE_FALLBACK_PROVIDER=True, CELERY_BROKER_URL="")
+    def test_lead_finder_large_batch_queue_permissions_and_duplicate_safety(self):
+        alice = User.objects.create_user(username="finder-alice", password="OpsPass123!", role="employee", first_name="Alice")
+        bob = User.objects.create_user(username="finder-bob", password="OpsPass123!", role="employee", first_name="Bob")
+        admin = User.objects.create_user(username="finder-admin", password="OpsPass123!", role="admin", first_name="Admin")
+
+        self.client.force_login(alice)
+        response = self.client.post(reverse("lead_finder"), {
+            "industry": "Restaurant",
+            "location": "Phoenix, AZ",
+            "quantity": "25",
+        })
+        queued = LeadGenerationBatch.objects.get()
+        self.assertRedirects(response, reverse("lead_generation_batch_detail", args=[queued.pk]))
+        queued.refresh_from_db()
+        self.assertEqual(queued.status, "queued")
+        self.assertEqual(queued.quantity_generated, 0)
+        self.assertIn("Queued", queued.status_message)
+
+        self.assertEqual(self.client.get(reverse("lead_generation_batch_detail", args=[queued.pk])).status_code, 200)
+        self.client.force_login(bob)
+        self.assertEqual(self.client.get(reverse("lead_generation_batch_detail", args=[queued.pk])).status_code, 404)
+        self.assertEqual(self.client.get(reverse("lead_generation_batch_status", args=[queued.pk])).status_code, 404)
+        self.client.force_login(admin)
+        self.assertEqual(self.client.get(reverse("lead_generation_batch_detail", args=[queued.pk])).status_code, 200)
+
+        self.client.force_login(alice)
+        self.client.post(reverse("lead_finder"), {
+            "industry": "Roofing",
+            "location": "Las Vegas, NV",
+            "quantity": "5",
+        })
+        self.assertEqual(LeadStaging.objects.filter(created_by=alice, industry="Roofing").count(), 5)
+        self.client.force_login(bob)
+        self.client.post(reverse("lead_finder"), {
+            "industry": "Roofing",
+            "location": "Las Vegas, NV",
+            "quantity": "5",
+        })
+        bob_batch = LeadGenerationBatch.objects.filter(employee=bob, industry="Roofing").get()
+        self.assertEqual(bob_batch.quantity_generated, 5)
+        self.assertGreaterEqual(bob_batch.duplicates_removed, 5)
+        self.assertEqual(LeadStaging.objects.filter(created_by=bob, industry="Roofing").count(), 5)
+        all_keys = list(LeadStaging.objects.filter(industry="Roofing").values_list("dedupe_key", flat=True))
+        self.assertEqual(len(all_keys), len(set(all_keys)))
 
     def test_staff_messaging_owner_oversight_and_group_messages(self):
         owner = User.objects.create_user(username="msg-owner", password="OwnerPass123!", role="owner")

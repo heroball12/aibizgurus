@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+  <title id="title">Voice AI illustration</title>
+  <desc id="desc">A microphone and glowing audio waveform in purple and gold.</desc>
+  <defs>
+    <radialGradient id="bg" cx="75%" cy="38%" r="82%">
+      <stop offset="0" stop-color="#581c87"/>
+      <stop offset=".44" stop-color="#0f0827"/>
+      <stop offset="1" stop-color="#050617"/>
+    </radialGradient>
+    <linearGradient id="violet" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#e9d5ff"/>
+      <stop offset=".52" stop-color="#a855f7"/>
+      <stop offset="1" stop-color="#d946ef"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#fff1a8"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <filter id="glow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="900" height="620" rx="42" fill="url(#bg)"/>
+  <g opacity=".15" stroke="#c084fc">
+    <path d="M0 154h900M0 310h900M0 466h900"/>
+    <path d="M120 0v620M300 0v620M480 0v620M660 0v620"/>
+  </g>
+  <g filter="url(#glow)">
+    <circle cx="300" cy="310" r="164" fill="#0a0618" stroke="#8b5cf6" stroke-width="4"/>
+    <rect x="252" y="166" width="96" height="220" rx="48" fill="url(#violet)"/>
+    <path d="M210 294c0 72 34 120 90 120s90-48 90-120" fill="none" stroke="#f5c451" stroke-width="16" stroke-linecap="round"/>
+    <path d="M300 414v70M244 484h112" stroke="#f5c451" stroke-width="16" stroke-linecap="round"/>
+  </g>
+  <g filter="url(#glow)" stroke-linecap="round">
+    <path d="M500 310h28" stroke="#fff" stroke-width="10"/>
+    <path d="M558 248v124M604 202v216M650 258v104M696 170v280M742 232v156M788 290v40" stroke="url(#violet)" stroke-width="15"/>
+    <path d="M520 430c86-34 188-34 292 0" stroke="url(#gold)" stroke-width="8" opacity=".8"/>
+  </g>
+</svg>
