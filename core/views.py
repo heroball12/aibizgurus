@@ -159,6 +159,13 @@ def home(request):
 
 
 def healthz(request):
+    from django.db import connections, DatabaseError
+    try:
+        with connections["default"].cursor() as cursor:
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
+    except DatabaseError:
+        return JsonResponse({"status": "unavailable"}, status=503)
     return JsonResponse({"status": "ok"})
 
 
@@ -219,10 +226,16 @@ def demo(request):
     if not IndustryTemplate.objects.exists():
         safe_seed_industries()
     industries, _ = get_industry_options()
-    return render(request, "core/demo.html", {
-        "industry_demos": industries[:12],
-        "employee_demos": AI_EMPLOYEES[:6],
-    })
+    from .demo_scenarios import SCENARIOS
+    from django.urls import reverse
+    from urllib.parse import urlencode
+    scenarios = []
+    for item in SCENARIOS:
+        scenario = {k: v for k, v in item.items() if k not in {"facts", "template_name"}}
+        template = next((t for t in industries if item["template_name"].lower() in t.name.lower()), None)
+        scenario["signup_url"] = reverse("signup") + ("?" + urlencode({"industry_slug": template.slug}) if template else "")
+        scenarios.append(scenario)
+    return render(request, "core/demo.html", {"demo_scenarios": scenarios, "industry_count": len(industries), "workflow_labels": ["Answer", "Qualify", "Capture", "Handoff"], "demo_history": request.session.get("demo_history", {})})
 
 def solutions(request):
     return render(request, "core/solutions.html", {"solutions": SOLUTIONS})
@@ -268,10 +281,17 @@ def pricing(request):
 def case_studies(request):
     return render(request, "core/case_studies.html")
 
+from django.db import transaction
+from .rate_limits import consume_budget, request_identity
+
+
+@transaction.atomic
 def growth_assessment(request):
     if request.method == "POST":
         form = ConsultationRequestForm(request.POST)
-        if form.is_valid():
+        if not consume_budget("consultation", request_identity(request), limit=5, window=3600):
+            form.add_error(None, "Too many requests. Please try again later or use the calendar above.")
+        if not form.errors and form.is_valid():
             obj = form.save()
             Lead.objects.create(
                 lead_type="internal_sales",
@@ -290,10 +310,13 @@ def growth_assessment(request):
         form = ConsultationRequestForm()
     return render(request, "core/growth_assessment.html", {"form": form})
 
+@transaction.atomic
 def consultation_request(request):
     if request.method == "POST":
         form = ConsultationRequestForm(request.POST)
-        if form.is_valid():
+        if not consume_budget("consultation", request_identity(request), limit=5, window=3600):
+            form.add_error(None, "Too many requests. Please try again later or use the calendar above.")
+        if not form.errors and form.is_valid():
             obj = form.save()
             Lead.objects.create(
                 lead_type="internal_sales",

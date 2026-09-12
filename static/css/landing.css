@@ -310,7 +310,7 @@ body.landing-page .navlinks .btn{
   font-weight:850;
 }
 
-.floating-chat-card button{
+.floating-chat-card button,.floating-chat-cta{
   width:100%;
   min-height:44px;
   border:0;
@@ -933,3 +933,5 @@ body.landing-page .navlinks .btn{
     border-radius:20px;
   }
 }
+
+.floating-chat-cta{display:block;text-align:center}.hero-v4-copy h1{font-size:clamp(50px,6.2vw,86px)}

@@ -1,13 +1,14 @@
 {% load static %}
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>{% block title %}AI Business Gurus{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}AI Business Gurus builds AI Employees, AI Chatbots, Voice AI, automation, websites, and growth systems that help businesses recover missed revenue and scale faster.{% endblock %}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=21">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=22">
+  <script src="{% static 'js/navigation.js' %}" defer></script>
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' or request.path|slice:':6' == '/team/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
@@ -16,7 +17,8 @@
     <img class="brand-logo" src="{% static 'img/ai-business-gurus-logo-nav.png' %}" alt="AI Business Gurus">
     <span class="sr-only">AI Business Gurus</span>
   </a>
-  <div class="navlinks">
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mainNavLinks" aria-label="Open navigation">Menu <span aria-hidden="true">☰</span></button>
+  <div class="navlinks" id="mainNavLinks">
     {% if user.is_authenticated %}
       {% if user.is_employee_or_admin %}
         {% if user.is_owner %}<a href="{% url 'owner_dashboard' %}">Owner</a>{% endif %}
@@ -30,7 +32,7 @@
       <a href="{% url 'industries' %}">Industries</a>
       <a href="{% url 'demo' %}">Demo Center</a>
       <a href="{% url 'pricing' %}">Pricing</a>
-      <a href="{% url 'logout' %}">Logout</a>
+      <a href="{% url 'password_change' %}">Password</a><form method="post" action="{% url 'logout' %}" class="nav-logout">{% csrf_token %}<button type="submit">Logout</button></form>
     {% else %}
       <a href="{% url 'solutions' %}">Solutions</a>
       <a href="{% url 'ai_employees' %}">AI Employees</a>

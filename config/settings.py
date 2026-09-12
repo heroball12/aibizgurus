@@ -59,6 +59,8 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "accounts.middleware.LegacyPasswordMiddleware",
+    "accounts.middleware.AuthRequestLimitMiddleware",
     "audit.middleware.ActivityLogMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -141,8 +143,8 @@ OPENAI_REQUEST_TIMEOUT = float(os.getenv("OPENAI_REQUEST_TIMEOUT", "20"))
 OPENAI_MAX_RETRIES = int(os.getenv("OPENAI_MAX_RETRIES", "1"))
 OPENAI_DAILY_USAGE_LIMIT = int(os.getenv("OPENAI_DAILY_USAGE_LIMIT", "500"))
 AI_SALES_INTELLIGENCE_ENABLED = env_bool("AI_SALES_INTELLIGENCE_ENABLED", default=False)
-LEAD_FINDER_ENABLE_PUBLIC_HTTP = env_bool("LEAD_FINDER_ENABLE_PUBLIC_HTTP", default=False)
-LEAD_FINDER_ENABLE_FALLBACK_PROVIDER = env_bool("LEAD_FINDER_ENABLE_FALLBACK_PROVIDER", default=True)
+LEAD_FINDER_ENABLE_PUBLIC_HTTP = env_bool("LEAD_FINDER_ENABLE_PUBLIC_HTTP", default=True)
+
 LEAD_FINDER_PROVIDER_TIMEOUT = float(os.getenv("LEAD_FINDER_PROVIDER_TIMEOUT", "8"))
 LEAD_FINDER_OVERPASS_URL = os.getenv("LEAD_FINDER_OVERPASS_URL", "https://overpass-api.de/api/interpreter")
 
@@ -155,7 +157,7 @@ CELERY_TASK_SOFT_TIME_LIMIT = int(os.getenv("CELERY_TASK_SOFT_TIME_LIMIT", "540"
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
 TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER", "")
-VALIDATE_TWILIO_SIGNATURES = env_bool("VALIDATE_TWILIO_SIGNATURES", default=False)
+VALIDATE_TWILIO_SIGNATURES = env_bool("VALIDATE_TWILIO_SIGNATURES", default=not DEBUG)
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@aibusinessgurus.com")
 SERVER_EMAIL = os.getenv("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
@@ -196,3 +198,12 @@ LOGGING = {
         "django.security": {"handlers": ["console"], "level": "WARNING", "propagate": False},
     },
 }
+
+# Optional one-time setup prices are added alongside the recurring plan in Checkout.
+STRIPE_SETUP_PRICE_STARTER = os.getenv("STRIPE_SETUP_PRICE_STARTER", "")
+STRIPE_SETUP_PRICE_GROWTH = os.getenv("STRIPE_SETUP_PRICE_GROWTH", "")
+STRIPE_SETUP_PRICE_PRO = os.getenv("STRIPE_SETUP_PRICE_PRO", "")
+DEMO_DAILY_AI_LIMIT = int(os.getenv("DEMO_DAILY_AI_LIMIT", "100"))
+
+# Number of trusted reverse proxies that append to X-Forwarded-For.
+TRUSTED_PROXY_HOPS = int(os.getenv("TRUSTED_PROXY_HOPS", "1" if "RENDER" in os.environ else "0"))

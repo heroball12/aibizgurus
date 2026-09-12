@@ -3,7 +3,7 @@ from .threadlocal import set_current_request, clear_current_request
 from .utils import log_activity
 
 SKIP_PREFIXES = ("/static/", "/favicon.ico")
-SKIP_NAMES = {"owner_activity_logs"}
+SKIP_NAMES = {"owner_activity_logs", "staff_message_summary", "staff_message_feed", "lead_generation_batch_status"}
 
 class ActivityLogMiddleware:
     def __init__(self, get_response):

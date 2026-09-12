@@ -7,6 +7,7 @@ class Command(BaseCommand):
     help = "Seed supported industry templates"
 
     def add_arguments(self, parser):
+        parser.add_argument("--force", action="store_true", help="Replace customized templates with the bundled definitions.")
         parser.add_argument("--clear", action="store_true", help="Delete existing industries before seeding.")
 
     def handle(self, *args, **kwargs):
@@ -19,7 +20,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f"Deleted existing industry records: {deleted}"))
 
         before = IndustryTemplate.objects.count()
-        created, updated, total = seed_industries(stdout=self.stdout)
+        created, updated, total = seed_industries(stdout=self.stdout, force=kwargs.get("force", False))
         after = IndustryTemplate.objects.count()
 
         self.stdout.write(self.style.SUCCESS("Industry seed complete."))

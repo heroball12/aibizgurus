@@ -1,6 +1,7 @@
 from django.db import models
 
 class CallLog(models.Model):
+    conversation = models.OneToOneField("assistant_ai.Conversation", null=True, blank=True, on_delete=models.SET_NULL, related_name="call_log")
     ai_instance = models.ForeignKey("clients.AIInstance", on_delete=models.CASCADE, related_name="call_logs")
     from_number = models.CharField(max_length=80, blank=True)
     to_number = models.CharField(max_length=80, blank=True)
@@ -17,4 +18,10 @@ class SMSLog(models.Model):
     body = models.TextField(blank=True)
     response = models.TextField(blank=True)
     message_sid = models.CharField(max_length=120, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class WebhookReceipt(models.Model):
+    key = models.CharField(max_length=64, primary_key=True)
+    response = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -485,11 +485,7 @@ def lead_finder(request):
             if quantity <= 20:
                 generate_leads_for_batch(batch.pk)
                 batch.refresh_from_db()
-                messages.success(
-                    request,
-                    f"Generated {batch.quantity_generated} fresh lead{'' if batch.quantity_generated == 1 else 's'} "
-                    f"for {batch.industry}.",
-                )
+                (messages.error if batch.status == "failed" else messages.success)(request, batch.status_message)
             else:
                 queued = enqueue_generation_batch(batch)
                 if queued:
@@ -497,7 +493,7 @@ def lead_finder(request):
                 else:
                     messages.info(
                         request,
-                        f"Batch #{batch.pk} is queued. Configure Celery/Redis or run the queued-batch command to process it.",
+                        f"Batch #{batch.pk} could not reach the background worker. Try 20 or fewer leads, or ask your administrator to restore the queue.",
                     )
             return redirect("lead_generation_batch_detail", pk=batch.pk)
     else:
@@ -626,7 +622,14 @@ def lead_staging_action(request, pk, action):
     next_url = safe_next_url(request)
     notes = request.POST.get("notes", "").strip()
     if action == "mark-called":
-        lead = convert_staging_to_crm_lead(staging, employee=request.user, notes=notes)
+        try:
+            lead = convert_staging_to_crm_lead(staging, employee=request.user, notes=notes)
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            return redirect(next_url)
+        except LeadStaging.DoesNotExist:
+            messages.info(request, "This row has already been processed.")
+            return redirect(next_url)
         messages.success(request, f"Moved {lead.business_name or lead.phone} into CRM as first contact attempted.")
         return redirect(next_url)
     if action == "skip":

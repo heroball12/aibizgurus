@@ -35,13 +35,11 @@ def seed_industries(stdout=None, force=False):
         data.setdefault("common_questions", [])
         data.setdefault("escalation_rules", "")
 
-        obj, created = IndustryTemplate.objects.update_or_create(
-            name=name,
-            defaults=data,
-        )
+        operation = IndustryTemplate.objects.update_or_create if force else IndustryTemplate.objects.get_or_create
+        obj, created = operation(name=name, defaults=data)
         if created:
             created_count += 1
-        else:
+        elif force:
             updated_count += 1
 
     total_count = IndustryTemplate.objects.count()

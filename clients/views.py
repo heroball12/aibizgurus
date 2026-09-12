@@ -38,6 +38,8 @@ def portal_home(request):
         "assistants": client.ai_instances.select_related("industry_template").order_by("-created_at"),
         "leads": Lead.objects.filter(client=client, lead_type="client_customer").select_related("ai_instance").order_by("-created_at")[:10],
         "conversations": Conversation.objects.filter(ai_instance__client=client).select_related("ai_instance").order_by("-updated_at", "-created_at")[:10],
+        "lead_count": Lead.objects.filter(client=client, lead_type="client_customer").count(),
+        "conversation_count": Conversation.objects.filter(ai_instance__client=client).count(),
         "paid_active": paid_active,
         "locked_features": locked_features,
     })
@@ -199,3 +201,22 @@ def ops_conversation_detail(request, client_id, conversation_id):
         "is_staff_view": True,
         "paid_active": client.is_paid_active,
     })
+
+
+@login_required
+def client_leads_export(request):
+    import csv
+    from django.http import HttpResponse
+    client = get_client_for_user(request.user)
+    if not client or not client.is_paid_active:
+        return redirect("billing_home")
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = 'attachment; filename="customer-leads.csv"'
+    writer = csv.writer(response)
+    writer.writerow(["Name", "Phone", "Email", "Source", "Status", "Notes", "Created"])
+    def safe_cell(value):
+        value = str(value or "")
+        return "'" + value if value.lstrip().startswith(("=", "+", "-", "@", "\t", "\r")) else value
+    for lead in Lead.objects.filter(client=client, lead_type="client_customer").order_by("-created_at").iterator():
+        writer.writerow([safe_cell(value) for value in [lead.name, lead.phone, lead.email, lead.source, lead.get_status_display(), lead.notes, lead.created_at.isoformat()]])
+    return response

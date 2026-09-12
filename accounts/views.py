@@ -2,7 +2,7 @@ from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.db import transaction
 from django.views import View
 from .forms import SignupForm
@@ -77,6 +77,8 @@ class RoleAwareLoginView(LoginView):
     template_name = "accounts/login.html"
 
     def get_success_url(self):
+        if next_url := self.get_redirect_url():
+            return next_url
         user = self.request.user
         if user.is_owner():
             return "/owner/"
@@ -85,11 +87,5 @@ class RoleAwareLoginView(LoginView):
         return "/portal/"
 
 
-class FriendlyLogoutView(View):
-    def get(self, request):
-        logout(request)
-        return redirect("home")
-
-    def post(self, request):
-        logout(request)
-        return redirect("home")
+class FriendlyLogoutView(LogoutView):
+    next_page = "home"

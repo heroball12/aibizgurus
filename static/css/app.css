@@ -2522,3 +2522,16 @@ body.light-mode:not(.landing-page) main{
     gap:14px;
   }
 }
+
+.nav-logout{display:inline;margin:0}.nav-logout button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}.auth-card{max-width:540px;margin:70px auto;padding:32px;border:1px solid #ddd6fe;border-radius:24px;background:white}.auth-card input{width:100%}.auth-card .helptext{display:block;font-size:13px;color:#635b75}.auth-card ul{padding-left:20px}
+
+/* Compact, keyboard-accessible navigation; links stay visible without JavaScript. */
+.nav-toggle{display:none}
+@media(max-width:760px){
+  .nav-enhanced .nav{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  .nav-enhanced .nav .nav-toggle{display:inline-flex;align-items:center;gap:12px;border:1px solid #9b7bb866;border-radius:8px;background:transparent;color:inherit;padding:11px 13px;font:inherit;font-size:12px;cursor:pointer;min-height:42px}
+  .nav-enhanced .nav .navlinks{display:none;flex-basis:100%;width:100%}
+  .nav-enhanced .nav.nav-open .navlinks{display:flex;flex-wrap:wrap}
+  .nav-enhanced .nav .brand-logo{width:100px}
+}
+@media(max-width:760px){.nav-enhanced .nav{display:flex}.nav-enhanced .nav>.brand{width:auto;flex:0 0 auto}.nav-enhanced .nav .nav-toggle{width:auto;flex:0 0 auto}}

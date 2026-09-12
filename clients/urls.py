@@ -5,6 +5,7 @@ urlpatterns = [
     path("business-profile/", views.business_profile, name="business_profile"),
     path("assistants/<int:pk>/", views.assistant_settings, name="assistant_settings"),
     path("integrations/", views.integrations, name="integrations"),
+    path("leads/export/", views.client_leads_export, name="client_leads_export"),
     path("leads/", views.client_leads, name="client_leads"),
     path("conversations/", views.client_conversations, name="client_conversations"),
     path("conversations/<int:pk>/", views.client_conversation_detail, name="client_conversation_detail"),

@@ -1,6 +1,13 @@
 from django.db import models
 from django.utils.text import slugify
 
+class RequestBudget(models.Model):
+    """Small shared counters; unlike local-memory cache these span web workers."""
+    key = models.CharField(max_length=64, primary_key=True)
+    count = models.PositiveIntegerField(default=0)
+    expires_at = models.DateTimeField(db_index=True)
+
+
 class IndustryTemplate(models.Model):
     name = models.CharField(max_length=160, unique=True)
     slug = models.SlugField(max_length=190, unique=True, blank=True)

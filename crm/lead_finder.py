@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from decimal import Decimal
+from datetime import timedelta
 import hashlib
 import json
 import logging
@@ -15,6 +16,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from audit.utils import log_activity
+from core.models import RequestBudget
 from .models import Lead, LeadActivity, LeadGenerationBatch, LeadStaging
 
 
@@ -95,6 +97,8 @@ class OpenStreetMapProvider(LeadProvider):
     name = "openstreetmap"
 
     INDUSTRY_FILTERS = {
+        "cannabis": ['["shop"="cannabis"]'],
+        "mortgage": ['["office"="financial"]["financial"="mortgage"]'],
         "restaurant": ['["amenity"="restaurant"]'],
         "dentist": ['["amenity"="dentist"]'],
         "law firm": ['["office"="lawyer"]'],
@@ -103,27 +107,38 @@ class OpenStreetMapProvider(LeadProvider):
         "accounting": ['["office"="accountant"]'],
         "financial advisor": ['["office"="financial"]'],
         "chiropractor": ['["healthcare"="chiropractor"]'],
-        "medical spa": ['["leisure"="spa"]'],
+        "medical spa": ['["healthcare"="clinic"]["healthcare:speciality"="cosmetic"]'],
         "salon": ['["shop"="hairdresser"]'],
         "barbershop": ['["shop"="hairdresser"]'],
         "auto repair": ['["shop"="car_repair"]'],
         "car dealership": ['["shop"="car"]'],
         "roofing": ['["craft"="roofer"]'],
-        "construction": ['["office"="company"]'],
+        "construction": ['["craft"="builder"]'],
         "hvac": ['["craft"="hvac"]'],
-        "solar": ['["craft"="electrician"]'],
-        "home services": ['["office"="company"]'],
+        "solar": ['["craft"="solar_panel_installer"]'],
+        "home services": ['["craft"~"^(plumber|electrician|hvac|roofer|carpenter)$"]'],
     }
 
     def search(self, *, industry: str, location: str, limit: int) -> list[DirectoryLead]:
         if not getattr(settings, "LEAD_FINDER_ENABLE_PUBLIC_HTTP", False):
-            return []
+            raise RuntimeError("Public listing search is disabled. Enable the configured provider to search real businesses.")
         timeout = float(getattr(settings, "LEAD_FINDER_PROVIDER_TIMEOUT", 8))
         endpoint = getattr(settings, "LEAD_FINDER_OVERPASS_URL", "https://overpass-api.de/api/interpreter")
-        filters = self.INDUSTRY_FILTERS.get(industry.lower(), ['["name"]'])
+        filters = self.INDUSTRY_FILTERS.get(industry.lower())
+        if not filters:
+            raise RuntimeError("This industry does not have a listing filter yet. Use a supported industry or import a verified list.")
         city, state = split_location(location)
-        area_name = location or "United States"
-        area_clause = f'area["name"="{area_name.replace(chr(34), "")}"]->.searchArea;'
+        # Resolve the city within its state using relations, then map to areas.
+        # area(area) is not supported by Overpass and would ignore the state.
+        if state:
+            state_filter = f'["ISO3166-2"={json.dumps("US-" + state.upper())}]' if len(state) == 2 else f'["name"={json.dumps(state)}]["admin_level"="4"]'
+            area_clause = f'area{state_filter}->.region;'
+        else:
+            area_clause = 'area["ISO3166-1"="US"]["admin_level"="2"]->.region;'
+        if city:
+            area_clause += f'rel(area.region)["boundary"="administrative"]["name"={json.dumps(city)}]; map_to_area->.searchArea;'
+        else:
+            area_clause += '.region->.searchArea;'
         union_parts = []
         for item_filter in filters:
             union_parts.extend([
@@ -153,8 +168,10 @@ class OpenStreetMapProvider(LeadProvider):
             with request.urlopen(req, timeout=timeout) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except Exception as exc:
-            logger.info("OpenStreetMap lead provider failed: %s", exc)
-            return []
+            logger.warning("OpenStreetMap lead provider failed: %s", type(exc).__name__)
+            raise RuntimeError("The public listing provider is unavailable. Please try again later.") from exc
+        if payload.get("remark"):
+            raise RuntimeError("The listing search exceeded the provider limit. Try a smaller area.")
         leads = []
         for element in payload.get("elements", []):
             tags = element.get("tags") or {}
@@ -175,48 +192,8 @@ class OpenStreetMapProvider(LeadProvider):
         return leads
 
 
-class FallbackDirectoryProvider(LeadProvider):
-    """Deterministic fallback so the feature stays usable without external services."""
-
-    name = "fallback_directory"
-
-    BUSINESS_SUFFIXES = [
-        "Group",
-        "Collective",
-        "Partners",
-        "Studio",
-        "Specialists",
-        "Pros",
-        "Works",
-        "Company",
-        "Center",
-        "Solutions",
-    ]
-
-    def search(self, *, industry: str, location: str, limit: int) -> list[DirectoryLead]:
-        city, state = split_location(location)
-        place = city or state or "Metro"
-        leads = []
-        for index in range(limit):
-            seed = hashlib.sha256(f"{industry}|{location}|{index}".encode()).hexdigest()
-            suffix = self.BUSINESS_SUFFIXES[int(seed[:2], 16) % len(self.BUSINESS_SUFFIXES)]
-            phone_digits = f"555{int(seed[2:9], 16) % 9000000 + 1000000:07d}"
-            leads.append(DirectoryLead(
-                business_name=f"{place} {industry} {suffix} {index + 1}".strip()[:200],
-                phone_number=format_phone(phone_digits),
-                industry=industry,
-                city=city,
-                state=state,
-                confidence_score=Decimal("0.58"),
-            ))
-        return leads
-
-
 def get_lead_providers() -> list[LeadProvider]:
-    providers: list[LeadProvider] = [OpenStreetMapProvider()]
-    if getattr(settings, "LEAD_FINDER_ENABLE_FALLBACK_PROVIDER", True):
-        providers.append(FallbackDirectoryProvider())
-    return providers
+    return [OpenStreetMapProvider()]
 
 
 def create_generation_batch(*, employee, industry: str, location: str, quantity: int) -> LeadGenerationBatch:
@@ -254,15 +231,16 @@ def duplicate_exists(candidate: DirectoryLead, dedupe_key: str) -> bool:
 
 
 def generate_leads_for_batch(batch_id: int, providers: list[LeadProvider] | None = None) -> LeadGenerationBatch:
-    batch = LeadGenerationBatch.objects.select_related("employee").get(pk=batch_id)
-    if batch.status == "completed":
-        return batch
-    started = timezone.now()
-    batch.started_at = started
-    batch.status = "generating"
-    batch.progress_percent = 5
-    batch.status_message = "Starting lead generation."
-    batch.save(update_fields=["started_at", "status", "progress_percent", "status_message"])
+    with transaction.atomic():
+        batch = LeadGenerationBatch.objects.select_for_update(of=("self",)).select_related("employee").get(pk=batch_id)
+        if batch.status in {"completed", "generating", "searching", "saving"}:
+            return batch
+        started = timezone.now()
+        batch.started_at = started
+        batch.status = "generating"
+        batch.progress_percent = 5
+        batch.status_message = "Starting real business listing search."
+        batch.save(update_fields=["started_at", "status", "progress_percent", "status_message"])
 
     provider_counts = {}
     seen_batch_keys = set(
@@ -273,7 +251,7 @@ def generate_leads_for_batch(batch_id: int, providers: list[LeadProvider] | None
     )
     duplicate_count = batch.duplicates_removed or 0
     created_count = batch.staged_leads.count()
-    providers = providers or get_lead_providers()
+    providers = get_lead_providers() if providers is None else providers
 
     try:
         set_batch_status(batch, "searching", 18, "Searching public business listings.")
@@ -300,32 +278,35 @@ def generate_leads_for_batch(batch_id: int, providers: list[LeadProvider] | None
                     duplicate_count += 1
                     continue
                 seen_batch_keys.add(key)
-                if duplicate_exists(result, key):
-                    duplicate_count += 1
-                    if duplicate_count == 1 or duplicate_count % 10 == 0:
-                        batch.duplicates_removed = duplicate_count
-                        batch.status_message = f"Skipped {duplicate_count} duplicate lead{'' if duplicate_count == 1 else 's'}."
-                        batch.save(update_fields=["duplicates_removed", "status_message"])
-                    continue
+                with transaction.atomic():
+                    RequestBudget.objects.get_or_create(key="lead-staging-write-lock", defaults={"expires_at": timezone.now() + timedelta(days=36500)})
+                    RequestBudget.objects.select_for_update().get(pk="lead-staging-write-lock")
+                    if duplicate_exists(result, key):
+                        duplicate_count += 1
+                        if duplicate_count == 1 or duplicate_count % 10 == 0:
+                            batch.duplicates_removed = duplicate_count
+                            batch.status_message = f"Skipped {duplicate_count} duplicate lead{'' if duplicate_count == 1 else 's'}."
+                            batch.save(update_fields=["duplicates_removed", "status_message"])
+                        continue
 
-                if created_count == 0 or created_count % 5 == 0:
-                    set_batch_status(
-                        batch,
-                        "saving",
-                        min(95, 22 + round((created_count / max(batch.quantity_requested, 1)) * 70)),
-                        f"Saving fresh leads as they come in from {provider.name}.",
+                    if created_count == 0 or created_count % 5 == 0:
+                        set_batch_status(
+                            batch,
+                            "saving",
+                            min(95, 22 + round((created_count / max(batch.quantity_requested, 1)) * 70)),
+                            f"Saving fresh leads as they come in from {provider.name}.",
+                        )
+                    LeadStaging.objects.create(
+                        batch=batch,
+                        business_name=result.business_name[:200],
+                        phone_number=result.phone_number[:80],
+                        industry=result.industry[:150],
+                        city=result.city[:120],
+                        state=result.state[:80],
+                        confidence_score=result.confidence_score,
+                        dedupe_key=key,
+                        created_by=batch.employee,
                     )
-                LeadStaging.objects.create(
-                    batch=batch,
-                    business_name=result.business_name[:200],
-                    phone_number=result.phone_number[:80],
-                    industry=result.industry[:150],
-                    city=result.city[:120],
-                    state=result.state[:80],
-                    confidence_score=result.confidence_score,
-                    dedupe_key=key,
-                    created_by=batch.employee,
-                )
                 created_count += 1
                 if created_count == 1 or created_count % 5 == 0 or created_count >= batch.quantity_requested:
                     batch.quantity_generated = created_count
@@ -347,7 +328,7 @@ def generate_leads_for_batch(batch_id: int, providers: list[LeadProvider] | None
         batch.duplicates_removed = duplicate_count
         batch.completed_at = completed
         batch.duration_seconds = Decimal(str(round((completed - started).total_seconds(), 2)))
-        batch.status_message = f"Completed with {created_count} fresh lead{'' if created_count == 1 else 's'}."
+        batch.status_message = f"Found {created_count} businesses with public phone listings." if created_count else "No new businesses with phone numbers matched this search. Try another location or industry."
         batch.provider_summary = provider_counts
         batch.save(update_fields=[
             "status", "progress_percent", "quantity_generated", "duplicates_removed",
@@ -376,7 +357,7 @@ def generate_leads_for_batch(batch_id: int, providers: list[LeadProvider] | None
         batch.status = "failed"
         batch.completed_at = completed
         batch.duration_seconds = Decimal(str(round((completed - started).total_seconds(), 2)))
-        batch.status_message = f"Generation failed: {exc.__class__.__name__}"
+        batch.status_message = str(exc)[:255] if isinstance(exc, RuntimeError) else "Search failed. Please try again or contact your administrator."
         batch.provider_summary = provider_counts
         batch.save(update_fields=["status", "completed_at", "duration_seconds", "status_message", "provider_summary"])
         log_activity(
@@ -405,8 +386,8 @@ def enqueue_generation_batch(batch: LeadGenerationBatch) -> bool:
         batch.save(update_fields=["provider_summary", "status_message"])
         return True
     except Exception as exc:
-        batch.status = "queued"
-        batch.status_message = "Queued. Configure Celery/Redis or run process_lead_generation_batches to process it."
+        batch.status = "failed"
+        batch.status_message = "The background queue is unavailable. Try a search of 20 or fewer, or ask your administrator to restore the worker."
         summary = dict(batch.provider_summary or {})
         summary["queue_warning"] = exc.__class__.__name__
         batch.provider_summary = summary
@@ -415,9 +396,12 @@ def enqueue_generation_batch(batch: LeadGenerationBatch) -> bool:
 
 
 def convert_staging_to_crm_lead(staging: LeadStaging, *, employee, notes: str = "") -> Lead:
+    if (staging.batch.provider_summary or {}).get("fallback_directory"):
+        raise ValueError("This older batch contains generated sample data and cannot be used for real outreach. Start a new public-listing search.")
     note_text = (notes or staging.notes or "First contact attempted from Lead Finder.").strip()
     now = timezone.now()
     with transaction.atomic():
+        staging = LeadStaging.objects.select_for_update().get(pk=staging.pk)
         lead = Lead.objects.create(
             lead_type="internal_sales",
             business_name=staging.business_name,

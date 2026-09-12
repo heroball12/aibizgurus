@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Count, Max, Q
 from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -171,11 +172,12 @@ def announce_time_clock_event(employee, event, note="", actor=None):
     return create_staff_message(thread, employee, body, [])
 
 
+@transaction.atomic
 def auto_clock_out_overdue_entries(request=None):
     now = timezone.now()
     cutoff = now - AUTO_CLOCK_OUT_AFTER
     overdue_entries = list(
-        TimeClockEntry.objects
+        TimeClockEntry.objects.select_for_update(of=("self",))
         .filter(clock_out__isnull=True, clock_in__lte=cutoff)
         .select_related("employee")
     )
@@ -511,7 +513,10 @@ def staff_message_attachment(request, pk):
 
 
 @team_member_required
+@transaction.atomic
 def staff_time_clock(request):
+    if request.method == "POST":
+        User.objects.select_for_update(no_key=True).get(pk=request.user.pk)
     auto_clock_out_overdue_entries(request)
     open_entry = TimeClockEntry.objects.filter(employee=request.user, clock_out__isnull=True).order_by("-clock_in").first()
     form = TimeClockNoteForm(request.POST or None)

@@ -455,6 +455,8 @@ def _read_workbook_sheets(zf):
     }
     sheets = []
     for sheet in workbook.findall(".//main:sheet", ns):
+        if sheet.attrib.get("state", "visible") != "visible":
+            continue
         rel_id = sheet.attrib.get(f"{{{ns['rel']}}}id")
         target = rel_targets.get(rel_id, "")
         if target:
@@ -474,6 +476,8 @@ def _read_xlsx_sheet(zf, path, shared_strings):
         values = []
         for cell in row_node.findall("main:c", ns):
             index = _cell_index(cell.attrib.get("r", "A1"))
+            if index > 1023:
+                raise ValueError("Worksheet has too many columns; export the lead table separately.")
             while len(values) <= index:
                 values.append("")
             cell_type = cell.attrib.get("t")
@@ -509,6 +513,8 @@ def parse_xlsx_file(uploaded_file, selected_sheet=""):
         return ImportParseResult(errors=["Excel file could not be read. Upload a valid .xlsx workbook."])
 
     result = ImportParseResult()
+    if len(zf.infolist()) > 2000 or sum(info.file_size for info in zf.infolist()) > 50 * 1024 * 1024:
+        return ImportParseResult(errors=["Excel workbook expands beyond the 50 MB import limit. Export a smaller sheet or CSV."])
     shared_strings = _read_shared_strings(zf)
     sheets = _read_workbook_sheets(zf)
     if not sheets:
@@ -631,24 +637,29 @@ def import_lead_file(
             },
         )
         leads = []
+        imported_rows = []
+        protected_count = 0
         created_count = 0
         updated_count = 0
         import_seen = {}
         for row in parsed.rows:
-            row.data["source_file"] = original_filename
+            row.data["source_file"] = original_filename[:Lead._meta.get_field("source_file").max_length]
             key = row.data.get("duplicate_key", "")
             existing = None
             if key:
                 existing = import_seen.get(key) or Lead.objects.filter(lead_type="internal_sales", duplicate_key=key).order_by("-created_at").first()
             if existing:
                 duplicate_count += 1
-                updated_count += 1
                 preserve_assigned_to = (
                     protect_existing_assignees_for is not None
                     and existing.assigned_to_id
                     and existing.assigned_to_id != protect_existing_assignees_for.pk
                 )
-                merge_imported_lead(existing, row.data, preserve_assigned_to=preserve_assigned_to)
+                if preserve_assigned_to:
+                    protected_count += 1
+                    continue
+                updated_count += 1
+                merge_imported_lead(existing, row.data)
                 lead = existing
                 row.duplicate_detected = True
             else:
@@ -657,8 +668,9 @@ def import_lead_file(
             if key:
                 import_seen[key] = lead
             leads.append(lead)
+            imported_rows.append(row)
         activities = []
-        for lead, row in zip(leads, parsed.rows):
+        for lead, row in zip(leads, imported_rows):
             activities.append(LeadActivity(
                 lead=lead,
                 user=uploaded_by,
@@ -681,11 +693,13 @@ def import_lead_file(
         lead_import.imported_count = created_count
         lead_import.updated_count = updated_count
         lead_import.duplicate_count = duplicate_count
+        lead_import.skipped_count += protected_count
         lead_import.import_summary = {
             **(lead_import.import_summary or {}),
             "created": created_count,
             "updated": updated_count,
             "duplicates_matched": duplicate_count,
+            "protected_duplicates_skipped": protected_count,
         }
-        lead_import.save(update_fields=["imported_count", "updated_count", "duplicate_count", "import_summary"])
+        lead_import.save(update_fields=["imported_count", "updated_count", "duplicate_count", "skipped_count", "import_summary"])
     return lead_import, parsed

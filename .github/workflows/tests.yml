@@ -1,0 +1,42 @@
+name: Site checks
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: test-only-password
+          POSTGRES_DB: aibg_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgres://postgres:test-only-password@localhost:5432/aibg_ci
+      DB_SSL_REQUIRE: '0'
+      DEBUG: '1'
+      SECRET_KEY: 'ci-only-test-key-not-a-production-secret-keep-real-secrets-in-render'
+      PLATFORM_OPENAI_API_KEY: ''
+      LEAD_FINDER_ENABLE_PUBLIC_HTTP: '0'
+      EMAIL_BACKEND: django.core.mail.backends.locmem.EmailBackend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python manage.py check
+      - run: python manage.py makemigrations --check --dry-run
+      - run: python manage.py test --noinput
+      - run: python manage.py collectstatic --noinput
+        env:
+          DEBUG: '0'

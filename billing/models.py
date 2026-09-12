@@ -8,3 +8,9 @@ class BillingCustomer(models.Model):
     status = models.CharField(max_length=100, default="inactive")
     current_period_end = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class BillingEvent(models.Model):
+    event_id = models.CharField(max_length=150, unique=True)
+    event_type = models.CharField(max_length=100)
+    received_at = models.DateTimeField(auto_now_add=True)

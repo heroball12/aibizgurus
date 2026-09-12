@@ -197,7 +197,7 @@ def staff_user_create(request):
             messages.success(request, f"Staff account created for {user.get_full_name() or user.username}.")
             return redirect("staff_users")
     else:
-        form = StaffUserForm(initial={"role": "employee", "is_active": True, "password": "AIBG123"})
+        form = StaffUserForm(initial={"role": "employee", "is_active": True})
     return render(request, "audit/staff_user_form.html", {"form": form, "staff_user": None})
 
 

@@ -18,7 +18,7 @@ def notify_lead_created(lead):
         f"Notes:\n{lead.notes}"
     )
     if lead.lead_type == "client_customer" and lead.client and not lead.client.is_paid_active:
-        logger.info("Demo lead captured without production alert: %s", body)
+        logger.info("Demo lead %s captured without production alert", lead.pk)
         return False
 
     recipients = []
@@ -28,11 +28,10 @@ def notify_lead_created(lead):
         recipients.append(lead.client.contact_email)
     recipients = list(dict.fromkeys([x for x in recipients if x]))
     if not recipients:
-        logger.info("Lead alert: %s", body)
+        logger.info("No email recipients configured for lead %s", lead.pk)
         return False
     try:
-        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, fail_silently=True)
-        return True
+        return bool(send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, fail_silently=False))
     except Exception:
         logger.exception("Lead alert failed")
         return False

@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,7 @@
     .leadbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px;background:#fff;border-top:1px solid var(--line)}
     .leadbar input,.composer input{padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
     .leadbar input:focus,.composer input:focus{outline:3px solid color-mix(in srgb, var(--brand) 20%, transparent);border-color:var(--brand)}
-    .composer{display:flex;gap:8px;padding:14px;border-top:1px solid var(--line);background:#fff}.composer input{flex:1}.composer button{width:96px;background:var(--brand);border:0;border-radius:12px;color:white;font-weight:800;box-shadow:0 14px 28px color-mix(in srgb, var(--brand) 24%, transparent)}
+    .composer{display:flex;gap:8px;padding:14px;border-top:1px solid var(--line);background:#fff}.composer input{flex:1;min-width:0}.composer button{width:96px;background:var(--brand);border:0;border-radius:12px;color:white;font-weight:800;box-shadow:0 14px 28px color-mix(in srgb, var(--brand) 24%, transparent)}
     @media(max-width:520px){
       .widget{max-width:none;min-height:100svh;box-shadow:none}
       .head{padding:18px}.head h2{font-size:20px;line-height:1.15}
@@ -38,14 +38,41 @@
 <body>
 <div class="widget">
   <div class="head"><h2>{{ instance.name }}</h2><p>{{ instance.client.business_name }} · {{ instance.industry }}</p>{% if not instance.client.is_paid_active %}<div class="preview-banner">Demo preview · Activate to publish live</div>{% endif %}</div>
-  <div class="body" id="body"><div class="msg assistant">{{ instance.greeting }}</div></div>
-  <div class="leadbar"><input id="name" placeholder="Name"><input id="phone" placeholder="Phone"><input id="email" placeholder="Email"></div>
-  <div class="composer"><input id="message" placeholder="Type your question..." onkeydown="if(event.key==='Enter')sendMsg()"><button onclick="sendMsg()">Send</button></div>
+  <div class="body" id="body" role="log" aria-live="polite" aria-label="Conversation"><div class="msg assistant">{{ instance.greeting }}</div></div>
+  <div class="leadbar">
+    {% if instance.collect_name %}<input id="name" placeholder="Name" aria-label="Your name" autocomplete="name" maxlength="150">{% endif %}
+    {% if instance.collect_phone %}<input id="phone" type="tel" placeholder="Phone" aria-label="Your phone number" autocomplete="tel" maxlength="80">{% endif %}
+    {% if instance.collect_email %}<input id="email" type="email" placeholder="Email" aria-label="Your email" autocomplete="email" maxlength="254">{% endif %}
+  </div>
+  <form class="composer" id="composer"><input id="message" aria-label="Your message" placeholder="Type your question…" maxlength="2000" required><button type="submit" id="send">Send</button></form>
+  <p id="chatError" role="alert" style="padding:0 14px;color:#9f1239" hidden></p>
+  <button type="button" id="newChat" style="margin:0 14px 14px;align-self:flex-start">New conversation</button>
 </div>
 <script>
-let visitorId=localStorage.getItem("abg_visitor_id")||"";let conversationId="";
-function addMsg(text,who){const d=document.createElement("div");d.className="msg "+who;d.textContent=text;document.getElementById("body").appendChild(d);document.getElementById("body").scrollTop=999999;}
-async function sendMsg(){const input=document.getElementById("message");const text=input.value.trim();if(!text)return;input.value="";addMsg(text,"visitor");const form=new FormData();form.append("message",text);form.append("visitor_id",visitorId);form.append("conversation_id",conversationId);form.append("name",document.getElementById("name").value);form.append("phone",document.getElementById("phone").value);form.append("email",document.getElementById("email").value);try{const res=await fetch("{% url 'widget_chat_api' instance.slug %}",{method:"POST",body:form});const data=await res.json();visitorId=data.visitor_id||visitorId;conversationId=data.conversation_id||conversationId;localStorage.setItem("abg_visitor_id",visitorId);addMsg(data.reply||"Thanks. The team will follow up.","assistant");}catch(e){addMsg("Sorry, something went wrong. Please contact the business directly.","assistant");}}
+(() => {
+  const key = "aibg-chat-{{ instance.slug|escapejs }}";
+  let token = "";
+  try { token = sessionStorage.getItem(key) || ""; } catch (_) {}
+  const input = document.getElementById("message"), button = document.getElementById("send"), error = document.getElementById("chatError"), body = document.getElementById("body");
+  function addMessage(text, who) { const node = document.createElement("div"); node.className = "msg " + who; node.textContent = text; body.appendChild(node); body.scrollTop = body.scrollHeight; }
+  document.getElementById("newChat").addEventListener("click", () => { token = ""; try { sessionStorage.removeItem(key); } catch (_) {} body.replaceChildren(); addMessage("{{ instance.greeting|escapejs }}", "assistant"); error.hidden = true; input.focus(); });
+  document.getElementById("composer").addEventListener("submit", async event => {
+    event.preventDefault();
+    const text = input.value.trim(); if (!text || button.disabled) return;
+    const form = new FormData(); form.append("message", text); form.append("conversation_token", token);
+    for (const field of ["name", "phone", "email"]) { const element = document.getElementById(field); if (element) { if (!element.reportValidity()) return; form.append(field, element.value); } }
+    button.disabled = true; button.textContent = "…"; error.hidden = true;
+    const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), 55000);
+    try {
+      const response = await fetch("{% url 'widget_chat_api' instance.slug %}", {method:"POST", body:form, signal:controller.signal});
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Unable to send. Please try again.");
+      token = data.conversation_token; try { sessionStorage.setItem(key, token); } catch (_) {}
+      addMessage(text, "visitor"); addMessage(data.reply, "assistant"); input.value = "";
+    } catch (exception) { error.textContent = exception.name === "AbortError" ? "The reply took too long. Please try again." : exception.message; error.hidden = false; }
+    finally { clearTimeout(timeout); button.disabled = false; button.textContent = "Send"; input.focus(); }
+  });
+})();
 </script>
 </body>
 </html>

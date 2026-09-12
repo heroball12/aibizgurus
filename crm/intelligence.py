@@ -67,7 +67,7 @@ def duplicate_fingerprint(*, business_name="", phone="", website="", email="", a
 
 
 def _contains(text, *phrases):
-    return any(phrase in text for phrase in phrases)
+    return any(re.search(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", text) for phrase in phrases)
 
 
 def _title_role(text):

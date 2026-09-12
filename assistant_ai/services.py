@@ -53,6 +53,8 @@ class PlatformAIService:
             return False
         start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         records = UsageRecord.objects.filter(created_at__gte=start, assistant_role=self.assistant_role)
+        if self.client_account:
+            records = records.filter(client=self.client_account)
         if self.user and getattr(self.user, "is_authenticated", False):
             records = records.filter(user=self.user)
         return records.count() >= limit
@@ -62,19 +64,23 @@ class PlatformAIService:
         if not self.api_key:
             self._record_usage(model=model, status="fallback", error_code="missing_api_key", metadata=metadata)
             return fallback, {"status": "fallback", "reason": "missing_api_key"}
-        if self.daily_limit_reached():
+        from core.rate_limits import consume_budget
+        limit = getattr(settings, "OPENAI_DAILY_USAGE_LIMIT", 500)
+        identity = f"client:{self.client_account.pk}" if self.client_account else f"user:{self.user.pk}" if getattr(self.user, "is_authenticated", False) else "platform"
+        if self.daily_limit_reached() or (limit and not consume_budget(f"ai:{self.assistant_role}", identity, limit=limit, window=86400)):
             self._record_usage(model=model, status="blocked", error_code="daily_limit", metadata=metadata)
             return fallback, {"status": "blocked", "reason": "daily_limit"}
 
         last_error = None
         for attempt in range(max(1, self.max_retries + 1)):
             try:
-                client = OpenAI(api_key=self.api_key)
+                client = OpenAI(api_key=self.api_key, max_retries=0)
                 response = client.chat.completions.create(
                     model=model,
                     messages=messages,
                     temperature=float(temperature),
                     timeout=self.timeout,
+                    max_completion_tokens=600,
                 )
                 content = response.choices[0].message.content or fallback
                 self._record_usage(model=model, response=response, status="success", metadata={**(metadata or {}), "attempt": attempt + 1})
@@ -142,7 +148,9 @@ def fallback_reply(ai_instance, user_message):
     if any(x in text for x in ["price", "cost", "quote", "how much"]):
         return f"Pricing can depend on the details. I can collect your info and have {name} follow up with an accurate quote. What do you need help with?"
     if any(x in text for x in ["hours", "open", "close"]):
-        return f"I can help with hours and availability. What service or question can I help you with today?"
+        profile = getattr(ai_instance.client, "profile", None)
+        hours = getattr(profile, "business_hours", "") or getattr(profile, "hours", "")
+        return f"Our hours: {hours}" if hours else f"Please contact {name} to confirm current hours. I can take your contact details for a follow-up."
     if any(x in text for x in ["book", "appointment", "schedule", "order"]):
         return "I can help start that request. What is your name, phone number, and preferred day/time?"
     if any(x in text for x in ["urgent", "emergency", "asap", "now"]):
@@ -180,3 +188,23 @@ def generate_ai_reply(ai_instance, conversation, user_message):
         metadata={"conversation_id": conversation.pk},
     )
     return reply
+
+
+def capture_conversation_lead(instance, conversation, *, source):
+    """One lead per conversation, with the latest contact details and transcript."""
+    from crm.models import Lead
+    transcript = "\n".join(f"{message.sender.title()}: {message.content}" for message in conversation.messages.order_by("created_at"))
+    lead, created = Lead.objects.get_or_create(
+        conversation=conversation,
+        defaults={"client": instance.client, "ai_instance": instance, "lead_type": "client_customer", "source": source, "status": "new", "name": conversation.customer_name or "Website visitor", "phone": conversation.customer_phone, "email": conversation.customer_email, "notes": transcript},
+    )
+    lead.name = conversation.customer_name or lead.name or "Website visitor"
+    lead.phone = conversation.customer_phone or lead.phone
+    lead.email = conversation.customer_email or lead.email
+    if not created and lead.notes and transcript not in lead.notes:
+        latest = "\n".join(f"{m.sender.title()}: {m.content}" for m in conversation.messages.order_by("-created_at")[:2][::-1])
+        lead.notes = f"{lead.notes}\n\n{latest}"
+    elif not lead.notes:
+        lead.notes = transcript
+    lead.save(update_fields=["name", "phone", "email", "notes"])
+    return lead

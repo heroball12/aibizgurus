@@ -1,0 +1,13 @@
+WEBVTT
+
+00:00.000 --> 00:06.000
+Answer: A customer asks for AC repair. The assistant starts a request.
+
+00:06.000 --> 00:12.000
+Qualify: Understand the problem, location, and preferred timing.
+
+00:12.000 --> 00:18.000
+Capture: Gather the sample contact and service request together.
+
+00:18.000 --> 00:24.000
+Handoff: The team confirms availability and pricing. No real booking is made.

@@ -23,15 +23,15 @@
       </div>
 
       <div class="hero-media-stage">
-        <a class="feature-video-card" href="{% url 'demo' %}" aria-label="Watch AI assistant demo">
+        <a class="feature-video-card" href="{% url 'demo' %}#film" aria-label="Watch AI assistant demo">
           <img src="{% static 'img/home-ai-receptionist.svg' %}" alt="AI receptionist visual">
           <span class="play-button">▶</span>
           <strong>Watch the AI demo</strong>
         </a>
         <div class="floating-chat-card" aria-label="AI chat preview">
-          <div><b>AI Growth Assistant</b><small>● Live</small></div>
+          <div><b>AI Growth Assistant</b><small>✧ Preview</small></div>
           <p>Need help choosing a service?</p>
-          <button type="button">Book a consultation</button>
+          <a class="floating-chat-cta" href="{% url 'growth_assessment' %}">Book a consultation</a>
         </div>
       </div>
     </div>

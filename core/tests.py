@@ -31,6 +31,17 @@ from crm.models import Lead, LeadActivity, LeadGenerationBatch, LeadImport, Lead
 User = get_user_model()
 
 
+class FixtureDirectoryProvider:
+    """Synthetic listings exist only in test fixtures, never in the product."""
+    name = "fixture_directory"
+
+    def search(self, *, industry, location, limit):
+        from crm.lead_finder import DirectoryLead, format_phone, split_location
+        city, state = split_location(location)
+        return [DirectoryLead(business_name=f"Fixture Business {i}", phone_number=format_phone(str(6195550100 + i)), industry=industry, city=city, state=state) for i in range(limit)]
+
+
+
 def build_minimal_xlsx(rows, sheet_name="Tracker"):
     def cell_ref(col_index, row_index):
         letters = ""
@@ -475,10 +486,11 @@ class PlatformFlowTests(TestCase):
         response = self.client.post(reverse("lead_upload"), {"csv_file": upload})
         lead_import = LeadImport.objects.get(original_filename="tracker.xlsx")
         self.assertRedirects(response, reverse("lead_import_detail", args=[lead_import.pk]))
-        duplicate = Lead.objects.get(business_name="Duplicate Co")
+        duplicate = Lead.objects.get(business_name="Duplicate Co LLC")
         callback = Lead.objects.get(business_name="Callback Spa")
-        self.assertEqual(duplicate.status, "duplicate_review")
-        self.assertTrue(duplicate.needs_review)
+        self.assertEqual(duplicate.status, "new")
+        self.assertFalse(duplicate.needs_review)
+        self.assertFalse(LeadActivity.objects.filter(lead=duplicate).exists())
         self.assertEqual(duplicate.assigned_to, other_sdr)
         self.assertEqual(self.client.get(reverse("lead_detail", args=[duplicate.pk])).status_code, 404)
         self.assertEqual(callback.status, "callback_requested")
@@ -486,8 +498,8 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(callback.assigned_to, employee)
         self.assertEqual(lead_import.sheet_names, ["Tracker"])
         self.assertEqual(lead_import.imported_count, 1)
-        self.assertEqual(lead_import.updated_count, 1)
-        self.assertGreaterEqual(lead_import.review_count, 1)
+        self.assertEqual(lead_import.updated_count, 0)
+        self.assertEqual(lead_import.import_summary["protected_duplicates_skipped"], 1)
 
     def test_admin_can_hard_delete_all_leads_from_imported_sheet(self):
         admin = User.objects.create_user(username="sheet-admin", password="OpsPass123!", role="admin")
@@ -606,14 +618,14 @@ class PlatformFlowTests(TestCase):
             "last_name": "Bonilla",
             "role": "employee",
             "is_active": "on",
-            "password": "AIBG123",
+            "password": "UniqueStaff-Password2026!",
         })
         self.assertRedirects(response, reverse("staff_users"))
         kaitlyn = User.objects.get(username="kaitlyn@aibiz.guru")
         self.assertEqual(kaitlyn.email, "kaitlyn@aibiz.guru")
         self.assertEqual(kaitlyn.role, "employee")
         self.assertTrue(kaitlyn.is_staff)
-        self.assertTrue(kaitlyn.check_password("AIBG123"))
+        self.assertTrue(kaitlyn.check_password("UniqueStaff-Password2026!"))
 
         response = self.client.post(reverse("staff_user_deactivate", args=[kaitlyn.pk]))
         self.assertRedirects(response, reverse("staff_users"))
@@ -664,7 +676,7 @@ class PlatformFlowTests(TestCase):
         self.assertFalse(Lead.objects.filter(pk=lead.pk).exists())
         self.assertEqual(self.client.get(reverse("lead_detail", args=[lead.pk])).status_code, 404)
 
-    @override_settings(LEAD_FINDER_ENABLE_PUBLIC_HTTP=False, LEAD_FINDER_ENABLE_FALLBACK_PROVIDER=True)
+    @patch("crm.lead_finder.get_lead_providers", lambda: [FixtureDirectoryProvider()])
     def test_lead_finder_immediate_generation_stages_and_mark_called_moves_to_crm(self):
         employee = User.objects.create_user(username="finder-sdr", password="OpsPass123!", role="employee", first_name="Finder")
 
@@ -714,7 +726,8 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(activity.activity_type, "call")
         self.assertEqual(activity.metadata["lead_generation_batch_id"], batch.pk)
 
-    @override_settings(LEAD_FINDER_ENABLE_PUBLIC_HTTP=False, LEAD_FINDER_ENABLE_FALLBACK_PROVIDER=True, CELERY_BROKER_URL="")
+    @override_settings(CELERY_BROKER_URL="")
+    @patch("crm.lead_finder.get_lead_providers", lambda: [FixtureDirectoryProvider()])
     def test_lead_finder_large_batch_queue_permissions_and_duplicate_safety(self):
         alice = User.objects.create_user(username="finder-alice", password="OpsPass123!", role="employee", first_name="Alice")
         bob = User.objects.create_user(username="finder-bob", password="OpsPass123!", role="employee", first_name="Bob")
@@ -729,9 +742,9 @@ class PlatformFlowTests(TestCase):
         queued = LeadGenerationBatch.objects.get()
         self.assertRedirects(response, reverse("lead_generation_batch_detail", args=[queued.pk]))
         queued.refresh_from_db()
-        self.assertEqual(queued.status, "queued")
+        self.assertEqual(queued.status, "failed")
         self.assertEqual(queued.quantity_generated, 0)
-        self.assertIn("Queued", queued.status_message)
+        self.assertIn("background queue is unavailable", queued.status_message)
 
         self.assertEqual(self.client.get(reverse("lead_generation_batch_detail", args=[queued.pk])).status_code, 200)
         self.client.force_login(bob)
@@ -1041,7 +1054,7 @@ class PlatformFlowTests(TestCase):
 
         reply = generate_ai_reply(self.assistant, conversation, "What services do you offer?")
         self.assertEqual(reply, "We can help with HVAC service.")
-        openai_client.assert_called_once_with(api_key="platform-test-key")
+        openai_client.assert_called_once_with(api_key="platform-test-key", max_retries=0)
         call = openai_client.return_value.chat.completions.create.call_args.kwargs
         self.assertEqual(call["model"], "gpt-4o-mini")
         self.assertEqual(call["messages"][-1]["content"], "What services do you offer?")

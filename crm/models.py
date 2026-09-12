@@ -57,6 +57,7 @@ CLASSIFICATION_SOURCE_CHOICES = [
 ]
 
 class Lead(models.Model):
+    conversation = models.OneToOneField("assistant_ai.Conversation", null=True, blank=True, on_delete=models.SET_NULL, related_name="captured_lead")
     LEAD_TYPE_CHOICES = [("internal_sales","Internal Sales Lead"),("client_customer","Client Customer Lead")]
     STATUS_CHOICES = INTERNAL_STATUS_CHOICES
     client = models.ForeignKey("clients.ClientAccount", on_delete=models.CASCADE, null=True, blank=True, related_name="leads")

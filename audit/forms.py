@@ -2,6 +2,7 @@ import re
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 
 from .models import TimeClockEntry
 
@@ -16,8 +17,8 @@ def active_staff_queryset():
 class StaffUserForm(forms.ModelForm):
     password = forms.CharField(
         required=False,
-        widget=forms.PasswordInput(render_value=True),
-        help_text="Leave blank when editing to keep the current password. New staff default to AIBG123.",
+        widget=forms.PasswordInput(),
+        help_text="Set a strong, unique password for new staff. Leave blank when editing to keep the current password.",
     )
 
     class Meta:
@@ -26,7 +27,9 @@ class StaffUserForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._original_password = self.instance.password
         self.fields["first_name"].required = True
+        self.fields["password"].required = not bool(self.instance.pk)
         self.fields["role"].choices = [("employee", "Employee / SDR"), ("admin", "Admin")]
 
     def clean_first_name(self):
@@ -43,6 +46,10 @@ class StaffUserForm(forms.ModelForm):
             existing = User.objects.filter(username=username).exclude(pk=self.instance.pk).first()
             if existing:
                 raise forms.ValidationError(f"{username} already exists. Edit that staff account instead.")
+        password = cleaned.get("password")
+        if password:
+            candidate = User(username=username, email=username, first_name=first_name, last_name=cleaned.get("last_name", ""))
+            validate_password(password, user=candidate)
         return cleaned
 
     @staticmethod
@@ -60,7 +67,9 @@ class StaffUserForm(forms.ModelForm):
         if self.cleaned_data.get("password"):
             user.set_password(self.cleaned_data["password"])
         elif not user.pk:
-            user.set_password("AIBG123")
+            user.set_unusable_password()
+        else:
+            user.password = self._original_password
         if commit:
             user.save()
         return user
