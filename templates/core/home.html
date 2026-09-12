@@ -5,46 +5,58 @@
 {% block body_class %}landing-page light-mode{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=17">
+<link rel="stylesheet" href="{% static 'css/arrival.css' %}?v=2">
+<link rel="preload" as="image" href="{% static 'img/ai-arrival-poster.png' %}" fetchpriority="high">
+<script src="{% static 'js/arrival.js' %}?v=2" defer></script>
 {% endblock %}
 {% block content %}
 <div class="landing-shell home-v4">
-  <section class="hero-v4">
-    <div class="hero-bg-motion" aria-hidden="true"></div>
-
-    <div class="hero-v4-grid">
-      <div class="hero-v4-copy">
-        <span class="tiny-pill">AI Employees for modern business</span>
-        <h1>Your AI Assistant.<br>Your Leads.<br><span>Your Growth.</span></h1>
-        <p>Answer. Qualify. Book. Capture leads — 24/7.</p>
-        <div class="hero-v4-actions">
-          <a class="v4-btn primary" href="{% url 'signup' %}">Start Free Demo</a>
-          <a class="v4-btn glass" href="{% url 'growth_assessment' %}">Book Assessment</a>
-        </div>
-      </div>
-
-      <div class="hero-media-stage">
-        <a class="feature-video-card" href="{% url 'demo' %}#film" aria-label="Watch AI assistant demo">
-          <img src="{% static 'img/home-ai-receptionist.svg' %}" alt="AI receptionist visual">
-          <span class="play-button">▶</span>
-          <strong>Watch the AI demo</strong>
-        </a>
-        <div class="floating-chat-card" aria-label="AI chat preview">
-          <div><b>AI Growth Assistant</b><small>✧ Preview</small></div>
-          <p>Need help choosing a service?</p>
-          <a class="floating-chat-cta" href="{% url 'growth_assessment' %}">Book a consultation</a>
-        </div>
+  <section class="arrival-hero{% if arrival_film.video %} arrival-with-film{% endif %}" data-arrival aria-labelledby="arrival-title">
+    <div class="arrival-media">
+      <img src="{% static 'img/ai-arrival-poster.png' %}" width="1672" height="941" fetchpriority="high"
+           alt="A violet-lit AI robot leaps between futuristic rooftops toward a gold-lit office building marked your company.">
+      {% if arrival_film.video %}
+      <video id="arrivalFilm" muted playsinline preload="none" poster="{% static 'img/ai-arrival-poster.png' %}" aria-describedby="arrival-description" aria-label="The AI arrival film">
+        <source data-src="{% static arrival_film.video %}" type="video/mp4">
+        {% if arrival_film.captions %}<track data-src="{% static arrival_film.captions %}" kind="descriptions" srclang="en" label="Scene descriptions">{% endif %}
+      </video>
+      <p id="arrival-description" class="arrival-film-note">A futuristic AI robot sprints across rooftops, vaults obstacles, and leaps between buildings. It drops into an office marked “your company,” lands at a desk, and starts working.</p>
+      {% endif %}
+    </div>
+    <div class="arrival-topline" aria-hidden="true">
+      <span>AI Business Gurus / The next chapter</span>
+      <span>Intelligence. In motion.</span>
+    </div>
+    <div class="arrival-copy">
+      <span class="arrival-kicker">The future just clocked in.</span>
+      <h1 id="arrival-title">Your AI Assistant.<br><span>Has arrived.</span></h1>
+      <p>From the first conversation to the next opportunity. Put AI to work for your company.</p>
+      <div class="arrival-actions">
+        <a class="arrival-primary" href="{% url 'demo' %}">Meet your AI employee <span aria-hidden="true">↗</span></a>
+        <a class="arrival-secondary" href="{% url 'growth_assessment' %}">Book an assessment</a>
       </div>
     </div>
-
-    <div class="stat-strip">
-      <div><strong>{{ industry_count }}+</strong><span>Industries</span></div>
-      <div><strong>24/7</strong><span>Coverage</span></div>
-      <div><strong>Demo</strong><span>Ready fast</span></div>
-      <div><strong>AI</strong><span>Built for growth</span></div>
+    <div class="arrival-bottom">
+      <div class="arrival-proof" aria-label="AI assistant capabilities">
+        <span><strong>{{ industry_count }}+</strong> industries</span>
+        <span><strong>24/7</strong> conversations</span>
+        <span><strong>Your Leads.</strong> Your Growth.</span>
+      </div>
+      {% if arrival_film.video %}
+      <div class="arrival-controls" data-film-controls hidden role="group" aria-label="Arrival film controls">
+        <button type="button" data-film-play aria-controls="arrivalFilm">Play film</button>
+        <button type="button" data-film-sound aria-controls="arrivalFilm" aria-pressed="false">Sound off</button>
+        <button type="button" data-film-replay aria-controls="arrivalFilm" aria-label="Replay the arrival film">Replay ↺</button>
+        <button type="button" data-film-fullscreen aria-controls="arrivalFilm" aria-label="Watch the arrival film in full screen" hidden>Full screen</button>
+      </div>
+      <span class="arrival-film-note" data-film-status role="status" aria-live="polite"></span>
+      {% else %}
+      <a class="arrival-scroll" href="#discover">Explore what comes next <span aria-hidden="true">↓</span></a>
+      {% endif %}
     </div>
   </section>
 
-  <section class="logo-strip-v4">
+  <section class="logo-strip-v4" id="discover">
     <span>Built for teams that need more leads, less busywork.</span>
     <div>
       <b>Home Services</b>

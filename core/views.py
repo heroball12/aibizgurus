@@ -8,6 +8,7 @@ from .models import IndustryTemplate
 from .seed import safe_seed_industries
 from .industry_options import get_industry_options
 from .forms import ConsultationRequestForm
+from .landing_film import landing_film_assets
 from crm.models import Lead
 from clients.models import ClientAccount, AIInstance
 
@@ -155,6 +156,7 @@ def home(request):
         "industry_source": industry_source,
         "solutions": SOLUTIONS,
         "ai_employees": AI_EMPLOYEES[:4],
+        "arrival_film": landing_film_assets(),
     })
 
 
