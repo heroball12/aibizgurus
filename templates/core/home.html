@@ -5,9 +5,10 @@
 {% block body_class %}landing-page light-mode{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=17">
-<link rel="stylesheet" href="{% static 'css/arrival.css' %}?v=2">
+<link rel="stylesheet" href="{% static 'css/arrival.css' %}?v=3">
 <link rel="preload" as="image" href="{% static 'img/ai-arrival-poster.png' %}" fetchpriority="high">
-<script src="{% static 'js/arrival.js' %}?v=2" defer></script>
+<script src="{% static 'js/arrival.js' %}?v=3" defer></script>
+{% if request.GET.guided != '1' %}<script src="{% static 'js/arrival-concierge.js' %}" defer></script>{% endif %}
 {% endblock %}
 {% block content %}
 <div class="landing-shell home-v4">
@@ -32,7 +33,7 @@
       <h1 id="arrival-title">Your AI Assistant.<br><span>Has arrived.</span></h1>
       <p>From the first conversation to the next opportunity. Put AI to work for your company.</p>
       <div class="arrival-actions">
-        <a class="arrival-primary" href="{% url 'demo' %}">Meet your AI employee <span aria-hidden="true">↗</span></a>
+        <a class="arrival-primary" href="{% url 'concierge' %}" {% if request.GET.guided != '1' %}data-meet-guru aria-controls="arrivalConcierge" aria-expanded="false"{% endif %}>Meet your AI employee <span aria-hidden="true">↗</span></a>
         <a class="arrival-secondary" href="{% url 'growth_assessment' %}">Book an assessment</a>
       </div>
     </div>
@@ -54,6 +55,17 @@
       <a class="arrival-scroll" href="#discover">Explore what comes next <span aria-hidden="true">↓</span></a>
       {% endif %}
     </div>
+    {% if request.GET.guided != '1' %}
+    <div id="arrivalConcierge" class="arrival-concierge" data-src="{% url 'concierge' %}?embed=1" hidden>
+      <div class="arrival-concierge-loading" role="status">
+        <span class="arrival-kicker">Your next chapter starts here</span>
+        <strong>Meet Guru.</strong>
+        <p>Opening your AI workspace…</p>
+        <a href="{% url 'concierge' %}">Open Guru in a full page ↗</a>
+        <button type="button" data-guru-close>Back to the film</button>
+      </div>
+    </div>
+    {% endif %}
   </section>
 
   <section class="logo-strip-v4" id="discover">

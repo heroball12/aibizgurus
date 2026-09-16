@@ -33,7 +33,7 @@
     hero.classList.toggle('is-playing', !video.paused);
   };
   const play = async () => {
-    if (hasError) return;
+    if (hasError || hero.classList.contains('is-guide')) return;
     loadSource();
     try {
       await video.play();
@@ -93,12 +93,13 @@
   };
   video.addEventListener('error', playbackFailed);
   video.querySelector('source').addEventListener('error', playbackFailed);
-  const autoplayAllowed = () => !reducedMotion.matches && !connection?.saveData && !userPaused;
+  const autoplayAllowed = () => !hero.classList.contains('is-guide') && !reducedMotion.matches && !connection?.saveData && !userPaused;
   const visibilityChanged = () => {
     if (document.hidden || !inView) video.pause();
     else if (autoplayAllowed() && !video.ended) play();
   };
   document.addEventListener('visibilitychange', visibilityChanged);
+  hero.addEventListener('guruclosed', visibilityChanged);
   reducedMotion.addEventListener('change', () => {
     if (reducedMotion.matches) video.pause();
   });

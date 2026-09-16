@@ -8,7 +8,16 @@ let page = config.initialPage, history = [page], dirty = false, focusAfterLoad =
 let call = null, connection = null, busy = false, generation = 0, timer = null, replyTimer = null;
 let callStarted = 0, typed = [], captions = [], formTouched = false, submissionId = crypto.randomUUID();
 let captionOrder = new Map(), captionSequence = 0, deliveryPending = false, typedCaptionIds = new Set();
+let pendingStart = null, connectingTimer = null;
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+const tellHost = type => { if(config.embedded && parent!==window)parent.postMessage({source:'aibg-hero-concierge',type},location.origin); };
+function connectionProgress(step) { $('guideConnectingStep').textContent=step; }
+function beginConnectionProgress() {
+  const started=Date.now();$('guideConnecting').hidden=false;
+  const tick=()=>{$('guideConnectingTime').textContent=`${Math.floor((Date.now()-started)/1000)}s`;if(Date.now()-started>20000 && busy)status('Guru is taking a little longer to join. You can keep browsing or request a team follow-up.');};
+  tick();connectingTimer=setInterval(tick,1000);
+}
+function stopConnectionProgress(){clearInterval(connectingTimer);connectingTimer=null;$('guideConnecting').hidden=true;}
 function status(text, isError=false) { $('guideStatus').textContent=text; $('guideStatus').classList.toggle('error',isError); }
 async function post(url, data={}) {
   const response = await fetch(url, {method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRFToken':csrf},body:JSON.stringify(data)});
@@ -21,8 +30,11 @@ function showPage(key, {back=false, fromAgent=false, search='', hash=''}={}) {
   if (!validPage(directory,key)) return;
   const item=directory[key];
   if (!item.embedded) { $('guidePortal').hidden=false; panel.classList.remove('minimized'); syncMinimize(); $('guidePortal').scrollIntoView({block:'nearest'}); return; }
-  if (key===page && !search && !hash) return;
+  const welcome=document.body.classList.contains('guide-welcome');
+  if (key===page && !search && !hash && !welcome) return;
   if (dirty && !confirm('Leave this page? Your unfinished form may be lost.')) return;
+  document.body.classList.remove('guide-welcome');
+  tellHost('browse');
   dirty=false; page=key;pageLoading=true;focusAfterLoad=null;
   if (!back) history.push(key);
   const url=new URL(item.path,location.origin);
@@ -38,6 +50,7 @@ function showPage(key, {back=false, fromAgent=false, search='', hash=''}={}) {
 }
 function focusSection(section) {
   if (!['top','content','calendar','assessment-request'].includes(section)) return;
+  if(document.body.classList.contains('guide-welcome') && !['calendar','assessment-request'].includes(section))showPage(page,{fromAgent:true});
   if (['calendar','assessment-request'].includes(section) && page!=='assessment') { showPage('assessment',{fromAgent:true}); if(page==='assessment')focusAfterLoad=section; return; }
   if(pageLoading){focusAfterLoad=section;return;}
   frame.contentWindow.postMessage({source:'aibg-concierge',type:'focus',section},location.origin);
@@ -124,7 +137,7 @@ async function cancelProvider(record) {
   }
 }
 async function endCall(message='Call ended. You can keep exploring or book your growth consultation.') {
-  ++generation;busy=false;clearInterval(timer);clearTimeout(replyTimer);
+  ++generation;busy=false;clearInterval(timer);clearTimeout(replyTimer);stopConnectionProgress();
   const oldConnection=connection,oldCall=call;connection=null;call=null;
   controls(false);$('guideState').textContent='Call ended';status(message);
   $('guideVideo').srcObject=null;$('guideAudio').srcObject=null;
@@ -132,6 +145,12 @@ async function endCall(message='Call ended. You can keep exploring or book your 
   await cancelProvider(oldCall);
 }
 $('guideEnd').addEventListener('click',()=>endCall());
+$('guideClose')?.addEventListener('click',async()=>{
+  $('guideClose').disabled=true;
+  // Keep the iframe alive until an in-flight creation can be cancelled.
+  if(pendingStart){try{await pendingStart;}catch(_){}}
+  await endCall();tellHost('close');
+});
 $('guideSound').addEventListener('click',async()=>{
   const audio=$('guideAudio');
   try {
@@ -152,28 +171,34 @@ $('guideStart').addEventListener('click',async()=>{
   if(busy||connection||!config.available)return;
   if(!$('guideConsentCheck').checked){status('Please agree to the AI Business Gurus Terms of Service before starting.',true);$('guideConsentCheck').focus();return;}
   const run=++generation;busy=true;controls(false);$('guideState').textContent='Connecting';status('Connecting you to Guru…');
+  beginConnectionProgress();connectionProgress('Preparing your conversation');
   typed=[];captions=[];typedCaptionIds.clear();captionOrder.clear();captionSequence=0;renderTranscript([]);
   let record=null;
   try {
     const mode=document.querySelector('[name=inputMode]:checked').value;
-    const modulePromise=import('./concierge-call.js');
+    const modulePromise=import(config.callModuleUrl);
     if(mode==='voice') {
       if(!navigator.mediaDevices?.getUserMedia)throw new Error('Your browser cannot access a microphone here. Choose Type to continue.');
       const permission=await navigator.mediaDevices.getUserMedia({audio:true,video:false});permission.getTracks().forEach(track=>track.stop());
     }
     if(run!==generation)return;
-    record=await post(config.startUrl,{consent:true,page});
+    pendingStart=post(config.startUrl,{consent:true,page});
+    try{record=await pendingStart;}finally{pendingStart=null;}
     if(run!==generation){await cancelProvider(record);return;}call=record;
     let credentials=null;
-    for(let attempt=0;attempt<60;attempt++){
+    connectionProgress('Bringing Guru online');
+    const deadline=Date.now()+90000;
+    for(let attempt=0;attempt<65 && Date.now()<deadline;attempt++){
       if(run!==generation)return;
       const ready=await post(record.pollUrl);
+      if(run!==generation)return;
       if(ready.status==='ready'){credentials=ready.credentials;break;}
-      status(attempt>10?'Guru is getting ready. This can take a moment…':'Preparing your live video conversation…');
-      await wait(1800);
+      await wait(attempt<10?700:1500);
     }
     if(!credentials)throw new Error('Guru took too long to connect. Please try again.');
     const {connectCall}=await modulePromise;
+    if(run!==generation)return;
+    connectionProgress('Connecting video and sound');
     const live=await connectCall({credentials,video:$('guideVideo'),audio:$('guideAudio'),
       onTranscript:entries=>{if(run===generation)renderTranscript(entries);},
       onTool:event=>{if(run===generation)tool(event);},
@@ -182,7 +207,7 @@ $('guideStart').addEventListener('click',async()=>{
       onAudioBlocked:()=>{status('Tap Hear Guru to enable sound.');$('guideSound').textContent='Hear Guru';},
     });
     if(run!==generation){await live.end();await cancelProvider(record);return;}
-    connection=live;busy=false;callStarted=Date.now();controls(true);$('guideState').textContent='Live AI';
+    connection=live;busy=false;stopConnectionProgress();callStarted=Date.now();controls(true);$('guideState').textContent='Live AI';
     if(mode==='voice') {try{await connection.setMic(true);}catch(_){status('Microphone unavailable. You can type below.',true);}}
     syncMic();status('You’re connected. Type below or turn on your mic.');
     document.querySelector('.guide-transcript').open=true;
@@ -195,7 +220,7 @@ $('guideStart').addEventListener('click',async()=>{
     tick();timer=setInterval(tick,1000);$('guideText').focus();
   } catch(error) {
     if(run!==generation)return;
-    if(error.existingCall){busy=false;call=error.existingCall;controls(false);$('guideEnd').hidden=false;$('guideState').textContent='Previous call';status(error.message,true);return;}
+    if(error.existingCall){busy=false;stopConnectionProgress();call=error.existingCall;controls(false);$('guideEnd').hidden=false;$('guideState').textContent='Previous call';status(error.message,true);return;}
     await endCall(error.name==='NotAllowedError'?'Microphone permission was declined. Choose Type and start again.':error.message||'The video connection could not start. Please try again.');
     $('guideState').textContent='Try again';$('guideStatus').classList.add('error');
   }
@@ -246,3 +271,4 @@ window.addEventListener('pagehide',()=>{
   connection?.end();
   if(call)fetch(call.stopUrl,{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:'{}',credentials:'same-origin',keepalive:true}).catch(()=>{});
 });
+tellHost('ready');

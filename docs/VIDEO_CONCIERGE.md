@@ -40,6 +40,16 @@ The call checkbox links to AI Business Gurus Terms of Service in a compact dialo
 
 ## Build and verification
 
+The homepage's “Meet your AI employee” action replaces the arrival film and copy with the concierge at `/ai/concierge/?embed=1`. The same call stays open when the visitor or Guru opens an approved page. The initial embedded screen does not load a second copy of the homepage. Its frame policy allows only this site's origin; account pages remain protected. “Back to the film” ends the call before removing the interface.
+
+For startup performance, the call transport is preloaded when the connection interface opens, and readiness is polled more frequently at the beginning. No paid session or microphone capture starts until the visitor agrees and presses Start. Connection progress shows the actual stage and elapsed time.
+
+`python manage.py sync_guru` saves the current public personality and greeting as Runway character defaults. `build.sh` runs it on deployment when Guru is configured. Runway documents slower provisioning with per-call personality or greeting overrides. Calls use saved defaults only after verifying they match the current code; the check is cached for five minutes. A changed prompt or unavailable sync falls back to this release's explicit instructions. Public persona configuration is shared; visitor messages and session credentials are never cached. No new environment variables are required.
+
+In a local provider test on September 16, 2026, session readiness changed from 9.62 seconds with overrides to 2.34 seconds with matching defaults (including the first configuration lookup). These are individual measurements of provisioning, not a guarantee of end-to-end video latency; network, WebRTC and provider load still affect connection time.
+
+The homepage integration passed 92 Django tests and 7 Node tests, including consent, same-origin framing, persona fallback, navigation and cancellation before a call finishes connecting. Desktop and 390 × 844 mobile browser checks covered the hero transition, terms dialog, guided navigation, minimized video and return to the film. The transport bundle is unchanged; provider readiness was measured separately from browser video playback.
+
 ```sh
 python manage.py migrate
 python manage.py test --noinput
@@ -60,4 +70,4 @@ After deployment, use a current browser over HTTPS to check Type, microphone per
 
 The committed portrait is `static/img/guru-concierge.png`, generated with the built-in image generation tool using the existing arrival-film poster as reference. The brief: a front-facing graphite/titanium AI robot with a violet visor and chest light, gold joints, an articulated mouth suited to speech, centered in a cinematic futuristic office, without text or weapons. Runway animates this portrait in real time; it is a still preview only before a call connects.
 
-Provider references: [Runway Characters](https://docs.dev.runwayml.com/characters/), [integration](https://docs.dev.runwayml.com/characters/integration/), and [client tools](https://docs.dev.runwayml.com/characters/tools/client-tools/).
+Provider references: [Runway Characters](https://docs.dev.runwayml.com/characters/), [session defaults and overrides](https://docs.dev.runwayml.com/characters/concepts/#per-call-overrides), [integration](https://docs.dev.runwayml.com/characters/integration/), and [client tools](https://docs.dev.runwayml.com/characters/tools/client-tools/).

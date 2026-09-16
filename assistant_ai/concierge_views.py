@@ -8,6 +8,7 @@ from django.conf import settings
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
@@ -46,6 +47,7 @@ def error(message, status=400):
 @ensure_csrf_cookie
 def concierge_home(request):
     directory = concierge.pages()
+    embedded = request.GET.get("embed") == "1"
     initial = request.GET.get("page", "home")
     if initial not in directory or not directory[initial]["embedded"]:
         initial = "home"
@@ -55,7 +57,10 @@ def concierge_home(request):
             "available": concierge.is_available(), "pages": directory, "initialPage": initial,
             "startUrl": reverse("concierge_start"), "followupUrl": reverse("concierge_followup"),
             "maxSeconds": settings.VIDEO_CONCIERGE_MAX_SECONDS,
+            "embedded": embedded,
+            "callModuleUrl": static("js/concierge-call.js"),
         },
+        "embedded": embedded,
         "available": concierge.is_available(), "directory": directory,
         "initial_path": directory[initial]["path"], "initial_label": directory[initial]["label"],
         "followup_form": FollowupForm(),

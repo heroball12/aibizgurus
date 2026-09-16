@@ -176,3 +176,23 @@
 @media (prefers-reduced-motion: reduce) {
   .arrival-media video, .arrival-primary { transition: none; }
 }
+
+/* The film transforms into the live workspace in the same part of the page. */
+.arrival-hero { scroll-margin-top: 78px; }
+.arrival-copy,.arrival-bottom,.arrival-topline { transition: opacity .25s ease; }
+.arrival-hero.is-guide { min-height: max(740px, calc(100svh - 88px)); }
+.arrival-hero.is-guide :is(.arrival-copy,.arrival-bottom,.arrival-topline,.arrival-media) { opacity:0; visibility:hidden; pointer-events:none; }
+.arrival-concierge { position:absolute; inset:0; z-index:5; background:#0c0912; }
+.arrival-concierge[hidden],.arrival-concierge [hidden] { display:none!important; }
+.arrival-concierge iframe { position:absolute; inset:0; width:100%; height:100%; border:0; opacity:0; transition:opacity .3s ease; }
+.arrival-concierge iframe.ready { opacity:1; }
+.arrival-concierge-loading { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:30px; text-align:center; background:radial-gradient(ellipse at 50% 45%,#321a46,#0c0912 65%); }
+.arrival-concierge-loading strong { color:#f4dfb5; font-size:clamp(44px,6vw,80px); letter-spacing:-.06em; }
+.arrival-concierge-loading p { margin:0; color:#cabbda; }
+.arrival-concierge-loading a { color:#edc479; font-size:13px; }
+.arrival-concierge-loading button { padding:10px 15px; color:#d8cce7; border:1px solid #b38bd455; border-radius:8px; background:#ffffff08; cursor:pointer; }
+.arrival-concierge-loading { z-index:1; }
+body:has(.arrival-hero.is-guide) .concierge-launcher { display:none; }
+@media(max-width:600px) { .arrival-hero.is-guide { min-height:830px; padding-top:0; } }
+.arrival-hero.is-guide.guide-browsing { height:max(560px,calc(100svh - 78px)); min-height:0; padding:0; }
+@media(prefers-reduced-motion:reduce) { .arrival-copy,.arrival-bottom,.arrival-topline,.arrival-concierge iframe { transition:none; } }

@@ -4,6 +4,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from django.test import Client, TestCase, override_settings
+from django.core.cache import cache
 from django.urls import reverse
 from django.utils import timezone
 
@@ -16,6 +17,9 @@ from .models import ConciergeCall, ConciergeSubmission
 
 @override_settings(VIDEO_CONCIERGE_ENABLED=True, RUNWAYML_API_SECRET='test-server-secret', RUNWAY_AVATAR_ID='test-character', VIDEO_CONCIERGE_DAILY_LIMIT=20, VIDEO_CONCIERGE_HOURLY_LIMIT=3)
 class ConciergeTests(TestCase):
+    def setUp(self):
+        cache.clear()
+
     def post(self, name, data=None, args=None, client=None):
         return (client or self.client).post(reverse(name,args=args), data=json.dumps(data or {}),content_type='application/json')
 
@@ -38,6 +42,46 @@ class ConciergeTests(TestCase):
             self.assertEqual(self.post('concierge_start',{'consent':'true'}).status_code,400)
             self.assertEqual(self.post('concierge_start',{}).status_code,400)
             api.assert_not_called()
+
+    def test_home_embeds_guru_only_when_requested_without_creating_a_call(self):
+        with patch('assistant_ai.concierge.create_session') as api:
+            home=self.client.get(reverse('home'))
+            self.assertContains(home,'data-meet-guru')
+            embedded=self.client.get(reverse('concierge'),{'embed':'1'})
+            self.assertContains(embedded,'guide-embedded guide-welcome')
+            self.assertNotContains(embedded,'src="/?guided=1"')
+            self.assertEqual(embedded.headers['X-Frame-Options'],'SAMEORIGIN')
+            self.assertEqual(embedded.headers['Content-Security-Policy'],"frame-ancestors 'self'")
+            self.assertEqual(self.client.get(reverse('login')+'?embed=1').headers['X-Frame-Options'],'DENY')
+            self.assertNotContains(self.client.get(reverse('home')+'?guided=1'),'data-meet-guru')
+            api.assert_not_called()
+            self.assertFalse(ConciergeCall.objects.exists())
+
+    def test_matching_avatar_defaults_avoid_per_call_overrides_and_cache_lookup(self):
+        avatar={'status':'READY','personality':concierge.personality(),'startScript':concierge.START_SCRIPT}
+        with patch('assistant_ai.concierge.runway_request',side_effect=[avatar,{'id':'first'},{'id':'second'}]) as api:
+            concierge.create_session('home')
+            concierge.create_session('pricing')
+        self.assertEqual(api.call_count,3)
+        for call in api.call_args_list[1:]:
+            self.assertEqual(call.args[:2],('POST','/realtime_sessions'))
+            self.assertNotIn('personality',call.args[2])
+            self.assertNotIn('startScript',call.args[2])
+            self.assertEqual(len(call.args[2]['tools']),3)
+
+    def test_stale_or_unavailable_avatar_defaults_preserve_current_instructions(self):
+        for avatar in [{'status':'READY','personality':'old instructions'},concierge.RunwayError('unavailable')]:
+            cache.clear()
+            with patch('assistant_ai.concierge.runway_request',side_effect=[avatar,{'id':'session'}]) as api:
+                concierge.create_session('home')
+            self.assertEqual(api.call_args.args[2]['personality'],concierge.personality())
+            self.assertEqual(api.call_args.args[2]['startScript'],concierge.START_SCRIPT)
+
+    def test_sync_updates_only_public_personality_and_greeting(self):
+        with patch('assistant_ai.concierge.runway_request',side_effect=[{},{}]) as api:
+            self.assertTrue(concierge.sync_avatar_defaults())
+        self.assertEqual(api.call_args.args[:2],('PATCH','/avatars/test-character'))
+        self.assertEqual(set(api.call_args.args[2]),{'personality','startScript'})
 
     def test_terms_can_be_read_without_accepting_or_starting_a_call(self):
         with patch('assistant_ai.concierge.create_session') as api:
