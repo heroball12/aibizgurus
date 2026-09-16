@@ -68,6 +68,6 @@ After deployment, use a current browser over HTTPS to check Type, microphone per
 
 ## Character artwork
 
-The committed portrait is `static/img/guru-concierge.png`, generated with the built-in image generation tool using the existing arrival-film poster as reference. The brief: a front-facing graphite/titanium AI robot with a violet visor and chest light, gold joints, an articulated mouth suited to speech, centered in a cinematic futuristic office, without text or weapons. Runway animates this portrait in real time; it is a still preview only before a call connects.
+The current portrait is `static/img/guru-helmet.jpg`: a seated graphite robot with a completely sealed faceplate, thin purple visor, purple chest light and gold details. The older mouth-based portrait is retained as a historical asset but is no longer used by the call interface. Runway animates the new reference in real time. The site adds an audio-reactive purple glow and a generated gesture transition for guided page actions. See [DEMO_CENTER.md](DEMO_CENTER.md) for the category employees, revised audio transport, typing cues, current verification and limitations, and [DEMO_ARTWORK.md](DEMO_ARTWORK.md) for generation briefs.
 
 Provider references: [Runway Characters](https://docs.dev.runwayml.com/characters/), [session defaults and overrides](https://docs.dev.runwayml.com/characters/concepts/#per-call-overrides), [integration](https://docs.dev.runwayml.com/characters/integration/), and [client tools](https://docs.dev.runwayml.com/characters/tools/client-tools/).

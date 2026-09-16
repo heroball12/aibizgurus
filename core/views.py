@@ -226,19 +226,26 @@ def industries(request):
     })
 
 def demo(request):
+    from django.conf import settings
+    from .demo_profiles import FEATURED, LEGACY_SLUGS, profiles
+    from assistant_ai.demo_video import available_profiles
     if not IndustryTemplate.objects.exists():
         safe_seed_industries()
-    industries, _ = get_industry_options()
-    from .demo_scenarios import SCENARIOS
-    from django.urls import reverse
-    from urllib.parse import urlencode
-    scenarios = []
-    for item in SCENARIOS:
-        scenario = {k: v for k, v in item.items() if k not in {"facts", "template_name"}}
-        template = next((t for t in industries if item["template_name"].lower() in t.name.lower()), None)
-        scenario["signup_url"] = reverse("signup") + ("?" + urlencode({"industry_slug": template.slug}) if template else "")
-        scenarios.append(scenario)
-    return render(request, "core/demo.html", {"demo_scenarios": scenarios, "industry_count": len(industries), "workflow_labels": ["Answer", "Qualify", "Capture", "Handoff"], "demo_history": request.session.get("demo_history", {})})
+    items = profiles()
+    video_profiles = available_profiles()
+    for item in items:
+        item["video_available"] = item["slug"] in video_profiles
+    public_items = [{k: v for k, v in item.items() if k not in {"facts", "escalation"}} for item in items]
+    history = {LEGACY_SLUGS.get(key, key): value for key, value in request.session.get("demo_history", {}).items()}
+    response = render(request, "core/demo.html", {
+        "demo_industries": public_items,
+        "featured_industries": [p for slug in FEATURED for p in public_items if p["slug"] == slug],
+        "demo_categories": sorted({p["category"] for p in items}),
+        "industry_count": len(items), "demo_history": history,
+        "demo_config": {"aiAvailable": bool(settings.PLATFORM_OPENAI_API_KEY)},
+    })
+    response["Cache-Control"] = "private, no-store"
+    return response
 
 def solutions(request):
     return render(request, "core/solutions.html", {"solutions": SOLUTIONS})

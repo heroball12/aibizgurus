@@ -112,7 +112,9 @@ class OperationalTests(TestCase):
         self.assertEqual(response.json()["mode"], "ai")
         self.assertEqual(UsageRecord.objects.get().assistant_role, "public_demo")
         kwargs = mock_ai.return_value.chat.completions.create.call_args.kwargs
-        self.assertIn("Fictional dental practice", kwargs["messages"][0]["content"])
+        self.assertIn("Nova Care", kwargs["messages"][0]["content"])
+        self.assertIn("fictional business", kwargs["messages"][0]["content"])
+        self.assertIn("administrative questions", kwargs["messages"][0]["content"])
         self.assertEqual(kwargs["max_completion_tokens"], 600)
         self.assertFalse(Lead.objects.exists())
 

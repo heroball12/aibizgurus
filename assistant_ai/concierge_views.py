@@ -6,7 +6,7 @@ from datetime import timedelta
 from django import forms
 from django.conf import settings
 from django.db import IntegrityError, transaction
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from django.templatetags.static import static
 from django.urls import reverse
@@ -18,7 +18,7 @@ from django.views.decorators.http import require_GET, require_POST
 from core.forms import ConsultationRequestForm
 from core.rate_limits import consume_budget, request_identity
 from crm.models import Lead
-from . import concierge
+from . import concierge, demo_video
 from .models import ConciergeCall, ConciergeSubmission
 
 
@@ -46,6 +46,11 @@ def error(message, status=400):
 @never_cache
 @ensure_csrf_cookie
 def concierge_home(request):
+    from core.demo_profiles import resolve_profile, profiles
+    demo_profile = resolve_profile(request.GET["industry"]) if "industry" in request.GET else None
+    if "industry" in request.GET and not demo_profile:
+        raise Http404("Demo category not found")
+    available = demo_profile["slug"] in demo_video.available_profiles() if demo_profile else concierge.is_available()
     directory = concierge.pages()
     embedded = request.GET.get("embed") == "1"
     initial = request.GET.get("page", "home")
@@ -54,14 +59,22 @@ def concierge_home(request):
     owner_digest(request)
     return render(request, "assistant_ai/concierge.html", {
         "config": {
-            "available": concierge.is_available(), "pages": directory, "initialPage": initial,
+            "available": available, "pages": directory, "initialPage": initial,
             "startUrl": reverse("concierge_start"), "followupUrl": reverse("concierge_followup"),
             "maxSeconds": settings.VIDEO_CONCIERGE_MAX_SECONDS,
             "embedded": embedded,
+            "employeeName": demo_profile["name"] if demo_profile else "Guru",
+            "industry": demo_profile["slug"] if demo_profile else "",
+            "demoDirectory": {p["slug"]: {"name": p["name"], "label": p["industry"]} for p in profiles()},
             "callModuleUrl": static("js/concierge-call.js"),
+            "typingAudioUrl": static("audio/typing-status.mp3"),
         },
         "embedded": embedded,
-        "available": concierge.is_available(), "directory": directory,
+        "available": available, "directory": directory,
+        "demo_profile": demo_profile,
+        "employee_name": demo_profile["name"] if demo_profile else "Guru",
+        "portrait": demo_profile["portrait"] if demo_profile else static("img/guru-helmet.jpg"),
+        "portrait_alt": demo_profile["portrait_alt"] if demo_profile else "Guru, a graphite robot with violet light and gold details",
         "initial_path": directory[initial]["path"], "initial_label": directory[initial]["label"],
         "followup_form": FollowupForm(),
     })
@@ -78,7 +91,17 @@ def start_call(request):
     data = body(request)
     if not data or data.get("consent") is not True:
         return error("Please agree to the AI Business Gurus Terms of Service before starting.")
-    if not concierge.is_available():
+    from core.demo_profiles import resolve_profile
+    demo_profile = None
+    if data.get("industry"):
+        if not isinstance(data["industry"], str):
+            return error("Choose a valid demo category.")
+        demo_profile = resolve_profile(data["industry"])
+        if not demo_profile:
+            return error("Choose a valid demo category.")
+        if demo_profile["slug"] not in demo_video.available_profiles():
+            return error("This video employee is not connected yet. Please use the text demo.", 503)
+    if not demo_profile and not concierge.is_available():
         return error("Live video is not available yet. You can still browse services, schedule a consultation or request help below.", 503)
     owner = owner_digest(request)
     now = timezone.now()
@@ -96,7 +119,7 @@ def start_call(request):
     except IntegrityError:
         return error("A video call is already being started. Please wait.", 409)
     try:
-        result = concierge.create_session(data.get("page", "home"))
+        result = demo_video.create_session(demo_profile) if demo_profile else concierge.create_session(data.get("page", "home"))
         provider_id = uuid.UUID(str(result.get("id", "")))
     except (concierge.RunwayError, ValueError, AttributeError):
         call.status, call.active = "failed", False

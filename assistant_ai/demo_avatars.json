@@ -1,0 +1,62 @@
+{
+  "automotive": {
+    "fingerprint": "2786719545e1ce214264ceb88b943dac5bff2897477e4e56bd8c9f64b50e5c46",
+    "id": "23663c32-c5a0-4bd2-9373-7f1e39eda5b1",
+    "ready": true
+  },
+  "beauty": {
+    "fingerprint": "fc16e5fef67c52f17032622027b0ee625007f05894b61ede51930fa00516ed38",
+    "id": "4e789881-e175-46e4-886e-b842d45adcba",
+    "ready": true
+  },
+  "business-technology": {
+    "fingerprint": "3b6b0b8e7d2a9f9d979134e4f833787c1b4a2ac6b6a146d3d61a4caa48e3c9af",
+    "id": "be616b5e-eed5-4ea9-b7f4-2e2089edc7d4",
+    "ready": true
+  },
+  "education-community": {
+    "fingerprint": "3776672fac52899b4134f667f1e40a2b41da2d6a19c718ea562aa829457e44fb",
+    "id": "42cc1aad-3646-417f-8828-93ea4063ef4b",
+    "ready": true
+  },
+  "fitness": {
+    "fingerprint": "9aaf0cc47c4fb49c2930a82e10b05f906acc33aafe6260b9ed4b06f2dcd4ed61",
+    "id": "0a42628d-c58f-405c-aafa-17b8fcdff193",
+    "ready": true
+  },
+  "food-hospitality": {
+    "fingerprint": "4ede48f76ce33477bebcf2d7e31d3e7d4e9a52f8345ccbdf6fb03e8d7bf0d6e1",
+    "id": "c3fd1b0d-a24b-4c5c-8e5a-575d6622d5f5",
+    "ready": true
+  },
+  "healthcare": {
+    "fingerprint": "f48d90c5640d5324213984fdf59b88a37e6ac2b9a5f90037a1bdcbc3a53548bb",
+    "id": "fb953854-c888-4ad6-8a16-d90cff997420",
+    "ready": true
+  },
+  "home-services": {
+    "fingerprint": "c74fbbb86278323b373e5c573a3a22453f8ce26406e819b6d6bea585497ffe91",
+    "id": "cef3c9ed-0e6c-4b40-a353-846549e500b0",
+    "ready": true
+  },
+  "hospitality-retail": {
+    "fingerprint": "2447c911cb1da0b437f3adc2b757c8f50f8243c9adfd90ba6d27934ecac6bd76",
+    "id": "6a616fe0-e0a6-4e5a-8e7f-132f30849e04",
+    "ready": true
+  },
+  "pet-services": {
+    "fingerprint": "d205db61cf1c07d70b8147fde848bf2c78a085d490f5e0890ea3ec59ae872c4e",
+    "id": "d424cbf9-7c0c-4af9-a8cc-8e2eebbeda4e",
+    "ready": true
+  },
+  "professional-services": {
+    "fingerprint": "9a6ebdd25b5454dc4d3e7f374a93ec6b600bced25c4dd45ccc2833f439ce4da7",
+    "id": "32e9bcbc-380e-4857-b535-ce7be37d6f37",
+    "ready": true
+  },
+  "transportation": {
+    "fingerprint": "f20d53cf2dbae5b77d03a736cd0373b0c4c337bbee4005ed29fa6c4b634af571",
+    "id": "8d126862-81c1-4878-877c-3eb3404339c7",
+    "ready": true
+  }
+}

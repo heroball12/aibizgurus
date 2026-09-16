@@ -9,7 +9,7 @@
   const tell = (type, data = {}) => parent.postMessage({source: 'aibg-guided-page', type, ...data}, location.origin);
   tell('loaded', {path: location.pathname});
   document.addEventListener('input', event => {
-    if (event.target.closest('form') && !dirty) { dirty = true; tell('dirty', {dirty: true}); }
+    if (event.target.closest('form:not(#demoChatForm)') && !dirty) { dirty = true; tell('dirty', {dirty: true}); }
   });
   document.addEventListener('click', event => {
     const link = event.target.closest('a[href]');
@@ -27,6 +27,7 @@
   });
   window.addEventListener('message', event => {
     if (event.origin !== location.origin || event.source !== parent || event.data?.source !== 'aibg-concierge') return;
+    if(event.data.type==='scroll' && ['up','down'].includes(event.data.direction)){window.scrollBy({top:(event.data.direction==='down'?1:-1)*innerHeight*.72,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});return;}
     if (event.data.type !== 'focus') return;
     const targets = {top: document.body, content: document.querySelector('main'), calendar: document.querySelector('.calendly-panel'), 'assessment-request': document.getElementById('assessment-request')};
     const target = targets[event.data.section];

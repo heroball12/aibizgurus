@@ -1,5 +1,6 @@
 import {validPage, followupDraft, isUserCaption} from './concierge-actions.js';
 const config = JSON.parse(document.getElementById('conciergeConfig').textContent);
+const employeeName = config.employeeName || 'Guru';
 const $ = id => document.getElementById(id);
 const frame = $('guideFrame'), panel = document.querySelector('.guide-companion');
 const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -8,17 +9,42 @@ let page = config.initialPage, history = [page], dirty = false, focusAfterLoad =
 let call = null, connection = null, busy = false, generation = 0, timer = null, replyTimer = null;
 let callStarted = 0, typed = [], captions = [], formTouched = false, submissionId = crypto.randomUUID();
 let captionOrder = new Map(), captionSequence = 0, deliveryPending = false, typedCaptionIds = new Set();
-let pendingStart = null, connectingTimer = null;
+let pendingStart = null, connectingTimer = null, preparedAudioContext = null;
+let typingTimer = null, typingCuePending = false, lastTypingCue = 0, typingBuffer = null;
+let gestureTimer = null;
+const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
+function gesture(kind='navigate') {
+  if(config.industry || reducedMotion())return;
+  const stage=$('guideStage'), clip=$('guideGestureVideo');
+  clearTimeout(gestureTimer);stage.dataset.gesture=kind;stage.classList.add('gesturing');
+  if(clip){clip.currentTime=0;clip.play().catch(()=>stage.classList.remove('gesturing'));}
+  gestureTimer=setTimeout(()=>{stage.classList.remove('gesturing');clip?.pause();},4800);
+}
+function speechLevel(level){$('guideStage').style?.setProperty('--speech',String(Math.max(0,Math.min(1,level))));}
+async function notifyTyping(){
+  const active=connection;
+  if(!active || !config.typingAudioUrl || typingCuePending || deliveryPending || !$('guideText').value.trim() || Date.now()-lastTypingCue<30000)return;
+  typingCuePending=true;
+  try{
+    if(!typingBuffer){const response=await fetch(config.typingAudioUrl);if(!response.ok)throw new Error('Typing cue unavailable');typingBuffer=await response.arrayBuffer();}
+    const sent=await active.sendAudio(typingBuffer,{control:true,shouldSend:()=>connection===active && !deliveryPending && !!$('guideText').value.trim()});
+    if(sent && connection===active){lastTypingCue=Date.now();status('Take your time typing. Guru has been notified to wait. Your draft is sent only when you press Send.');}
+  }catch(_){/* Typing never blocks the actual message. */}finally{typingCuePending=false;}
+}
+$('guideText').addEventListener('input',()=>{
+  clearTimeout(replyTimer);clearTimeout(typingTimer);
+  if(connection && $('guideText').value.trim())typingTimer=setTimeout(notifyTyping,1000);
+});
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const tellHost = type => { if(config.embedded && parent!==window)parent.postMessage({source:'aibg-hero-concierge',type},location.origin); };
-function connectionProgress(step) { $('guideConnectingStep').textContent=step; }
+const tellHost = type => { if(config.embedded && parent!==window)parent.postMessage({source:config.industry?'aibg-demo-employee':'aibg-hero-concierge',type},location.origin); };
+function connectionProgress(step) { $('guideConnectingStep').textContent=step.replaceAll('Guru',employeeName); }
 function beginConnectionProgress() {
   const started=Date.now();$('guideConnecting').hidden=false;
   const tick=()=>{$('guideConnectingTime').textContent=`${Math.floor((Date.now()-started)/1000)}s`;if(Date.now()-started>20000 && busy)status('Guru is taking a little longer to join. You can keep browsing or request a team follow-up.');};
   tick();connectingTimer=setInterval(tick,1000);
 }
 function stopConnectionProgress(){clearInterval(connectingTimer);connectingTimer=null;$('guideConnecting').hidden=true;}
-function status(text, isError=false) { $('guideStatus').textContent=text; $('guideStatus').classList.toggle('error',isError); }
+function status(text, isError=false) { $('guideStatus').textContent=text.replaceAll('Guru',employeeName); $('guideStatus').classList.toggle('error',isError); }
 async function post(url, data={}) {
   const response = await fetch(url, {method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRFToken':csrf},body:JSON.stringify(data)});
   let result;
@@ -35,6 +61,7 @@ function showPage(key, {back=false, fromAgent=false, search='', hash=''}={}) {
   if (dirty && !confirm('Leave this page? Your unfinished form may be lost.')) return;
   document.body.classList.remove('guide-welcome');
   tellHost('browse');
+  if(fromAgent)gesture('navigate');
   dirty=false; page=key;pageLoading=true;focusAfterLoad=null;
   if (!back) history.push(key);
   const url=new URL(item.path,location.origin);
@@ -53,6 +80,7 @@ function focusSection(section) {
   if(document.body.classList.contains('guide-welcome') && !['calendar','assessment-request'].includes(section))showPage(page,{fromAgent:true});
   if (['calendar','assessment-request'].includes(section) && page!=='assessment') { showPage('assessment',{fromAgent:true}); if(page==='assessment')focusAfterLoad=section; return; }
   if(pageLoading){focusAfterLoad=section;return;}
+  gesture(section==='top'?'up':'down');
   frame.contentWindow.postMessage({source:'aibg-concierge',type:'focus',section},location.origin);
 }
 function openFollowup(args={}) {
@@ -65,7 +93,12 @@ function openFollowup(args={}) {
 }
 function tool(event) {
   if (!event || !event.args || typeof event.args!=='object' || Array.isArray(event.args)) return;
-  if (event.tool==='navigate_page') showPage(event.args.page,{fromAgent:true});
+  if (config.industry || $('guideText').value.trim() || deliveryPending) return;
+  if (event.tool==='introduce_demo_employee' && Object.hasOwn(config.demoDirectory || {},event.args.industry)) {
+    showPage('demo',{fromAgent:true,search:'?industry='+encodeURIComponent(event.args.industry)});
+  } else if(event.tool==='scroll_page' && ['up','down'].includes(event.args.direction)){
+    gesture(event.args.direction);frame.contentWindow.postMessage({source:'aibg-concierge',type:'scroll',direction:event.args.direction},location.origin);
+  } else if (event.tool==='navigate_page') showPage(event.args.page,{fromAgent:true});
   else if(event.tool==='focus_section') focusSection(event.args.section);
   else if(event.tool==='prepare_followup') openFollowup(event.args);
 }
@@ -89,8 +122,20 @@ document.querySelectorAll('[data-guide-terms]').forEach(link=>link.addEventListe
   $('guideTermsDialog').showModal();$('guideTermsTitle').focus();
 }));
 document.querySelectorAll('[data-close-terms]').forEach(button=>button.addEventListener('click',()=>$('guideTermsDialog').close()));
-window.addEventListener('message',event=>{
+window.addEventListener('message',async event=>{
+  if(event.origin===location.origin && event.source===parent && config.industry && event.data?.source==='aibg-demo-host' && event.data.type==='close') {
+    if(pendingStart){try{await pendingStart;}catch(_){}}
+    const closed=await endCall();
+    if(closed)tellHost('closed');
+    return;
+  }
   if(event.origin!==location.origin || event.source!==frame.contentWindow || event.data?.source!=='aibg-guided-page')return;
+  if(event.data.type==='demo-handoff' && !config.industry && Object.hasOwn(config.demoDirectory || {},event.data.industry)) {
+    if(pendingStart){try{await pendingStart;}catch(_){}}
+    const closed=await endCall('I’ve introduced you to your demo employee. Choose Start conversation in their window when you’re ready.');
+    if(closed){panel.classList.add('minimized');syncMinimize();}
+    frame.contentWindow.postMessage({source:'aibg-concierge',type:'demo-handoff-ready',ok:closed},location.origin);
+  }
   if(event.data.type==='dirty')dirty=event.data.dirty===true;
   if(event.data.type==='navigate') {
     const key=Object.keys(directory).find(key=>directory[key].path===event.data.path);
@@ -107,6 +152,7 @@ function controls(active) {
   $('guideEnd').hidden=!busy&&!active; $('guideMic').hidden=!active;
   $('guideInputMode').hidden=busy||active; $('guideConsent').hidden=busy||active||!config.available;
   $('guideTextForm').hidden=!active;panel.classList.toggle('in-call',active);
+  $('guideListening').hidden=!active;
   $('guideSound').hidden=!active; $('guideTimer').hidden=!active;
   if(!active)$('guideStage').classList.remove('live');
 }
@@ -121,7 +167,7 @@ function renderTranscript(entries=captions) {
   for(const entry of merged.slice(-40)) {
     if(!entry.text)continue;
     const p=document.createElement('p'),user=isUserCaption(entry);
-    p.dataset.role=user?'user':'assistant';p.textContent=(user?'You: ':'Guru: ')+entry.text;
+    p.dataset.role=user?'user':'assistant';p.textContent=(user?'You: ':employeeName+': ')+entry.text;
     region.appendChild(p);
   }
   region.scrollTop=region.scrollHeight;
@@ -131,30 +177,37 @@ function renderTranscript(entries=captions) {
   }
 }
 async function cancelProvider(record) {
-  if(!record)return;
-  try { await post(record.stopUrl); } catch (_) {
-    try {await wait(700);await post(record.stopUrl);} catch (_) { /* Provider has a hard maximum session duration. */ }
+  if(!record)return true;
+  try { await post(record.stopUrl); return true; } catch (_) {
+    try {await wait(700);await post(record.stopUrl);return true;} catch (_) { return false; }
   }
 }
 async function endCall(message='Call ended. You can keep exploring or book your growth consultation.') {
-  ++generation;busy=false;clearInterval(timer);clearTimeout(replyTimer);stopConnectionProgress();
+  ++generation;busy=false;clearInterval(timer);clearTimeout(replyTimer);clearTimeout(typingTimer);stopConnectionProgress();speechLevel(0);
   const oldConnection=connection,oldCall=call;connection=null;call=null;
+  if(!oldConnection && preparedAudioContext){await preparedAudioContext.close().catch(()=>{});preparedAudioContext=null;}
   controls(false);$('guideState').textContent='Call ended';status(message);
   $('guideVideo').srcObject=null;$('guideAudio').srcObject=null;
-  if(oldConnection)await oldConnection.end();
-  await cancelProvider(oldCall);
+  // Provider cancellation must still run if browser media cleanup fails.
+  if(oldConnection){try{await oldConnection.end();}catch(_){}}
+  const closed=await cancelProvider(oldCall);
+  if(!closed){call=oldCall;$('guideEnd').hidden=false;status('The call has not closed yet. Please press End call to retry.',true);}
+  return closed;
 }
 $('guideEnd').addEventListener('click',()=>endCall());
 $('guideClose')?.addEventListener('click',async()=>{
   $('guideClose').disabled=true;
   // Keep the iframe alive until an in-flight creation can be cancelled.
   if(pendingStart){try{await pendingStart;}catch(_){}}
-  await endCall();tellHost('close');
+  if(await endCall())tellHost('close');
+  else $('guideClose').disabled=false;
 });
 $('guideSound').addEventListener('click',async()=>{
   const audio=$('guideAudio');
   try {
-    if(audio.paused){audio.muted=false;await audio.play();}else audio.muted=!audio.muted;
+    const enable=audio.paused||audio.muted;
+    if(enable){if(connection)await connection.unlockAudio();else await audio.play();audio.muted=false;}
+    else audio.muted=true;
     $('guideSound').textContent=audio.muted?'Sound off':'Sound on';
     $('guideSound').setAttribute('aria-pressed',String(!audio.muted));
   }catch(_){status('Your browser could not play the audio. Try pressing Sound on again.',true);}
@@ -166,10 +219,12 @@ $('guideMic').addEventListener('click',async()=>{
   catch(_){status('Microphone access is unavailable. You can keep typing below.',true);}
   finally{$('guideMic').disabled=false;$('guideTextSend').disabled=false;}
 });
-function syncMic(){const enabled=connection?.micEnabled||false;$('guideMic').textContent=enabled?'Mute mic':'Turn mic on';$('guideMic').setAttribute('aria-pressed',String(enabled));}
+function syncMic(){const enabled=connection?.micEnabled||false;$('guideListeningLabel').textContent=enabled?'Listening · microphone on':'Typing mode · microphone off';$('guideMic').textContent=enabled?'Mute mic':'Turn mic on';$('guideMic').setAttribute('aria-pressed',String(enabled));}
 $('guideStart').addEventListener('click',async()=>{
   if(busy||connection||!config.available)return;
   if(!$('guideConsentCheck').checked){status('Please agree to the AI Business Gurus Terms of Service before starting.',true);$('guideConsentCheck').focus();return;}
+  if(window.AudioContext){preparedAudioContext=new AudioContext();preparedAudioContext.resume().catch(()=>{});}
+  lastTypingCue=0;
   const run=++generation;busy=true;controls(false);$('guideState').textContent='Connecting';status('Connecting you to Guru…');
   beginConnectionProgress();connectionProgress('Preparing your conversation');
   typed=[];captions=[];typedCaptionIds.clear();captionOrder.clear();captionSequence=0;renderTranscript([]);
@@ -182,7 +237,7 @@ $('guideStart').addEventListener('click',async()=>{
       const permission=await navigator.mediaDevices.getUserMedia({audio:true,video:false});permission.getTracks().forEach(track=>track.stop());
     }
     if(run!==generation)return;
-    pendingStart=post(config.startUrl,{consent:true,page});
+    pendingStart=post(config.startUrl,{consent:true,page,industry:config.industry || ''});
     try{record=await pendingStart;}finally{pendingStart=null;}
     if(run!==generation){await cancelProvider(record);return;}call=record;
     let credentials=null;
@@ -199,15 +254,17 @@ $('guideStart').addEventListener('click',async()=>{
     const {connectCall}=await modulePromise;
     if(run!==generation)return;
     connectionProgress('Connecting video and sound');
-    const live=await connectCall({credentials,video:$('guideVideo'),audio:$('guideAudio'),
+    const live=await connectCall({credentials,audioContext:preparedAudioContext,video:$('guideVideo'),audio:$('guideAudio'),
+      onSpeechLevel:level=>{if(run===generation)speechLevel(level);},
+      onInputLevel:level=>{if(run===generation)$('guideListening').style?.setProperty('--input-level',String(level));},
       onTranscript:entries=>{if(run===generation)renderTranscript(entries);},
       onTool:event=>{if(run===generation)tool(event);},
-      onState:state=>{if(run!==generation)return;if(state==='ended')endCall();else if(state==='reconnecting')status('Reconnecting… your conversation will resume shortly.');},
+      onState:state=>{if(run!==generation)return;if(state==='ended')endCall();else if(state==='reconnecting')status('Reconnecting… your conversation will resume shortly.');else if(state==='active')status('Connected. Type below or use your mic.');else if(state==='mic-lost'){syncMic();status('Microphone access stopped. Turn your mic on again or keep typing.',true);}else if(state==='audio-paused')status('Audio paused by your browser. Tap Sound on to resume.',true);},
       onVideo:()=>{if(run===generation)$('guideStage').classList.add('live');},
-      onAudioBlocked:()=>{status('Tap Hear Guru to enable sound.');$('guideSound').textContent='Hear Guru';},
+      onAudioBlocked:()=>{status('Tap Hear Guru to enable sound.');$('guideSound').textContent='Hear '+employeeName;},
     });
     if(run!==generation){await live.end();await cancelProvider(record);return;}
-    connection=live;busy=false;stopConnectionProgress();callStarted=Date.now();controls(true);$('guideState').textContent='Live AI';
+    connection=live;preparedAudioContext=null;busy=false;stopConnectionProgress();callStarted=Date.now();controls(true);$('guideState').textContent='Live AI';
     if(mode==='voice') {try{await connection.setMic(true);}catch(_){status('Microphone unavailable. You can type below.',true);}}
     syncMic();status('You’re connected. Type below or turn on your mic.');
     document.querySelector('.guide-transcript').open=true;
@@ -226,7 +283,8 @@ $('guideStart').addEventListener('click',async()=>{
   }
 });
 $('guideTextForm').addEventListener('submit',async event=>{
-  event.preventDefault();const text=$('guideText').value.trim();if(!text||!connection)return;
+  event.preventDefault();const text=$('guideText').value.trim();if(!text||!connection||deliveryPending)return;
+  clearTimeout(typingTimer);
   const active=connection,typedEntry={id:crypto.randomUUID(),text,local:true};$('guideTextSend').disabled=true;$('guideMic').disabled=true;deliveryPending=true;
   try {
     await active.unlockAudio();
@@ -245,11 +303,14 @@ $('guideTextForm').addEventListener('submit',async event=>{
     if(!audio)throw new Error('Message delivery timed out.');
     if(connection!==active)return;
     $('guideMic').disabled=true;
-    typed.push(typedEntry);typed=typed.slice(-20);renderTranscript();
     await active.sendAudio(audio);
+    lastTypingCue=0;
     if(connection!==active)return;
-    $('guideText').value='';status('Message sent. Guru is responding…');
-    replyTimer=setTimeout(()=>status('No reply yet. You can try your microphone or request a team follow-up.',true),20000);
+    typed.push(typedEntry);typed=typed.slice(-20);renderTranscript();
+    if($('guideText').value.trim()===text)$('guideText').value='';
+    else typingTimer=setTimeout(notifyTyping,1000);
+    status('Message sent. Guru is responding…');
+    replyTimer=setTimeout(()=>{if(connection===active && !$('guideText').value.trim())status('Still waiting for a reply. You can try your microphone or end this call and reconnect.',true);},45000);
   } catch(_){if(connection===active)status('Your message could not be sent. Please try again.',true);}
   finally{deliveryPending=false;$('guideTextSend').disabled=false;$('guideMic').disabled=false;syncMic();if(connection)$('guideText').focus();}
 });

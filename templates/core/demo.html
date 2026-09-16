@@ -1,51 +1,47 @@
-{% extends "base.html" %}
-{% load static %}
-{% block title %}Experience Your AI Workforce | AI Business Gurus{% endblock %}
-{% block meta_description %}Step inside the AI Business Gurus Demo Center. Explore interactive industry scenarios, watch an AI workflow, and try a conversation in our purple-and-gold experience lab.{% endblock %}
+{% extends 'base.html' %}{% load static %}
+{% block title %}Meet your AI team | AI Business Gurus Demo Center{% endblock %}
+{% block meta_description %}Choose your industry and meet an AI employee. Try an industry-specific conversation through chat or live video.{% endblock %}
 {% block body_class %}demo-page{% endblock %}
 {% block extra_head %}<link rel="stylesheet" href="{% static 'css/demo.css' %}"><script src="{% static 'js/demo.js' %}" defer></script>{% endblock %}
 {% block content %}
-<div class="demo-shell" id="demoApp" data-chat-url="{% url 'demo_chat' %}">
-  <section class="demo-hero" aria-labelledby="demoTitle">
-    <img class="demo-hero-art" src="{% static 'img/demo-neural-core.png' %}" alt="A luminous violet neural core surrounded by glass and gold orbits" width="1881" height="836" fetchpriority="high">
-    <div class="demo-hero-shade" aria-hidden="true"></div>
-    <div class="demo-hero-copy">
-      <span class="demo-kicker"><i></i> THE EXPERIENCE LAB</span>
-      <h1 id="demoTitle">Meet your<br>next <span>advantage.</span></h1>
-      <p>A conversation becomes an opportunity.<br>See your AI workforce make the connection.</p>
-      <div class="demo-actions"><a class="demo-button gold" href="#experience">Enter the demo <span aria-hidden="true">↗</span></a><a class="demo-watch" href="#film"><span class="play-ring" aria-hidden="true">▶</span> Watch the walkthrough</a></div>
-      <div class="demo-hero-note"><span>INTERACTIVE</span><b>·</b><span>NO SIGNUP NEEDED</span><b>·</b><span>BUILT AROUND YOU</span></div>
-    </div>
-    <div class="orb-caption" aria-hidden="true"><span class="signal-dot"></span><div><small>INTELLIGENCE IN MOTION</small><strong>Always ready for the next conversation.</strong></div></div>
-    <div class="hero-index" aria-hidden="true">01 / EXPLORE WHAT’S POSSIBLE</div>
-  </section>
-
-  <section class="experience-section demo-container" id="experience" aria-labelledby="experienceTitle">
-    <div class="demo-section-head"><div><span class="demo-kicker">YOUR BUSINESS. YOUR SCENARIO.</span><h2 id="experienceTitle">Take the controls.</h2></div><p>Choose an industry. Follow the conversation.<br>See what your team gets next.</p></div>
-    <div class="scenario-tabs" role="tablist" aria-label="Business scenario">
-      {% for scenario in demo_scenarios %}<button role="tab" id="tab-{{ scenario.id }}" aria-controls="scenario-panel" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" data-scenario="{{ scenario.id }}"><span aria-hidden="true">{{ scenario.icon }}</span>{{ scenario.label }}<span class="tab-arrow" aria-hidden="true">↗</span></button>{% endfor %}
-    </div>
-    <section id="scenario-panel" role="tabpanel" aria-labelledby="tab-home-services" class="mission-control">
-      <div class="mission-bar"><span><i class="signal-dot"></i> WORKFLOW EXPLORER</span><span class="sample-badge">ILLUSTRATIVE SCENARIO</span><button id="resetDemo" type="button" aria-label="Restart sample workflow">↻ <span>Restart</span></button></div>
-      <div class="mission-grid">
-        <div class="mission-story"><span class="demo-kicker" id="scenarioRole">AI RECEPTIONIST</span><h3 id="scenarioHeadline">The next job starts with a conversation.</h3><p id="scenarioDescription">An after-hours AC inquiry becomes a clear request for your service team.</p><div class="workflow-controls"><button class="demo-button gold" id="playWorkflow" type="button"><span aria-hidden="true">▶</span> Play scenario</button><button id="voiceToggle" class="sound-button" type="button" aria-pressed="false" aria-label="Enable spoken sample preview">♪</button></div><p class="voice-note" id="voiceNote">Optional audio uses your device’s voice.</p><div class="step-selector" aria-label="Workflow stages">{% for label in workflow_labels %}<button type="button" data-step="{{ forloop.counter0 }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"><span>0{{ forloop.counter }}</span>{{ label }}<i aria-hidden="true">↗</i></button>{% endfor %}</div></div>
-        <div class="demo-conversation"><div class="conversation-top"><span class="business-avatar" id="businessInitials">SH</span><div><strong id="businessName">Summit Home Comfort</strong><span id="businessRole">AI Receptionist · Sample conversation</span></div><span class="conversation-spark" aria-hidden="true">✧</span></div><div id="sampleMessages" class="sample-messages" role="log" aria-live="polite" aria-label="Sample customer conversation"></div><div class="conversation-bottom"><span class="typing-dots" aria-hidden="true"><i></i><i></i><i></i></span><span id="workflowStatus">Ready when you are.</span><span>✦</span></div></div>
-        <div class="handoff-panel"><div class="handoff-label"><span>THE OTHER SIDE OF THE CONVERSATION</span><i aria-hidden="true">↗</i></div><h4>Your team’s next move.</h4><div class="signal-visual" aria-hidden="true"><div class="signal-ring"></div><div class="signal-ring outer"></div><span>✦</span><i class="orbit-point p1"></i><i class="orbit-point p2"></i></div><div class="lead-preview" id="leadPreview"><div class="lead-preview-title"><span class="lead-avatar" id="leadInitials">AM</span><div><strong id="leadName">Waiting for details</strong><small>Sample lead preview</small></div><span class="lead-state" id="leadState">READY</span></div><dl><div><dt>Interested in</dt><dd id="leadNeed">—</dd></div><div><dt>Priority</dt><dd id="leadPriority">—</dd></div><div><dt>Next step</dt><dd id="leadNext">Listen & understand</dd></div></dl></div><p class="demo-disclosure">Fictional business and sample data. This explorer does not make real bookings or send messages.</p></div>
+<div id="demoApp" class="demo-shell" data-chat-url="{% url 'demo_chat' %}">
+  <header class="demo-intro">
+    <div><span class="demo-eyebrow"><i></i> THE AI EMPLOYEE EXPERIENCE</span><h1>Your industry.<br><em>Your next AI hire.</em></h1><p>Choose a business. Meet its AI employee. Be the customer and see where the conversation goes.</p></div>
+    <a class="demo-guru-link" href="{% url 'concierge' %}?page=demo"><img src="{% static 'img/guru-helmet.jpg' %}" alt=""><span><small>WANT AN INTRODUCTION?</small><strong>Let Guru show you around <span aria-hidden="true">↗</span></strong></span></a>
+  </header>
+  <div class="demo-workspace">
+    <aside class="demo-picker" aria-labelledby="industryTitle">
+      <div class="demo-picker-title"><span class="demo-eyebrow">01 / CHOOSE YOUR WORLD</span><h2 id="industryTitle">Choose your category<span>{{ industry_count }}</span></h2></div>
+      <label class="demo-search"><span class="sr-only">Search industries</span><span aria-hidden="true">⌕</span><input id="industrySearch" type="search" placeholder="Search an industry or category…" autocomplete="off"></label>
+      <label class="demo-category-label" for="industryCategory">Filter the team</label>
+      <select id="industryCategory"><option value="">All categories</option>{% for category in demo_categories %}<option>{{ category }}</option>{% endfor %}</select>
+      <div class="demo-list-label"><span id="industryListTitle">POPULAR PLACES TO START</span><span id="industryResults" aria-live="polite"></span></div>
+      <div id="industryList" class="demo-industry-list" aria-label="Industry choices"></div>
+      <p id="noIndustries" class="demo-empty" hidden>No matches yet. Try a different name or category.</p>
+      <button class="demo-browse" id="browseAll" type="button">Explore all {{ industry_count }} categories <span aria-hidden="true">↗</span></button>
+      <p class="demo-picker-note">12 characters. Over 100 industries.<br>The same possibility for yours.</p>
+    </aside>
+    <section class="demo-employee" id="employeePanel" aria-labelledby="employeeTitle" tabindex="-1">
+      <div class="demo-employee-top"><span class="demo-eyebrow">02 / MEET YOUR AI EMPLOYEE</span><span class="demo-label">FICTIONAL BUSINESS DEMO</span></div>
+      <div class="demo-employee-heading"><div><p id="employeeCategory"></p><h2 id="employeeTitle"></h2><p id="employeeBusiness"></p></div><div class="demo-mode-switch" role="group" aria-label="Conversation mode"><button type="button" id="textMode" aria-pressed="true">Text chat</button><button type="button" id="videoMode" aria-pressed="false">Video & voice <span aria-hidden="true">↗</span></button></div></div>
+      <div id="textExperience" class="demo-text-experience">
+        <div class="demo-character-stage"><img id="employeePortrait" alt="" fetchpriority="high"><div class="demo-character-lines" aria-hidden="true"></div><span class="demo-stage-tag">MEET <strong id="employeeName"></strong></span><div class="demo-character-copy"><span class="demo-eyebrow">BUILT FOR THIS BUSINESS</span><p id="employeeServices"></p><button type="button" id="meetVideo">Meet on video <span aria-hidden="true">↗</span></button></div></div>
+        <div class="demo-chat">
+          <div class="demo-chat-toolbar"><span id="replyMode">AI CHAT</span><button type="button" id="clearChat">Start fresh <span aria-hidden="true">↺</span></button></div>
+          <div id="tryMessages" class="demo-messages" role="log" aria-live="polite" aria-relevant="additions" aria-label="Industry demo conversation"></div>
+          <div id="suggestedPrompts" class="demo-prompts" aria-label="Suggested questions"></div>
+          <p id="demoChatError" class="demo-error" role="alert" hidden></p>
+          <form id="demoChatForm" class="demo-chat-form" method="post" action="{% url 'demo_chat' %}">{% csrf_token %}<label for="demoMessage" class="sr-only">Your message to the industry assistant</label><textarea id="demoMessage" name="message" rows="2" maxlength="1000" placeholder="Ask as if you’re a customer…" required></textarea><button type="submit" id="demoSend" aria-label="Send message">↑</button></form>
+          <p class="demo-mode-note" id="modeNote"></p>
+        </div>
       </div>
-      <div class="mission-progress"><span id="stepCount">01 / 04</span><div><i id="stepProgress"></i></div><span id="stepDetail">Respond when the customer reaches out.</span></div>
+      <div id="videoExperience" class="demo-video-experience" hidden><p id="videoNotice" class="demo-video-notice" role="status"></p><div id="demoVideoMount"></div><button type="button" id="backToText" class="demo-browse">Return to text chat</button></div>
+      <div class="demo-next"><span><strong>Imagine this working for your business.</strong><small>Your brand. Your knowledge. Your next customer.</small></span><a href="{% url 'growth_assessment' %}">Book a growth consultation <span aria-hidden="true">↗</span></a></div>
     </section>
-    <noscript><p class="demo-noscript">Enable JavaScript to use the interactive explorer. You can still watch the walkthrough below or <a href="{% url 'signup' %}">create a demo workspace</a>.</p></noscript>
-  </section>
-
-  <section class="try-section demo-container" id="try-it" aria-labelledby="tryTitle">
-    <div class="try-copy"><span class="demo-kicker">LESS IMAGINING. MORE EXPLORING.</span><h2 id="tryTitle">Now, make it<br><span>your conversation.</span></h2><p>Be the customer. Ask a question, explore a service, or start an appointment request for the sample business you selected.</p><div class="try-detail"><span>✧</span><div><strong>Same idea. Your business knowledge.</strong><p>Your own assistant uses the hours, services, FAQs, and policies you provide.</p></div></div><a href="{% url 'signup' %}" class="demo-text-link" id="scenarioSignup">Create my own assistant <span aria-hidden="true">↗</span></a></div>
-    <div class="sandbox-card"><div class="sandbox-top"><span class="signal-dot"></span><strong id="tryBusiness">Summit Home Comfort</strong><span id="replyMode">TRY A CONVERSATION</span></div><div class="sandbox-messages" id="tryMessages" role="log" aria-live="polite" aria-label="Your demo conversation"></div><div class="suggested-prompts" id="suggestedPrompts" aria-label="Suggested questions"></div><form id="demoChatForm" class="demo-composer">{% csrf_token %}<label for="demoMessage" class="sr-only">Message the sample assistant</label><input id="demoMessage" name="message" placeholder="What would you ask your AI?" maxlength="1000" autocomplete="off" required><button type="submit" id="demoSend" aria-label="Send message">↗</button></form><p class="chat-error" id="demoChatError" role="alert" hidden></p><div class="sandbox-note"><span id="modeNote">AI replies when available; guided sample replies otherwise. Use fictional details.</span><button id="clearChat" type="button">New chat</button></div></div>
-  </section>
-
-  <section class="film-section demo-container" id="film" aria-labelledby="filmTitle"><div class="demo-section-head"><div><span class="demo-kicker">THE BIG PICTURE · 24 SECONDS</span><h2 id="filmTitle">From first hello<br>to a clear next step.</h2></div><p>A visual walkthrough of the workflow.<br>No sound needed. Just press play.</p></div><div class="film-frame"><video id="demoFilm" controls playsinline preload="none" poster="{% static 'img/demo-film-poster.png' %}" aria-label="24-second animated sample workflow walkthrough"><source src="{% static 'video/demo-workflow.mp4' %}" type="video/mp4"><track kind="captions" src="{% static 'video/demo-workflow.vtt' %}" srclang="en" label="English"><p>Your browser cannot play this video. The walkthrough transcript is below.</p></video><span class="film-label">AI BUSINESS GURUS / WORKFLOW IN MOTION</span></div><details class="film-transcript"><summary>Read the walkthrough transcript</summary><p>A customer reaches out: “My AC stopped cooling.” The assistant asks about the problem and preferred timing. The sample request gathers Alex Morgan’s details and AC repair needs. The team receives a clear next step: confirm availability and pricing. This is an illustrative workflow; no real booking is made.</p></details></section>
-
-  <section class="demo-final demo-container"><span class="demo-kicker">THE NEXT CHAPTER IS YOURS.</span><h2>Your business.<br><span>A new kind of workforce.</span></h2><p>Build a demo around your industry, or let’s map out what AI could do for your business.</p><div class="demo-actions"><a class="demo-button gold" href="{% url 'signup' %}">Build my free demo <span aria-hidden="true">↗</span></a><a class="demo-button outline" href="{% url 'growth_assessment' %}">Let’s talk possibilities</a></div><a class="demo-text-link" href="{% url 'industries' %}">Explore all {{ industry_count }} industry templates →</a></section>
+  </div>
+  <noscript><p>Enable JavaScript to meet the demo employees. You can also <a href="{% url 'growth_assessment' %}">book a growth consultation</a>.</p></noscript>
+  <section class="demo-how"><div><span class="demo-eyebrow">FROM A QUESTION TO A NEXT STEP</span><h2>Let the conversation<br>do the work.</h2><p>Try a service question, a new customer inquiry, or an appointment request. See how an AI employee asks the right follow-up and helps a customer move forward.</p><a id="scenarioSignup" href="{% url 'signup' %}">Build an assistant for this industry ↗</a></div><details class="demo-film"><summary><img src="{% static 'img/demo-film-poster.png' %}" alt="AI workflow film preview" loading="lazy"><span>Watch the workflow film <b aria-hidden="true">▶</b></span></summary><video controls playsinline preload="none" poster="{% static 'img/demo-film-poster.png' %}"><source src="{% static 'video/demo-workflow.mp4' %}" type="video/mp4"><track src="{% static 'video/demo-workflow.vtt' %}" kind="captions" srclang="en" label="English"><a href="{% static 'video/demo-workflow.mp4' %}">Watch the demo film</a></video></details></section>
+  <p class="demo-disclosure">Demo businesses are fictional. Use sample details. No real appointments, orders, payments, or service requests are created. Video and text chat are separate conversations.</p>
 </div>
-{{ demo_scenarios|json_script:"demo-scenarios" }}
-{{ demo_history|json_script:"demo-history" }}
+{{ demo_industries|json_script:'demo-industries' }}{{ demo_history|json_script:'demo-history' }}{{ demo_config|json_script:'demo-config' }}
 {% endblock %}
