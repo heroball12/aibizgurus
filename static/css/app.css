@@ -348,7 +348,7 @@ html{scroll-behavior:smooth}
   min-height:520px;
 }
 .assessment-hero h1{color:white;font-size:clamp(42px,6vw,70px);line-height:1;letter-spacing:-2.8px}
-.assessment-hero p{color:#eee7ff;font-size:20px}.assessment-hero .mini-label{color:#fde68a;background:rgba(245,196,81,.14);border-color:rgba(245,196,81,.32)}
+.assessment-hero>div:first-child p{color:#eee7ff;font-size:20px}.assessment-hero .mini-label{color:#fde68a;background:rgba(245,196,81,.14);border-color:rgba(245,196,81,.32)}
 .assessment-list{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.assessment-list span{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);color:#f5f3ff;border-radius:999px;padding:10px 12px;font-weight:800}
 .assessment-form{position:sticky;top:96px}
 .calendly-panel{

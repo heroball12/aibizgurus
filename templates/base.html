@@ -9,6 +9,8 @@
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
   <link rel="stylesheet" href="{% static 'css/app.css' %}?v=22">
   <script src="{% static 'js/navigation.js' %}" defer></script>
+  <link rel="stylesheet" href="{% static 'css/concierge-launcher.css' %}">
+  <script src="{% static 'js/concierge-launcher.js' %}" defer></script>
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' or request.path|slice:':6' == '/team/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
@@ -46,6 +48,9 @@
 </nav>
 {% if messages %}<div class="messages">{% for message in messages %}<div class="alert">{{ message }}</div>{% endfor %}</div>{% endif %}
 <main>{% block content %}{% endblock %}</main>
+{% if request.GET.guided != '1' and not user.is_employee_or_admin %}
+<a class="concierge-launcher" href="{% url 'concierge' %}" aria-label="Open AI growth concierge"><span class="concierge-launcher-icon" aria-hidden="true">✦</span><span><strong>Meet your AI guide</strong><small>Explore. Ask. Grow.</small></span><span aria-hidden="true">↗</span></a>
+{% endif %}
 {% if user.is_authenticated and user.is_employee_or_admin %}
 <div class="team-chat-widget" data-summary-url="{% url 'staff_message_summary' %}">
   <div class="team-chat-toast" id="teamChatToast" hidden></div>

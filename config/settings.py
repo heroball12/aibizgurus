@@ -64,6 +64,7 @@ MIDDLEWARE = [
     "audit.middleware.ActivityLogMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "assistant_ai.concierge_middleware.ConciergeFrameMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -207,3 +208,11 @@ DEMO_DAILY_AI_LIMIT = int(os.getenv("DEMO_DAILY_AI_LIMIT", "100"))
 
 # Number of trusted reverse proxies that append to X-Forwarded-For.
 TRUSTED_PROXY_HOPS = int(os.getenv("TRUSTED_PROXY_HOPS", "1" if "RENDER" in os.environ else "0"))
+
+# Live video concierge. The permanent Runway credential is server-only.
+RUNWAYML_API_SECRET = os.getenv("RUNWAYML_API_SECRET", "")
+RUNWAY_AVATAR_ID = os.getenv("RUNWAY_AVATAR_ID", "")
+VIDEO_CONCIERGE_ENABLED = env_bool("VIDEO_CONCIERGE_ENABLED", default=False)
+VIDEO_CONCIERGE_DAILY_LIMIT = int(os.getenv("VIDEO_CONCIERGE_DAILY_LIMIT", "20"))
+VIDEO_CONCIERGE_HOURLY_LIMIT = int(os.getenv("VIDEO_CONCIERGE_HOURLY_LIMIT", "3"))
+VIDEO_CONCIERGE_MAX_SECONDS = max(60, min(300, int(os.getenv("VIDEO_CONCIERGE_MAX_SECONDS", "300"))))

@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 
@@ -118,3 +119,24 @@ class KnowledgeDocument(models.Model):
         indexes = [
             models.Index(fields=["ai_instance", "processed_status"]),
         ]
+
+
+class ConciergeCall(models.Model):
+    """Ownership and lifecycle only; no media, transcript or connection secret."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner_digest = models.CharField(max_length=64, db_index=True)
+    provider_id = models.UUIDField(null=True, blank=True)
+    status = models.CharField(max_length=20, default="creating")
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["owner_digest"], condition=models.Q(active=True), name="one_active_concierge_call")]
+
+
+class ConciergeSubmission(models.Model):
+    """An idempotency receipt prevents double-clicks from creating duplicate leads."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner_digest = models.CharField(max_length=64)
+    consultation = models.OneToOneField("core.ConsultationRequest", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)

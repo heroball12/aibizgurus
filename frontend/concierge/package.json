@@ -1,0 +1,16 @@
+{
+  "name": "aibg-video-concierge",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild index.js --bundle --format=esm --target=es2020 --minify --legal-comments=linked --outfile=../../static/js/concierge-call.js",
+    "test": "node --test *.test.js"
+  },
+  "dependencies": {
+    "@runwayml/avatars": "0.17.0",
+    "livekit-client": "2.22.3"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

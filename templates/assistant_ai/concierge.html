@@ -1,0 +1,79 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your AI Growth Concierge | AI Business Gurus</title>
+  <meta name="description" content="Explore AI Business Gurus with a video concierge. Discover services, get guidance and book a growth consultation.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'css/concierge.css' %}">
+  <script src="{% static 'js/concierge.js' %}" type="module"></script>
+</head>
+<body>
+  <header class="guide-header">
+    <a href="{% url 'home' %}" class="guide-brand"><img src="{% static 'img/ai-business-gurus-logo-nav.png' %}" alt="AI Business Gurus"></a>
+    <div class="guide-mode"><span aria-hidden="true"></span> YOUR GROWTH, GUIDED</div>
+    <a href="{% url 'home' %}" class="guide-exit">Exit guide <span aria-hidden="true">↗</span></a>
+  </header>
+  <main class="guide-layout">
+    <section class="guide-browser" aria-label="Explore the website">
+      <div class="guide-toolbar">
+        <button id="guideBack" type="button" aria-label="Previous guided page" disabled>←</button>
+        <span class="guide-address"><span aria-hidden="true">◇</span> <span>AI Business Gurus</span><span aria-hidden="true">/</span><strong id="guidePageLabel">{{ initial_label }}</strong></span>
+        <button id="guideExpand" type="button" aria-expanded="false">Focus page</button>
+      </div>
+      <nav class="guide-shortcuts" aria-label="Guided pages">
+        <button type="button" data-page="solutions">Solutions</button>
+        <button type="button" data-page="demo">See it in action</button>
+        <button type="button" data-page="pricing">Plans & pricing</button>
+        <button type="button" data-page="assessment" class="guide-book">Book a growth consultation <span aria-hidden="true">↗</span></button>
+      </nav>
+      <div class="guide-page-status" id="guidePageStatus" role="status"></div>
+      <iframe id="guideFrame" src="{{ initial_path }}?guided=1" title="AI Business Gurus — guided website" referrerpolicy="same-origin"></iframe>
+      <noscript><p>This guided experience requires JavaScript. <a href="{% url 'growth_assessment' %}">Book a growth consultation</a> or <a href="{% url 'solutions' %}">explore services</a>.</p></noscript>
+    </section>
+    <aside class="guide-companion" aria-label="AI video concierge">
+      <div class="guide-companion-heading"><span class="guide-eyebrow">MEET YOUR AI CONCIERGE</span><button id="guideMinimize" type="button" aria-label="Minimize video assistant" aria-expanded="true">−</button><span class="guide-chip" id="guideState">{% if available %}Ready to meet{% else %}Preview{% endif %}</span></div>
+      <div class="guide-stage" id="guideStage">
+        <img class="guide-portrait" src="{% static 'img/guru-concierge.png' %}" alt="Guru, a graphite robot with violet light and gold details" id="guidePortrait">
+        <video id="guideVideo" playsinline autoplay muted aria-label="Live video of your AI concierge"></video>
+        <div class="guide-stage-grid" aria-hidden="true"></div>
+        <div class="guide-stage-caption"><div><span class="guide-eyebrow">AI BUSINESS GURUS</span><h1>Guru<span>.</span></h1><p>Your next chapter starts here.</p></div><span class="guide-orbit" aria-hidden="true">✦</span></div>
+        <span id="guideTimer" class="guide-timer" hidden></span>
+      </div>
+      <div class="guide-conversation">
+        <p class="guide-intro">Tell me what’s next for your business.<br>I’ll help you find the way there.</p>
+        <p class="guide-status" id="guideStatus" role="status" aria-live="polite">{% if available %}Type or speak to Guru. Your camera stays off.{% else %}Live video is being connected. Explore the site or book a consultation below.{% endif %}</p>
+        <div id="guideConsent" class="guide-consent" {% if not available %}hidden{% endif %}>
+          <label><input type="checkbox" id="guideConsentCheck"> I agree to a live AI call processed by Runway. Audio and conversation transcripts may be retained by Runway. Please avoid sharing sensitive information.</label>
+        </div>
+        <fieldset id="guideInputMode" class="guide-input-mode"><legend class="sr-only">How would you like to chat?</legend><label><input type="radio" name="inputMode" value="text" checked> Type</label><label><input type="radio" name="inputMode" value="voice"> Speak</label></fieldset>
+        <div class="guide-call-controls">
+          <button id="guideStart" type="button" class="guide-primary" {% if not available %}disabled{% endif %}><span aria-hidden="true">◉</span> Start conversation</button>
+          <button id="guideMic" type="button" hidden aria-pressed="false">Mute mic</button>
+          <button id="guideSound" type="button" hidden aria-pressed="true">Sound on</button>
+          <button id="guideEnd" type="button" class="guide-end" hidden>End call</button>
+        </div>
+        <audio id="guideAudio" autoplay hidden></audio>
+        <p class="guide-call-note">Live AI · Up to 5 minutes · Camera off</p>
+        <form id="guideTextForm" class="guide-text-form" hidden><label for="guideText" class="sr-only">Type a message to Guru</label><input id="guideText" name="message" type="text" autocomplete="off" maxlength="500" placeholder="Ask Guru anything about our services…" required><button type="submit" id="guideTextSend" aria-label="Send message">↑</button></form>
+        <div class="guide-actions"><button type="button" data-page="assessment">Schedule a growth call <span aria-hidden="true">↗</span></button><button id="guideFollowupOpen" type="button">Request a team follow-up <span aria-hidden="true">+</span></button><button type="button" data-page="portal">I’m already a client <span aria-hidden="true">↗</span></button></div>
+        <div id="guidePortal" class="guide-portal" hidden><strong>Your secure client workspace</strong><p>Manage your business profile, assistants, leads and conversations in your portal. Your video call can stay open here.</p><a href="{% url 'portal_home' %}" target="_blank" rel="noopener">Open client portal ↗</a></div>
+        <details class="guide-transcript"><summary>Conversation & captions <span aria-hidden="true">⌄</span></summary><div id="guideTranscript" role="log" aria-label="Conversation captions" aria-live="off"><p>Captions appear here during your conversation.</p></div></details>
+        <p class="guide-attribution">Video powered by Runway</p>
+      </div>
+    </aside>
+  </main>
+  <dialog id="guideFollowupDialog" aria-labelledby="followupTitle">
+    <div class="guide-modal-head"><span class="guide-eyebrow">LET’S KEEP IT MOVING</span><button type="button" id="guideFollowupClose" aria-label="Close follow-up form">×</button></div>
+    <h2 id="followupTitle">Your next step, together.</h2><p>Tell our team what you need. Review your details, then send your request. This does not reserve a calendar time.</p>
+    <form id="guideFollowupForm" method="post" action="{% url 'concierge_followup' %}">
+      {% csrf_token %}{{ followup_form.as_p }}
+      <p id="guideFormStatus" role="status" aria-live="polite"></p>
+      <button type="submit" class="guide-primary" id="guideSubmit">Send request</button>
+    </form>
+  </dialog>
+  {{ config|json_script:"conciergeConfig" }}
+</body>
+</html>

@@ -24,6 +24,7 @@ Complete Django starter platform for multi-industry AI receptionists.
 - Industry templates across many business types
 - Render/PostgreSQL-ready setup
 - SQLite default for local testing
+- Runway video concierge with typed/voice input, guided browsing, and consultation handoff. See [setup and deployment notes](docs/VIDEO_CONCIERGE.md).
 
 ## Quick Start
 
