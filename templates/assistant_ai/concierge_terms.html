@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}AI Business Gurus Terms of Service — Video Assistant{% endblock %}
+{% block content %}
+<section class="clean-panel narrow">
+  <span class="mini-label">Video assistant</span>
+  <h1>AI Business Gurus Terms of Service</h1>
+  <p>Terms for using Guru, our live AI video assistant.</p>
+  {% include 'assistant_ai/_concierge_terms.html' %}
+  <a class="btn" href="{% url 'concierge' %}">Back to Guru</a>
+</section>
+{% endblock %}

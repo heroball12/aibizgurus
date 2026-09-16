@@ -39,6 +39,17 @@ class ConciergeTests(TestCase):
             self.assertEqual(self.post('concierge_start',{}).status_code,400)
             api.assert_not_called()
 
+    def test_terms_can_be_read_without_accepting_or_starting_a_call(self):
+        with patch('assistant_ai.concierge.create_session') as api:
+            page=self.client.get(reverse('concierge'))
+            terms=self.client.get(reverse('concierge_terms'))
+            self.assertContains(page,'data-guide-terms')
+            self.assertContains(page,'id="guideTermsDialog"')
+            self.assertContains(terms,'AI Business Gurus Terms of Service')
+            self.assertContains(terms,'Audio, conversation recordings and transcripts may be retained by Runway')
+            self.assertFalse(ConciergeCall.objects.exists())
+            api.assert_not_called()
+
     def test_post_only_and_csrf_required(self):
         self.assertEqual(self.client.get(reverse('concierge_start')).status_code,405)
         strict=Client(enforce_csrf_checks=True)

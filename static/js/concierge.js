@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 const frame = $('guideFrame'), panel = document.querySelector('.guide-companion');
 const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
 const directory = config.pages;
-let page = config.initialPage, history = [page], dirty = false, focusAfterLoad = null;
+let page = config.initialPage, history = [page], dirty = false, focusAfterLoad = null, pageLoading = false;
 let call = null, connection = null, busy = false, generation = 0, timer = null, replyTimer = null;
 let callStarted = 0, typed = [], captions = [], formTouched = false, submissionId = crypto.randomUUID();
 let captionOrder = new Map(), captionSequence = 0, deliveryPending = false, typedCaptionIds = new Set();
@@ -23,7 +23,7 @@ function showPage(key, {back=false, fromAgent=false, search='', hash=''}={}) {
   if (!item.embedded) { $('guidePortal').hidden=false; panel.classList.remove('minimized'); syncMinimize(); $('guidePortal').scrollIntoView({block:'nearest'}); return; }
   if (key===page && !search && !hash) return;
   if (dirty && !confirm('Leave this page? Your unfinished form may be lost.')) return;
-  dirty=false; page=key;
+  dirty=false; page=key;pageLoading=true;focusAfterLoad=null;
   if (!back) history.push(key);
   const url=new URL(item.path,location.origin);
   if(typeof search==='string' && search.length<2000)url.search=search;
@@ -39,6 +39,7 @@ function showPage(key, {back=false, fromAgent=false, search='', hash=''}={}) {
 function focusSection(section) {
   if (!['top','content','calendar','assessment-request'].includes(section)) return;
   if (['calendar','assessment-request'].includes(section) && page!=='assessment') { showPage('assessment',{fromAgent:true}); if(page==='assessment')focusAfterLoad=section; return; }
+  if(pageLoading){focusAfterLoad=section;return;}
   frame.contentWindow.postMessage({source:'aibg-concierge',type:'focus',section},location.origin);
 }
 function openFollowup(args={}) {
@@ -69,6 +70,12 @@ $('guideBack').addEventListener('click',()=>{if(history.length>1){const target=h
 document.querySelectorAll('[data-page]').forEach(button=>button.addEventListener('click',()=>showPage(button.dataset.page)));
 $('guideFollowupOpen').addEventListener('click',()=>openFollowup());
 $('guideFollowupClose').addEventListener('click',()=>$('guideFollowupDialog').close());
+document.querySelectorAll('[data-guide-terms]').forEach(link=>link.addEventListener('click',event=>{
+  if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+  event.preventDefault();
+  $('guideTermsDialog').showModal();$('guideTermsTitle').focus();
+}));
+document.querySelectorAll('[data-close-terms]').forEach(button=>button.addEventListener('click',()=>$('guideTermsDialog').close()));
 window.addEventListener('message',event=>{
   if(event.origin!==location.origin || event.source!==frame.contentWindow || event.data?.source!=='aibg-guided-page')return;
   if(event.data.type==='dirty')dirty=event.data.dirty===true;
@@ -76,7 +83,8 @@ window.addEventListener('message',event=>{
     const key=Object.keys(directory).find(key=>directory[key].path===event.data.path);
     if(key)showPage(key,{search:event.data.search,hash:event.data.hash});
   }
-  if(event.data.type==='loaded') {
+  if(event.data.type==='loaded' && event.data.path===directory[page].path) {
+    pageLoading=false;
     $('guidePageStatus').textContent='';
     if(focusAfterLoad){focusSection(focusAfterLoad);focusAfterLoad=null;}
   }
@@ -142,7 +150,7 @@ $('guideMic').addEventListener('click',async()=>{
 function syncMic(){const enabled=connection?.micEnabled||false;$('guideMic').textContent=enabled?'Mute mic':'Turn mic on';$('guideMic').setAttribute('aria-pressed',String(enabled));}
 $('guideStart').addEventListener('click',async()=>{
   if(busy||connection||!config.available)return;
-  if(!$('guideConsentCheck').checked){status('Please agree to the live AI call before starting.',true);$('guideConsentCheck').focus();return;}
+  if(!$('guideConsentCheck').checked){status('Please agree to the AI Business Gurus Terms of Service before starting.',true);$('guideConsentCheck').focus();return;}
   const run=++generation;busy=true;controls(false);$('guideState').textContent='Connecting';status('Connecting you to Guru…');
   typed=[];captions=[];typedCaptionIds.clear();captionOrder.clear();captionSequence=0;renderTranscript([]);
   let record=null;

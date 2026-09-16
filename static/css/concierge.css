@@ -32,3 +32,9 @@ dialog{background:#1c1428;color:var(--ink);width:min(540px,calc(100vw - 28px));m
 .guide-companion.minimized .guide-stage-caption p,.guide-companion.minimized .guide-stage-caption .guide-eyebrow,.guide-companion.minimized .guide-orbit,.guide-companion.minimized .guide-stage-grid{display:none}
 .guide-companion.minimized .guide-timer{font-size:8px;top:7px;right:8px;padding:3px 5px}
 @media(max-width:760px){.guide-brand img{max-height:48px}.guide-text-form input{font-size:16px}dialog input:not([type=checkbox]),dialog textarea{font-size:16px}}
+.guide-consent a{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+.guide-terms-dialog{width:min(500px,calc(100vw - 28px));padding:24px}
+.guide-terms-dialog h2{font-size:25px;line-height:1.2}
+.guide-terms-body{max-height:48dvh;overflow:auto;overscroll-behavior:contain;padding:0 12px 0 0;margin:16px 0 20px;scrollbar-width:thin}
+.guide-terms-body h3{font-size:13px;color:#f4e9ff;margin:20px 0 7px}.guide-terms-body h3:first-child{margin-top:0}
+.guide-terms-body p{font-size:12px;line-height:1.65;color:var(--muted);margin:0 0 12px}.guide-terms-body a{color:var(--gold)}

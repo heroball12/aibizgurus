@@ -62,12 +62,17 @@ def concierge_home(request):
     })
 
 
+@require_GET
+def concierge_terms(request):
+    return render(request, "assistant_ai/concierge_terms.html")
+
+
 @require_POST
 @never_cache
 def start_call(request):
     data = body(request)
     if not data or data.get("consent") is not True:
-        return error("Please agree to start the live AI conversation.")
+        return error("Please agree to the AI Business Gurus Terms of Service before starting.")
     if not concierge.is_available():
         return error("Live video is not available yet. You can still browse services, schedule a consultation or request help below.", 503)
     owner = owner_digest(request)

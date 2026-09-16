@@ -32,7 +32,11 @@ Guru's knowledge comes from public services, roles, industries, and the shared p
 - Draft a follow-up form using details volunteered by the visitor.
 - Reveal a secure portal link for existing clients.
 
+Guru's conversation instructions and each action tool require spoken guidance: explain what is about to open and why, with one relevant next step, in a single spoken reply accompanying the action. Both sentences are generated before invoking the tool because a tool call can end the provider's spoken turn. This applies to page changes, highlighted sections, portal links, and follow-up drafts. Related actions on one page share a concise explanation, and a declined consultation should not trigger repeated booking pitches. These instructions apply to new calls after the updated server code is deployed.
+
 The visitor chooses and confirms a Calendly appointment. A follow-up request is not a reservation. Forms require manual submission and contact consent; the model cannot submit them. Account pages open separately and remain protected from framing. Guru cannot read or change private account data, issue refunds, or manage client billing. Questions requiring that access are handed to the team.
+
+The call checkbox links to AI Business Gurus Terms of Service in a compact dialog. Opening or closing the terms does not check the agreement box or start a call. The same assistant-specific terms are available at `/ai/concierge/terms/`, including the Runway processing and recording disclosure, AI limitations, appropriate use, form submission, booking, and support information.
 
 ## Build and verification
 

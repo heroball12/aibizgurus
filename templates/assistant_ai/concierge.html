@@ -46,7 +46,7 @@
         <p class="guide-intro">Tell me what’s next for your business.<br>I’ll help you find the way there.</p>
         <p class="guide-status" id="guideStatus" role="status" aria-live="polite">{% if available %}Type or speak to Guru. Your camera stays off.{% else %}Live video is being connected. Explore the site or book a consultation below.{% endif %}</p>
         <div id="guideConsent" class="guide-consent" {% if not available %}hidden{% endif %}>
-          <label><input type="checkbox" id="guideConsentCheck"> I agree to a live AI call processed by Runway. Audio and conversation transcripts may be retained by Runway. Please avoid sharing sensitive information.</label>
+          <label><input type="checkbox" id="guideConsentCheck"><span>I agree to the <a href="{% url 'concierge_terms' %}" data-guide-terms aria-haspopup="dialog" aria-controls="guideTermsDialog">AI Business Gurus Terms of Service</a>.</span></label>
         </div>
         <fieldset id="guideInputMode" class="guide-input-mode"><legend class="sr-only">How would you like to chat?</legend><label><input type="radio" name="inputMode" value="text" checked> Type</label><label><input type="radio" name="inputMode" value="voice"> Speak</label></fieldset>
         <div class="guide-call-controls">
@@ -65,6 +65,13 @@
       </div>
     </aside>
   </main>
+  <dialog id="guideTermsDialog" class="guide-terms-dialog" aria-labelledby="guideTermsTitle">
+    <div class="guide-modal-head"><span class="guide-eyebrow">BEFORE WE CONNECT</span><button type="button" data-close-terms aria-label="Close terms of service">×</button></div>
+    <h2 id="guideTermsTitle" tabindex="-1">AI Business Gurus<br>Terms of Service</h2>
+    <p>Terms for using Guru, our live AI video assistant.</p>
+    <div class="guide-terms-body">{% include 'assistant_ai/_concierge_terms.html' %}</div>
+    <button type="button" class="guide-primary" data-close-terms>Done</button>
+  </dialog>
   <dialog id="guideFollowupDialog" aria-labelledby="followupTitle">
     <div class="guide-modal-head"><span class="guide-eyebrow">LET’S KEEP IT MOVING</span><button type="button" id="guideFollowupClose" aria-label="Close follow-up form">×</button></div>
     <h2 id="followupTitle">Your next step, together.</h2><p>Tell our team what you need. Review your details, then send your request. This does not reserve a calendar time.</p>
