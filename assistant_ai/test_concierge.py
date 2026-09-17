@@ -67,7 +67,7 @@ class ConciergeTests(TestCase):
             self.assertEqual(call.args[:2],('POST','/realtime_sessions'))
             self.assertNotIn('personality',call.args[2])
             self.assertNotIn('startScript',call.args[2])
-            self.assertEqual(len(call.args[2]['tools']),5)
+            self.assertEqual(len(call.args[2]['tools']),6)
 
     def test_stale_or_unavailable_avatar_defaults_preserve_current_instructions(self):
         for avatar in [{'status':'READY','personality':'old instructions'},concierge.RunwayError('unavailable')]:

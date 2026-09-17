@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views, concierge_views
 urlpatterns = [
+    path("concierge/calls/<uuid:call_id>/context/", concierge_views.save_context, name="concierge_context"),
     path("concierge/calls/<uuid:call_id>/text/", concierge_views.text_input, name="concierge_text"),
     path("concierge/calls/<uuid:call_id>/text/status/", concierge_views.text_status, name="concierge_text_status"),
     path("concierge/", concierge_views.concierge_home, name="concierge"),

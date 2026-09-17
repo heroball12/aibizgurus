@@ -5,7 +5,7 @@ import vm from 'node:vm';
 
 // Run the real transport against deterministic media devices and a simulated room.
 function fixture() {
-  let now=100000, permission;
+  let now=100000, permission, room;
   const tracks=[], sources=[], published=[], states=[], timers=new Map(), listeners=new Map();
   const track=()=>{const item={stopped:false,events:{},stop(){this.stopped=true;},addEventListener(k,fn){this.events[k]=fn;}};tracks.push(item);return item;};
   const input=track();
@@ -16,7 +16,7 @@ function fixture() {
     createMediaStreamSource:()=>{const source=node();sources.push(source);return source;},
     decodeAudioData:async()=>({duration:.5}),createBufferSource:()=>{const source=node();source.start=()=>queueMicrotask(()=>source.onended?.());return source;}};
   class FakeRoom {
-    constructor(){this.events={};this.remoteParticipants=new Map();this.localParticipant={identity:'visitor',publishTrack:async t=>published.push(t),publishData:async()=>{}};}
+    constructor(){room=this;this.events={};this.remoteParticipants=new Map();this.localParticipant={identity:'visitor',publishTrack:async t=>published.push(t),publishData:async()=>{}};}
     on(type,fn){this.events[type]=fn;return this;}
     registerTextStreamHandler(){}
     async connect(){this.state='connected';this.events.state('connected');}
@@ -35,7 +35,7 @@ function fixture() {
   vm.runInContext(source,context);
   context.args={credentials:{},audioContext:ctx,video:{play:async()=>{}},audio:{play:async()=>{}},onTranscript(){},onTool(){},onState:s=>states.push(s),onVideo(){},onAudioBlocked(){}};
   return {connect:()=>vm.runInContext('connectCall(args)',context),tracks,sources,published,states,timers,listeners,ctx,input,
-    advance:ms=>{now+=ms;},deny:()=>{permission=async()=>{throw new Error('Permission denied');};}};
+    speakers:list=>room.events.speakers(list), now:()=>now, advance:ms=>{now+=ms;},deny:()=>{permission=async()=>{throw new Error('Permission denied');};}};
 }
 
 test('voice and typed replies retain one live input through repeated mode changes beyond a minute',async()=>{
@@ -70,4 +70,21 @@ test('typing remains available after denied microphone access and a stale typing
 test('browser suspension resumes without republishing input and cleanup removes recovery listeners',async()=>{
   const f=fixture(),call=await f.connect();f.ctx.state='suspended';f.listeners.get('visibilitychange')();
   assert.equal(f.ctx.state,'running');assert.equal(f.published.length,1);await call.end();assert.equal(f.listeners.size,0);
+});
+
+
+test('handoff waits through the goodbye and a quiet interval, and aborts on visitor activity',async()=>{
+  const f=fixture(),call=await f.connect();
+  f.speakers([{identity:'assistant'}]);let checks=0;const started=f.now();
+  assert.equal(await call.waitForSpeechEnd({shouldContinue:()=>{if(++checks===20)f.speakers([]);return true;}}),true);
+  assert.ok(f.now()-started>=4000,'do not cut the goodbye at the tool event');
+  assert.equal(await call.waitForSpeechEnd({shouldContinue:()=>false}),false);
+  await call.end();assert.equal(await call.waitForSpeechEnd(),false);
+});
+
+test('blocked autoplay does not leave a transferred call stuck connecting',async()=>{
+  const f=fixture();f.ctx.resume=()=>new Promise(()=>{});
+  const call=await f.connect();
+  assert.equal(call.audioBlocked,true);assert.equal(f.published.length,1);
+  await call.end();
 });

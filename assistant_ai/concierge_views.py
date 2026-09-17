@@ -18,7 +18,7 @@ from django.views.decorators.http import require_GET, require_POST
 from core.forms import ConsultationRequestForm
 from core.rate_limits import consume_budget, request_identity
 from crm.models import Lead
-from . import concierge, demo_video
+from . import concierge, demo_video, concierge_context
 from .models import ConciergeCall, ConciergeSubmission
 
 
@@ -57,6 +57,8 @@ def concierge_home(request):
     if initial not in directory or not directory[initial]["embedded"]:
         initial = "home"
     owner_digest(request)
+    transfer = concierge_context.handoff(request.session, request.GET.get("handoff"), demo_profile["slug"]) if demo_profile else None
+    auto_start = bool(transfer and ConciergeCall.objects.filter(pk=transfer["source_call"], owner_digest=owner_digest(request), active=False, status="ended").exists())
     return render(request, "assistant_ai/concierge.html", {
         "config": {
             "available": available, "pages": directory, "initialPage": initial,
@@ -68,10 +70,12 @@ def concierge_home(request):
             "demoDirectory": {p["slug"]: {"name": p["name"], "label": p["industry"]} for p in profiles()},
             "callModuleUrl": static("js/concierge-call.js"),
             "typingAudioUrl": static("audio/typing-status.mp3"),
+            "handoff": {"id": transfer["id"], "mode": transfer["mode"], "autoStart": auto_start} if transfer else None,
         },
         "embedded": embedded,
         "available": available, "directory": directory,
         "demo_profile": demo_profile,
+        "handoff": transfer,
         "employee_name": demo_profile["name"] if demo_profile else "Guru",
         "portrait": demo_profile["portrait"] if demo_profile else static("img/guru-helmet.jpg"),
         "portrait_alt": demo_profile["portrait_alt"] if demo_profile else "Guru, a graphite robot with violet light and gold details",
@@ -89,7 +93,7 @@ def concierge_terms(request):
 @never_cache
 def start_call(request):
     data = body(request)
-    if not data or data.get("consent") is not True:
+    if not data:
         return error("Please agree to the AI Business Gurus Terms of Service before starting.")
     from core.demo_profiles import resolve_profile
     demo_profile = None
@@ -99,6 +103,12 @@ def start_call(request):
         demo_profile = resolve_profile(data["industry"])
         if not demo_profile:
             return error("Choose a valid demo category.")
+    transfer = concierge_context.handoff(request.session, data.get("handoff"), demo_profile["slug"]) if demo_profile else None
+    if data.get("handoff") and not transfer:
+        return error("This introduction has expired. Please start a new conversation.", 409)
+    if not transfer and data.get("consent") is not True:
+        return error("Please agree to the AI Business Gurus Terms of Service before starting.")
+    if demo_profile:
         if demo_profile["slug"] not in demo_video.available_profiles():
             return error("This video employee is not connected yet. Please use the text demo.", 503)
     if not demo_profile and not concierge.is_available():
@@ -115,23 +125,60 @@ def start_call(request):
                 return error("You’ve reached the video call limit for now. You can still book or send a request.", 429)
             if not consume_budget("concierge-daily", "platform", limit=settings.VIDEO_CONCIERGE_DAILY_LIMIT, window=86400):
                 return error("Live video is at capacity today. Please use the consultation calendar or send a request.", 429)
+            # Atomically consume the source call's transfer permission. Only the
+            # same visitor's explicitly consented, closed Guru call can grant it.
+            if transfer and not ConciergeCall.objects.filter(pk=transfer["source_call"], owner_digest=owner, active=False, status="ended").update(status="transferred"):
+                return error("Guru’s introduction has already been used or the call is still open. Please end it before starting a new conversation.", 409)
             call = ConciergeCall.objects.create(owner_digest=owner)
     except IntegrityError:
         return error("A video call is already being started. Please wait.", 409)
     try:
-        result = demo_video.create_session(demo_profile) if demo_profile else concierge.create_session(data.get("page", "home"))
+        if demo_profile:
+            result = demo_video.create_session(demo_profile, transfer["context"]) if transfer else demo_video.create_session(demo_profile)
+        else:
+            result = concierge.create_session(data.get("page", "home"), concierge_context.visitor(request.session))
         provider_id = uuid.UUID(str(result.get("id", "")))
     except (concierge.RunwayError, ValueError, AttributeError):
         call.status, call.active = "failed", False
         call.save(update_fields=["status", "active"])
+        if transfer:
+            ConciergeCall.objects.filter(pk=transfer["source_call"], owner_digest=owner, status="transferred").update(status="ended")
         return error("The live video connection could not start. Please try again or request a follow-up.", 502)
     call.provider_id, call.status = provider_id, "pending"
     call.save(update_fields=["provider_id", "status"])
-    return JsonResponse({"id": str(call.id), "status": "pending", "textUrl":reverse("concierge_text",args=[call.id]), "pollUrl": reverse("concierge_poll", args=[call.id]), "stopUrl": reverse("concierge_stop", args=[call.id])}, status=201)
+    if not demo_profile:
+        request.session["concierge_guru_call"] = str(call.id)
+    return JsonResponse({"id": str(call.id), "status": "pending", "contextUrl": reverse("concierge_context", args=[call.id]) if not demo_profile else None, "textUrl":reverse("concierge_text",args=[call.id]), "pollUrl": reverse("concierge_poll", args=[call.id]), "stopUrl": reverse("concierge_stop", args=[call.id])}, status=201)
 
 
 def owned_call(request, call_id):
     return get_object_or_404(ConciergeCall, id=call_id, owner_digest=owner_digest(request))
+
+
+@require_POST
+@never_cache
+def save_context(request, call_id):
+    call = owned_call(request, call_id)
+    if not call.active or call.status != "issued" or request.session.get("concierge_guru_call") != str(call.id):
+        return error("Reconnect with Guru before making an introduction.", 409)
+    data = body(request)
+    if data is None:
+        return error("Invalid introduction.")
+    try:
+        details = concierge_context.clean_details(data)
+    except ValueError as exc:
+        return error(str(exc))
+    if not consume_budget("concierge-context", str(call.id), limit=40, window=300):
+        return error("Please finish this conversation before making more introductions.", 429)
+    if "industry" in data:
+        from core.demo_profiles import resolve_profile
+        profile = resolve_profile(data["industry"]) if isinstance(data["industry"], str) else None
+        if not profile:
+            return error("Choose a valid demo category.")
+        transfer = concierge_context.prepare(request.session, call.id, profile["slug"], details, data.get("mode"))
+        return JsonResponse({"handoff": transfer["id"], "industry": profile["slug"]})
+    concierge_context.remember(request.session, details)
+    return JsonResponse({"remembered": True})
 
 
 @require_POST

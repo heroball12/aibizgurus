@@ -229,12 +229,16 @@ def demo(request):
     from django.conf import settings
     from .demo_profiles import FEATURED, LEGACY_SLUGS, profiles
     from assistant_ai.demo_video import available_profiles
+    from assistant_ai import concierge_context
     if not IndustryTemplate.objects.exists():
         safe_seed_industries()
     items = profiles()
+    transfer = concierge_context.handoff(request.session, request.GET.get("handoff"))
     video_profiles = available_profiles()
     for item in items:
         item["video_available"] = item["slug"] in video_profiles
+        if transfer and item["slug"] == transfer["industry"]:
+            item["greeting"] = concierge_context.greeting(item, transfer["context"])
     public_items = [{k: v for k, v in item.items() if k not in {"facts", "escalation"}} for item in items]
     history = {LEGACY_SLUGS.get(key, key): value for key, value in request.session.get("demo_history", {}).items()}
     response = render(request, "core/demo.html", {
@@ -242,7 +246,7 @@ def demo(request):
         "featured_industries": [p for slug in FEATURED for p in public_items if p["slug"] == slug],
         "demo_categories": sorted({p["category"] for p in items}),
         "industry_count": len(items), "demo_history": history,
-        "demo_config": {"aiAvailable": bool(settings.PLATFORM_OPENAI_API_KEY)},
+        "demo_config": {"aiAvailable": bool(settings.PLATFORM_OPENAI_API_KEY), "handoff": {"id": transfer["id"], "industry": transfer["industry"]} if transfer else None},
     })
     response["Cache-Control"] = "private, no-store"
     return response

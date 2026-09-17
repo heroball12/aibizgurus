@@ -12,6 +12,30 @@ let captionOrder = new Map(), captionSequence = 0, deliveryPending = false, type
 let pendingStart = null, connectingTimer = null, preparedAudioContext = null;
 let typingTimer = null, typingCuePending = false, lastTypingCue = 0, typingBuffer = null;
 let gestureTimer = null;
+let contextQueue = Promise.resolve(), transferPending = false, preparedHandoff = null;
+function saveContext(details) {
+  const current=call, run=generation;
+  const work=()=>{if(!current?.contextUrl || current!==call || run!==generation)throw new Error('Reconnect with Guru to make this introduction.');return post(current.contextUrl,details);};
+  const result=contextQueue.then(work,work);contextQueue=result.catch(()=>{});return result;
+}
+async function introduceEmployee(args) {
+  if(transferPending)return;
+  if(!call?.contextUrl || !connection){showPage('demo',{fromAgent:true,search:'?industry='+encodeURIComponent(args.industry)});return;}
+  transferPending=true;
+  const active=connection, run=generation;
+  try {
+    const saved=await saveContext({...args,mode:active.micEnabled?'voice':'text'});
+    const canContinue=()=>connection===active && generation===run && !$('guideText').value.trim() && !deliveryPending;
+    if(!canContinue())return;
+    status('Guru is finishing your introduction…');
+    const finished=await active.waitForSpeechEnd({shouldContinue:canContinue});
+    if(!canContinue())return;
+    if(!finished){status('The introduction paused while Guru was still speaking. Ask Guru to introduce you again when you’re ready.');return;}
+    preparedHandoff={id:saved.handoff,industry:saved.industry};
+    showPage('demo',{fromAgent:true,search:'?industry='+encodeURIComponent(saved.industry)+'&handoff='+encodeURIComponent(saved.handoff),hash:'#employeePanel'});
+  } catch(error) {status('The introduction could not be prepared. Please ask Guru to try again.',true);}
+  finally {transferPending=false;}
+}
 const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
 function gesture(kind='navigate') {
   if(config.industry || reducedMotion())return;
@@ -93,9 +117,11 @@ function openFollowup(args={}) {
 }
 function tool(event) {
   if (!event || !event.args || typeof event.args!=='object' || Array.isArray(event.args)) return;
-  if (config.industry || $('guideText').value.trim() || deliveryPending) return;
+  if(config.industry)return;
+  if(event.tool==='remember_visitor'){saveContext(event.args).catch(()=>status('Your name or request could not be remembered. Please ask Guru to try again.',true));return;}
+  if ($('guideText').value.trim() || deliveryPending) return;
   if (event.tool==='introduce_demo_employee' && Object.hasOwn(config.demoDirectory || {},event.args.industry)) {
-    showPage('demo',{fromAgent:true,search:'?industry='+encodeURIComponent(event.args.industry)});
+    introduceEmployee(event.args);
   } else if(event.tool==='scroll_page' && ['up','down'].includes(event.args.direction)){
     gesture(event.args.direction);frame.contentWindow.postMessage({source:'aibg-concierge',type:'scroll',direction:event.args.direction},location.origin);
   } else if (event.tool==='navigate_page') showPage(event.args.page,{fromAgent:true});
@@ -131,8 +157,12 @@ window.addEventListener('message',async event=>{
   }
   if(event.origin!==location.origin || event.source!==frame.contentWindow || event.data?.source!=='aibg-guided-page')return;
   if(event.data.type==='demo-handoff' && !config.industry && Object.hasOwn(config.demoDirectory || {},event.data.industry)) {
+    if(event.data.handoff && (preparedHandoff?.id!==event.data.handoff || preparedHandoff?.industry!==event.data.industry))return;
     if(pendingStart){try{await pendingStart;}catch(_){}}
-    const closed=await endCall('I’ve introduced you to your demo employee. Choose Start conversation in their window when you’re ready.');
+    if(connection?.waitForSpeechEnd && !await connection.waitForSpeechEnd()) {
+      frame.contentWindow.postMessage({source:'aibg-concierge',type:'demo-handoff-ready',ok:false},location.origin);return;
+    }
+    const closed=await endCall(event.data.handoff?'Your demo employee is joining. I’ll be here if you need me.':'I’ve introduced you to your demo employee. Choose Start conversation in their window when you’re ready.');
     if(closed){panel.classList.add('minimized');syncMinimize();}
     frame.contentWindow.postMessage({source:'aibg-concierge',type:'demo-handoff-ready',ok:closed},location.origin);
   }
@@ -220,9 +250,10 @@ $('guideMic').addEventListener('click',async()=>{
   finally{$('guideMic').disabled=false;$('guideTextSend').disabled=false;}
 });
 function syncMic(){const enabled=connection?.micEnabled||false;$('guideListeningLabel').textContent=enabled?'Listening · microphone on':'Typing mode · microphone off';$('guideMic').textContent=enabled?'Mute mic':'Turn mic on';$('guideMic').setAttribute('aria-pressed',String(enabled));}
-$('guideStart').addEventListener('click',async()=>{
+async function startConversation({handoff=!!config.handoff?.autoStart}={}){
   if(busy||connection||!config.available)return;
-  if(!$('guideConsentCheck').checked){status('Please agree to the AI Business Gurus Terms of Service before starting.',true);$('guideConsentCheck').focus();return;}
+  const transfer=handoff && config.handoff?.autoStart ? config.handoff : null;
+  if(!transfer && !$('guideConsentCheck').checked){status('Please agree to the AI Business Gurus Terms of Service before starting.',true);$('guideConsentCheck').focus();return;}
   if(window.AudioContext){preparedAudioContext=new AudioContext();preparedAudioContext.resume().catch(()=>{});}
   lastTypingCue=0;
   const run=++generation;busy=true;controls(false);$('guideState').textContent='Connecting';status('Connecting you to Guru…');
@@ -230,15 +261,18 @@ $('guideStart').addEventListener('click',async()=>{
   typed=[];captions=[];typedCaptionIds.clear();captionOrder.clear();captionSequence=0;renderTranscript([]);
   let record=null;
   try {
-    const mode=document.querySelector('[name=inputMode]:checked').value;
+    let mode=transfer?.mode || document.querySelector('[name=inputMode]:checked').value;
     const modulePromise=import(config.callModuleUrl);
     if(mode==='voice') {
-      if(!navigator.mediaDevices?.getUserMedia)throw new Error('Your browser cannot access a microphone here. Choose Type to continue.');
-      const permission=await navigator.mediaDevices.getUserMedia({audio:true,video:false});permission.getTracks().forEach(track=>track.stop());
+      try {
+        if(!navigator.mediaDevices?.getUserMedia)throw new Error('Your browser cannot access a microphone here. Choose Type to continue.');
+        const permission=await navigator.mediaDevices.getUserMedia({audio:true,video:false});permission.getTracks().forEach(track=>track.stop());
+      } catch(error) {if(!transfer)throw error;mode='text';}
     }
     if(run!==generation)return;
-    pendingStart=post(config.startUrl,{consent:true,page,industry:config.industry || ''});
+    pendingStart=post(config.startUrl,{consent:!transfer && $('guideConsentCheck').checked,page,industry:config.industry || '',...(transfer?{handoff:transfer.id}:{})});
     try{record=await pendingStart;}finally{pendingStart=null;}
+    if(transfer)config.handoff.autoStart=false;
     if(run!==generation){await cancelProvider(record);return;}call=record;
     let credentials=null;
     connectionProgress('Bringing Guru online');
@@ -261,12 +295,12 @@ $('guideStart').addEventListener('click',async()=>{
       onTool:event=>{if(run===generation)tool(event);},
       onState:state=>{if(run!==generation)return;if(state==='ended')endCall();else if(state==='reconnecting')status('Reconnecting… your conversation will resume shortly.');else if(state==='active')status('Connected. Type below or use your mic.');else if(state==='mic-lost'){syncMic();status('Microphone access stopped. Turn your mic on again or keep typing.',true);}else if(state==='audio-paused')status('Audio paused by your browser. Tap Sound on to resume.',true);},
       onVideo:()=>{if(run===generation)$('guideStage').classList.add('live');},
-      onAudioBlocked:()=>{status('Tap Hear Guru to enable sound.');$('guideSound').textContent='Hear '+employeeName;},
+      onAudioBlocked:()=>{if(run===generation){status('Tap Hear Guru to enable sound.');$('guideSound').textContent='Hear '+employeeName;}},
     });
     if(run!==generation){await live.end();await cancelProvider(record);return;}
     connection=live;preparedAudioContext=null;busy=false;stopConnectionProgress();callStarted=Date.now();controls(true);$('guideState').textContent='Live AI';
-    if(mode==='voice') {try{await connection.setMic(true);}catch(_){status('Microphone unavailable. You can type below.',true);}}
-    syncMic();status('You’re connected. Type below or turn on your mic.');
+    if(mode==='voice' && !connection.audioBlocked) {try{await connection.setMic(true);}catch(_){status('Microphone unavailable. You can type below.',true);}}
+    syncMic();status(connection.audioBlocked?`Tap Hear ${employeeName} to enable sound, then type or turn on your mic.`:'You’re connected. Type below or turn on your mic.');
     document.querySelector('.guide-transcript').open=true;
     const tick=()=>{
       const left=Math.max(0,config.maxSeconds-Math.floor((Date.now()-callStarted)/1000));
@@ -281,7 +315,8 @@ $('guideStart').addEventListener('click',async()=>{
     await endCall(error.name==='NotAllowedError'?'Microphone permission was declined. Choose Type and start again.':error.message||'The video connection could not start. Please try again.');
     $('guideState').textContent='Try again';$('guideStatus').classList.add('error');
   }
-});
+}
+$('guideStart').addEventListener('click',()=>startConversation());
 $('guideTextForm').addEventListener('submit',async event=>{
   event.preventDefault();const text=$('guideText').value.trim();if(!text||!connection||deliveryPending)return;
   clearTimeout(typingTimer);
@@ -333,3 +368,11 @@ window.addEventListener('pagehide',()=>{
   if(call)fetch(call.stopUrl,{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:'{}',credentials:'same-origin',keepalive:true}).catch(()=>{});
 });
 tellHost('ready');
+if(config.industry && parent!==window && window.ResizeObserver){
+  const resize=new ResizeObserver(()=>{
+    const height=Math.ceil(panel.offsetHeight+(document.querySelector('.guide-embed-bar')?.offsetHeight || 0));
+    parent.postMessage({source:'aibg-demo-employee',type:'resize',height},location.origin);
+  });
+  resize.observe(panel);
+}
+if(config.handoff?.autoStart)startConversation({handoff:true});

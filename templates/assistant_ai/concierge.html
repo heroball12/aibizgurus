@@ -40,16 +40,18 @@
     <aside class="guide-companion" aria-label="AI video concierge">
       <div class="guide-companion-heading"><span class="guide-eyebrow">{% if demo_profile %}MEET YOUR AI EMPLOYEE{% else %}MEET YOUR AI CONCIERGE{% endif %}</span><button id="guideMinimize" type="button" aria-label="Minimize video assistant" aria-expanded="true">−</button><span class="guide-chip" id="guideState">{% if available %}Ready to meet{% else %}Preview{% endif %}</span></div>
       <div class="guide-stage" id="guideStage">
+        <div class="guide-avatar-art">
         <img class="guide-portrait" src="{{ portrait }}" alt="{{ portrait_alt }}" id="guidePortrait">
-        <video id="guideVideo" playsinline autoplay muted aria-label="Live video of your AI concierge"></video>
+        <video id="guideVideo" playsinline autoplay muted aria-hidden="true"></video>
         {% if not demo_profile %}<video id="guideGestureVideo" class="guide-gesture-video" muted playsinline preload="none" aria-hidden="true"><source src="{% static 'video/guru-gesture.mp4' %}" type="video/mp4"></video>{% endif %}
         <div class="guide-speech-glow" aria-hidden="true"></div>
+        </div>
         <div class="guide-stage-grid" aria-hidden="true"></div>
         <div class="guide-stage-caption"><div><span class="guide-eyebrow">AI BUSINESS GURUS</span><h1>{{ employee_name }}<span>.</span></h1><p>{% if demo_profile %}{{ demo_profile.industry }}{% else %}Your next chapter starts here.{% endif %}</p></div><span class="guide-orbit" aria-hidden="true">✦</span></div>
         <span id="guideTimer" class="guide-timer" hidden></span>
       </div>
       <div class="guide-conversation">
-        <p class="guide-intro">{% if demo_profile %}Step into the customer’s shoes.<br>Ask me about {{ demo_profile.industry|lower }}.{% else %}Tell me what’s next for your business.<br>I’ll help you find the way there.{% endif %}</p>
+        <p class="guide-intro">{% if handoff %}{% if handoff.context.visitor_name %}Welcome, {{ handoff.context.visitor_name }}.<br>{% endif %}Guru has introduced you to {{ employee_name }}.{% elif demo_profile %}Step into the customer’s shoes.<br>Ask me about {{ demo_profile.industry|lower }}.{% else %}Tell me what’s next for your business.<br>I’ll help you find the way there.{% endif %}</p>
         <p class="guide-status" id="guideStatus" role="status" aria-live="polite">{% if available %}Type or speak to {{ employee_name }}. Your camera stays off.{% else %}Live video is being connected. Explore the site or book a consultation below.{% endif %}</p>
         <div id="guideConnecting" class="guide-connecting" hidden><span class="guide-connecting-pulse" aria-hidden="true"></span><span id="guideConnectingStep">Preparing your conversation</span><span id="guideConnectingTime">0s</span></div>
         <div id="guideConsent" class="guide-consent" {% if not available %}hidden{% endif %}>
@@ -68,7 +70,7 @@
         <div class="guide-actions"><button type="button" data-page="assessment">Schedule a growth call <span aria-hidden="true">↗</span></button><button id="guideFollowupOpen" type="button">Request a team follow-up <span aria-hidden="true">+</span></button><button type="button" data-page="portal">I’m already a client <span aria-hidden="true">↗</span></button></div>
         <div id="guidePortal" class="guide-portal" hidden><strong>Your secure client workspace</strong><p>Manage your business profile, assistants, leads and conversations in your portal. Your video call can stay open here.</p><a href="{% url 'portal_home' %}" target="_blank" rel="noopener">Open client portal ↗</a></div>
         <details class="guide-transcript"><summary>Conversation & captions <span aria-hidden="true">⌄</span></summary><div id="guideTranscript" role="log" aria-label="Conversation captions" aria-live="off"><p>Captions appear here during your conversation.</p></div></details>
-        <p class="guide-attribution">Video powered by Runway</p>
+        <p class="guide-attribution">Live conversation powered by Runway · Voice-reactive robot artwork</p>
       </div>
     </aside>
   </main>

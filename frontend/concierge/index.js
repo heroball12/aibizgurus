@@ -47,16 +47,30 @@ export async function connectCall({credentials, video, audio, onTranscript, onTo
   const resume=()=>{if(!ended&&audioContext.state==='suspended')audioContext.resume().catch(()=>onState('audio-paused'));};
   document.addEventListener('visibilitychange',resume);
   try {
-    await audioContext.resume();
+    // An automatic same-site handoff may lose transient user activation.
+    // Safari can leave resume() pending until a tap; never block joining on it.
+    audioContext.resume().catch(onAudioBlocked);
     await room.connect(connection.url,connection.token,{autoSubscribe:true});
     await room.localParticipant.publishTrack(inputTrack,{source:Track.Source.Microphone,name:'conversation-input',dtx:false});
     connectedAt=Date.now();
-    meterTimer=setInterval(()=>{onSpeechLevel(level(remoteAnalyser));onInputLevel(micEnabled?level(micAnalyser):0);},70);
+    meterTimer=setInterval(()=>{const speech=level(remoteAnalyser);if(speech>.025){lastAvatarSpeech=Date.now();heardAvatar=true;}onSpeechLevel(speech);onInputLevel(micEnabled?level(micAnalyser):0);},70);
     monitorTimer=setInterval(resume,5000);
+    if(audioContext.state==='suspended')onAudioBlocked();
   } catch(error){document.removeEventListener('visibilitychange',resume);transcript.dispose();silence.stop();await room.disconnect();inputTrack.stop();await audioContext.close();throw error;}
   const api={
     get micEnabled(){return micEnabled;},
+    get audioBlocked(){return audioContext.state==='suspended';},
     get avatarSpeaking(){return avatarSpeaking || Date.now()-lastAvatarSpeech<700;},
+    async waitForSpeechEnd({shouldContinue=()=>true}={}){
+      const started=Date.now(), deadline=started+45000;
+      // Tool events can arrive before buffered audio. Allow it to start, then
+      // require a quiet interval so the goodbye is not cut off by teardown.
+      while(!ended && shouldContinue() && Date.now()<deadline){
+        if(Date.now()-started>=1600 && !avatarSpeaking && Date.now()-lastAvatarSpeech>=1200)return true;
+        await new Promise(resolve=>setTimeout(resolve,100));
+      }
+      return false;
+    },
     async setMic(enabled){
       if(ended||enabled===micEnabled)return;
       await audioContext.resume();

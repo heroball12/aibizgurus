@@ -126,3 +126,40 @@ test('a browser media cleanup error still cancels the provider call',async()=>{
   vm.runInContext("call={stopUrl:'/stop'};connection={end:async()=>{throw new Error('Audio context closed');}}",app.context);
   await app.node('guideEnd').listeners.click();assert.deepEqual(requests,['/stop']);
 });
+
+test('remembering a name saves only tool context, even while an unsent draft exists',async()=>{
+  const bodies=[];const app=fixture(async(url,options)=>{bodies.push(JSON.parse(options.body));return response({remembered:true});});
+  app.node('guideText').value='private unsent draft';
+  vm.runInContext("call={contextUrl:'/context'};tool({tool:'remember_visitor',args:{visitor_name:'Alex',request_summary:'Reservations'}})",app.context);
+  await flush();
+  assert.deepEqual(bodies,[{visitor_name:'Alex',request_summary:'Reservations'}]);
+  assert.equal(app.node('guideFrame').src,undefined);
+});
+
+test('warm introduction waits for the spoken goodbye and sends only an opaque token in the URL',async()=>{
+  const app=fixture(async()=>response({handoff:'opaque-token',industry:'food-hospitality'}));
+  vm.runInContext("config.pages.demo={path:'/demo/',label:'Demos',embedded:true};config.demoDirectory={'food-hospitality':{name:'Sage'}};call={contextUrl:'/context'};let finishSpeech;connection={micEnabled:true,waitForSpeechEnd:()=>new Promise(resolve=>{finishSpeech=resolve;})};tool({tool:'introduce_demo_employee',args:{industry:'food-hospitality',visitor_name:'Alex',request_summary:'Restaurant reservations'}})",app.context);
+  await flush();assert.equal(app.node('guideFrame').src,undefined);
+  vm.runInContext('finishSpeech(true)',app.context);await flush();
+  assert.equal(app.node('guideFrame').src,'https://example.test/demo/?industry=food-hospitality&handoff=opaque-token&guided=1#employeePanel');
+  assert.ok(!app.node('guideFrame').src.includes('Alex'));
+});
+
+test('a new draft cancels a pending introduction without ending the conversation',async()=>{
+  const app=fixture(async()=>response({handoff:'opaque-token',industry:'food-hospitality'}));
+  vm.runInContext("config.demoDirectory={'food-hospitality':{name:'Sage'}};call={contextUrl:'/context'};let finishSpeech;connection={waitForSpeechEnd:()=>new Promise(resolve=>{finishSpeech=resolve;})};tool({tool:'introduce_demo_employee',args:{industry:'food-hospitality'}})",app.context);
+  await flush();app.node('guideText').value='One more thing';
+  vm.runInContext('finishSpeech(true)',app.context);await flush();
+  assert.equal(app.node('guideFrame').src,undefined);
+  assert.equal(vm.runInContext('!!connection',app.context),true);
+});
+
+test('an automatic transfer passes its authorization token without checking the consent box',async()=>{
+  let payload;const app=fixture(async(url,options)=>{
+    if(url==='/start'){payload=JSON.parse(options.body);return {ok:false,json:async()=>({error:'Test stops before creating a call'})};}
+    return response({});
+  });
+  await vm.runInContext("config.industry='food-hospitality';config.handoff={id:'opaque-token',autoStart:true,mode:'text'};startConversation({handoff:true})",app.context);
+  assert.equal(payload.handoff,'opaque-token');assert.equal(payload.consent,false);
+  assert.equal(!!app.node('guideConsentCheck').checked,false);
+});

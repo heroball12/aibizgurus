@@ -29,7 +29,8 @@ def fingerprint(profile):
     return hashlib.sha256((system_prompt(profile) + profile["greeting"] + profile["character"]).encode()).hexdigest()
 
 
-def create_session(profile):
+def create_session(profile, visitor_context=None):
+    from .concierge_context import prompt as context_prompt, greeting
     item = manifest().get(profile["slug"], {})
     if profile["slug"] not in available_profiles():
         raise concierge.RunwayError("This industry’s video employee is not connected yet. Try the text chat.")
@@ -40,6 +41,9 @@ def create_session(profile):
         "tools": [],
     }
     prompt = system_prompt(profile)
+    if visitor_context:
+        payload.update(personality=prompt + context_prompt(visitor_context), startScript=greeting(profile, visitor_context))
+        return concierge.runway_request("POST", "/realtime_sessions", payload)
     key = "demo-avatar:" + item["id"] + fingerprint(profile)
     matched = cache.get(key)
     if matched is None:

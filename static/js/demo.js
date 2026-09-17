@@ -4,6 +4,7 @@
   const industries = JSON.parse($('demo-industries').textContent);
   const histories = JSON.parse($('demo-history').textContent);
   const config = JSON.parse($('demo-config').textContent);
+  const transferFor = slug => config.handoff?.industry === slug ? config.handoff : null;
   const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
   const featured = industries.map(item => item.slug);
   const modes = {}, drafts = {};
@@ -89,7 +90,7 @@
       $('scenarioSignup').href = item.signup_url; $('demoMessage').value = drafts[item.slug] || '';
       $('demoMessage').placeholder = `Ask ${item.name} as a customer…`;
       listIndustries(); renderChat();
-      const url = new URL(location.href); url.searchParams.set('industry',item.slug); history.replaceState(null,'',url);
+      const url = new URL(location.href); url.searchParams.set('industry',item.slug); if(!transferFor(item.slug))url.searchParams.delete('handoff'); history.replaceState(null,'',url);
       if (focus && matchMedia('(max-width: 650px)').matches) { $('employeePanel').scrollIntoView({behavior:'smooth',block:'start'}); $('employeePanel').focus({preventScroll:true}); }
     } finally { switching = false; }
   }
@@ -103,21 +104,23 @@
       if (guided) {
         $('videoNotice').textContent = 'Guru is handing you over to your demo employee…';
         const ready = await new Promise(resolve => {
-          const timer = setTimeout(() => { handoffResolve = null; resolve(false); },30000);
+          const timer = setTimeout(() => { handoffResolve = null; resolve(false); },65000);
           handoffResolve = ok => { clearTimeout(timer); handoffResolve = null; resolve(ok); };
-          parent.postMessage({source:'aibg-guided-page',type:'demo-handoff',industry:selected.slug},location.origin);
+          parent.postMessage({source:'aibg-guided-page',type:'demo-handoff',industry:selected.slug,handoff:transferFor(selected.slug)?.id},location.origin);
         });
         if (!ready) { $('videoNotice').textContent = 'Guru’s call could not close yet. End Guru’s call, then return to text chat and choose video again.'; return; }
       }
-      $('videoNotice').textContent = `Meet ${selected.name}, your ${selected.industry.toLowerCase()} employee. Start a new video conversation below. You can type or speak; your camera stays off.`;
+      const transfer=transferFor(selected.slug);
+      $('videoNotice').textContent = transfer ? `Guru has introduced you. ${selected.name} is joining with your name and request. You can type or speak.` : `Meet ${selected.name}, your ${selected.industry.toLowerCase()} employee. Start a new video conversation below. You can type or speak; your camera stays off.`;
       videoFrame = document.createElement('iframe'); videoFrame.title = `${selected.name} — ${selected.industry} live video demo`;
-      videoFrame.allow = 'microphone; autoplay'; videoFrame.src = selected.video_url;
+      videoFrame.allow = 'microphone; autoplay'; const url=new URL(selected.video_url,location.origin);if(transfer)url.searchParams.set('handoff',transfer.id);videoFrame.src = url.href;
       $('demoVideoMount').replaceChildren(videoFrame);
     } finally { switching = false; }
   }
   window.addEventListener('message', event => {
     if (event.origin !== location.origin) return;
     if (event.source === videoFrame?.contentWindow && event.data?.source === 'aibg-demo-employee') {
+      if(event.data.type==='resize' && Number.isFinite(event.data.height))videoFrame.style.height=Math.max(380,Math.min(1800,event.data.height))+'px';
       if (event.data.type === 'ready' && closeResolve) videoFrame.contentWindow.postMessage({source:'aibg-demo-host',type:'close'},location.origin);
       if (event.data.type === 'closed') closeResolve?.(true);
       if (event.data.type === 'close') {
@@ -140,7 +143,7 @@
     event.preventDefault(); const message = $('demoMessage').value.trim(); if (!message || pending || resetting) return;
     const slug = selected.slug; pending = {slug,message}; $('demoMessage').value = ''; drafts[slug] = ''; error(''); renderChat();
     try {
-      const result = await post({industry:slug,message});
+      const result = await post({industry:slug,message,...(transferFor(slug)?{handoff:transferFor(slug).id}:{})});
       if (result.industry !== slug || typeof result.reply !== 'string') throw new Error('The reply could not be matched to this industry. Please try again.');
       histories[slug] = [...(histories[slug] || []), {role:'user',content:message}, {role:'assistant',content:result.reply}].slice(-12); modes[slug] = result.mode;
     } catch (err) {
@@ -160,5 +163,5 @@
   for (const id of ['videoMode','meetVideo']) $(id).addEventListener('click',videoView);
   for (const id of ['textMode','backToText']) $(id).addEventListener('click', async () => { if (switching) return; switching = true; try { if (await closeVideo()) textView(); } finally { switching = false; } });
   const slug = new URLSearchParams(location.search).get('industry');
-  selectIndustry(industries.find(item => item.slug === slug || item.industry_slugs.includes(slug)) || industries.find(item => item.slug === 'food-hospitality') || industries[0]);
+  selectIndustry(industries.find(item => item.slug === slug || item.industry_slugs.includes(slug)) || industries.find(item => item.slug === 'food-hospitality') || industries[0]).then(()=>{if(guided && transferFor(selected.slug))videoView();});
 })();
