@@ -47,11 +47,11 @@ function gesture(kind='navigate') {
 function speechLevel(level){$('guideStage').style?.setProperty('--speech',String(Math.max(0,Math.min(1,level))));}
 async function notifyTyping(){
   const active=connection;
-  if(!active || !config.typingAudioUrl || typingCuePending || deliveryPending || !$('guideText').value.trim() || Date.now()-lastTypingCue<30000)return;
+  if(!active || active.micEnabled || !config.typingAudioUrl || typingCuePending || deliveryPending || !$('guideText').value.trim() || Date.now()-lastTypingCue<30000)return;
   typingCuePending=true;
   try{
     if(!typingBuffer){const response=await fetch(config.typingAudioUrl);if(!response.ok)throw new Error('Typing cue unavailable');typingBuffer=await response.arrayBuffer();}
-    const sent=await active.sendAudio(typingBuffer,{control:true,shouldSend:()=>connection===active && !deliveryPending && !!$('guideText').value.trim()});
+    const sent=await active.sendAudio(typingBuffer,{control:true,shouldSend:()=>connection===active && !active.micEnabled && !deliveryPending && !!$('guideText').value.trim()});
     if(sent && connection===active){lastTypingCue=Date.now();status('Take your time typing. Guru has been notified to wait. Your draft is sent only when you press Send.');}
   }catch(_){/* Typing never blocks the actual message. */}finally{typingCuePending=false;}
 }
@@ -183,6 +183,7 @@ function controls(active) {
   $('guideInputMode').hidden=busy||active; $('guideConsent').hidden=busy||active||!config.available;
   $('guideTextForm').hidden=!active;panel.classList.toggle('in-call',active);
   $('guideListening').hidden=!active;
+  $('guideInterrupt').hidden=true;
   $('guideSound').hidden=!active; $('guideTimer').hidden=!active;
   if(!active)$('guideStage').classList.remove('live');
 }
@@ -249,7 +250,21 @@ $('guideMic').addEventListener('click',async()=>{
   catch(_){status('Microphone access is unavailable. You can keep typing below.',true);}
   finally{$('guideMic').disabled=false;$('guideTextSend').disabled=false;}
 });
-function syncMic(){const enabled=connection?.micEnabled||false;$('guideListeningLabel').textContent=enabled?'Listening · microphone on':'Typing mode · microphone off';$('guideMic').textContent=enabled?'Mute mic':'Turn mic on';$('guideMic').setAttribute('aria-pressed',String(enabled));}
+function syncMic(state=connection?.listeningState){
+  const enabled=connection?.micEnabled||false;
+  const labels={listening:'Your turn · listening', 'assistant-speaking':employeeName+' is speaking · mic paused', waiting:'Waiting for '+employeeName+' · mic paused', sending:'Sending your typed message · mic paused', reconnecting:'Reconnecting · mic paused', 'audio-paused':'Tap Hear '+employeeName+' to resume audio'};
+  $('guideListeningLabel').textContent=enabled?(labels[state]||'Your turn · listening'):'Typing mode · microphone off';
+  $('guideListening').dataset.state=enabled?state||'listening':'muted';
+  $('guideMic').textContent=enabled?'Mute mic':'Turn mic on';$('guideMic').setAttribute('aria-pressed',String(enabled));
+  $('guideInterrupt').hidden=!enabled || !['assistant-speaking','waiting'].includes(state) || deliveryPending;
+}
+$('guideInterrupt').addEventListener('click',async()=>{
+  const active=connection;if(!active || deliveryPending)return;
+  $('guideInterrupt').disabled=true;
+  try {if(await active.interrupt() && connection===active){syncMic();status('Go ahead—your microphone is open.');}}
+  catch(_){if(connection===active)status('Tap Sound on to resume audio, then try again.',true);}
+  finally{$('guideInterrupt').disabled=false;}
+});
 async function startConversation({handoff=!!config.handoff?.autoStart}={}){
   if(busy||connection||!config.available)return;
   const transfer=handoff && config.handoff?.autoStart ? config.handoff : null;
@@ -291,10 +306,11 @@ async function startConversation({handoff=!!config.handoff?.autoStart}={}){
     const live=await connectCall({credentials,audioContext:preparedAudioContext,video:$('guideVideo'),audio:$('guideAudio'),
       onSpeechLevel:level=>{if(run===generation)speechLevel(level);},
       onInputLevel:level=>{if(run===generation)$('guideListening').style?.setProperty('--input-level',String(level));},
+      onListeningState:state=>{if(run===generation)syncMic(state);},
       onTranscript:entries=>{if(run===generation)renderTranscript(entries);},
       onTool:event=>{if(run===generation)tool(event);},
       onState:state=>{if(run!==generation)return;if(state==='ended')endCall();else if(state==='reconnecting')status('Reconnecting… your conversation will resume shortly.');else if(state==='active')status('Connected. Type below or use your mic.');else if(state==='mic-lost'){syncMic();status('Microphone access stopped. Turn your mic on again or keep typing.',true);}else if(state==='audio-paused')status('Audio paused by your browser. Tap Sound on to resume.',true);},
-      onVideo:()=>{if(run===generation)$('guideStage').classList.add('live');},
+      onMediaReady:()=>{if(run===generation)$('guideStage').classList.add('live');},
       onAudioBlocked:()=>{if(run===generation){status('Tap Hear Guru to enable sound.');$('guideSound').textContent='Hear '+employeeName;}},
     });
     if(run!==generation){await live.end();await cancelProvider(record);return;}
@@ -338,7 +354,7 @@ $('guideTextForm').addEventListener('submit',async event=>{
     if(!audio)throw new Error('Message delivery timed out.');
     if(connection!==active)return;
     $('guideMic').disabled=true;
-    await active.sendAudio(audio);
+    if(!await active.sendAudio(audio))throw new Error('Message delivery was interrupted.');
     lastTypingCue=0;
     if(connection!==active)return;
     typed.push(typedEntry);typed=typed.slice(-20);renderTranscript();

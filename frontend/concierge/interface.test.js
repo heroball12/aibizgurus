@@ -163,3 +163,30 @@ test('an automatic transfer passes its authorization token without checking the 
   assert.equal(payload.handoff,'opaque-token');assert.equal(payload.consent,false);
   assert.equal(!!app.node('guideConsentCheck').checked,false);
 });
+
+test('voice mode shows paused listening honestly and offers intentional interruption',async()=>{
+  const app=fixture();
+  vm.runInContext("connection={micEnabled:true,listeningState:'assistant-speaking',interrupt:async()=>{connection.listeningState='listening';return true;}};syncMic()",app.context);
+  assert.match(app.node('guideListeningLabel').textContent,/Guru is speaking · mic paused/);
+  assert.equal(app.node('guideInterrupt').hidden,false);
+  await app.node('guideInterrupt').listeners.click();
+  assert.match(app.node('guideListeningLabel').textContent,/Your turn/);
+  assert.equal(app.node('guideInterrupt').hidden,true);
+  vm.runInContext("connection.micEnabled=false;syncMic()",app.context);
+  assert.match(app.node('guideListeningLabel').textContent,/microphone off/);
+});
+
+test('a draft does not send a typing notification while the microphone is enabled',async()=>{
+  let requests=0;const app=fixture(async()=>{requests++;});app.node('guideText').value='Unsent draft';
+  await vm.runInContext("config.typingAudioUrl='/typing.mp3';connection={micEnabled:true};notifyTyping()",app.context);
+  assert.equal(requests,0);
+});
+
+test('failed audio delivery preserves the typed message instead of marking it sent',async()=>{
+  const app=fixture(async url=>url==='/text'?response({pollUrl:'/speech',token:'receipt'}):{ok:true,headers:{get:()=> 'audio/mpeg'},arrayBuffer:async()=>new ArrayBuffer(10)});
+  app.node('guideText').value='My question';
+  vm.runInContext("call={textUrl:'/text'};connection={micEnabled:false,unlockAudio:async()=>{},sendAudio:async()=>false}",app.context);
+  await app.node('guideTextForm').listeners.submit({preventDefault(){}});
+  assert.equal(app.node('guideText').value,'My question');
+  assert.match(app.node('guideStatus').textContent,/could not be sent/);
+});

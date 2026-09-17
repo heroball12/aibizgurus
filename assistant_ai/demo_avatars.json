@@ -14,6 +14,11 @@
     "id": "be616b5e-eed5-4ea9-b7f4-2e2089edc7d4",
     "ready": true
   },
+  "cannabis": {
+    "fingerprint": "a1191641f24a9242bbd719e7cae597e84f1d916250332222f39cabb1ad1ceecf",
+    "id": "bb50f2c4-6a63-4738-b6ca-d06ceebffa31",
+    "ready": true
+  },
   "education-community": {
     "fingerprint": "3776672fac52899b4134f667f1e40a2b41da2d6a19c718ea562aa829457e44fb",
     "id": "42cc1aad-3646-417f-8828-93ea4063ef4b",
@@ -40,7 +45,7 @@
     "ready": true
   },
   "hospitality-retail": {
-    "fingerprint": "2447c911cb1da0b437f3adc2b757c8f50f8243c9adfd90ba6d27934ecac6bd76",
+    "fingerprint": "27d1b029507bd1f1f285c7f486caa8b8f20dbd40c7f8111567ed1b7e74c73dc5",
     "id": "6a616fe0-e0a6-4e5a-8e7f-132f30849e04",
     "ready": true
   },

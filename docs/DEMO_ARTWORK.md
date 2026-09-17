@@ -98,6 +98,14 @@ Generation prompt:
 
 One landscape 3:2 cinematic portrait of a robot employee in the SAME design family as the reference, waist-up seated front-facing, centered, whole head visible with headroom. Jett, feminine robot, long dark metallic hair tied in a high ponytail with a violet band, gold reflective safety vest over a tailored purple transport uniform, modern dispatch room. Professional, fully clothed. CRITICAL: SAME CLOSED SMOOTH OPAQUE GRAPHITE HELMET FACEPLATE. Hair if present is outside the helmet and must not cover visor. ONLY ONE narrow horizontal purple glowing visor slit. NO mouth, lips, nose, human facial features, mouth-shaped seams or jaw opening. Entire lower face sealed blank metal. Gold ear discs and mechanical hands on desk. Premium photorealistic 3D materials, violet ambient light and warm gold accents, softly blurred industry background. No text/logo/watermark/extra people.
 
+## cannabis — MaryJain
+
+Asset: `static/img/demo-characters/cannabis.jpg` (1200×800 JPEG).
+
+Generated with the built-in image-generation tool, using `static/img/demo-characters/host.jpg` only as a design and composition reference. Final prompt:
+
+Use case: stylized-concept. Create one new character portrait for a website, using the attached image ONLY as the reference for robot design, composition, materials and brand palette. The new character is MaryJain, a feminine AI front-desk employee for a fictional cannabis dispensary and delivery business. Landscape 3:2 cinematic portrait, waist-up seated front-facing and centered, both mechanical hands resting on the desk, entire head and hair visible with generous headroom. Feminine silhouette, long dark metallic hair with subtle violet accents, purple tailored staff jacket over a graphite top, small gold cannabis-leaf lapel pin. Replace the hotel setting with an understated premium dispensary reception: softly blurred botanical wall art and a gold leaf emblem, architectural shelving, violet ambient and warm gold lighting. Professional and fully clothed. Preserve the reference's sealed smooth opaque graphite helmet, gold ear discs and mechanical joints. ONLY ONE thin straight horizontal purple luminous visor slit. No visible human face, nose, mouth, lips, teeth, mouth-shaped seam, smiling visor or jaw opening; entire lower face continuous blank metal. Premium photorealistic 3D materials. No text, watermark, extra people, smoking, consumption, product packages, prices or advertisements. Preserve vertical framing so the head, torso, hands and desk all remain visible in a centered square crop.
+
 # Guru
 
 Asset: `static/img/guru-helmet.jpg`. Generated from the arrival-film robot design as a front-facing seated office portrait, with a smooth sealed opaque graphite faceplate, one thin purple visor, gold mechanical details, purple chest illumination and no mouth or lips.

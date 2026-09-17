@@ -70,3 +70,7 @@ dialog{background:#1c1428;color:var(--ink);width:min(540px,calc(100vw - 28px));m
 .guide-demo .guide-call-note{margin:12px 0;line-height:1.7}.guide-demo .guide-text-form input{font-size:16px}
 .guide-demo .guide-transcript #guideTranscript{max-height:270px}.guide-demo .guide-attribution{margin-top:16px;line-height:1.6}
 @media(max-width:520px){.guide-demo .guide-companion{display:block}.guide-demo .guide-companion-heading{padding:18px 20px}.guide-demo .guide-stage{min-height:0;border-right:0;border-bottom:1px solid var(--line)}.guide-demo .guide-avatar-art{aspect-ratio:1.1}.guide-demo .guide-stage-caption{padding:16px 22px}.guide-demo .guide-stage-caption h1{font-size:32px}.guide-demo .guide-stage-caption .guide-eyebrow{display:none}.guide-demo .guide-conversation{padding:22px}.guide-demo .guide-transcript #guideTranscript{max-height:180px}}
+.guide-listening[data-state=assistant-speaking]>span,.guide-listening[data-state=waiting]>span{background:var(--gold);box-shadow:none;transform:none}
+.guide-listening[data-state=reconnecting]>span,.guide-listening[data-state=audio-paused]>span{background:#d89070;box-shadow:none;transform:none}
+.guide-interrupt{display:block;width:100%;margin:0 0 12px;padding:10px 12px;border:1px solid #d8b36655;color:var(--gold);font-size:12px;background:#33203d;min-height:40px}
+.guide-interrupt:hover{background:#493057}

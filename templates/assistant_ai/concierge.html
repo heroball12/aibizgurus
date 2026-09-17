@@ -51,7 +51,7 @@
         <span id="guideTimer" class="guide-timer" hidden></span>
       </div>
       <div class="guide-conversation">
-        <p class="guide-intro">{% if handoff %}{% if handoff.context.visitor_name %}Welcome, {{ handoff.context.visitor_name }}.<br>{% endif %}Guru has introduced you to {{ employee_name }}.{% elif demo_profile %}Step into the customer’s shoes.<br>Ask me about {{ demo_profile.industry|lower }}.{% else %}Tell me what’s next for your business.<br>I’ll help you find the way there.{% endif %}</p>
+        <p class="guide-intro">{% if handoff %}{% if handoff.context.visitor_name %}Welcome, {{ handoff.context.visitor_name }}.<br>{% endif %}Guru has introduced you to {{ employee_name }}.{% elif demo_profile %}Step into the customer’s shoes.<br>{% if demo_profile.slug == 'cannabis' %}Ask me about our hours and front-desk support.{% else %}Ask me about {{ demo_profile.industry|lower }}.{% endif %}{% else %}Tell me what’s next for your business.<br>I’ll help you find the way there.{% endif %}</p>
         <p class="guide-status" id="guideStatus" role="status" aria-live="polite">{% if available %}Type or speak to {{ employee_name }}. Your camera stays off.{% else %}Live video is being connected. Explore the site or book a consultation below.{% endif %}</p>
         <div id="guideConnecting" class="guide-connecting" hidden><span class="guide-connecting-pulse" aria-hidden="true"></span><span id="guideConnectingStep">Preparing your conversation</span><span id="guideConnectingTime">0s</span></div>
         <div id="guideConsent" class="guide-consent" {% if not available %}hidden{% endif %}>
@@ -64,8 +64,9 @@
           <button id="guideSound" type="button" hidden aria-pressed="true">Sound on</button>
           <button id="guideEnd" type="button" class="guide-end" hidden>End call</button>
         </div>
-        <audio id="guideAudio" autoplay hidden></audio><div id="guideListening" class="guide-listening" hidden><span></span><small id="guideListeningLabel">Listening</small></div>
-        <p class="guide-call-note">Live AI · Up to 5 minutes · Camera off{% if demo_profile %}<br>Fictional business · Use sample details · No real bookings{% endif %}</p>
+        <audio id="guideAudio" autoplay hidden></audio><div id="guideListening" class="guide-listening" hidden><span></span><small id="guideListeningLabel" role="status" aria-live="polite">Listening</small></div>
+        <button id="guideInterrupt" class="guide-interrupt" type="button" hidden>Interrupt &amp; speak</button>
+        <p class="guide-call-note">Live AI · Up to 5 minutes · Camera off<br>Your mic pauses during replies to prevent accidental interruptions.{% if demo_profile %}<br>Fictional business · Use sample details · No real bookings{% endif %}</p>
         <form id="guideTextForm" class="guide-text-form" hidden><label for="guideText" class="sr-only">Type a message to {{ employee_name }}</label><input id="guideText" name="message" type="text" autocomplete="off" maxlength="500" placeholder="Ask {{ employee_name }} about our services…" required><button type="submit" id="guideTextSend" aria-label="Send message">↑</button></form>
         <div class="guide-actions"><button type="button" data-page="assessment">Schedule a growth call <span aria-hidden="true">↗</span></button><button id="guideFollowupOpen" type="button">Request a team follow-up <span aria-hidden="true">+</span></button><button type="button" data-page="portal">I’m already a client <span aria-hidden="true">↗</span></button></div>
         <div id="guidePortal" class="guide-portal" hidden><strong>Your secure client workspace</strong><p>Manage your business profile, assistants, leads and conversations in your portal. Your video call can stay open here.</p><a href="{% url 'portal_home' %}" target="_blank" rel="noopener">Open client portal ↗</a></div>

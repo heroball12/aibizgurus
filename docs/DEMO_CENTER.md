@@ -1,6 +1,6 @@
 # Category demo center
 
-The demo page groups the 101 catalog industries into 12 video employees. Search matches both the category and every underlying industry. Each category has its own chat history, sample business, suggested questions and character. These demonstrations never create real appointments, orders, leads or service requests.
+The demo page groups the 101 catalog industries into 13 video employees. Search matches both the category and every underlying industry. Each category has its own chat history, sample business, suggested questions and character. These demonstrations never create real appointments, orders, leads or service requests.
 
 | Category | Employee | Appearance |
 | --- | --- | --- |
@@ -12,12 +12,15 @@ The demo page groups the 101 catalog industries into 12 video employees. Search 
 | Professional & property | Sterling | Suit and purple tie |
 | Business & technology | Vega | Tailored jacket and sleek bob |
 | Hospitality, retail & events | Aria | Hospitality uniform and long hair |
+| Cannabis | MaryJain | Purple staff jacket, gold leaf pin and long violet-accented hair |
 | Fitness & movement | Rio | Athletic jacket |
 | Education & community | Mira | Cardigan, bob and violet hair clip |
 | Pet services | Kai | Veterinary scrubs |
 | Transport & logistics | Jett | Reflective vest and ponytail |
 
-All portraits use sealed graphite helmets with a purple visor and gold details. The site adds a purple speech glow driven by the actual remote audio level. Runway does not expose a reliable lip-animation switch. The call UI therefore keeps the original sealed-helmet artwork visible and hides the generated facial video; the live voice drives the purple light. This is explicitly labelled voice-reactive robot artwork, not continuous animated body video. The generated Guru gesture clip is a short visual transition played over the live video when a website action occurs; live audio continues. Reduced-motion preferences suppress that clip.
+All portraits use sealed graphite helmets with a purple visor and gold details. The site adds a purple speech glow driven by the actual remote audio level. Runway does not expose a reliable lip-animation switch. The call UI keeps the original sealed-helmet artwork visible and subscribes only to live audio; the voice drives the purple light. This is explicitly labelled voice-reactive robot artwork, not continuous animated body video. The generated Guru gesture clip is a short visual transition played over the artwork when a website action occurs; live audio continues. Reduced-motion preferences suppress that clip.
+
+MaryJain covers the existing Dispensary, Cannabis Delivery and CBD Store catalog entries, which previously belonged to Aria. Her fictional business is Violet Leaf. Both the Runway persona and text preview are limited to administrative information: sample office hours, general support and explaining the AI front-desk role. She does not recommend products, give dosing or professional advice, take orders, arrange deliveries or collect private customer details. Guru includes her in the same personalized introduction flow as the other employees.
 
 ## Conversations and handoffs
 
@@ -29,13 +32,17 @@ When the visitor agrees to try a demo, `introduce_demo_employee` speaks their na
 
 The selected text demo also receives the introduction context when using its AI gateway. Text history and unsent drafts are not copied into video. Closing or changing categories waits for the current video session to end. Actions are restricted to approved categories, pages and bounded scrolling; the model cannot submit forms.
 
-The call transport publishes one continuous Web Audio input stream. Microphone audio and generated speech for typed messages feed that stream without unpublishing or replacing it between replies. It handles browser audio suspension and reports lost microphone access. Repeated submissions are blocked while a typed message is being delivered; newly typed draft text is preserved.
+The call transport publishes one continuous Web Audio input stream. Microphone audio and generated speech for typed messages feed that stream without unpublishing or replacing it between replies. It handles browser audio suspension and reports lost microphone access. Repeated submissions are blocked while a typed message is being delivered; newly typed draft text is preserved, including when delivery cannot finish.
 
-Runway's current audio session interface has no native typing event. After the visitor starts typing, a short fixed application speech cue asks the AI to wait silently. It never transmits the unfinished draft. Cues are throttled, cancelled if obsolete, and sent after the assistant stops speaking. Character instructions reinforce quiet waiting. Model compliance and provider idle/session limits still apply; typing does not extend Runway's five-minute cap.
+Guru and every category share the same microphone turn handling. The outgoing mic is paused during the opening greeting, assistant speech and a 1.1-second quiet tail, typed-audio delivery, reconnection and suspended browser audio. Both remote speaker events and measured audio levels drive the gate. A 150ms mic delay gives the speech detector time to close it before speaker echo reaches the provider. Echo cancellation and noise suppression remain enabled; automatic gain control is disabled. The hardware mic stays captured during normal turn changes, but muting or ending the call stops it. The UI says who is speaking and when it is the visitor's turn. **Interrupt & speak** deliberately opens a short mic window; normal turn protection resumes afterward. This is client-side microphone gating, not an undocumented Runway interruption setting.
+
+Only audio tracks are subscribed; the unused generated face video is not downloaded or decoded. Duplicate notifications for the same audio track do not reattach it or reset playback. Reconnection and pending microphone permission responses are guarded so they cannot reopen a muted or ended call.
+
+Runway's current audio session interface has no native typing event. In Type mode, after the visitor starts typing, a short fixed application speech cue asks the AI to wait silently. It never transmits the unfinished draft. Cues are disabled while the microphone is enabled, throttled, cancelled if obsolete, and sent only after the assistant stops speaking; a timeout never forces a cue into a reply. Character instructions reinforce quiet waiting. Model compliance and provider idle/session limits still apply; typing does not extend Runway's five-minute cap. Guru is also instructed to finish its spoken reply and follow-up before calling the quiet visitor-memory tool.
 
 ## Deployment and character maintenance
 
-No new environment variables or database migrations are required beyond the existing video concierge and platform AI configuration. Keep `RUNWAYML_API_SECRET` server-side in Render, using the same developer organization as the public character IDs in `assistant_ai/demo_avatars.json`. That manifest contains no API keys. All 12 entries were confirmed READY in Runway on September 16, 2026. Guru's existing avatar ID was retained and its helmet portrait and instructions updated remotely.
+No new environment variables or database migrations are required beyond the existing video concierge and platform AI configuration. Keep `RUNWAYML_API_SECRET` server-side in Render, using the same developer organization as the public character IDs in `assistant_ai/demo_avatars.json`. That manifest contains no API keys. All 13 entries, including MaryJain, were confirmed READY in Runway on September 16, 2026. Guru's existing avatar ID was retained and its helmet portrait and instructions updated remotely.
 
 The frontend bundle is checked in for the Python-only Render build. Changes remain local until committed and deployed through the usual Git flow. Updating shared Runway character artwork affects that remote character immediately, including any existing deployment using its ID.
 
@@ -52,11 +59,15 @@ python manage.py sync_guru --helmet
 
 ## Verification
 
-September 16, 2026: 121 Django tests and 23 Node tests passed after the personalized handoff update. Migration consistency and production static collection passed. Browser checks covered category search, isolated sample chat, desktop and 390×844 layouts, terms display, employee video mounting, and return to text. Transport tests cover repeated voice/text changes beyond one simulated minute, mic loss/recovery, denied permission, stale typing cues, browser audio suspension, and cleanup. Handoff tests verify confirmed call closure and same-origin/source checks.
+September 16, 2026: 125 Django tests and 35 Node tests passed after the microphone cleanup and MaryJain addition. Migration consistency, diff whitespace checks and production static collection passed. Earlier browser checks covered category search, isolated sample chat, desktop and 390×844 layouts, terms display, employee video mounting, and return to text. MaryJain's category, full portrait framing, guided office-hours reply and Type/Speak connection interface were additionally checked in a separate preview tab. No microphone permission or call agreement was accepted during that preview check.
+
+Transport tests cover 20 speech turns beyond two simulated minutes with one mic capture and published stream, speaker echo and gaps between phrases, actual audio-level detection, explicit interruption and recovery, typed-message overlap prevention, stale typing cues, reconnect/duplicate track events, late mic permission, browser audio suspension, and cleanup. Interface tests cover every employee's shared controls and preservation of undelivered drafts. Handoff tests verify confirmed call closure and same-origin/source checks. Physical speaker/microphone quality and mobile Safari remain device checks; the visitor was invited to test a fresh Speak call and has not yet reported the result.
 
 Live Runway provisioning checks with final settings took 2.89 seconds for Guru and 2.40 seconds for Sage, including the initial defaults lookup. Both test sessions were immediately closed without connecting a visitor. Three decoded frames from the generated gesture clip confirmed the raised hand, presenting sweep and sealed helmet. These timings measure session readiness, not full video playback. Physical microphone use, sustained real conversations and mobile Safari still need device verification. The displayed helmet no longer uses provider facial animation. The local environment has no platform OpenAI key, so the local text preview uses the labelled fallback; OpenAI behavior was tested through a mocked gateway.
 
 Artwork prompts and final asset paths are in [DEMO_ARTWORK.md](DEMO_ARTWORK.md).
+
+MaryJain's personalized Runway session reached READY in 7.37 seconds using a fictional first name and a sample office-hours request. The session was immediately closed without joining a visitor. This verifies session provisioning with introduction context, not a spoken microphone conversation.
 
 ## Layout and helmet treatment
 

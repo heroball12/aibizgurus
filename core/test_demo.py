@@ -18,10 +18,20 @@ class CategoryDemoTests(TestCase):
     def setUp(self):
         cache.clear()
 
-    def test_catalog_compresses_all_industries_into_twelve_distinct_characters(self):
+    def test_guru_and_every_demo_employee_share_voice_turn_controls(self):
+        for query in [{}, *({"industry": p["slug"], "embed": "1"} for p in profiles())]:
+            with self.subTest(query=query):
+                page=self.client.get(reverse('concierge'),query)
+                self.assertContains(page,'id="guideInterrupt"')
+                self.assertContains(page,'Interrupt &amp; speak')
+                self.assertContains(page,'Your mic pauses during replies')
+                self.assertContains(page,'js/concierge.js')
+                self.assertContains(page,'js/concierge-call.js')
+
+    def test_catalog_compresses_all_industries_into_thirteen_distinct_characters(self):
         entries=profiles()
-        self.assertEqual(len(entries),12)
-        self.assertEqual(len({p['character'] for p in entries}),12)
+        self.assertEqual(len(entries),13)
+        self.assertEqual(len({p['character'] for p in entries}),13)
         slugs=[slug for item in entries for slug in item['industry_slugs']]
         options,_=get_industry_options()
         self.assertEqual(set(slugs),{i.slug for i in options})
@@ -63,11 +73,47 @@ class CategoryDemoTests(TestCase):
 
     def test_provider_configuration_and_secrets_are_not_in_public_page(self):
         page=self.client.get(reverse('demo'))
-        self.assertEqual(len(page.context['demo_industries']),12)
+        self.assertEqual(len(page.context['demo_industries']),13)
         self.assertNotContains(page,'test-only')
         self.assertIn('no-store',page.headers['Cache-Control'])
         for item in page.context['demo_industries']:
             self.assertNotIn('facts',item);self.assertNotIn('escalation',item)
+
+    def test_cannabis_has_its_own_employee_and_guru_introduction(self):
+        profile=resolve_profile('cannabis')
+        self.assertEqual(profile['name'],'MaryJain')
+        self.assertEqual(set(profile['covers']),{'Dispensary','Cannabis Delivery','CBD Store'})
+        for slug in profile['industry_slugs']:
+            self.assertEqual(resolve_profile(slug)['name'],'MaryJain')
+            self.assertNotIn(slug,resolve_profile('hospitality-retail')['industry_slugs'])
+        self.assertIn('MaryJain',concierge.personality())
+        introduction=next(tool for tool in concierge.tool_definitions() if tool['name']=='introduce_demo_employee')
+        self.assertIn('cannabis',str(introduction))
+        page=self.client.get(reverse('demo'),{'industry':'cannabis'})
+        self.assertContains(page,'13 characters.')
+        self.assertContains(page,'MaryJain')
+
+    def test_cannabis_guided_preview_stays_administrative(self):
+        url=reverse('demo_chat')
+        hours=self.client.post(url,{'industry':'cannabis','message':'What are your hours?'}).json()
+        self.assertEqual(hours['mode'],'guided')
+        self.assertIn('Monday–Friday',hours['reply'])
+        for message in ['Can I order for delivery tomorrow?', 'Which strain should I buy?', 'What dose helps pain?']:
+            with self.subTest(message=message):
+                reply=self.client.post(url,{'industry':'cannabis','message':message}).json()['reply']
+                self.assertIn('can’t help select, purchase or arrange delivery',reply)
+                self.assertNotIn('preferred day or time',reply)
+        self.assertFalse(Lead.objects.exists())
+        self.assertFalse(Conversation.objects.exists())
+
+    @override_settings(PLATFORM_OPENAI_API_KEY='test-only')
+    def test_maryjain_ai_uses_the_administrative_persona(self):
+        with patch('core.demo_views.PlatformAIService.chat',return_value=('Our sample office hours are 9am–5pm.',{'status':'success'})) as gateway:
+            response=self.client.post(reverse('demo_chat'),{'industry':'dispensary','message':'What are your hours?'})
+        self.assertEqual(response.json()['industry'],'cannabis')
+        prompt=gateway.call_args.kwargs['messages'][0]['content']
+        self.assertIn('MaryJain',prompt)
+        self.assertIn('Do not take, arrange or assist purchases or deliveries.',prompt)
 
     def test_demo_video_requires_allowlisted_category_and_consent(self):
         url=reverse('concierge_start')
