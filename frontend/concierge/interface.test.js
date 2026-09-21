@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import {validPage, followupDraft, isUserCaption} from '../../static/js/concierge-actions.js';
 
 // Exercise the UI controller in an isolated DOM fixture, without paid calls.
-function fixture(fetch) {
+function fixture(fetch, options={}) {
   const nodes=new Map(), messages=[], listeners={};
   const makeNode=()=>({
     value:"",dataset:{},style:{setProperty(){}},play:async()=>{},pause(){},listeners:{},classList:{values:new Set(),add(x){this.values.add(x);},remove(x){this.values.delete(x);},contains(x){return this.values.has(x);},toggle(){}},
@@ -16,12 +16,13 @@ function fixture(fetch) {
   const pages={home:{path:'/',label:'Home',embedded:true},assessment:{path:'/growth-assessment/',label:'Growth consultation',embedded:true}};
   node('conciergeConfig').textContent=JSON.stringify({available:true,embedded:true,pages,initialPage:'home',startUrl:'/start',maxSeconds:300,callModuleUrl:'/static/call.hash.js'});
   const body=makeNode();body.classList.add('guide-welcome');
-  const document={body,getElementById:node,querySelector:selector=>selector==='[name=inputMode]:checked'?{value:'text'}:node(selector),querySelectorAll:()=>[]};
+  const document={body,getElementById:node,querySelector:selector=>selector==='[name=inputMode]:checked'?{value:options.mode||'text'}:node(selector),querySelectorAll:()=>[]};
   let connections=0;
   const context=vm.createContext({document,fetch,validPage,followupDraft,isUserCaption,URL,location:{origin:'https://example.test'},innerWidth:1280,
     window:{addEventListener(type,fn){listeners[type]=fn;},matchMedia:()=>({matches:true})},parent:{postMessage(message){messages.push(message);}},crypto:{randomUUID:()=> 'test-id'},
-    setInterval:()=>1,clearInterval(){},setTimeout,clearTimeout,confirm:()=>true,
-    loadCallModule:async()=>({connectCall:async()=>{connections++;throw new Error('Unexpected connection');}}),
+    navigator:{mediaDevices:{getUserMedia:options.getUserMedia}},
+    setInterval:()=>1,clearInterval(){},setTimeout,clearTimeout,AbortController,confirm:()=>true,
+    loadCallModule:async()=>({microphoneConstraints:{audio:{autoGainControl:true}},connectCall:async args=>{connections++;if(options.connectCall)return options.connectCall(args);throw new Error('Unexpected connection');}}),
   });
   const source=readFileSync(new URL('../../static/js/concierge.js',import.meta.url),'utf8')
     .replace(/^import .*\n/,'').replace('import(config.callModuleUrl)','loadCallModule()');
@@ -189,4 +190,53 @@ test('failed audio delivery preserves the typed message instead of marking it se
   await app.node('guideTextForm').listeners.submit({preventDefault(){}});
   assert.equal(app.node('guideText').value,'My question');
   assert.match(app.node('guideStatus').textContent,/could not be sent/);
+});
+
+test('quiet voice boost applies to the active transport and follows microphone visibility',async()=>{
+  const app=fixture();
+  vm.runInContext("connection={micEnabled:true,micBoosted:false,setMicBoost(value){this.micBoosted=value;}};syncMic()",app.context);
+  assert.equal(app.node('guideMicBoost').hidden,false);
+  await app.node('guideMicBoost').listeners.click();
+  assert.equal(app.node('guideMicBoost').textContent,'Quiet voice boost on');
+  vm.runInContext("connection.micEnabled=false;syncMic()",app.context);
+  assert.equal(app.node('guideMicBoost').hidden,true);
+});
+
+test('Speak startup transfers the original microphone to the connection without opening it twice',async()=>{
+  let captures=0,received;const track={stop(){}},stream={getTracks:()=>[track]};
+  const app=fixture(async url=>response(url==='/start'?{pollUrl:'/poll',stopUrl:'/stop'}:{status:'ready',credentials:{}}),{
+    mode:'voice',getUserMedia:async()=>{captures++;return stream;},
+    connectCall:async args=>{received=args.microphoneStream;return {micEnabled:true,listeningState:'listening',end:async()=>track.stop()};},
+  });
+  app.node('guideConsentCheck').checked=true;await app.node('guideStart').listeners.click();
+  assert.equal(captures,1);assert.equal(received,stream);assert.equal(app.node('guideMicBoost').hidden,false);
+  await app.node('guideEnd').listeners.click();
+});
+
+test('cancelling while microphone permission is pending releases a late device without creating a call',async()=>{
+  let allow,calls=0,stopped=false;const app=fixture(async()=>{calls++;return response({});},{mode:'voice',getUserMedia:()=>new Promise(resolve=>{allow=resolve;})});
+  app.node('guideConsentCheck').checked=true;const starting=app.node('guideStart').listeners.click();await flush();
+  await app.node('guideEnd').listeners.click();
+  allow({getTracks:()=>[{stop(){stopped=true;}}]});await starting;
+  assert.equal(stopped,true);assert.equal(calls,0);
+});
+
+test('a rejected session releases the microphone captured during startup',async()=>{
+  let stopped=false;const app=fixture(async()=>({ok:false,json:async()=>({error:'Call limit reached'})}),{
+    mode:'voice',getUserMedia:async()=>({getTracks:()=>[{stop(){stopped=true;}}]}),
+  });
+  app.node('guideConsentCheck').checked=true;await app.node('guideStart').listeners.click();
+  assert.equal(stopped,true);assert.equal(app.connections(),0);assert.match(app.node('guideStatus').textContent,/Call limit/);
+});
+
+test('ending a call clears pending delivery and late results cannot unlock a newer message',async()=>{
+  let deliver;const app=fixture(async url=>url==='/text'?new Promise(resolve=>{deliver=resolve;}):response({}));
+  app.node('guideText').value='Old question';
+  vm.runInContext("call={textUrl:'/text',stopUrl:'/stop'};connection={unlockAudio:async()=>{},end:async()=>{}}",app.context);
+  const sending=app.node('guideTextForm').listeners.submit({preventDefault(){}});await flush();
+  await app.node('guideEnd').listeners.click();
+  assert.equal(app.node('guideTextSend').disabled,false);assert.equal(vm.runInContext('deliveryPending',app.context),false);
+  vm.runInContext("connection={micEnabled:false};deliveryPending=true",app.context);app.node('guideTextSend').disabled=true;
+  deliver(response({pollUrl:'/speech',token:'old'}));await sending;
+  assert.equal(app.node('guideTextSend').disabled,true);assert.equal(vm.runInContext('deliveryPending',app.context),true);
 });

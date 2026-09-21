@@ -1,0 +1,31 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}MaryJain’s Cannabis Knowledge Library | AI Business Gurus{% endblock %}
+{% block meta_description %}Explore MaryJain’s sourced reference notes on cannabis science, strain identity, medicinal research and industry terminology.{% endblock %}
+{% block body_class %}cannabis-library-page{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/cannabis-knowledge.css' %}">{% endblock %}
+{% block content %}
+<div class="cannabis-library">
+  <a class="knowledge-back" href="{% url 'demo' %}?industry=cannabis#employeePanel">← Talk with MaryJain</a>
+  <header class="knowledge-hero">
+    <div><span class="knowledge-eyebrow">MARYJAIN / THE KNOWLEDGE LIBRARY</span><h1>Curiosity.<br><em>Meet evidence.</em></h1><p>{{ library.scope }}</p></div>
+    <img src="{% static 'img/demo-characters/cannabis.jpg' %}" alt="MaryJain, a robot with a sealed purple-lit helmet and gold botanical pin">
+  </header>
+  <div class="knowledge-meta"><span>{{ topic_count }} reference topics</span><span>{{ source_count }} linked sources</span><span>References checked {{ library.reviewed_on }}</span></div>
+  <form class="knowledge-search" method="get"><label for="knowledgeQuery">Find a topic</label><div><input id="knowledgeQuery" name="q" type="search" maxlength="100" value="{{ query }}" placeholder="Try CBD, pain, Blue Dream or lab reports"><button type="submit">Search ↗</button>{% if query %}<a href="{% url 'cannabis_knowledge' %}">Clear</a>{% endif %}</div></form>
+  <p class="knowledge-context">Research about a particular medicine does not establish medicinal effects for every strain. Each note identifies the kind of evidence behind it; the source links let you read further. Personal treatment, dosing and medicine interactions belong with a qualified clinician or pharmacist.</p>
+  {% regroup topics by group as groups %}
+  <nav class="knowledge-nav" aria-label="Knowledge topics">{% for group in groups %}<a href="#group-{{ forloop.counter }}">{{ group.grouper }}</a>{% endfor %}</nav>
+  {% for group in groups %}
+  <section class="knowledge-group" id="group-{{ forloop.counter }}" aria-labelledby="heading-{{ forloop.counter }}">
+    <h2 id="heading-{{ forloop.counter }}">{{ group.grouper }}</h2>
+    <div class="knowledge-grid">{% for topic in group.list %}
+      <article class="knowledge-card" id="{{ topic.id }}">
+        <span class="knowledge-evidence">{{ topic.evidence }}</span><h3>{{ topic.title }}</h3><p>{{ topic.summary }}</p>
+        <div class="knowledge-sources"><strong>Read the evidence</strong>{% for source in topic.references %}<a href="{{ source.url }}" target="_blank" rel="noopener noreferrer">{{ source.title }} ↗</a>{% endfor %}</div>
+      </article>
+    {% endfor %}</div>
+  </section>
+  {% empty %}<p class="knowledge-empty">No reviewed entry matches “{{ query }}”. Try a broader topic. An absent strain entry means we cannot verify its profile from this library.</p>{% endfor %}
+  <footer class="knowledge-footer"><p>This reference is maintained with the website. It does not check live inventory, new studies or current laws during a conversation. Violet Leaf is a fictional demo business.</p><a href="{% url 'demo' %}?industry=cannabis#employeePanel">Continue with MaryJain ↗</a></footer>
+</div>
+{% endblock %}

@@ -10,6 +10,7 @@ urlpatterns = [
     path("ai-employees/", views.ai_employees, name="ai_employees"),
     path("industries/", views.industries, name="industries"),
     path("demo/chat/", demo_views.demo_chat, name="demo_chat"),
+    path("demo/cannabis/knowledge/", demo_views.cannabis_library, name="cannabis_knowledge"),
     path("demo/", views.demo, name="demo"),
     path("pricing/", views.pricing, name="pricing"),
     path("case-studies/", views.case_studies, name="case_studies"),

@@ -23,6 +23,7 @@ class CategoryDemoTests(TestCase):
             with self.subTest(query=query):
                 page=self.client.get(reverse('concierge'),query)
                 self.assertContains(page,'id="guideInterrupt"')
+                self.assertContains(page,'id="guideMicBoost"')
                 self.assertContains(page,'Interrupt &amp; speak')
                 self.assertContains(page,'Your mic pauses during replies')
                 self.assertContains(page,'js/concierge.js')
@@ -93,21 +94,24 @@ class CategoryDemoTests(TestCase):
         self.assertContains(page,'13 characters.')
         self.assertContains(page,'MaryJain')
 
-    def test_cannabis_guided_preview_stays_administrative(self):
+    def test_cannabis_guided_preview_educates_without_arranging_purchases(self):
         url=reverse('demo_chat')
         hours=self.client.post(url,{'industry':'cannabis','message':'What are your hours?'}).json()
         self.assertEqual(hours['mode'],'guided')
         self.assertIn('Monday–Friday',hours['reply'])
-        for message in ['Can I order for delivery tomorrow?', 'Which strain should I buy?', 'What dose helps pain?']:
+        for message in ['Can I order for delivery tomorrow?', 'Which strain should I buy?']:
             with self.subTest(message=message):
                 reply=self.client.post(url,{'industry':'cannabis','message':message}).json()['reply']
                 self.assertIn('can’t help select, purchase or arrange delivery',reply)
                 self.assertNotIn('preferred day or time',reply)
+        education=self.client.post(url,{'industry':'cannabis','message':'What does research say about pain?'}).json()
+        self.assertIn('AHRQ',education['reply'])
+        self.assertIn('chronic-pain',education['knowledge_topics'])
         self.assertFalse(Lead.objects.exists())
         self.assertFalse(Conversation.objects.exists())
 
     @override_settings(PLATFORM_OPENAI_API_KEY='test-only')
-    def test_maryjain_ai_uses_the_administrative_persona(self):
+    def test_maryjain_ai_uses_the_educational_persona(self):
         with patch('core.demo_views.PlatformAIService.chat',return_value=('Our sample office hours are 9am–5pm.',{'status':'success'})) as gateway:
             response=self.client.post(reverse('demo_chat'),{'industry':'dispensary','message':'What are your hours?'})
         self.assertEqual(response.json()['industry'],'cannabis')

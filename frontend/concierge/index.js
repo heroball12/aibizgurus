@@ -3,9 +3,11 @@ import {consumeSession, TranscriptAccumulator, parseClientEvent} from '@runwayml
 
 // One published input for the whole call. The microphone gate prevents speaker
 // bleed from being interpreted as a visitor interrupting the assistant.
-const SPEECH_TAIL_MS = 1100;
+const SPEECH_TAIL_MS = 700;
+const SPEAKER_HINT_MS = 900;
 const OPENING_WAIT_MS = 14000;
-export async function connectCall({credentials, video, audio, onTranscript, onTool, onState, onMediaReady=()=>{}, onAudioBlocked, onSpeechLevel=()=>{}, onInputLevel=()=>{}, onListeningState=()=>{}, audioContext:providedContext}) {
+export const microphoneConstraints = {audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:1},video:false};
+export async function connectCall({credentials, video, audio, microphoneStream=null, onTranscript, onTool, onState, onMediaReady=()=>{}, onAudioBlocked, onSpeechLevel=()=>{}, onInputLevel=()=>{}, onListeningState=()=>{}, audioContext:providedContext}) {
   const connection = await consumeSession(credentials);
   const room = new Room({adaptiveStream:false, dynacast:false, disconnectOnPageLeave:true});
   const transcript = new TranscriptAccumulator({interim:true, bufferSize:60});
@@ -16,19 +18,24 @@ export async function connectCall({credentials, video, audio, onTranscript, onTo
   silentGain.gain.value=0; silence.connect(silentGain).connect(inputBus); silence.start();
   const micGain = audioContext.createGain(); micGain.gain.value=0; micGain.connect(inputBus);
   // Give incoming speech detection a head start on acoustic speaker echo.
-  const micDelay = audioContext.createDelay(.5); micDelay.delayTime.value=.15; micDelay.connect(micGain);
+  const micDelay = audioContext.createDelay(.5); micDelay.delayTime.value=.08; micDelay.connect(micGain);
+  const micBoost=audioContext.createGain();micBoost.gain.value=1;
+  const limiter=audioContext.createDynamicsCompressor();
+  limiter.threshold.value=-6;limiter.knee.value=6;limiter.ratio.value=12;limiter.attack.value=.003;limiter.release.value=.12;
+  micBoost.connect(limiter).connect(micDelay);
   let ended=false, micEnabled=false, micStream=null, micSource=null, playingSource=null, micVersion=0, micPending=false;
   let remoteAnalyser=null, remoteSource=null, remoteTrack=null, remoteMediaTrack=null, micAnalyser=null, meterTimer=null, monitorTimer=null;
-  let avatarSpeaking=false, heardAvatar=false, lastAvatarSpeech=0, connectedAt=0, queue=Promise.resolve();
+  let avatarSpeaking=false, speakerHintAt=0, heardAvatar=false, lastAvatarSpeech=0, connectedAt=0, queue=Promise.resolve();
   let listeningState='muted', interruptUntil=0, interruptStarted=0, interruptHeardVoice=false, lastInterruptVoice=0;
-  const waveform=new Uint8Array(512);
-  function level(analyser){if(!analyser)return 0;analyser.getByteTimeDomainData(waveform);let sum=0;for(const value of waveform)sum+=((value-128)/128)**2;return Math.min(1,Math.sqrt(sum/waveform.length)*5);}
-  function avatarBusy(){return avatarSpeaking || (heardAvatar && Date.now()-lastAvatarSpeech<SPEECH_TAIL_MS);}
+  // Float samples retain quiet speech that an 8-bit meter rounds down to silence.
+  const waveform=new Float32Array(512);
+  function level(analyser){if(!analyser)return 0;analyser.getFloatTimeDomainData(waveform);let sum=0;for(const value of waveform)sum+=value**2;return Math.min(1,Math.sqrt(sum/waveform.length)*5);}
+  function avatarBusy(){const now=Date.now();return (avatarSpeaking && now-speakerHintAt<SPEAKER_HINT_MS) || (heardAvatar && now-lastAvatarSpeech<SPEECH_TAIL_MS);}
   function waitingForOpening(){return !heardAvatar && Date.now()-connectedAt<OPENING_WAIT_MS;}
   function updateInput() {
     const now=Date.now(), micLevel=micEnabled?level(micAnalyser):0;
     if(interruptUntil){
-      if(micLevel>.06){interruptHeardVoice=true;lastInterruptVoice=now;}
+      if(micLevel>.015){interruptHeardVoice=true;lastInterruptVoice=now;}
       if(now>=interruptUntil || (interruptHeardVoice && now-lastInterruptVoice>1200) || (!avatarBusy() && now-interruptStarted>1600))interruptUntil=0;
     }
     let next='muted';
@@ -72,7 +79,10 @@ export async function connectCall({credentials, video, audio, onTranscript, onTo
   transcript.on('update',entries=>onTranscript(entries));
   room.on(RoomEvent.ActiveSpeakersChanged,speakers=>{
     const speaking=speakers.some(participant=>participant.identity!==room.localParticipant.identity);
-    if(speaking||avatarSpeaking)lastAvatarSpeech=Date.now();if(speaking)heardAvatar=true;avatarSpeaking=speaking;updateInput();
+    // Speaker events are a brief early hint. Actual audio keeps the gate closed;
+    // a missing stop event must never leave a visitor muted for the whole call.
+    if(speaking && !avatarSpeaking){speakerHintAt=Date.now();lastAvatarSpeech=Date.now();heardAvatar=true;}
+    avatarSpeaking=speaking;updateInput();
   });
   room.on(RoomEvent.TrackPublished,subscribe);
   room.on(RoomEvent.TrackSubscribed,attach);
@@ -86,7 +96,8 @@ export async function connectCall({credentials, video, audio, onTranscript, onTo
     else if(state===ConnectionState.Connected){subscribeExisting();updateInput();onState('active');}
     else if(state===ConnectionState.Disconnected){updateInput();onState('ended');}
   });
-  const resume=()=>{if(!ended&&audioContext.state==='suspended')audioContext.resume().then(updateInput).catch(()=>onState('audio-paused'));};
+  const audioPaused=()=>audioContext.state==='suspended'||audioContext.state==='interrupted';
+  const resume=()=>{if(!ended&&audioPaused())audioContext.resume().then(updateInput).catch(()=>onState('audio-paused'));};
   document.addEventListener('visibilitychange',resume);
   try {
     // A transferred call may need a tap before audio can resume. Joining must
@@ -98,11 +109,11 @@ export async function connectCall({credentials, video, audio, onTranscript, onTo
     connectedAt=Date.now();
     meterTimer=setInterval(()=>{
       const speech=level(remoteAnalyser);
-      if(speech>.025){lastAvatarSpeech=Date.now();heardAvatar=true;}
+      if(speech>.02){lastAvatarSpeech=Date.now();heardAvatar=true;}
       onSpeechLevel(speech);updateInput();
-    },50);
+    },25);
     monitorTimer=setInterval(resume,5000);
-    if(audioContext.state==='suspended')onAudioBlocked();
+    if(audioPaused())onAudioBlocked();
   } catch(error){
     ended=true;document.removeEventListener('visibilitychange',resume);transcript.dispose();silence.stop();remoteSource?.disconnect();
     try{await room.disconnect();}finally{inputTrack.stop();await audioContext.close();}
@@ -110,30 +121,32 @@ export async function connectCall({credentials, video, audio, onTranscript, onTo
   }
   const api={
     get micEnabled(){return micEnabled;},
-    get audioBlocked(){return audioContext.state==='suspended';},
+    get audioBlocked(){return audioPaused();},
     get avatarSpeaking(){return avatarBusy();},
     get listeningState(){return listeningState;},
-    async waitForSpeechEnd({shouldContinue=()=>true}={}){
+    get micBoosted(){return micBoost.gain.value>1;},
+    setMicBoost(enabled){micBoost.gain.value=enabled?2.5:1;},
+    async waitForSpeechEnd({shouldContinue=()=>true,settleMs=1600}={}){
       const started=Date.now(), deadline=started+45000;
       while(!ended && shouldContinue() && Date.now()<deadline){
-        if(Date.now()-started>=1600 && !avatarBusy() && !waitingForOpening())return true;
+        if(Date.now()-started>=settleMs && !avatarBusy() && !waitingForOpening())return true;
         await new Promise(resolve=>setTimeout(resolve,100));
       }
       return false;
     },
-    async setMic(enabled){
+    async setMic(enabled,preparedStream=null){
       if(ended || (enabled===micEnabled && !micPending))return;
       const version=++micVersion;micPending=enabled;interruptUntil=0;
-      micEnabled=false;micSource?.disconnect();micSource=null;micAnalyser=null;
+      micEnabled=false;micSource?.disconnect();micSource=null;if(micAnalyser)limiter.disconnect(micAnalyser);micAnalyser=null;
       micStream?.getTracks().forEach(track=>track.stop());micStream=null;updateInput();
       if(!enabled)return;
       try {
-        await audioContext.resume();
+        audioContext.resume().catch(onAudioBlocked);
         if(ended || version!==micVersion)return;
-        const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:false,channelCount:1},video:false});
+        const stream=preparedStream || await navigator.mediaDevices.getUserMedia(microphoneConstraints);
         if(ended || version!==micVersion){stream.getTracks().forEach(track=>track.stop());return;}
-        micStream=stream;micSource=audioContext.createMediaStreamSource(stream);micSource.connect(micDelay);
-        micAnalyser=audioContext.createAnalyser();micAnalyser.fftSize=512;micSource.connect(micAnalyser);
+        micStream=stream;micSource=audioContext.createMediaStreamSource(stream);micSource.connect(micBoost);
+        micAnalyser=audioContext.createAnalyser();micAnalyser.fftSize=512;limiter.connect(micAnalyser);
         micEnabled=true;updateInput();
         for(const track of stream.getAudioTracks())track.addEventListener('ended',()=>{if(stream===micStream&&micEnabled&&!ended){micEnabled=false;interruptUntil=0;updateInput();onState('mic-lost');}});
       } finally {if(version===micVersion)micPending=false;}
@@ -171,11 +184,14 @@ export async function connectCall({credentials, video, audio, onTranscript, onTo
       if(ended)return;ended=true;++micVersion;micPending=false;interruptUntil=0;
       clearInterval(meterTimer);clearInterval(monitorTimer);document.removeEventListener('visibilitychange',resume);
       if(playingSource){try{playingSource.stop();}catch(_){}}
-      micEnabled=false;updateInput();micStream?.getTracks().forEach(track=>track.stop());micSource?.disconnect();remoteSource?.disconnect();micDelay.disconnect();silence.stop();
+      micEnabled=false;updateInput();micStream?.getTracks().forEach(track=>track.stop());micSource?.disconnect();remoteSource?.disconnect();micBoost.disconnect();limiter.disconnect();micDelay.disconnect();silence.stop();
       try{await room.localParticipant.publishData(new TextEncoder().encode(JSON.stringify({type:'END_CALL'})),{reliable:true});}catch(_){}
       transcript.dispose();
       try{await room.disconnect(true);}finally{inputTrack.stop();await audioContext.close();if(video)video.srcObject=null;audio.srcObject=null;onSpeechLevel(0);onInputLevel(0);}
     },
   };
+  if(microphoneStream){
+    try{await api.setMic(true,microphoneStream);}catch(error){await api.end();throw error;}
+  }
   return api;
 }

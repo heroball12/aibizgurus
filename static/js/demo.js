@@ -34,20 +34,30 @@
     $('industryListTitle').textContent = popular ? 'MEET THE TEAM' : 'MATCHING CATEGORIES';
     $('browseAll').hidden = !popular;
   }
-  function bubble(role, text, typing = false) {
+  function bubble(role, text, typing = false, topicIds = []) {
     const node = document.createElement('div'); node.className = `demo-message ${role}${typing ? ' typing' : ''}`;
     const label = document.createElement('small'), body = document.createElement('p');
     label.textContent = role === 'user' ? 'YOU' : `${selected.name.toUpperCase()} / AI EMPLOYEE`; body.textContent = text;
-    node.append(label, body); $('tryMessages').append(node);
+    node.append(label, body);
+    if (role === 'assistant' && selected.knowledge && Array.isArray(topicIds)) {
+      const topics = selected.knowledge.topics.filter(topic => topicIds.includes(topic.id)).slice(0,3);
+      if(topics.length){
+        const reading=document.createElement('div');reading.className='demo-reading';
+        const heading=document.createElement('span');heading.textContent='Related reading';reading.append(heading);
+        for(const topic of topics){const link=document.createElement('a');link.textContent=topic.title;link.href=selected.knowledge.url+'#'+topic.id;link.target='_blank';link.rel='noopener';reading.append(link);}
+        node.append(reading);
+      }
+    }
+    $('tryMessages').append(node);
   }
   function renderChat() {
     $('tryMessages').replaceChildren(); bubble('assistant', selected.greeting);
-    for (const turn of histories[selected.slug] || []) bubble(turn.role === 'user' ? 'user' : 'assistant', turn.content);
+    for (const turn of histories[selected.slug] || []) bubble(turn.role === 'user' ? 'user' : 'assistant', turn.content, false, turn.knowledge_topics);
     if (pending?.slug === selected.slug) { bubble('user', pending.message); bubble('assistant', `${selected.name} is thinking…`, true); }
     $('tryMessages').scrollTop = $('tryMessages').scrollHeight;
     const mode = modes[selected.slug] || (config.aiAvailable ? 'ready' : 'guided');
     $('replyMode').textContent = mode === 'guided' ? 'GUIDED PREVIEW' : mode === 'ai' ? 'LIVE AI CHAT' : 'AI CHAT';
-    $('modeNote').textContent = mode === 'guided' ? 'Live AI is unavailable right now. These are sample replies; try video for a live conversation.' : 'AI replies can be imperfect. Use sample details. Enter to send; Shift + Enter for a new line.';
+    $('modeNote').textContent = mode === 'guided' ? (selected.knowledge ? 'Reference preview: replies come from reviewed notes. Try video for a live conversation.' : 'Live AI is unavailable right now. These are sample replies; try video for a live conversation.') : 'AI replies can be imperfect. Use sample details. Enter to send; Shift + Enter for a new line.';
     $('clearChat').disabled = !!pending || resetting;
     $('demoSend').disabled = !!pending || resetting;
     $('demoMessage').disabled = resetting;
@@ -87,6 +97,8 @@
       $('employeeTitle').textContent = item.industry; $('employeeCategory').textContent = item.category;
       $('employeeBusiness').textContent = item.business; $('employeeName').textContent = item.name.toUpperCase();
       $('employeeServices').textContent = item.services; $('employeePortrait').src = item.portrait; $('employeePortrait').alt = item.portrait_alt;
+      $('employeeKnowledge').hidden=!item.knowledge;
+      if(item.knowledge){$('employeeKnowledgeLink').href=item.knowledge.url;$('employeeKnowledgeDate').textContent='References checked '+item.knowledge.reviewed_on;}
       $('scenarioSignup').href = item.signup_url; $('demoMessage').value = drafts[item.slug] || '';
       $('demoMessage').placeholder = `Ask ${item.name} as a customer…`;
       listIndustries(); renderChat();
@@ -145,7 +157,7 @@
     try {
       const result = await post({industry:slug,message,...(transferFor(slug)?{handoff:transferFor(slug).id}:{})});
       if (result.industry !== slug || typeof result.reply !== 'string') throw new Error('The reply could not be matched to this industry. Please try again.');
-      histories[slug] = [...(histories[slug] || []), {role:'user',content:message}, {role:'assistant',content:result.reply}].slice(-12); modes[slug] = result.mode;
+      histories[slug] = [...(histories[slug] || []), {role:'user',content:message}, {role:'assistant',content:result.reply,knowledge_topics:result.knowledge_topics}].slice(-12); modes[slug] = result.mode;
     } catch (err) {
       drafts[slug] = message;
       if (selected.slug === slug) { if (!$('demoMessage').value) $('demoMessage').value = message; error(err.name === 'AbortError' ? 'The reply took too long. Please refresh before retrying to recover any completed reply.' : err.message); }

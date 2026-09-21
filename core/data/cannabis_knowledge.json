@@ -1,0 +1,213 @@
+{
+  "reviewed_on": "2026-09-16",
+  "title": "MaryJain’s cannabis knowledge library",
+  "scope": "Cannabis science, medical evidence and industry literacy. A curated educational reference, not a complete strain catalog, a live database, or personal medical advice.",
+  "sources": {
+    "nccih": {"title": "NCCIH — Cannabis and cannabinoids: what you need to know", "url": "https://www.nccih.nih.gov/health/cannabis-marijuana-and-cannabinoids-what-you-need-to-know"},
+    "fda_medicines": {"title": "FDA — Cannabis research, products and approved medicines", "url": "https://www.fda.gov/news-events/public-health-focus/fda-regulation-cannabis-and-cannabis-derived-products-including-cannabidiol-cbd"},
+    "chemistry": {"title": "Smith et al., PLOS ONE (2022) — Commercial cannabis chemistry", "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0267498"},
+    "nci": {"title": "National Cancer Institute — Cannabis and cannabinoids", "url": "https://www.cancer.gov/about-cancer/treatment/cam/patient/cannabis-pdq"},
+    "nci_science": {"title": "National Cancer Institute — Cannabinoid pharmacology", "url": "https://www.cancer.gov/about-cancer/treatment/cam/hp/cannabis-pdq"},
+    "pain": {"title": "AHRQ (2025) — Living systematic review of cannabis for chronic pain", "url": "https://www.ncbi.nlm.nih.gov/books/NBK618045/"},
+    "minor": {"title": "NCCIH — Research on minor cannabinoids and terpenes", "url": "https://www.nccih.nih.gov/news/press-releases/nih-to-investigate-minor-cannabinoids-and-terpenes-for-potential-painrelieving-properties"},
+    "limonene": {"title": "Spindle et al. (2024) — Controlled human study of limonene and THC", "url": "https://www.sciencedirect.com/science/article/pii/S0376871624001881"},
+    "cbd": {"title": "FDA — CBD safety, liver effects and drug interactions", "url": "https://www.fda.gov/consumers/consumer-updates/what-you-need-know-and-what-were-working-find-out-about-products-containing-cannabis-or-cannabis"},
+    "cbd_thc": {"title": "NCCIH — Oral CBD can strengthen THC effects in a controlled study", "url": "https://www.nccih.nih.gov/research/research-results/when-taken-orally-9-tetrahydrocannabinol-with-cannabidiol-can-result-in-stronger-drug-effects-than-9-tetrahydrocannabinol-alone"},
+    "delta8": {"title": "FDA — Delta-8 THC and product uncertainty", "url": "https://www.fda.gov/consumers/consumer-updates/5-things-know-about-delta-8-tetrahydrocannabinol-delta-8-thc"},
+    "mental": {"title": "CDC — Cannabis and mental health", "url": "https://www.cdc.gov/cannabis/health-effects/mental-health.html"},
+    "ptsd": {"title": "VA National Center for PTSD — Cannabis and PTSD", "url": "https://www.ptsd.va.gov/professional/treat/cooccurring/marijuana_ptsd_vets.asp"},
+    "poisoning": {"title": "CDC — Edibles and cannabis poisoning", "url": "https://www.cdc.gov/cannabis/health-effects/poisoning.html"},
+    "dependence": {"title": "CDC — Cannabis use disorder and concentrated THC", "url": "https://www.cdc.gov/cannabis/health-effects/cannabis-use-disorder.html"},
+    "driving": {"title": "CDC — Cannabis and driving", "url": "https://www.cdc.gov/cannabis/health-effects/driving.html"},
+    "pregnancy": {"title": "CDC — Pregnancy and breastfeeding", "url": "https://www.cdc.gov/cannabis/health-effects/pregnancy.html"},
+    "lungs": {"title": "CDC — Cannabis and lung health", "url": "https://www.cdc.gov/cannabis/health-effects/lung-health.html"},
+    "heart": {"title": "CDC — Cannabis and heart health", "url": "https://www.cdc.gov/cannabis/health-effects/heart-health.html"},
+    "testing": {"title": "California DCC — Laboratory testing and certificates of analysis", "url": "https://www.cannabis.ca.gov/licensees/testing-laboratories/"},
+    "measurement": {"title": "NIST — Reference materials and accurate cannabis measurements", "url": "https://www.nist.gov/news-events/news/2024/07/nists-new-hemp-reference-material-will-help-ensure-accurate-cannabis"},
+    "industry": {"title": "California DCC — Cannabis business license types", "url": "https://www.cannabis.ca.gov/applicants/license-types/"}
+  },
+  "topics": [
+    {
+      "id": "plant-and-cannabinoids", "group": "Plant science", "title": "THC, CBD and the cannabis plant", "evidence": "Established chemistry",
+      "keywords": ["thc", "cbd", "cannabinoids", "cannabis basics", "marijuana", "hemp seed", "plant", "flower", "botany", "flavonoids"],
+      "summary": "Cannabis contains cannabinoids, terpenes and flavonoids. Delta-9 THC is its main intoxicating cannabinoid; CBD does not produce the characteristic THC high, but still has biological effects. Cannabinoids are concentrated in female flowers. Hemp seed oil is a food oil with little or no cannabinoids and is different from CBD extract.",
+      "voice": "THC is the main intoxicating cannabinoid; CBD lacks its characteristic high but is biologically active. Female flowers concentrate cannabinoids. Hemp seed oil is not CBD extract.",
+      "sources": ["nci_science"]
+    },
+    {
+      "id": "endocannabinoid-system", "group": "Plant science", "title": "The endocannabinoid system", "evidence": "Established biology; effects depend on context",
+      "keywords": ["endocannabinoid", "ecs", "cb1", "cb2", "receptors", "anandamide", "mechanism"],
+      "summary": "The body has a cannabinoid signaling system. CB1 receptors are prominent in nervous tissue; CB2 is associated with immune tissues. THC interacts with these receptors. A biological mechanism alone does not demonstrate a clinical treatment benefit.",
+      "voice": "CB1: nervous system; CB2: immune tissues. Mechanism does not prove clinical benefit.",
+      "sources": ["nci_science"]
+    },
+    {
+      "id": "minor-cannabinoids", "group": "Plant science", "title": "CBG, CBN, CBC and THCV", "evidence": "Emerging research",
+      "keywords": ["cbg", "cbn", "cbc", "thcv", "minor cannabinoid", "minor cannabinoids"],
+      "summary": "Cannabigerol (CBG), cannabinol (CBN), cannabichromene (CBC) and tetrahydrocannabivarin (THCV) are distinct cannabinoids under investigation. Research interest does not establish a treatment, a safe personal dose, or a reliable effect from a retail label. Do not turn laboratory findings into promises that CBN treats insomnia or THCV produces weight loss.",
+      "voice": "CBG, CBN, CBC and THCV are research topics, not established retail treatments. Do not promise CBN sleep benefits or THCV weight loss.",
+      "sources": ["minor", "nci_science"]
+    },
+    {
+      "id": "terpenes-and-entourage", "group": "Plant science", "title": "Terpenes and the entourage hypothesis", "evidence": "Chemistry established; clinical claims remain limited",
+      "keywords": ["terpene", "terpenes", "entourage", "myrcene", "limonene", "pinene", "linalool", "caryophyllene", "humulene", "terpinolene", "aroma", "smell"],
+      "summary": "Terpenes contribute to cannabis aroma. Common research targets include myrcene, limonene, pinene and beta-caryophyllene. The entourage hypothesis proposes interactions among plant compounds; it is not a guarantee of a particular therapeutic effect. A controlled 2024 human study found limonene reduced some THC-related anxiety under specific experimental conditions. That does not establish that a limonene-rich strain treats anxiety.",
+      "voice": "Terpenes contribute aroma. Entourage effects are hypotheses, not guaranteed treatments. A controlled limonene/THC study does not prove a named strain treats anxiety.",
+      "sources": ["minor", "limonene"]
+    },
+    {
+      "id": "strain-names", "group": "Strains and identity", "title": "Why a strain name is not a medical profile", "evidence": "Chemical observational research",
+      "keywords": ["strain", "strains", "cultivar", "lineage", "genetics", "indica", "sativa", "hybrid", "every strain", "all strains", "og kush", "sour diesel", "gelato", "girl scout cookies", "gsc", "wedding cake", "northern lights", "jack herer", "durban poison", "runtz", "granddaddy purple"],
+      "summary": "Names and indica/sativa/hybrid labels do not reliably establish chemical composition or medicinal effects. The same name can vary between producers and batches. This library is not a complete strain registry. For an unverified name, MaryJain says so instead of inventing lineage, potency, terpenes or therapeutic benefits.",
+      "voice": "No complete strain registry is loaded. Names and indica/sativa/hybrid labels cannot guarantee chemistry or effects. Never invent lineage, potency or medicinal benefits for an unfamiliar name.",
+      "sources": ["chemistry"]
+    },
+    {
+      "id": "chemotypes-and-cultivation", "group": "Strains and identity", "title": "Chemotypes, genetics and batch variation", "evidence": "Chemical observational research",
+      "keywords": ["chemotype", "chemovar", "type i", "type ii", "type iii", "ratio", "balanced", "cultivation", "growing", "clone", "phenotype", "harvest", "curing"],
+      "summary": "Common chemical groupings are THC-dominant, mixed THC/CBD and CBD-dominant. Genetics, growing conditions and preparation can affect measured composition even with clones. A chemotype describes chemistry, not an approved medical indication.",
+      "voice": "Chemotypes describe THC-dominant, mixed or CBD-dominant chemistry. Genetics, growing conditions and preparation can change batch composition, even with clones.",
+      "sources": ["chemistry"]
+    },
+    {
+      "id": "named-strain-research", "group": "Strains and identity", "title": "What research actually says about named examples", "evidence": "One chemical dataset; not clinical trials",
+      "keywords": ["blue dream", "dutch treat", "purple punch", "dogwalker og", "tangie"],
+      "summary": "In a 2022 commercial-flower dataset, Blue Dream often clustered with myrcene/pinene, Dutch Treat with terpinolene, and Purple Punch and Dogwalker OG with caryophyllene/limonene. Tangie was less chemically consistent. These are observations within that dataset, not guaranteed batch profiles or evidence of medicinal effects.",
+      "voice": "2022 chemistry dataset: Blue Dream—myrcene/pinene; Dutch Treat—terpinolene; Purple Punch/Dogwalker OG—caryophyllene/limonene; Tangie less consistent. Dataset tendencies only, never batch guarantees or medical claims.",
+      "sources": ["chemistry"]
+    },
+    {
+      "id": "approved-medicines", "group": "Medical evidence", "title": "Approved cannabinoid medicines", "evidence": "Specific FDA approvals",
+      "keywords": ["medicinal", "medical", "benefits", "epilepsy", "seizure", "seizures", "epidiolex", "dravet", "lennox", "tuberous", "dronabinol", "nabilone", "marinol", "syndros", "cesamet", "approved", "appetite", "aids"],
+      "summary": "In the United States, prescription cannabidiol (Epidiolex) has specific seizure indications: Lennox–Gastaut syndrome, Dravet syndrome and tuberous sclerosis complex in patients aged one year and older. Dronabinol and nabilone have specific chemotherapy-related nausea indications; dronabinol also has an AIDS-related anorexia/weight-loss indication. These approvals concern defined medicines and populations, not dispensary strains or retail CBD generally.",
+      "voice": "FDA approvals: Epidiolex for seizures in Lennox–Gastaut, Dravet and tuberous sclerosis complex, age 1+; dronabinol/nabilone for specified chemotherapy nausea; dronabinol for AIDS-related anorexia/weight loss. Retail strains are not equivalent.",
+      "sources": ["fda_medicines", "nci"]
+    },
+    {
+      "id": "chronic-pain", "group": "Medical evidence", "title": "Chronic pain: modest effects and meaningful gaps", "evidence": "2025 systematic review; low to moderate certainty",
+      "keywords": ["pain", "neuropathy", "neuropathic", "arthritis", "fibromyalgia", "opioid", "opioids", "analgesia"],
+      "summary": "AHRQ’s 2025 review found small short-term pain improvements, largely in neuropathic pain studies, with certain THC-containing formulations. Dizziness, sedation and nausea increased. Oral CBD alone did not improve pain in the included trials. Evidence for whole-plant cannabis, long-term outcomes and reducing opioid use remained insufficient. These results do not rank retail strains or establish a personal treatment plan.",
+      "voice": "AHRQ 2025: certain THC formulations gave small short-term pain benefits with more dizziness, sedation and nausea. Oral CBD alone did not improve pain; whole-plant and long-term evidence remained insufficient.",
+      "sources": ["pain"]
+    },
+    {
+      "id": "cancer-and-nausea", "group": "Medical evidence", "title": "Cancer symptoms are different from cancer treatment", "evidence": "Specific symptom indications; no proven cancer cure",
+      "keywords": ["cancer", "tumor", "tumour", "chemotherapy", "chemo", "nausea", "antiemetic", "rso", "rick simpson", "cure"],
+      "summary": "Some cannabinoid medicines can treat chemotherapy-related nausea when conventional antiemetics have been inadequate. That is different from treating the cancer itself. Laboratory antitumor findings do not establish a cure in people, and cannabis is not an FDA-approved cancer treatment. Cancer patients should discuss cannabis and possible treatment interactions with their oncology team.",
+      "voice": "Chemotherapy nausea relief is not cancer treatment. Laboratory antitumor findings do not prove a human cure. Do not suggest replacing oncology treatment.",
+      "sources": ["nci"]
+    },
+    {
+      "id": "ms-spasticity", "group": "Medical evidence", "title": "Multiple sclerosis and spasticity", "evidence": "Limited, formulation-specific symptom evidence",
+      "keywords": ["multiple sclerosis", "spasticity", "nabiximols", "sativex", "muscle spasms"],
+      "summary": "Some cannabinoid preparations have modest evidence for patient-reported multiple-sclerosis spasticity symptoms. Objective measures have been less consistent. Symptom improvement does not establish disease modification, and findings from a studied preparation do not apply automatically to a named strain.",
+      "voice": "Some preparations modestly improve reported MS spasticity; objective findings are less consistent. This is symptom research, not a cure or strain-specific evidence.",
+      "sources": ["nccih"]
+    },
+    {
+      "id": "sleep-and-digestive-claims", "group": "Medical evidence", "title": "Sleep, bowel disease and glaucoma claims", "evidence": "Limited or unsupported uses",
+      "keywords": ["sleep", "insomnia", "crohn", "colitis", "ibd", "ibs", "glaucoma", "digestive", "bowel"],
+      "summary": "Sleep improvements in studies of other illnesses may reflect symptom relief rather than a direct insomnia treatment. Evidence for primary sleep problems is uncertain. Symptom changes in bowel-disease studies do not prove remission. Cannabis is not an established glaucoma treatment. An individual’s care decisions require a qualified clinician.",
+      "voice": "Primary insomnia evidence is uncertain. Bowel symptom relief is not proven remission. Cannabis is not an established glaucoma treatment.",
+      "sources": ["nccih"]
+    },
+    {
+      "id": "mental-health", "group": "Medical evidence", "title": "Anxiety, paranoia and psychosis", "evidence": "Risks observed; causation and susceptibility vary",
+      "keywords": ["anxiety", "panic", "paranoia", "psychosis", "schizophrenia", "depression", "bipolar", "mental health"],
+      "summary": "Cannabis can cause anxiety, paranoia and disorientation. Use is associated with psychosis and schizophrenia, especially with earlier initiation and more frequent use, but individual risk cannot be predicted from a strain label. A feeling of short-term relaxation is not proof that cannabis treats an anxiety disorder or depression.",
+      "voice": "Cannabis can cause anxiety/paranoia; frequent and earlier use is linked with psychosis risk. Relaxation anecdotes are not established anxiety or depression treatments.",
+      "sources": ["mental"]
+    },
+    {
+      "id": "ptsd", "group": "Medical evidence", "title": "PTSD and trauma-related claims", "evidence": "2023 VA/DoD guideline recommends against treatment",
+      "keywords": ["ptsd", "trauma", "nightmares", "veteran", "veterans"],
+      "summary": "The VA/DoD’s 2023 PTSD guideline recommends against treating PTSD with cannabis or cannabis derivatives. Research has not established an effective PTSD treatment, despite anecdotal reports of relief. MaryJain can explain that evidence distinction and encourage evidence-based care without dismissing a person’s experience.",
+      "voice": "VA/DoD 2023 recommends against cannabis as PTSD treatment. Anecdotal relief does not establish efficacy; acknowledge experiences without presenting them as clinical proof.",
+      "sources": ["ptsd"]
+    },
+    {
+      "id": "cbd-interactions", "group": "Effects and safety", "title": "CBD, medicines and liver effects", "evidence": "Documented risks; individual assessment needed",
+      "keywords": ["interaction", "interactions", "medicine", "medication", "medications", "warfarin", "clobazam", "blood thinner", "liver", "alcohol", "non intoxicating", "safe"],
+      "summary": "CBD can affect the action of other medicines and can cause liver injury and sedation. Combining it with alcohol or sedating medicines can increase drowsiness. Non-intoxicating does not mean risk-free. A pharmacist or prescribing clinician should assess an individual’s medicines; the assistant cannot clear a combination or tell someone to stop a prescription.",
+      "voice": "CBD can cause liver injury, sedation and drug interactions. A pharmacist/clinician must assess personal combinations. Never tell a visitor to stop or change prescriptions.",
+      "sources": ["cbd"]
+    },
+    {
+      "id": "cbd-and-thc", "group": "Effects and safety", "title": "Does CBD cancel THC?", "evidence": "Controlled human study; context-specific",
+      "keywords": ["cancel", "counteract", "antidote", "sobering", "sober up", "reduce the high"],
+      "summary": "CBD is not a reliable antidote to THC. A controlled oral-administration study found stronger effects and impairment with a high-CBD/THC combination than with THC alone. Route, amount and timing matter; this result should not be generalized to every preparation or used as a home-treatment protocol.",
+      "voice": "CBD does not reliably cancel THC. A controlled oral study found greater effects and impairment with high CBD plus THC. Do not offer CBD as an antidote.",
+      "sources": ["cbd_thc"]
+    },
+    {
+      "id": "edibles-and-exposure", "group": "Effects and safety", "title": "Edibles, delayed effects and accidental exposure", "evidence": "Established public-health risks",
+      "keywords": ["edible", "edibles", "gummy", "gummies", "beverage", "onset", "how long", "poison", "overdose", "too much", "child", "toddler", "pet", "storage"],
+      "summary": "Edibles may take 30 minutes to two hours to produce intoxicating effects, and effects can last longer than expected. Delayed onset increases accidental overconsumption risk. Keep cannabis locked away from children and pets. Suspected poisoning warrants prompt poison-center guidance; in the US call 1-800-222-1222, or 911 for an emergency. Do not use a timing estimate as a redosing instruction.",
+      "voice": "Edibles can have delayed, prolonged effects; no redosing advice. Lock away from children/pets. Suspected poisoning: US Poison Control 1-800-222-1222; emergency 911, or local equivalents.",
+      "sources": ["poisoning"]
+    },
+    {
+      "id": "concentrates-and-dependence", "group": "Effects and safety", "title": "Concentrates, tolerance and cannabis use disorder", "evidence": "Established risk; precise individual risk varies",
+      "keywords": ["concentrate", "concentrates", "wax", "shatter", "resin", "rosin", "dab", "dabbing", "tolerance", "addiction", "addictive", "dependence", "withdrawal", "quit"],
+      "summary": "Concentrates can contain much more THC than flower. Higher THC is not a guarantee of better medical benefit. Cannabis use disorder can involve loss of control and continued use despite harm; risk increases with earlier initiation and frequent use. Increasing tolerance does not mean someone is immune to impairment. Support from a health professional can help when use is becoming difficult to control.",
+      "voice": "Concentrates can deliver high THC; potency is not medical quality. Frequent/earlier use raises dependence risk. Tolerance does not remove impairment; support is available.",
+      "sources": ["dependence"]
+    },
+    {
+      "id": "delta8-and-novel-products", "group": "Effects and safety", "title": "Delta-8 and novel cannabinoid products", "evidence": "Regulatory safety concerns; incomplete evidence",
+      "keywords": ["delta 8", "delta8", "delta-8", "delta 10", "hhc", "thcp", "synthetic", "hemp derived"],
+      "summary": "Delta-8 THC is intoxicating. FDA reports concerns about unapproved products, variable composition and contaminants from conversion processes. A hemp-derived label does not establish safety or legal status. This library does not establish clinical benefits or reliable potency equivalence for delta-10, HHC or THCP products.",
+      "voice": "Delta-8 is intoxicating; FDA notes variable products and conversion-contaminant concerns. Hemp-derived is not a safety guarantee. Novel cannabinoid benefits/equivalencies are not established here.",
+      "sources": ["delta8"]
+    },
+    {
+      "id": "driving", "group": "Effects and safety", "title": "Driving, work and impairment", "evidence": "Established impairment risk",
+      "keywords": ["driving", "drive", "machinery", "impairment", "blood thc", "workplace"],
+      "summary": "Cannabis can impair reaction time, coordination and judgment. Alcohol and cannabis together can increase impairment. A measured THC level or feeling normal cannot reliably certify fitness to drive. MaryJain does not provide a personalized safe-to-drive countdown; choose transportation with a sober driver when impairment is possible.",
+      "voice": "Cannabis impairs driving skills; alcohol can worsen impairment. No THC-level shortcut or guaranteed safe-to-drive countdown. Use a sober driver.",
+      "sources": ["driving"]
+    },
+    {
+      "id": "pregnancy", "group": "Effects and safety", "title": "Pregnancy and breastfeeding", "evidence": "Public-health recommendation to avoid exposure",
+      "keywords": ["pregnant", "pregnancy", "breastfeeding", "breastmilk", "nursing", "baby", "fetus"],
+      "summary": "Cannabis exposure during pregnancy may affect fetal development, and chemicals from cannabis can pass into breast milk. CBD is not established as a safe substitute. CDC encourages avoiding cannabis while breastfeeding and discussing use with a clinician during pregnancy, planning pregnancy or breastfeeding.",
+      "voice": "Pregnancy/breastfeeding: no safe cannabis or CBD substitute is established; discuss with a clinician. Cannabis chemicals can reach a baby through breast milk.",
+      "sources": ["pregnancy"]
+    },
+    {
+      "id": "lungs-and-heart", "group": "Effects and safety", "title": "Lung and cardiovascular effects", "evidence": "Known effects plus observational risk evidence",
+      "keywords": ["lung", "lungs", "smoke", "smoking", "vape", "vaping", "bronchitis", "heart", "cardiovascular", "blood pressure", "stroke"],
+      "summary": "Cannabis smoke contains irritants and can harm lung tissue; smoking is associated with cough and bronchitis symptoms. Cannabis can acutely increase heart rate and blood pressure. Associations with cardiovascular events require careful interpretation because smoke exposure and other factors can confound findings. No inhaled product should be presented as risk-free.",
+      "voice": "Smoke harms lungs and can cause bronchitis symptoms. Cannabis can raise heart rate/blood pressure; cardiovascular associations have confounders. Do not call inhaled products risk-free.",
+      "sources": ["lungs", "heart"]
+    },
+    {
+      "id": "hyperemesis", "group": "Effects and safety", "title": "Cannabinoid hyperemesis", "evidence": "Recognized adverse syndrome",
+      "keywords": ["chs", "hyperemesis", "vomiting", "throwing up", "hot shower"],
+      "summary": "Some long-term cannabis users develop recurrent severe vomiting, known as cannabinoid hyperemesis syndrome. Vomiting should not automatically be attributed to cannabis; medical assessment is needed, especially with dehydration or severe symptoms. MaryJain cannot diagnose the cause or offer a home-treatment protocol.",
+      "voice": "Repeated severe vomiting can occur with long-term use (CHS), but do not diagnose it. Severe symptoms or dehydration need medical assessment.",
+      "sources": ["nccih"]
+    },
+    {
+      "id": "lab-reports", "group": "Industry and quality", "title": "Reading a certificate of analysis", "evidence": "Laboratory reporting; jurisdiction-specific requirements",
+      "keywords": ["coa", "certificate", "lab report", "lab test", "testing", "pesticide", "metal", "mold", "microbial", "solvent", "contaminant", "batch"],
+      "summary": "A certificate of analysis (COA) reports test results for a particular sample or batch. California testing includes cannabinoids, terpenes, pesticides, residual solvents, heavy metals, microbes, mycotoxins and other quality measures. Match the report to the batch and distinguish a test result from a medical claim. A passed panel does not prove a treatment works or eliminate every possible risk.",
+      "voice": "COAs report batch tests, not medical efficacy. Match batch identity; distinguish cannabinoids/terpenes from contaminant panels. California requirements are examples, not universal law.",
+      "sources": ["testing"]
+    },
+    {
+      "id": "measurement-and-labels", "group": "Industry and quality", "title": "Potency numbers and measurement quality", "evidence": "Analytical measurement principles",
+      "keywords": ["potency", "percentage", "percent", "thca", "cbda", "total thc", "decarboxylation", "detection", "quantification", "nd", "loq", "lab shopping", "label"],
+      "summary": "Laboratories need consistent methods and reference materials to produce comparable cannabinoid measurements. Acidic and neutral cannabinoid measurements are not interchangeable. Compare units, sample identity, method and reporting limits before comparing numbers. A printed percentage cannot verify a batch’s identity, predict a person’s experience or establish therapeutic quality.",
+      "voice": "Potency interpretation requires units, sample identity, method and reporting limits. Acidic/neutral cannabinoids differ; a percentage does not predict personal effects or medicinal quality.",
+      "sources": ["measurement", "testing"]
+    },
+    {
+      "id": "industry-operations", "group": "Industry and quality", "title": "How the industry fits together", "evidence": "Regulatory categories; operational examples",
+      "keywords": ["industry", "dispensary", "delivery", "business", "retail", "cultivator", "manufacturer", "distributor", "license", "licensing", "legal", "law", "laws", "compliance", "tax", "transport", "regulation"],
+      "summary": "Cultivation, manufacturing, testing, distribution and retail are distinct activities in California’s licensing system; delivery is part of its retail framework. Rules vary by jurisdiction and change. This library is not a current legal, tax or licensing opinion. An AI can explain terminology and routine policies, while authorized staff handle regulated decisions and transactions.",
+      "voice": "Explain cultivation/manufacturing/testing/distribution/retail roles. California is only an example. No live law/tax/license verification; authorized staff handle regulated decisions and transactions.",
+      "sources": ["industry"]
+    }
+  ]
+}

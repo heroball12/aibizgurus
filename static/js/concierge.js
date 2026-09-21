@@ -10,6 +10,7 @@ let call = null, connection = null, busy = false, generation = 0, timer = null, 
 let callStarted = 0, typed = [], captions = [], formTouched = false, submissionId = crypto.randomUUID();
 let captionOrder = new Map(), captionSequence = 0, deliveryPending = false, typedCaptionIds = new Set();
 let pendingStart = null, connectingTimer = null, preparedAudioContext = null;
+let preparedMicStream = null;
 let typingTimer = null, typingCuePending = false, lastTypingCue = 0, typingBuffer = null;
 let gestureTimer = null;
 let contextQueue = Promise.resolve(), transferPending = false, preparedHandoff = null;
@@ -70,11 +71,15 @@ function beginConnectionProgress() {
 function stopConnectionProgress(){clearInterval(connectingTimer);connectingTimer=null;$('guideConnecting').hidden=true;}
 function status(text, isError=false) { $('guideStatus').textContent=text.replaceAll('Guru',employeeName); $('guideStatus').classList.toggle('error',isError); }
 async function post(url, data={}) {
-  const response = await fetch(url, {method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRFToken':csrf},body:JSON.stringify(data)});
-  let result;
-  try { result=await response.json(); } catch (_) { throw new Error('The connection was interrupted. Please try again.'); }
-  if (!response.ok) { const error=new Error(result.error || 'This request could not complete. Please try again.');error.existingCall=result.existingCall;throw error; }
-  return result;
+  const controller=new AbortController(), timeout=setTimeout(()=>controller.abort(),30000);
+  try {
+    const response = await fetch(url, {method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRFToken':csrf},body:JSON.stringify(data),signal:controller.signal});
+    let result;
+    try { result=await response.json(); } catch (_) { throw new Error('The connection was interrupted. Please try again.'); }
+    if (!response.ok) { const error=new Error(result.error || 'This request could not complete. Please try again.');error.existingCall=result.existingCall;throw error; }
+    return result;
+  } catch(error) {if(error.name==='AbortError')throw new Error('The connection took too long. Please try again.');throw error;}
+  finally {clearTimeout(timeout);}
 }
 function showPage(key, {back=false, fromAgent=false, search='', hash=''}={}) {
   if (!validPage(directory,key)) return;
@@ -159,7 +164,7 @@ window.addEventListener('message',async event=>{
   if(event.data.type==='demo-handoff' && !config.industry && Object.hasOwn(config.demoDirectory || {},event.data.industry)) {
     if(event.data.handoff && (preparedHandoff?.id!==event.data.handoff || preparedHandoff?.industry!==event.data.industry))return;
     if(pendingStart){try{await pendingStart;}catch(_){}}
-    if(connection?.waitForSpeechEnd && !await connection.waitForSpeechEnd()) {
+    if(connection?.waitForSpeechEnd && !await connection.waitForSpeechEnd({settleMs:event.data.handoff && event.data.handoff===preparedHandoff?.id?0:1600})) {
       frame.contentWindow.postMessage({source:'aibg-concierge',type:'demo-handoff-ready',ok:false},location.origin);return;
     }
     const closed=await endCall(event.data.handoff?'Your demo employee is joining. I’ll be here if you need me.':'I’ve introduced you to your demo employee. Choose Start conversation in their window when you’re ready.');
@@ -184,6 +189,7 @@ function controls(active) {
   $('guideTextForm').hidden=!active;panel.classList.toggle('in-call',active);
   $('guideListening').hidden=!active;
   $('guideInterrupt').hidden=true;
+  $('guideMicBoost').hidden=true;
   $('guideSound').hidden=!active; $('guideTimer').hidden=!active;
   if(!active)$('guideStage').classList.remove('live');
 }
@@ -215,7 +221,9 @@ async function cancelProvider(record) {
 }
 async function endCall(message='Call ended. You can keep exploring or book your growth consultation.') {
   ++generation;busy=false;clearInterval(timer);clearTimeout(replyTimer);clearTimeout(typingTimer);stopConnectionProgress();speechLevel(0);
+  deliveryPending=false;$('guideTextSend').disabled=false;$('guideMic').disabled=false;
   const oldConnection=connection,oldCall=call;connection=null;call=null;
+  preparedMicStream?.getTracks().forEach(track=>track.stop());preparedMicStream=null;
   if(!oldConnection && preparedAudioContext){await preparedAudioContext.close().catch(()=>{});preparedAudioContext=null;}
   controls(false);$('guideState').textContent='Call ended';status(message);
   $('guideVideo').srcObject=null;$('guideAudio').srcObject=null;
@@ -257,7 +265,14 @@ function syncMic(state=connection?.listeningState){
   $('guideListening').dataset.state=enabled?state||'listening':'muted';
   $('guideMic').textContent=enabled?'Mute mic':'Turn mic on';$('guideMic').setAttribute('aria-pressed',String(enabled));
   $('guideInterrupt').hidden=!enabled || !['assistant-speaking','waiting'].includes(state) || deliveryPending;
+  $('guideMicBoost').hidden=!enabled;
+  $('guideMicBoost').setAttribute('aria-pressed',String(connection?.micBoosted||false));
+  $('guideMicBoost').textContent=connection?.micBoosted?'Quiet voice boost on':'Quiet voice boost';
 }
+$('guideMicBoost').addEventListener('click',()=>{
+  if(!connection)return;
+  connection.setMicBoost(!connection.micBoosted);syncMic();
+});
 $('guideInterrupt').addEventListener('click',async()=>{
   const active=connection;if(!active || deliveryPending)return;
   $('guideInterrupt').disabled=true;
@@ -277,11 +292,14 @@ async function startConversation({handoff=!!config.handoff?.autoStart}={}){
   let record=null;
   try {
     let mode=transfer?.mode || document.querySelector('[name=inputMode]:checked').value;
-    const modulePromise=import(config.callModuleUrl);
+    const {connectCall,microphoneConstraints}=await import(config.callModuleUrl);
+    if(run!==generation)return;
     if(mode==='voice') {
       try {
         if(!navigator.mediaDevices?.getUserMedia)throw new Error('Your browser cannot access a microphone here. Choose Type to continue.');
-        const permission=await navigator.mediaDevices.getUserMedia({audio:true,video:false});permission.getTracks().forEach(track=>track.stop());
+        const permission=await navigator.mediaDevices.getUserMedia(microphoneConstraints);
+        if(run!==generation){permission.getTracks().forEach(track=>track.stop());return;}
+        preparedMicStream=permission;
       } catch(error) {if(!transfer)throw error;mode='text';}
     }
     if(run!==generation)return;
@@ -300,10 +318,9 @@ async function startConversation({handoff=!!config.handoff?.autoStart}={}){
       await wait(attempt<10?700:1500);
     }
     if(!credentials)throw new Error('Guru took too long to connect. Please try again.');
-    const {connectCall}=await modulePromise;
     if(run!==generation)return;
     connectionProgress('Connecting video and sound');
-    const live=await connectCall({credentials,audioContext:preparedAudioContext,video:$('guideVideo'),audio:$('guideAudio'),
+    const live=await connectCall({credentials,audioContext:preparedAudioContext,microphoneStream:preparedMicStream,video:$('guideVideo'),audio:$('guideAudio'),
       onSpeechLevel:level=>{if(run===generation)speechLevel(level);},
       onInputLevel:level=>{if(run===generation)$('guideListening').style?.setProperty('--input-level',String(level));},
       onListeningState:state=>{if(run===generation)syncMic(state);},
@@ -314,8 +331,7 @@ async function startConversation({handoff=!!config.handoff?.autoStart}={}){
       onAudioBlocked:()=>{if(run===generation){status('Tap Hear Guru to enable sound.');$('guideSound').textContent='Hear '+employeeName;}},
     });
     if(run!==generation){await live.end();await cancelProvider(record);return;}
-    connection=live;preparedAudioContext=null;busy=false;stopConnectionProgress();callStarted=Date.now();controls(true);$('guideState').textContent='Live AI';
-    if(mode==='voice' && !connection.audioBlocked) {try{await connection.setMic(true);}catch(_){status('Microphone unavailable. You can type below.',true);}}
+    connection=live;preparedAudioContext=null;preparedMicStream=null;busy=false;stopConnectionProgress();callStarted=Date.now();controls(true);$('guideState').textContent='Live AI';
     syncMic();status(connection.audioBlocked?`Tap Hear ${employeeName} to enable sound, then type or turn on your mic.`:'You’re connected. Type below or turn on your mic.');
     document.querySelector('.guide-transcript').open=true;
     const tick=()=>{
@@ -327,7 +343,7 @@ async function startConversation({handoff=!!config.handoff?.autoStart}={}){
     tick();timer=setInterval(tick,1000);$('guideText').focus();
   } catch(error) {
     if(run!==generation)return;
-    if(error.existingCall){busy=false;stopConnectionProgress();call=error.existingCall;controls(false);$('guideEnd').hidden=false;$('guideState').textContent='Previous call';status(error.message,true);return;}
+    if(error.existingCall){await endCall(error.message);call=error.existingCall;$('guideEnd').hidden=false;$('guideState').textContent='Previous call';return;}
     await endCall(error.name==='NotAllowedError'?'Microphone permission was declined. Choose Type and start again.':error.message||'The video connection could not start. Please try again.');
     $('guideState').textContent='Try again';$('guideStatus').classList.add('error');
   }
@@ -345,10 +361,13 @@ $('guideTextForm').addEventListener('submit',async event=>{
     let audio=null;
     for(let attempt=0;attempt<35;attempt++) {
       if(connection!==active)return;
-      const response=await fetch(task.pollUrl,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRFToken':csrf},body:JSON.stringify({token:task.token})});
-      if(response.ok && response.headers.get('Content-Type')?.startsWith('audio/')){audio=await response.arrayBuffer();break;}
-      const result=await response.json();
-      if(!response.ok)throw new Error(result.error||'Message delivery failed.');
+      const controller=new AbortController(), timeout=setTimeout(()=>controller.abort(),20000);
+      try{
+        const response=await fetch(task.pollUrl,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRFToken':csrf},body:JSON.stringify({token:task.token}),signal:controller.signal});
+        if(response.ok && response.headers.get('Content-Type')?.startsWith('audio/')){audio=await response.arrayBuffer();break;}
+        const result=await response.json();
+        if(!response.ok)throw new Error(result.error||'Message delivery failed.');
+      }finally{clearTimeout(timeout);}
       await wait(1000);
     }
     if(!audio)throw new Error('Message delivery timed out.');
@@ -363,7 +382,7 @@ $('guideTextForm').addEventListener('submit',async event=>{
     status('Message sent. Guru is responding…');
     replyTimer=setTimeout(()=>{if(connection===active && !$('guideText').value.trim())status('Still waiting for a reply. You can try your microphone or end this call and reconnect.',true);},45000);
   } catch(_){if(connection===active)status('Your message could not be sent. Please try again.',true);}
-  finally{deliveryPending=false;$('guideTextSend').disabled=false;$('guideMic').disabled=false;syncMic();if(connection)$('guideText').focus();}
+  finally{if(connection===active){deliveryPending=false;$('guideTextSend').disabled=false;$('guideMic').disabled=false;syncMic();$('guideText').focus();}}
 });
 $('guideFollowupForm').addEventListener('input',()=>{formTouched=true;});
 $('guideFollowupForm').addEventListener('submit',async event=>{
@@ -380,6 +399,7 @@ $('guideFollowupForm').addEventListener('submit',async event=>{
   }catch(error){$('guideFormStatus').textContent=error.message||'Please try again.';$('guideSubmit').disabled=false;}
 });
 window.addEventListener('pagehide',()=>{
+  preparedMicStream?.getTracks().forEach(track=>track.stop());
   connection?.end();
   if(call)fetch(call.stopUrl,{method:'POST',headers:{'X-CSRFToken':csrf,'Content-Type':'application/json'},body:'{}',credentials:'same-origin',keepalive:true}).catch(()=>{});
 });
