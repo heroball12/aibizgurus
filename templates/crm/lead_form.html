@@ -1,16 +1,4 @@
-{% extends "base.html" %}
-{% block title %}Lead | Sales Intelligence{% endblock %}
-{% block content %}
-<section class="sales-hero compact solo">
-  <div>
-    <span class="ops-label">Sales Intelligence</span>
-    <h1>{% if lead %}Edit lead{% else %}Create lead{% endif %}</h1>
-    <p>Keep the internal pipeline clean, current, and ready for follow-up. {% if not lead %}Need to add a list? Upload a CSV or Excel tracker instead.{% endif %}</p>
-    <div class="sales-hero-actions">
-      {% if not lead %}<a class="btn ghost" href="{% url 'lead_upload' %}">Upload Tracker</a>{% endif %}
-      <a class="btn ghost" href="{% url 'crm_home' %}">Dashboard</a>
-    </div>
-  </div>
-</section>
-<section class="sales-panel"><form method="post" class="form gridform dark-form">{% csrf_token %}{{ form.as_p }}<button class="btn neon">Save Lead</button></form></section>
+{% extends "crm/base.html" %}{% block title %}{% if lead %}Edit lead{% else %}Add a lead{% endif %} | Sales{% endblock %}{% block workspace %}
+<header class="sales-page-head"><div><a class="sales-back" href="{% url 'sales_pipeline' %}">← Pipeline</a><h1>{% if lead %}Keep the details clear.{% else %}Start a conversation.{% endif %}</h1><p>Capture the basics. Build the relationship from here.</p></div>{% if not lead %}<a class="btn ghost" href="{% url 'lead_upload' %}">Import a list ↗</a>{% endif %}</header>
+<section class="sales-surface sales-prep"><form method="post" class="form dark-form">{% csrf_token %}{{ form.non_field_errors }}<div class="sales-contact-fields">{% for field in form %}{% if field.name == 'business_name' or field.name == 'industry' or field.name == 'name' or field.name == 'phone' or field.name == 'email' or field.name == 'website' or field.name == 'city' or field.name == 'state' %}<p>{{ field.label_tag }}{{ field }}{{ field.errors }}</p>{% endif %}{% endfor %}</div><p>{{ form.notes.label_tag }}{{ form.notes }}{{ form.notes.errors }}</p><details {% if form.errors %}open{% endif %}><summary>More details &amp; record settings</summary><div class="sales-contact-fields">{% for field in form %}{% if field.name != 'business_name' and field.name != 'industry' and field.name != 'name' and field.name != 'phone' and field.name != 'email' and field.name != 'website' and field.name != 'city' and field.name != 'state' and field.name != 'notes' %}<p>{{ field.label_tag }}{{ field }}{{ field.errors }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}</p>{% endif %}{% endfor %}</div></details><button class="btn neon" type="submit">Save lead ↗</button></form></section>
 {% endblock %}

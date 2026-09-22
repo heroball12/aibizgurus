@@ -172,3 +172,34 @@ FIELD_ENCRYPTION_KEY=your-generated-key
 ```
 # aibizgurus
 # aibizgurus
+
+
+## Sales workspace
+
+Staff sales work starts at `/crm/`: Today, Lead Finder, Pipeline and Assessments. Existing imports, detailed statuses, assignment and bulk controls remain available under More tools and Advanced records. Existing lead records are preserved.
+
+- Lead Finder uses real OpenStreetMap public listings with phone numbers. Result cards link to the listing and business website when supplied. Results persist across days and are paginated; adding a prospect does not record a call. Phone deduplication also checks archived and do-not-contact records, including another check when saving a result. Public results are cached for five minutes and provider failures trigger a one-minute cooldown. Public source coverage varies; a requested count is a limit, not guaranteed inventory. The Overpass endpoint remains configurable through `LEAD_FINDER_OVERPASS_URL`; see the [official instance directory](https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances) when choosing a provider appropriate to your usage.
+- Searches up to 20 run immediately. Larger quantities are offered only when `CELERY_BROKER_URL` (or `REDIS_URL`) is configured; a running Celery worker is still required. Worker/provider errors are shown in search status. No new paid search account is required.
+- Growth Assessments are 15–20 minute video business reviews with an AI Specialist: current operations, AI opportunities, implementation strategy and custom pricing. The existing Calendly link supplies availability and invitations. Staff explicitly confirm the booking and record its time in the CRM; this is not an automatic Calendly synchronization. Times use the configured `America/Los_Angeles` timezone.
+- Each lead has a structured assessment brief, simple conversation outcomes, follow-up dates and an activity history. Raw notes and advanced classification controls remain accessible.
+- Ask Guru opens a staff-only Type / Speak coaching window using the existing Runway credentials and avatar. The server checks staff access and lead ownership on both rendering and session creation. Only the selected business name, industry, stage and bounded assessment fields enter the persona; contact fields, meeting links and raw notes are excluded. Information typed into the call itself is processed by Runway under the existing live-call terms. The coach proposes wording and role-plays; it does not send outreach, mutate CRM records, or book appointments. Public Guru and demo sessions keep their existing audio transport and visitor handoffs.
+
+Deployment uses migration `crm.0009` (additive fields only), already covered by the existing Render migration commands. No additional environment variables are needed for the coach when public Guru is configured.
+
+## Lead sheets
+
+`/crm/sheets/` provides a built-in spreadsheet editor; it does not require Google OAuth or create a Google-hosted document. Create a blank sheet, open an Excel/CSV file for review, or use **Edit this view in a sheet** from CRM screens. The contextual action respects lead, pipeline, queue, import and Finder filters. Finder sheets edit existing staging results; saving them does not promote results or record outreach.
+
+- **Save to CRM** applies all valid edits in one transaction, with row errors, duplicate checks, owner/assignment permissions, do-not-contact protections and conflict detection. Retries use a mutation ID to avoid duplicate inserts. Existing records retain fields outside the sheet. Follow-up dates also update the CRM's next-follow-up time. Confirmed assessment bookings still belong on the lead page.
+- Named sheets store ordered record references, not another copy of the lead values. Reopening reads current CRM data and removes inaccessible rows from the view. Removing a row from a sheet does not delete the lead. Sheets themselves are private to their creator.
+- Sheets support 500 rows, column groups, dropdowns, dates and multi-cell TSV paste. Larger filtered selections clearly show the cap; refine the source view to edit the remaining records. Exports support up to 10,000 filtered records. Drafts live in the current browser tab with an unsaved-change warning.
+- Excel downloads include frozen headers, text-safe phone numbers, validation dropdowns and hidden signed record references. Reopen a current export as the same user to update its existing CRM rows, even after changing their names. Stale, expired (90 days), inaccessible or cross-user references are rejected. CSV exports escape spreadsheet formulas. `.xlsx` and UTF-8 `.csv` uploads support 5 MB files; Open file previews the first visible worksheet and reports ignored columns. The original tracker importer still supports multi-tab analysis.
+- Excel files are compatible with Excel and Google Sheets. The OOXML writer uses Python's standard library and adds no runtime dependency. Migration `crm.0010` adds the private sheet model.
+
+## Teamspace chat
+
+`/team/messages/` contains the redesigned staff inbox and responsive conversations. Attachments, reactions and owner oversight remain available. Sending uses an authenticated JSON response with an idempotent message nonce, preserves failed drafts and avoids full-page reloads. Feeds return 60 messages at a time with earlier-message loading and reconnect backoff. Polling never marks messages read: the visible, focused conversation explicitly acknowledges the latest displayed message when scrolled to the bottom.
+
+Notification preferences are stored per account: Aurora, Glass, Pulse, Soft chime or Silent; volume; message previews; desktop alerts; Do Not Disturb. Individual conversations can be muted. Unread totals count every active membership, and browser tabs coordinate notification deduplication. Alerts operate while an app tab remains open (browser timer throttling applies); this is not closed-browser Web Push. Desktop permission is requested only by the user's Enable alerts action, and sounds follow browser audio permissions. The global Team button is also available in the CRM.
+
+Team video calls and screen sharing are deferred. Migration `audit.0006` adds notification preferences, muted memberships and message retry IDs; `audit.0007` removes the experimental call schema already applied in the local preview. Existing messages and preferences are preserved. These migrations run through the existing Render migration command.

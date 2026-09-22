@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% load static %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/sales-workspace.css' %}"><script src="{% static 'js/sales-workspace.js' %}" defer></script>{% block sales_head %}{% endblock %}{% endblock %}
+{% block body_class %}staff-mode sales-app{% endblock %}
+{% block navigation %}<header class="sales-topbar"><a href="{% url 'crm_home' %}" class="sales-wordmark"><span aria-hidden="true">✦</span> AI BUSINESS GURUS <small>SALES</small></a><div><span>{{ user.first_name|default:user.username }}</span><details class="sales-account"><summary>Workspace ▾</summary><div><a href="{% url 'ops_dashboard' %}">Operations</a>{% if user.is_owner %}<a href="{% url 'owner_dashboard' %}">Owner dashboard</a>{% endif %}<a href="{% url 'staff_messages' %}">Team chat</a><a href="{% url 'staff_time_clock' %}">Time clock</a><a href="{% url 'home' %}" target="_blank" rel="noopener">Public website ↗</a><a href="{% url 'password_change' %}">Change password</a><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button>Sign out</button></form></div></details></div></header>{% endblock %}
+{% block content %}
+<div class="sales-workspace">
+  <aside class="sales-sidebar"><span class="sales-eyebrow">YOUR WORKSPACE</span><nav aria-label="Sales workspace">
+    <a href="{% url 'crm_home' %}" {% if request.resolver_match.url_name == 'crm_home' %}aria-current="page"{% endif %}><span>◈</span> Today</a>
+    <a href="{% url 'lead_finder' %}" {% if 'finder' in request.resolver_match.url_name or 'generation' in request.resolver_match.url_name %}aria-current="page"{% endif %}><span>⌕</span> Lead Finder</a>
+    <a href="{% url 'sales_pipeline' %}" {% if request.resolver_match.url_name == 'sales_pipeline' or request.resolver_match.url_name == 'lead_detail' %}aria-current="page"{% endif %}><span>▤</span> Pipeline</a>
+    <a href="{% url 'sales_assessments' %}" {% if request.resolver_match.url_name == 'sales_assessments' %}aria-current="page"{% endif %}><span>◷</span> Assessments</a>
+    <a href="{% url 'lead_sheets' %}" {% if 'sheet' in request.resolver_match.url_name %}aria-current="page"{% endif %}><span>▦</span> Lead sheets</a>
+  </nav><details class="sales-secondary"><summary>More tools</summary><a href="{% url 'lead_upload' %}">Import leads</a><a href="{% url 'lead_create' %}">Add a lead</a><a href="{% url 'lead_generation_history' %}">Search history</a><a href="{% url 'lead_queue' 'review' %}">Review records</a><a href="{% url 'sales_scorecards' %}">Team performance</a><a href="{% url 'lead_export' %}">Export leads</a></details>
+  <button type="button" class="sales-guru-launch" data-sales-guru="{{ guru_url|default:'/ai/concierge/?embed=1&sales=1' }}"><img src="{% static 'img/guru-helmet.jpg' %}" alt=""><span><strong>Ask Guru</strong><small>Your sales coach</small></span><b>↗</b></button>
+  <p class="sales-sidebar-note">One conversation.<br>One useful next step.</p></aside>
+  <div class="sales-content">{% if context_sheet_url %}<nav class="sheet-shortcuts" aria-label="Lead spreadsheet tools"><a href="{% url 'lead_sheet_new' %}">＋ Blank lead sheet</a><a href="{{ context_sheet_url }}">▦ Edit this view in a sheet</a><a href="{{ context_export_url }}">↓ Export Excel</a></nav>{% endif %}{% block workspace %}{% endblock %}</div>
+</div>
+<dialog id="salesGuruDialog" class="sales-guru-dialog" aria-labelledby="salesGuruTitle"><header><div><span class="sales-eyebrow">YOUR SALES COACH</span><h2 id="salesGuruTitle">Guru, on your side.</h2></div><button type="button" data-close-guru aria-label="Close sales coach">×</button></header><p>Practice your opener, work through an objection, or prepare the assessment. Guru receives the selected business’s name, industry, stage and saved assessment brief through Runway. Contact fields and the full CRM are not included. Save your brief before opening Guru.</p><div id="salesGuruMount"></div><p id="salesGuruStatus" role="status"></p></dialog>
+{% endblock %}
+{% block team_widget %}{% endblock %}{% block footer %}{% endblock %}

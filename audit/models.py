@@ -102,6 +102,7 @@ class StaffMessageParticipant(models.Model):
     joined_at = models.DateTimeField(auto_now_add=True)
     last_read_at = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    muted = models.BooleanField(default=False)
 
     class Meta:
         unique_together = [("thread", "user")]
@@ -114,14 +115,25 @@ class StaffMessageParticipant(models.Model):
         return f"{self.user} in {self.thread}"
 
 
+class StaffNotificationPreference(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="chat_notification_preferences")
+    sound = models.CharField(max_length=20, default="aurora", choices=[("aurora", "Aurora"), ("glass", "Glass"), ("pulse", "Pulse"), ("soft", "Soft chime"), ("none", "Silent")])
+    volume = models.PositiveSmallIntegerField(default=40)
+    desktop = models.BooleanField(default=False)
+    previews = models.BooleanField(default=True)
+    snoozed_until = models.DateTimeField(null=True, blank=True)
+
+
 class StaffMessage(models.Model):
     thread = models.ForeignKey(StaffMessageThread, on_delete=models.CASCADE, related_name="messages")
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="sent_staff_messages")
     body = models.TextField()
+    client_nonce = models.UUIDField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["created_at"]
+        constraints = [models.UniqueConstraint(fields=["sender", "client_nonce"], name="staff_message_sender_nonce")]
         indexes = [
             models.Index(fields=["thread", "created_at"]),
             models.Index(fields=["sender", "created_at"]),

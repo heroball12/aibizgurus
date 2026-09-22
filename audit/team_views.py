@@ -276,10 +276,13 @@ def create_staff_message(thread, sender, body, files):
 def staff_messages(request):
     ensure_updates_thread()
     threads = team_threads_for_user(request.user)
+    query = request.GET.get("q", "").strip()[:150]
+    if query:
+        threads = threads.filter(Q(title__icontains=query)|Q(participants__user__first_name__icontains=query)|Q(participants__user__username__icontains=query)).distinct()
     page_obj = paginate(request, threads, 30)
     decorate_chat_titles(page_obj.object_list, request.user)
     return render(request, "audit/staff_messages.html", {
-        "page_obj": page_obj,
+        "page_obj": page_obj, "q": query,
         "can_view_all": can_view_all_staff_messages(request.user),
     })
 
@@ -363,15 +366,15 @@ def staff_message_thread(request, pk):
                 return redirect("staff_message_thread", pk=thread.pk)
         for error in file_errors:
             form.add_error(None, error)
-    messages_qs = thread.messages.select_related("sender").prefetch_related("attachments", "reactions__user").order_by("created_at")
+    messages_qs = list(reversed(list(thread.messages.select_related("sender").prefetch_related("attachments", "reactions__user").order_by("-pk")[:60])))
     sidebar_threads = list(team_threads_for_user(request.user)[:40])
     decorate_chat_titles(sidebar_threads, request.user)
     chat_title = chat_title_for_user(thread, request.user)
-    mark_thread_read(thread, request.user)
     return render(request, "audit/staff_message_thread.html", {
         "thread": thread,
         "chat_title": chat_title,
         "thread_messages": messages_qs,
+        "my_membership": thread.participants.filter(user=request.user, is_active=True).first(),
         "sidebar_threads": sidebar_threads,
         "form": form,
         "reaction_emojis": REACTION_EMOJIS,

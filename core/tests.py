@@ -454,7 +454,7 @@ class PlatformFlowTests(TestCase):
         )
         response = self.client.get(reverse("crm_home"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "SDR command center")
+        self.assertContains(response, "Make room for growth.")
         self.assertContains(response, "Warm Demo Co")
         queue = self.client.get(reverse("lead_queue", args=["warm"]))
         self.assertContains(queue, "Warm Demo Co")
@@ -702,7 +702,8 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(len(status.json()["staged_leads"]), 5)
         self.assertIn("business_name", status.json()["staged_leads"][0])
         self.assertNotIn("email", status.json()["staged_leads"][0])
-        self.assertNotIn("website", status.json()["staged_leads"][0])
+        self.assertIn("website", status.json()["staged_leads"][0])
+        self.assertIn("source_url", status.json()["staged_leads"][0])
 
         staged = LeadStaging.objects.filter(batch=batch).first()
         response = self.client.post(reverse("lead_staging_action", args=[staged.pk, "mark-called"]), {
@@ -739,8 +740,14 @@ class PlatformFlowTests(TestCase):
             "location": "Phoenix, AZ",
             "quantity": "25",
         })
-        queued = LeadGenerationBatch.objects.get()
-        self.assertRedirects(response, reverse("lead_generation_batch_detail", args=[queued.pk]))
+        # Avoid offering an unavailable large search when no worker is configured.
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("quantity", response.context["form"].errors)
+        self.assertFalse(LeadGenerationBatch.objects.exists())
+        # Existing queued jobs still surface worker failures and enforce ownership.
+        from crm.lead_finder import create_generation_batch, enqueue_generation_batch
+        queued = create_generation_batch(employee=alice, industry="Restaurant", location="Phoenix, AZ", quantity=25)
+        self.assertFalse(enqueue_generation_batch(queued))
         queued.refresh_from_db()
         self.assertEqual(queued.status, "failed")
         self.assertEqual(queued.quantity_generated, 0)
@@ -807,6 +814,7 @@ class PlatformFlowTests(TestCase):
         bob_view = self.client.get(reverse("staff_message_thread", args=[thread.pk]))
         self.assertEqual(bob_view.status_code, 200)
         self.assertContains(bob_view, "Can you follow up")
+        self.client.post(reverse("staff_message_read", args=[thread.pk]), {"through": thread.messages.latest("pk").pk})
         self.assertEqual(self.client.get(reverse("staff_message_summary")).json()["unread_count"], 0)
 
         self.client.force_login(charlie)

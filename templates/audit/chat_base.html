@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% load static %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/team-chat.css' %}">{% block chat_head %}{% endblock %}{% endblock %}
+{% block body_class %}staff-mode chat-app{% endblock %}
+{% block navigation %}<header class="chat-appbar"><a class="chat-brand" href="{% url 'staff_messages' %}"><span>✦</span> AI BUSINESS GURUS <small>TEAMSPACE</small></a><nav aria-label="Team workspace"><a href="{% url 'crm_home' %}">Sales workspace ↗</a><a href="{% url 'ops_dashboard' %}">Operations</a><button type="button" data-notification-settings>Notification settings</button></nav></header>{% endblock %}
+{% block footer %}{% endblock %}
+{% block team_widget %}<span class="team-chat-widget" hidden></span>{% endblock %}

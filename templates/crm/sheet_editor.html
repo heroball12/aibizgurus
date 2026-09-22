@@ -1,0 +1,15 @@
+{% extends 'crm/base.html' %}{% load static %}
+{% block title %}Lead sheet | AI Business Gurus{% endblock %}
+{% block sales_head %}<link rel="stylesheet" href="{% static 'css/lead-sheets.css' %}"><script src="{% static 'js/lead-sheets.js' %}" defer></script>{% endblock %}
+{% block workspace %}
+<div id="leadSheetApp" data-save-url="{% url 'lead_sheet_save' %}" data-import-url="{% url 'lead_sheet_import' %}" data-export-base="{% url 'lead_sheet_export' %}">
+{% csrf_token %}{{ sheet_data|json_script:'leadSheetData' }}
+<header class="sheet-heading"><div><a class="sheet-back" href="{% url 'lead_sheets' %}">← Lead sheets</a><label class="sales-eyebrow" for="sheetTitle">SHEET NAME</label><input id="sheetTitle" maxlength="150" aria-label="Sheet name" value="{{ sheet_data.title }}"><p id="sheetSubtitle">Prebuilt columns. Real CRM records. One save.</p></div><div class="sheet-save-area"><span id="sheetStatus" role="status">Ready to edit</span><button type="button" class="btn neon" id="saveSheet">Save to CRM <kbd>⌘ S</kbd></button></div></header>
+<div class="sheet-notice" id="sheetNotice" hidden></div><div class="sheet-errors" id="sheetErrors" role="alert" hidden></div>
+<section class="sheet-surface" aria-label="Lead spreadsheet"><div class="sheet-toolbar"><div><button type="button" id="addRows">＋ Add 10 rows</button><button type="button" id="removeRows" disabled>Remove from sheet</button></div><div><button type="button" id="openSheetFile">Open file</button><input type="file" id="sheetFile" accept=".xlsx,.csv" hidden><button type="button" id="exportSheet">Export Excel ↓</button><button type="button" id="exportCSV">CSV ↓</button></div></div>
+<div class="sheet-view-bar"><div id="sheetGroups" role="tablist" aria-label="Column groups"></div><label class="sheet-search">⌕ <input type="search" id="sheetSearch" placeholder="Find a row…" aria-label="Find a row in this sheet"></label></div>
+<div class="sheet-grid-scroll" tabindex="0" aria-label="Scrollable lead sheet"><table id="sheetGrid"><caption class="sheet-sr-only">Edit lead fields. Tab moves between cells. Enter moves down. Paste multiple rows from Excel or Google Sheets.</caption><thead></thead><tbody></tbody></table></div>
+<footer class="sheet-grid-footer"><span id="sheetRowCount"></span><div><button type="button" id="sheetPrev" aria-label="Previous rows">←</button><span id="sheetPage"></span><button type="button" id="sheetNext" aria-label="Next rows">→</button></div></footer></section>
+<div class="sheet-help"><p><strong>Start with a business name or contact name.</strong> Switch column groups for outreach, details and assessment notes. Paste rows directly from Excel or Google Sheets.</p><p>Save updates the CRM immediately. Removing a row from a sheet keeps its CRM record. Confirm assessment bookings on the <a href="{% url 'sales_assessments' %}">lead’s assessment page</a>.</p><p>Up to 500 rows per sheet. Dates use YYYY-MM-DD. Files stay within your CRM access permissions.</p></div>
+</div>
+{% endblock %}

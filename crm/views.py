@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
-from django.db.models import Count, Q, Sum
+from django.db.models import Case, Count, IntegerField, Q, Sum, Value, When
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -140,7 +141,7 @@ def apply_lead_filters(leads, filters):
     if filters["assigned_to"]:
         if filters["assigned_to"] == "unassigned":
             leads = leads.filter(assigned_to__isnull=True)
-        else:
+        elif filters["assigned_to"].isdigit():
             leads = leads.filter(assigned_to_id=filters["assigned_to"])
     if filters["source_file"]:
         leads = leads.filter(source_file=filters["source_file"])
@@ -254,6 +255,10 @@ def update_leads_from_action(user, request, leads):
 
     if not updates:
         return 0
+    if updates.get("status") and updates["status"] != "do_not_contact" and not is_sales_manager(user):
+        if leads.filter(status="do_not_contact").exists():
+            messages.warning(request, "Do-not-contact records were left unchanged. A manager must review them.")
+        leads = leads.exclude(status="do_not_contact")
     count = leads.update(**updates)
     log_activity(
         user=user,
@@ -343,7 +348,7 @@ def apply_staging_filters(staging, filters):
             | Q(industry__icontains=query)
             | Q(city__icontains=query)
         )
-    if filters["employee"]:
+    if filters["employee"].isdigit():
         staging = staging.filter(created_by_id=filters["employee"])
     if filters["industry"]:
         staging = staging.filter(industry=filters["industry"])
@@ -353,7 +358,7 @@ def apply_staging_filters(staging, filters):
             staging = staging.filter(created_at__date=parsed)
     if filters["status"]:
         staging = staging.filter(status=filters["status"])
-    if filters["batch"]:
+    if filters["batch"].isdigit():
         staging = staging.filter(batch_id=filters["batch"])
     return staging
 
@@ -363,7 +368,7 @@ def apply_batch_filters(batches, request):
     industry = request.GET.get("industry", "").strip()
     status = request.GET.get("status", "").strip()
     date_value = request.GET.get("date", "").strip()
-    if employee:
+    if employee.isdigit():
         batches = batches.filter(employee_id=employee)
     if industry:
         batches = batches.filter(industry=industry)
@@ -443,31 +448,27 @@ def employee_required(view):
 
 @employee_required
 def crm_home(request):
+    from .sales import annotate_leads, due_filter, INACTIVE, guide_url
     leads = internal_leads_for_user(request.user).select_related("assigned_to")
-    today = timezone.localdate()
-    imports = LeadImport.objects.select_related("uploaded_by")
-    if not is_sales_manager(request.user):
-        imports = imports.filter(uploaded_by=request.user)
-    imports = imports.order_by("-created_at")[:6]
-    scorecards = build_scorecards(leads, limit=8)
     filters = lead_filter_values(request)
-    filtered_leads = order_leads(apply_lead_filters(leads, filters), filters["sort"])
-    context = {
-        "leads": filtered_leads[:25],
-        "page_obj": paginate(request, filtered_leads, 100),
-        "filtered_count": filtered_leads.count(),
-        "metrics": sales_metrics(leads),
-        "warm_leads": leads.filter(lead_temperature__in=["warm", "hot"]).order_by("-lead_temperature", "follow_up_date", "-created_at")[:10],
-        "followups": leads.filter(Q(follow_up_date__lte=today) | Q(status__in=["callback_requested", "follow_up", "email_requested"])).order_by("follow_up_date", "-created_at")[:10],
-        "review_leads": leads.filter(needs_review=True).order_by("-created_at")[:10],
-        "imports": imports,
-        "scorecards": scorecards,
-        "is_sales_manager": is_sales_manager(request.user),
-        **lead_finder_control_context(request.user),
-        **lead_filter_context(request, leads),
-    }
-    return render(request, "crm/crm_home.html", context)
-
+    filtered = order_leads(apply_lead_filters(leads, filters), filters["sort"])
+    active = filtered.exclude(status__in=INACTIVE)
+    priority = active.annotate(priority=Case(
+        When(due_filter(), then=Value(0)),
+        When(lead_temperature__in=["hot", "warm"], then=Value(1)),
+        default=Value(2), output_field=IntegerField(),
+    )).order_by("priority", "-created_at")
+    return render(request, "crm/crm_home.html", {
+        "page_obj": paginate(request, filtered, 50) if request.GET else None,
+        "filtered_count": filtered.count() if request.GET else None,
+        **(lead_filter_context(request, leads) if request.GET else {}),
+        "today_leads": annotate_leads(list(priority[:8])),
+        "active_count": leads.exclude(status__in=INACTIVE).count(),
+        "due_count": leads.exclude(status__in=INACTIVE).filter(due_filter()).count(),
+        "assessment_count": leads.filter(status="appointment_scheduled").count(),
+        "upcoming_assessments": annotate_leads(list(filtered.filter(status="appointment_scheduled").order_by("appointment_at")[:4])),
+        "guru_url": guide_url(),
+    })
 
 @employee_required
 def lead_finder(request):
@@ -500,18 +501,22 @@ def lead_finder(request):
         form = LeadFinderForm()
 
     filters = lead_finder_filter_values(request)
-    todays_staging = lead_staging_for_user(request.user).filter(created_at__date=today)
-    staged_leads = apply_staging_filters(todays_staging, filters).order_by("-created_at")
+    staged_leads = apply_staging_filters(lead_staging_for_user(request.user), filters).order_by("status", "-created_at")
+    page_obj = paginate(request, staged_leads, 20)
     open_batches = lead_batches_for_user(request.user).filter(status__in=OPEN_BATCH_STATUSES).order_by("-created_at")[:8]
     recent_batches = lead_batches_for_user(request.user).order_by("-created_at")[:8]
     return render(request, "crm/lead_finder.html", {
         "form": form,
-        "staged_leads": staged_leads[:250],
+        "staged_leads": page_obj,
+        "page_obj": page_obj,
+        "query_string": query_without_page(request),
         "staged_count": staged_leads.count(),
         "open_batches": open_batches,
         "recent_batches": recent_batches,
         "finder_filters": filters,
         "today": today,
+        "has_background_worker": bool(settings.CELERY_BROKER_URL),
+        "search_enabled": settings.LEAD_FINDER_ENABLE_PUBLIC_HTTP,
         **lead_finder_control_context(request.user),
     })
 
@@ -538,9 +543,13 @@ def lead_generation_history(request):
 def lead_generation_batch_detail(request, pk):
     batch = get_batch_or_404(request.user, pk)
     staged = lead_staging_for_user(request.user).filter(batch=batch).order_by("-created_at")
+    page_obj = paginate(request, staged, 20)
     return render(request, "crm/lead_generation_batch_detail.html", {
         "batch": batch,
-        "staged_leads": staged,
+        "batch_is_open": batch.status in OPEN_BATCH_STATUSES,
+        "page_obj": page_obj,
+        "query_string": query_without_page(request),
+        "staged_leads": page_obj,
         "staged_count": staged.count(),
         **lead_finder_control_context(request.user),
     })
@@ -565,6 +574,9 @@ def lead_generation_batch_status(request, pk):
             "created": timezone.localtime(lead.created_at).strftime("%b %-d, %-I:%M %p"),
             "call_url": f"tel:{lead.phone_number}",
             "mark_called_url": reverse("lead_staging_action", args=[lead.pk, "mark-called"]),
+            "save_url": reverse("lead_staging_action", args=[lead.pk, "save"]),
+            "website": lead.website,
+            "source_url": lead.source_url,
             "skip_url": reverse("lead_staging_action", args=[lead.pk, "skip"]),
             "delete_url": reverse("lead_staging_action", args=[lead.pk, "delete"]),
         })
@@ -621,15 +633,18 @@ def lead_staging_action(request, pk, action):
         return redirect("lead_generation_batch_detail", pk=staging.batch_id)
     next_url = safe_next_url(request)
     notes = request.POST.get("notes", "").strip()
-    if action == "mark-called":
+    if action in {"mark-called", "save"}:
         try:
-            lead = convert_staging_to_crm_lead(staging, employee=request.user, notes=notes)
+            lead = convert_staging_to_crm_lead(staging, employee=request.user, notes=notes, contacted=action=="mark-called")
         except ValueError as exc:
             messages.error(request, str(exc))
             return redirect(next_url)
         except LeadStaging.DoesNotExist:
             messages.info(request, "This row has already been processed.")
             return redirect(next_url)
+        if action == "save":
+            messages.success(request, "Added to your pipeline. Prepare your approach with Guru.")
+            return redirect("lead_detail", pk=lead.pk)
         messages.success(request, f"Moved {lead.business_name or lead.phone} into CRM as first contact attempted.")
         return redirect(next_url)
     if action == "skip":
@@ -765,6 +780,7 @@ def lead_upload(request):
 
 @employee_required
 def lead_detail(request, pk):
+    from .workspace_views import detail_context
     lead = get_internal_lead_or_404(request.user, pk)
     if request.method == "POST":
         action = request.POST.get("action", "add_note")
@@ -835,6 +851,7 @@ def lead_detail(request, pk):
             LeadIntelligenceForm(instance=lead, user=request.user, is_sales_manager=is_sales_manager(request.user)),
         )
     return render(request, "crm/lead_detail.html", {
+        **detail_context(lead),
         "lead": lead,
         "note_form": note_form,
         "intelligence_form": intelligence_form,

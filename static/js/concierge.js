@@ -61,7 +61,7 @@ $('guideText').addEventListener('input',()=>{
   if(connection && $('guideText').value.trim())typingTimer=setTimeout(notifyTyping,1000);
 });
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const tellHost = type => { if(config.embedded && parent!==window)parent.postMessage({source:config.industry?'aibg-demo-employee':'aibg-hero-concierge',type},location.origin); };
+const tellHost = type => { if(config.embedded && parent!==window)parent.postMessage({source:config.salesGuide?'aibg-sales-guru':config.industry?'aibg-demo-employee':'aibg-hero-concierge',type},location.origin); };
 function connectionProgress(step) { $('guideConnectingStep').textContent=step.replaceAll('Guru',employeeName); }
 function beginConnectionProgress() {
   const started=Date.now();$('guideConnecting').hidden=false;
@@ -122,7 +122,7 @@ function openFollowup(args={}) {
 }
 function tool(event) {
   if (!event || !event.args || typeof event.args!=='object' || Array.isArray(event.args)) return;
-  if(config.industry)return;
+  if(config.industry || config.salesGuide)return;
   if(event.tool==='remember_visitor'){saveContext(event.args).catch(()=>status('Your name or request could not be remembered. Please ask Guru to try again.',true));return;}
   if ($('guideText').value.trim() || deliveryPending) return;
   if (event.tool==='introduce_demo_employee' && Object.hasOwn(config.demoDirectory || {},event.args.industry)) {
@@ -154,7 +154,7 @@ document.querySelectorAll('[data-guide-terms]').forEach(link=>link.addEventListe
 }));
 document.querySelectorAll('[data-close-terms]').forEach(button=>button.addEventListener('click',()=>$('guideTermsDialog').close()));
 window.addEventListener('message',async event=>{
-  if(event.origin===location.origin && event.source===parent && config.industry && event.data?.source==='aibg-demo-host' && event.data.type==='close') {
+  if(event.origin===location.origin && event.source===parent && ((config.industry && event.data?.source==='aibg-demo-host') || (config.salesGuide && event.data?.source==='aibg-sales-host')) && event.data.type==='close') {
     if(pendingStart){try{await pendingStart;}catch(_){}}
     const closed=await endCall();
     if(closed)tellHost('closed');
@@ -219,7 +219,7 @@ async function cancelProvider(record) {
     try {await wait(700);await post(record.stopUrl);return true;} catch (_) { return false; }
   }
 }
-async function endCall(message='Call ended. You can keep exploring or book your growth consultation.') {
+async function endCall(message=config.salesGuide?'Coaching ended. Review your next step and save it on the lead.':'Call ended. You can keep exploring or book your Growth Assessment.') {
   ++generation;busy=false;clearInterval(timer);clearTimeout(replyTimer);clearTimeout(typingTimer);stopConnectionProgress();speechLevel(0);
   deliveryPending=false;$('guideTextSend').disabled=false;$('guideMic').disabled=false;
   const oldConnection=connection,oldCall=call;connection=null;call=null;
@@ -303,7 +303,7 @@ async function startConversation({handoff=!!config.handoff?.autoStart}={}){
       } catch(error) {if(!transfer)throw error;mode='text';}
     }
     if(run!==generation)return;
-    pendingStart=post(config.startUrl,{consent:!transfer && $('guideConsentCheck').checked,page,industry:config.industry || '',...(transfer?{handoff:transfer.id}:{})});
+    pendingStart=post(config.startUrl,{consent:!transfer && $('guideConsentCheck').checked,page,industry:config.industry || '',...(config.salesGuide?{salesGuide:true,salesLead:config.salesLead}:{}),...(transfer?{handoff:transfer.id}:{})});
     try{record=await pendingStart;}finally{pendingStart=null;}
     if(transfer)config.handoff.autoStart=false;
     if(run!==generation){await cancelProvider(record);return;}call=record;

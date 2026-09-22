@@ -11,6 +11,9 @@ import re
 from urllib import parse, request
 
 from django.conf import settings
+from django.core.cache import cache
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
@@ -31,6 +34,22 @@ class DirectoryLead:
     city: str = ""
     state: str = ""
     confidence_score: Decimal = Decimal("0.70")
+    website: str = ""
+    source_url: str = ""
+    address: str = ""
+
+
+def public_url(value):
+    value = (value or "").strip()
+    if value and "://" not in value:
+        value = "https://" + value
+    try:
+        parsed = parse.urlsplit(value)
+        host = parsed.hostname
+        URLValidator(schemes=["http", "https"])(value)
+    except (ValueError, ValidationError):
+        return ""
+    return value[:200] if parsed.scheme in {"http", "https"} and host and not parsed.username and len(value) <= 200 else ""
 
 
 class LeadProvider(ABC):
@@ -141,11 +160,8 @@ class OpenStreetMapProvider(LeadProvider):
             area_clause += '.region->.searchArea;'
         union_parts = []
         for item_filter in filters:
-            union_parts.extend([
-                f"node{item_filter}(area.searchArea);",
-                f"way{item_filter}(area.searchArea);",
-                f"relation{item_filter}(area.searchArea);",
-            ])
+            for phone_tag in ["phone", "contact:phone"]:
+                union_parts.append(f'nwr{item_filter}["{phone_tag}"](area.searchArea);')
         query = f"""
         [out:json][timeout:{int(timeout)}];
         {area_clause}
@@ -154,6 +170,13 @@ class OpenStreetMapProvider(LeadProvider):
         );
         out tags {max(limit * 5, 25)};
         """
+        cache_key = "lead-listings:v2:" + hashlib.sha256(json.dumps([endpoint, industry, location, limit], separators=(",", ":")).encode()).hexdigest()
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return cached
+        cooldown_key = "lead-provider-cooldown:" + hashlib.sha256(endpoint.encode()).hexdigest()
+        if cache.get(cooldown_key):
+            raise RuntimeError("The public listing provider is temporarily unavailable. Please wait a minute, then try again.")
         encoded = parse.urlencode({"data": query}).encode()
         req = request.Request(
             endpoint,
@@ -166,8 +189,12 @@ class OpenStreetMapProvider(LeadProvider):
         )
         try:
             with request.urlopen(req, timeout=timeout) as response:
-                payload = json.loads(response.read().decode("utf-8"))
+                content = response.read(4_000_001)
+                if len(content) > 4_000_000:
+                    raise ValueError("Listing response exceeded its size limit")
+                payload = json.loads(content.decode("utf-8"))
         except Exception as exc:
+            cache.set(cooldown_key, True, 60)
             logger.warning("OpenStreetMap lead provider failed: %s", type(exc).__name__)
             raise RuntimeError("The public listing provider is unavailable. Please try again later.") from exc
         if payload.get("remark"):
@@ -177,8 +204,10 @@ class OpenStreetMapProvider(LeadProvider):
             tags = element.get("tags") or {}
             name = (tags.get("name") or "").strip()
             phone = (tags.get("phone") or tags.get("contact:phone") or "").strip()
-            if not name or not phone:
+            if not name or not 7 <= len(normalize_phone(phone)) <= 15:
                 continue
+            kind, osm_id = element.get("type"), element.get("id")
+            source_url = f"https://www.openstreetmap.org/{kind}/{osm_id}" if kind in {"node", "way", "relation"} and isinstance(osm_id, int) else ""
             leads.append(DirectoryLead(
                 business_name=name[:200],
                 phone_number=format_phone(phone)[:80],
@@ -186,9 +215,14 @@ class OpenStreetMapProvider(LeadProvider):
                 city=(tags.get("addr:city") or city)[:120],
                 state=(tags.get("addr:state") or state)[:80],
                 confidence_score=Decimal("0.82"),
+                website=public_url(tags.get("website") or tags.get("contact:website")),
+                source_url=source_url,
+                address=" ".join(str(tags.get(key) or "") for key in ["addr:housenumber", "addr:street"]).strip()[:255],
             ))
             if len(leads) >= limit:
                 break
+        # Cache only public listings. Every save still checks current CRM duplicates.
+        cache.set(cache_key, leads, 300)
         return leads
 
 
@@ -215,19 +249,18 @@ def set_batch_status(batch: LeadGenerationBatch, status: str, progress: int, mes
     batch.save(update_fields=["status", "progress_percent", "status_message"])
 
 
-def duplicate_exists(candidate: DirectoryLead, dedupe_key: str) -> bool:
+def duplicate_exists(candidate: DirectoryLead, dedupe_key: str, *, exclude_staging_id=None) -> bool:
     if not dedupe_key:
         return True
     phone = candidate.phone_number
-    business = candidate.business_name
-    existing_staging = LeadStaging.objects.filter(dedupe_key=dedupe_key).exists()
+    existing_staging = LeadStaging.objects.filter(dedupe_key=dedupe_key).exclude(pk=exclude_staging_id).exists()
     if existing_staging:
         return True
-    return Lead.objects.filter(lead_type="internal_sales").filter(
-        Q(duplicate_key=dedupe_key)
-        | Q(phone=phone)
-        | (Q(business_name__iexact=business) & Q(phone=phone))
-    ).exists()
+    matches = Q(duplicate_key=dedupe_key) | Q(phone=phone)
+    digits = normalize_phone(phone)
+    if len(digits) >= 7:
+        matches |= Q(phone__regex=(r"^\D*(1\D*)?" if len(digits) == 10 else r"^\D*") + r"\D*".join(digits) + r"\D*$")
+    return Lead.objects.filter(lead_type="internal_sales").filter(matches).exists()
 
 
 def generate_leads_for_batch(batch_id: int, providers: list[LeadProvider] | None = None) -> LeadGenerationBatch:
@@ -303,6 +336,9 @@ def generate_leads_for_batch(batch_id: int, providers: list[LeadProvider] | None
                         industry=result.industry[:150],
                         city=result.city[:120],
                         state=result.state[:80],
+                        website=public_url(result.website),
+                        source_url=public_url(result.source_url),
+                        address=result.address[:255],
                         confidence_score=result.confidence_score,
                         dedupe_key=key,
                         created_by=batch.employee,
@@ -395,13 +431,21 @@ def enqueue_generation_batch(batch: LeadGenerationBatch) -> bool:
         return False
 
 
-def convert_staging_to_crm_lead(staging: LeadStaging, *, employee, notes: str = "") -> Lead:
+def convert_staging_to_crm_lead(staging: LeadStaging, *, employee, notes: str = "", contacted: bool = True) -> Lead:
     if (staging.batch.provider_summary or {}).get("fallback_directory"):
         raise ValueError("This older batch contains generated sample data and cannot be used for real outreach. Start a new public-listing search.")
-    note_text = (notes or staging.notes or "First contact attempted from Lead Finder.").strip()
+    note_text = (notes or staging.notes or ("First contact attempted from Lead Finder." if contacted else "Saved from Lead Finder. No outreach recorded.")).strip()
     now = timezone.now()
     with transaction.atomic():
+        RequestBudget.objects.get_or_create(key="lead-staging-write-lock", defaults={"expires_at": timezone.now() + timedelta(days=36500)})
+        RequestBudget.objects.select_for_update().get(pk="lead-staging-write-lock")
         staging = LeadStaging.objects.select_for_update().get(pk=staging.pk)
+        if not (employee.is_superuser or employee.role in {"admin", "owner"}) and staging.created_by_id != employee.pk:
+            raise ValueError("This result was reassigned. Refresh your Lead Finder results.")
+        candidate = DirectoryLead(business_name=staging.business_name, phone_number=staging.phone_number, industry=staging.industry)
+        key = lead_dedupe_key(business_name=staging.business_name, phone_number=staging.phone_number)
+        if duplicate_exists(candidate, key, exclude_staging_id=staging.pk):
+            raise ValueError("A matching business is already in the internal CRM or another search result. Review the existing record before outreach.")
         lead = Lead.objects.create(
             lead_type="internal_sales",
             business_name=staging.business_name,
@@ -409,19 +453,21 @@ def convert_staging_to_crm_lead(staging: LeadStaging, *, employee, notes: str = 
             phone=staging.phone_number,
             city=staging.city,
             state=staging.state,
+            website=staging.website,
+            address=staging.address,
             source="Lead Finder",
             source_file=f"Lead Finder Batch #{staging.batch_id}",
             source_sheet=staging.batch.industry,
-            status="attempted",
+            status="attempted" if contacted else "new",
             lead_temperature="cold",
             notes=note_text,
             cleaned_notes=note_text,
             assigned_to=employee,
             imported_at=staging.created_at,
-            last_contact_at=now,
+            last_contact_at=now if contacted else None,
             classification_confidence=staging.confidence_score,
             classification_source="manual",
-            duplicate_key=staging.dedupe_key,
+            duplicate_key=key,
             lead_generation_batch=staging.batch,
         )
         LeadActivity.objects.create(
@@ -429,15 +475,16 @@ def convert_staging_to_crm_lead(staging: LeadStaging, *, employee, notes: str = 
             user=employee,
             raw_note=note_text,
             cleaned_note=note_text,
-            inferred_status="attempted",
+            inferred_status=lead.status,
             lead_temperature="cold",
             confidence_score=staging.confidence_score,
-            activity_type="call",
+            activity_type="call" if contacted else "manual_note",
             classification_source="manual",
             manually_reviewed=True,
             metadata={
                 "lead_generation_batch_id": staging.batch_id,
                 "lead_staging_id": staging.pk,
+                "source_url": staging.source_url,
             },
         )
         staging.delete()
@@ -447,7 +494,7 @@ def convert_staging_to_crm_lead(staging: LeadStaging, *, employee, notes: str = 
         model_label="crm.Lead",
         object_id=lead.pk,
         object_repr=str(lead),
-        message=f"Moved Lead Finder staging row into CRM after first contact attempt.",
+        message="Moved Lead Finder result into CRM after contact." if contacted else "Saved Lead Finder result to the pipeline without recording contact.",
         metadata={"lead_generation_batch_id": lead.lead_generation_batch_id},
     )
     return lead

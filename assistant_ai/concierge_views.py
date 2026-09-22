@@ -18,7 +18,7 @@ from django.views.decorators.http import require_GET, require_POST
 from core.forms import ConsultationRequestForm
 from core.rate_limits import consume_budget, request_identity
 from crm.models import Lead
-from . import concierge, demo_video, concierge_context
+from . import concierge, demo_video, concierge_context, sales_concierge
 from .models import ConciergeCall, ConciergeSubmission
 
 
@@ -47,12 +47,16 @@ def error(message, status=400):
 @ensure_csrf_cookie
 def concierge_home(request):
     from core.demo_profiles import resolve_profile, profiles
+    sales_guide = request.GET.get("sales") == "1"
+    sales_lead = sales_concierge.selected_lead(request, request.GET.get("lead")) if sales_guide else None
+    if sales_guide and ("industry" in request.GET or "handoff" in request.GET):
+        raise Http404("Choose the sales coach or an industry demo.")
     demo_profile = resolve_profile(request.GET["industry"]) if "industry" in request.GET else None
     if "industry" in request.GET and not demo_profile:
         raise Http404("Demo category not found")
     available = demo_profile["slug"] in demo_video.available_profiles() if demo_profile else concierge.is_available()
     directory = concierge.pages()
-    embedded = request.GET.get("embed") == "1"
+    embedded = sales_guide or request.GET.get("embed") == "1"
     initial = request.GET.get("page", "home")
     if initial not in directory or not directory[initial]["embedded"]:
         initial = "home"
@@ -64,7 +68,7 @@ def concierge_home(request):
             "available": available, "pages": directory, "initialPage": initial,
             "startUrl": reverse("concierge_start"), "followupUrl": reverse("concierge_followup"),
             "maxSeconds": settings.VIDEO_CONCIERGE_MAX_SECONDS,
-            "embedded": embedded,
+            "embedded": embedded, "salesGuide": sales_guide, "salesLead": sales_lead.pk if sales_lead else None,
             "employeeName": demo_profile["name"] if demo_profile else "Guru",
             "industry": demo_profile["slug"] if demo_profile else "",
             "demoDirectory": {p["slug"]: {"name": p["name"], "label": p["industry"]} for p in profiles()},
@@ -72,7 +76,7 @@ def concierge_home(request):
             "typingAudioUrl": static("audio/typing-status.mp3"),
             "handoff": {"id": transfer["id"], "mode": transfer["mode"], "autoStart": auto_start} if transfer else None,
         },
-        "embedded": embedded,
+        "embedded": embedded, "sales_guide": sales_guide,
         "available": available, "directory": directory,
         "demo_profile": demo_profile,
         "handoff": transfer,
@@ -96,6 +100,12 @@ def start_call(request):
     if not data:
         return error("Please agree to the AI Business Gurus Terms of Service before starting.")
     from core.demo_profiles import resolve_profile
+    sales_guide = data.get("salesGuide") is True
+    if "salesGuide" in data and not isinstance(data["salesGuide"], bool):
+        return error("Choose a valid conversation mode.")
+    sales_lead = sales_concierge.selected_lead(request, data.get("salesLead")) if sales_guide else None
+    if sales_guide and (data.get("industry") or data.get("handoff")):
+        return error("Choose the sales coach or an industry demo.")
     demo_profile = None
     if data.get("industry"):
         if not isinstance(data["industry"], str):
@@ -133,7 +143,9 @@ def start_call(request):
     except IntegrityError:
         return error("A video call is already being started. Please wait.", 409)
     try:
-        if demo_profile:
+        if sales_guide:
+            result = sales_concierge.create_session(sales_lead)
+        elif demo_profile:
             result = demo_video.create_session(demo_profile, transfer["context"]) if transfer else demo_video.create_session(demo_profile)
         else:
             result = concierge.create_session(data.get("page", "home"), concierge_context.visitor(request.session))
@@ -146,9 +158,9 @@ def start_call(request):
         return error("The live video connection could not start. Please try again or request a follow-up.", 502)
     call.provider_id, call.status = provider_id, "pending"
     call.save(update_fields=["provider_id", "status"])
-    if not demo_profile:
+    if not demo_profile and not sales_guide:
         request.session["concierge_guru_call"] = str(call.id)
-    return JsonResponse({"id": str(call.id), "status": "pending", "contextUrl": reverse("concierge_context", args=[call.id]) if not demo_profile else None, "textUrl":reverse("concierge_text",args=[call.id]), "pollUrl": reverse("concierge_poll", args=[call.id]), "stopUrl": reverse("concierge_stop", args=[call.id])}, status=201)
+    return JsonResponse({"id": str(call.id), "status": "pending", "contextUrl": reverse("concierge_context", args=[call.id]) if not demo_profile and not sales_guide else None, "textUrl":reverse("concierge_text",args=[call.id]), "pollUrl": reverse("concierge_poll", args=[call.id]), "stopUrl": reverse("concierge_stop", args=[call.id])}, status=201)
 
 
 def owned_call(request, call_id):

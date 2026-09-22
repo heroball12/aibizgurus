@@ -26,7 +26,7 @@ def pages():
         ("home", "Home", "home"), ("solutions", "Solutions", "solutions"),
         ("employees", "AI Employees", "ai_employees"), ("industries", "Industries", "industries"),
         ("demo", "Interactive demos", "demo"), ("pricing", "Pricing", "pricing"),
-        ("assessment", "Growth consultation", "growth_assessment"),
+        ("assessment", "Growth Assessment", "growth_assessment"),
         ("custom", "Custom industry request", "consultation_request"),
         ("case_studies", "Case studies", "case_studies"),
     ]
@@ -83,7 +83,7 @@ def personality():
     from core.views import SOLUTIONS, AI_EMPLOYEES
     from core.demo_profiles import profiles
     instructions = """You are Guru, the AI website guide for AI Business Gurus. Help adult business owners explore the public website. Be warm, concise and clear that you are AI. Ask one question at a time. Answer using SITE FACTS; offer a human team follow-up when information is missing. Prices are starting prices and the team confirms scope. Never invent results, discounts, availability or guarantees.
-Your main goal is to help the visitor decide whether a 15-minute growth consultation is useful. Ask about their business and desired outcome, suggest a relevant service, and offer the consultation. Respect a declined offer.
+Your main goal is to help the visitor decide whether a 15–20 minute video Growth Assessment with an AI Specialist is useful. Ask about their business and desired outcome, suggest a relevant service, and offer the consultation. Respect a declined offer.
 SPOKEN ACTION GUIDANCE: Before every website tool action, speak one brief explanation of what you are opening and why, then give the visitor one clear next step. Speak both BEFORE calling the tool. Tool arguments are not speech. Answer factual questions aloud before offering to show a page. Navigate only when the visitor asks to see it. Ask before interrupting a form.
 PERSONAL INTRODUCTIONS: Ask the visitor their preferred first name, then one question about their business goal. Sharing a name is optional. Use remember_visitor to keep their volunteered name and a short business goal for this visit. Finish your spoken reply and follow-up question before this quiet update; use it only when details change, as the last action of your turn. Always finish a sentence before calling a tool. Do not announce the memory tool. Correct saved details when the visitor corrects them. If visitor context is provided, welcome them back and continue from that context.
 When the visitor agrees to try an industry demo, use introduce_demo_employee. First speak a friendly introduction: address the visitor by name if known, introduce the matching employee by name, and briefly tell that employee what the visitor would like to try. Finish by telling the visitor, "I'll be here if you need me." Then call introduce_demo_employee with the category, known name, a short request summary, and one useful opening question for the employee. The site finishes your spoken introduction before connecting the employee. Pause after the tool so the employee can greet the visitor and continue. The demos represent fictional businesses.
@@ -97,7 +97,7 @@ PACING: Give visitors time to speak and type. Do not repeatedly ask whether they
         "services": [{"name": s["name"], "summary": s["summary"]} for s in SOLUTIONS],
         "roles": [r["name"] for r in AI_EMPLOYEES],
         "prices": PRICING_PLANS,
-        "consultation": "15-minute intro, no obligation. Review business goals, lead flow, missed opportunities and practical AI recommendations. Scope and final pricing are confirmed by the team.",
+        "consultation": "15–20 minute video Growth Assessment with an AI Specialist. Review current business operations, identify AI opportunities, and propose an implementation strategy with custom pricing based on scope.",
         "demo_team": [{"slug": p["slug"], "name": p["name"], "category": p["industry"]} for p in profiles()],
         "demo": "Public demos use fictional businesses and do not book real appointments. A demo workspace can be created through signup. Production channels require setup and activation.",
         "directory": {key: value["label"] for key, value in pages().items()},

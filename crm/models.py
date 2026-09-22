@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.db import models
 
@@ -96,6 +98,7 @@ class Lead(models.Model):
     last_contact_at = models.DateTimeField(null=True, blank=True)
     next_follow_up_at = models.DateTimeField(null=True, blank=True)
     appointment_at = models.DateTimeField(null=True, blank=True)
+    assessment_brief = models.JSONField(default=dict, blank=True)
     classification_confidence = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     classification_source = models.CharField(max_length=20, choices=CLASSIFICATION_SOURCE_CHOICES, default="manual")
     needs_review = models.BooleanField(default=False)
@@ -121,6 +124,26 @@ class Lead(models.Model):
 
     def __str__(self):
         return self.name or self.business_name or f"Lead {self.pk}"
+
+class LeadSheet(models.Model):
+    """A private, ordered view of CRM records; values remain on the source records."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="lead_sheets")
+    title = models.CharField(max_length=150, default="Untitled lead sheet")
+    kind = models.CharField(max_length=20, choices=[("leads", "Pipeline leads"), ("prospects", "Finder prospects")], default="leads")
+    rows = models.JSONField(default=list)
+    revision = models.PositiveIntegerField(default=0)
+    last_mutation_id = models.UUIDField(null=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+
+    def __str__(self):
+        return self.title
+
 
 class LeadNote(models.Model):
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name="lead_notes")
@@ -180,6 +203,9 @@ class LeadStaging(models.Model):
     batch = models.ForeignKey(LeadGenerationBatch, on_delete=models.CASCADE, related_name="staged_leads")
     business_name = models.CharField(max_length=200)
     phone_number = models.CharField(max_length=80)
+    website = models.URLField(blank=True)
+    source_url = models.URLField(blank=True)
+    address = models.CharField(max_length=255, blank=True)
     industry = models.CharField(max_length=150)
     city = models.CharField(max_length=120, blank=True)
     state = models.CharField(max_length=80, blank=True)

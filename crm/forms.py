@@ -1,4 +1,6 @@
 from django import forms
+from django.conf import settings
+from django.core.validators import URLValidator
 from django.contrib.auth import get_user_model
 from .models import Lead, LeadNote
 
@@ -50,9 +52,14 @@ class LeadFinderForm(forms.Form):
     location = forms.CharField(
         required=False,
         max_length=180,
-        widget=forms.TextInput(attrs={"placeholder": "California, San Diego, Phoenix, Entire United States…"}),
+        widget=forms.TextInput(attrs={"placeholder": "City, state — e.g. San Diego, CA"}),
     )
-    quantity = forms.ChoiceField(choices=[(str(value), str(value)) for value in LEAD_FINDER_QUANTITIES])
+    quantity = forms.ChoiceField(choices=[(str(value), str(value)) for value in LEAD_FINDER_QUANTITIES], initial="10")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not settings.CELERY_BROKER_URL:
+            self.fields["quantity"].choices = [(str(n), str(n)) for n in LEAD_FINDER_QUANTITIES if n <= 20]
 
     def clean(self):
         cleaned = super().clean()
@@ -67,7 +74,50 @@ class LeadFinderForm(forms.Form):
         return cleaned
 
 
-class LeadForm(forms.ModelForm):
+class SalesUpdateForm(forms.Form):
+    outcome = forms.ChoiceField(choices=[("", "Choose an outcome"), ("attempted", "Tried to reach them"), ("warm_lead", "Had a conversation"), ("callback_requested", "Follow up later"), ("not_interested", "Not interested"), ("do_not_contact", "Do not contact"), ("closed_won", "Won")])
+    note = forms.CharField(max_length=4000, required=False, widget=forms.Textarea(attrs={"rows":3,"placeholder":"What did you learn?"}))
+    follow_up_date = forms.DateField(required=False, widget=forms.DateInput(attrs={"type":"date"}))
+
+    def clean(self):
+        values = super().clean()
+        if values.get("outcome") == "callback_requested" and not values.get("follow_up_date"):
+            self.add_error("follow_up_date", "Choose when to follow up.")
+        return values
+
+
+class AssessmentForm(forms.Form):
+    workflow = forms.CharField(label="How the business operates today", max_length=2000, required=False, widget=forms.Textarea(attrs={"rows":3}))
+    tools = forms.CharField(label="Current tools and systems", max_length=1000, required=False)
+    bottleneck = forms.CharField(label="Main bottleneck", max_length=2000, required=False, widget=forms.Textarea(attrs={"rows":2}))
+    goal = forms.CharField(label="Desired outcome", max_length=1000, required=False)
+    appointment_at = forms.DateTimeField(label="Confirmed assessment time", required=False, widget=forms.DateTimeInput(attrs={"type":"datetime-local"},format="%Y-%m-%dT%H:%M"))
+    meeting_url = forms.URLField(label="Video meeting link", required=False, validators=[URLValidator(schemes=["https", "http"])])
+    confirmed = forms.BooleanField(label="This time has been agreed and booked with the customer", required=False)
+    completed = forms.BooleanField(label="Assessment completed", required=False)
+    strategy = forms.CharField(label="Proposed implementation strategy", max_length=4000, required=False, widget=forms.Textarea(attrs={"rows":3}))
+    pricing = forms.CharField(label="Custom pricing / scope notes", max_length=2000, required=False, widget=forms.Textarea(attrs={"rows":2}))
+
+    def clean(self):
+        values = super().clean()
+        if values.get("confirmed") and not values.get("appointment_at"):
+            self.add_error("appointment_at", "Enter the confirmed date and time.")
+        if values.get("appointment_at") and not values.get("confirmed"):
+            self.add_error("confirmed", "Confirm the booking before recording an assessment time.")
+        if values.get("completed") and not values.get("confirmed"):
+            self.add_error("completed", "Record the confirmed assessment before marking it completed.")
+        return values
+
+
+class RestrictedLeadForm(forms.ModelForm):
+    def clean(self):
+        values = super().clean()
+        if self.instance.pk and self.instance.status == "do_not_contact" and values.get("status") != "do_not_contact" and not self.is_sales_manager:
+            self.add_error("status", "A manager must review the do-not-contact restriction before outreach resumes.")
+        return values
+
+
+class LeadForm(RestrictedLeadForm):
     class Meta:
         model = Lead
         fields = [
@@ -141,7 +191,7 @@ class LeadCSVUploadForm(forms.Form):
         return uploaded
 
 
-class LeadIntelligenceForm(forms.ModelForm):
+class LeadIntelligenceForm(RestrictedLeadForm):
     correction_reason = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={"rows": 2}),

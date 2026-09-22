@@ -14,6 +14,7 @@
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' or request.path|slice:':6' == '/team/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
+{% block navigation %}
 <nav class="nav">
   <a class="brand" href="{% url 'home' %}">
     <img class="brand-logo" src="{% static 'img/ai-business-gurus-logo-nav.png' %}" alt="AI Business Gurus">
@@ -46,258 +47,15 @@
     {% endif %}
   </div>
 </nav>
+{% endblock %}
 {% if messages %}<div class="messages">{% for message in messages %}<div class="alert">{{ message }}</div>{% endfor %}</div>{% endif %}
 <main>{% block content %}{% endblock %}</main>
 {% if request.GET.guided != '1' and not user.is_employee_or_admin %}
 <a class="concierge-launcher" href="{% url 'concierge' %}" aria-label="Open AI growth concierge"><span class="concierge-launcher-icon" aria-hidden="true">✦</span><span><strong>Meet your AI guide</strong><small>Explore. Ask. Grow.</small></span><span aria-hidden="true">↗</span></a>
 {% endif %}
-{% if user.is_authenticated and user.is_employee_or_admin %}
-<div class="team-chat-widget" data-summary-url="{% url 'staff_message_summary' %}">
-  <div class="team-chat-toast" id="teamChatToast" hidden></div>
-  <section class="team-chat-popover" id="teamChatPopover" aria-hidden="true">
-    <div class="team-chat-head">
-      <div>
-        <span class="ops-label">Team Chat</span>
-        <h2>Chat</h2>
-      </div>
-      <a href="{% url 'staff_message_create' %}" class="team-chat-new">New Chat</a>
-    </div>
-    <div class="team-chat-body" id="teamChatBody">
-      <div class="team-chat-loading">Checking chat…</div>
-    </div>
-    <div class="team-chat-foot">
-      <a href="{% url 'staff_messages' %}">Open Chat →</a>
-      <button type="button" class="team-chat-alert-toggle" id="teamChatAlertToggle">Enable alerts</button>
-    </div>
-  </section>
-  <button type="button" class="team-chat-fab" id="teamChatFab" aria-expanded="false" aria-controls="teamChatPopover">
-    <span class="team-chat-fab-icon">💬</span>
-    <span class="team-chat-fab-text">Chat</span>
-    <span class="team-chat-badge" id="teamChatBadge" hidden>0</span>
-  </button>
-</div>
-<script>
-(() => {
-  const widget = document.querySelector(".team-chat-widget");
-  if (!widget) return;
-  const button = document.getElementById("teamChatFab");
-  const popover = document.getElementById("teamChatPopover");
-  const body = document.getElementById("teamChatBody");
-  const badge = document.getElementById("teamChatBadge");
-  const toast = document.getElementById("teamChatToast");
-  const alertToggle = document.getElementById("teamChatAlertToggle");
-  const summaryUrl = widget.dataset.summaryUrl;
-  let opened = false;
-  let initialized = false;
-  let lastUnread = 0;
-  let lastSignature = "";
-  let pollTimer = null;
-  let inFlight = false;
-  let audioContext = null;
-  let audioUnlocked = false;
-  const soundKey = "aibgTeamChatSound";
-
-  function escapeHtml(value) {
-    const element = document.createElement("div");
-    element.textContent = value || "";
-    return element.innerHTML;
-  }
-
-  function alertsEnabled() {
-    return localStorage.getItem(soundKey) !== "off";
-  }
-
-  function updateAlertToggle() {
-    if (!alertToggle) return;
-    const desktopReady = "Notification" in window && Notification.permission === "granted";
-    alertToggle.textContent = alertsEnabled()
-      ? (desktopReady ? "Alerts on" : "Enable desktop alerts")
-      : "Enable alerts";
-    alertToggle.classList.toggle("enabled", alertsEnabled());
-  }
-
-  function ensureAudio() {
-    if (!audioContext) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return null;
-      audioContext = new AudioContext();
-    }
-    if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
-    return audioContext;
-  }
-
-  function unlockAudio() {
-    const context = ensureAudio();
-    if (!context) return;
-    try {
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      gain.gain.setValueAtTime(0.00001, context.currentTime);
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.start();
-      oscillator.stop(context.currentTime + 0.02);
-      audioUnlocked = true;
-    } catch (error) {
-      audioUnlocked = true;
-    }
-  }
-
-  function playDing(force = false) {
-    if (!force && !alertsEnabled()) return;
-    const context = ensureAudio();
-    if (!context) return;
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    oscillator.type = "sine";
-    const start = context.currentTime + 0.01;
-    oscillator.frequency.setValueAtTime(784, start);
-    oscillator.frequency.exponentialRampToValueAtTime(1175, start + 0.08);
-    gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(0.18, start + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.28);
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    oscillator.start(start);
-    oscillator.stop(start + 0.3);
-  }
-
-  function showToast(thread) {
-    if (!toast || !thread) return;
-    toast.innerHTML = `<strong>New in ${escapeHtml(thread.title || "Chat")}</strong><span>${escapeHtml(thread.last_sender)}: ${escapeHtml(thread.last_body)}</span>`;
-    toast.hidden = false;
-    widget.classList.add("toast-visible");
-    clearTimeout(showToast.timer);
-    showToast.timer = setTimeout(() => {
-      widget.classList.remove("toast-visible");
-      toast.hidden = true;
-    }, 6200);
-  }
-
-  function showDesktopNotification(thread) {
-    if (!alertsEnabled() || !("Notification" in window) || Notification.permission !== "granted" || !thread) return;
-    try {
-      const notification = new Notification(thread.title || "New chat message", {
-        body: `${thread.last_sender}: ${thread.last_body}`,
-        tag: `aibg-thread-${thread.id}`,
-        icon: "{% static 'img/ai-business-gurus-logo-nav.png' %}",
-      });
-      notification.onclick = () => {
-        window.focus();
-        window.location.href = thread.url;
-      };
-    } catch (error) {
-      // Browser notification support varies; toast + badge still work.
-    }
-  }
-
-  function notifyIfNeeded(data) {
-    const unread = Number(data.unread_count || 0);
-    const threads = data.threads || [];
-    const newestUnread = threads.find((thread) => Number(thread.unread_count || 0) > 0);
-    if (initialized && unread > lastUnread && newestUnread) {
-      playDing();
-      showToast(newestUnread);
-      showDesktopNotification(newestUnread);
-    }
-    initialized = true;
-    lastUnread = unread;
-  }
-
-  function setOpen(next) {
-    opened = next;
-    widget.classList.toggle("open", opened);
-    button.setAttribute("aria-expanded", opened ? "true" : "false");
-    popover.setAttribute("aria-hidden", opened ? "false" : "true");
-    if (opened) {
-      unlockAudio();
-      fetchSummary({force: true});
-    }
-  }
-
-  function render(data) {
-    const signature = JSON.stringify({
-      unread: data.unread_count || 0,
-      threads: (data.threads || []).map((thread) => [thread.id, thread.unread_count, thread.last_body, thread.updated]),
-    });
-    if (signature === lastSignature) return;
-    lastSignature = signature;
-    const unread = Number(data.unread_count || 0);
-    if (unread > 0) {
-      badge.hidden = false;
-      badge.textContent = unread > 99 ? "99+" : String(unread);
-      button.classList.add("has-unread");
-    } else {
-      badge.hidden = true;
-      button.classList.remove("has-unread");
-    }
-    const threads = data.threads || [];
-    body.innerHTML = threads.length ? threads.map((thread) => {
-      const initial = escapeHtml((thread.title || "C").slice(0, 1).toUpperCase());
-      const unreadPill = thread.unread_count ? `<span class="team-chat-thread-badge">${escapeHtml(String(thread.unread_count))}</span>` : "";
-      return `<a class="team-chat-thread ${thread.unread_count ? "unread" : ""}" href="${thread.url}">
-        <span class="avatar-dot">${initial}</span>
-        <span class="team-chat-thread-copy">
-          <strong>${escapeHtml(thread.title)}</strong>
-          <small>${escapeHtml(thread.last_sender)} · ${escapeHtml(thread.last_body)}</small>
-        </span>
-        <span class="team-chat-thread-meta">${escapeHtml(thread.updated)}${unreadPill}</span>
-      </a>`;
-    }).join("") : `<div class="team-chat-empty">No chats yet. Start one when the squad needs a thread.</div>`;
-  }
-
-  function scheduleNextPoll() {
-    clearTimeout(pollTimer);
-    const delay = document.hidden ? 45000 : (opened ? 12000 : 22000);
-    pollTimer = setTimeout(() => fetchSummary(), delay);
-  }
-
-  async function fetchSummary(options = {}) {
-    if (inFlight && !options.force) return;
-    inFlight = true;
-    try {
-      const response = await fetch(summaryUrl, {headers: {"X-Requested-With": "fetch"}});
-      if (!response.ok) return;
-      const data = await response.json();
-      notifyIfNeeded(data);
-      render(data);
-    } catch (error) {
-      // Notification polling is best-effort; the full inbox remains available.
-    } finally {
-      inFlight = false;
-      scheduleNextPoll();
-    }
-  }
-
-  button.addEventListener("click", () => {
-    unlockAudio();
-    setOpen(!opened);
-  });
-  if (alertToggle) {
-    alertToggle.addEventListener("click", async () => {
-      localStorage.setItem(soundKey, "on");
-      unlockAudio();
-      playDing(true);
-      if ("Notification" in window && Notification.permission === "default") {
-        await Notification.requestPermission();
-      }
-      updateAlertToggle();
-    });
-  }
-  document.addEventListener("pointerdown", unlockAudio, {once: true, passive: true});
-  document.addEventListener("keydown", unlockAudio, {once: true});
-  document.addEventListener("click", (event) => {
-    if (opened && !widget.contains(event.target)) setOpen(false);
-  });
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && opened) setOpen(false);
-  });
-  document.addEventListener("visibilitychange", () => fetchSummary({force: true}));
-  updateAlertToggle();
-  fetchSummary();
-})();
-</script>
-{% endif %}
+{% block team_widget %}{% endblock %}
+{% if user.is_authenticated and user.is_employee_or_admin %}{% include 'audit/_notifications.html' %}{% endif %}
+{% block footer %}
 <footer class="site-footer">
   <div>
     <a class="brand" href="{% url 'home' %}">
@@ -319,5 +77,6 @@
     <a href="{% url 'growth_assessment' %}">Growth Assessment</a>
   </div>
 </footer>
+{% endblock %}
 </body>
 </html>

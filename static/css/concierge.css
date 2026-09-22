@@ -76,3 +76,16 @@ dialog{background:#1c1428;color:var(--ink);width:min(540px,calc(100vw - 28px));m
 .guide-interrupt{display:block;width:100%;margin:0 0 12px;padding:10px 12px;border:1px solid #d8b36655;color:var(--gold);font-size:12px;background:#33203d;min-height:40px}
 .guide-interrupt:hover{background:#493057}
 .guide-knowledge{font-size:12px;margin:0 0 16px}.guide-knowledge a{color:#e9be63;text-underline-offset:3px}
+
+/* Staff coaching stays in its own call window, with the same audio protections. */
+.guide-sales .guide-browser,.guide-sales .guide-actions,.guide-sales #guideMinimize,.guide-sales .guide-header{display:none!important}
+.guide-sales.guide-embedded .guide-layout{display:block;padding:0;min-height:0}
+.guide-sales.guide-embedded .guide-companion{display:grid!important;grid-template-columns:minmax(180px,.9fr) minmax(270px,1.1fr);width:100%;position:static;height:auto;max-height:none;overflow:visible}
+.guide-sales .guide-companion-heading{grid-column:1/-1}
+.guide-sales.guide-embedded .guide-stage{min-height:390px;height:100%;max-height:none;border-radius:0}
+.guide-sales .guide-stage .guide-avatar-art{height:100%}
+.guide-sales .guide-conversation{min-width:0;overflow:visible}
+.guide-sales .guide-stage-caption p{font-size:12px}
+.guide-sales .guide-stage-caption h1{font-size:40px}
+.guide-sales .guide-intro{font-size:16px}
+@media(max-width:600px){.guide-sales.guide-embedded .guide-companion{grid-template-columns:1fr}.guide-sales.guide-embedded .guide-stage{height:240px;min-height:240px}.guide-sales .guide-portrait{object-fit:contain}.guide-sales .guide-stage-caption h1{font-size:30px}.guide-sales .guide-stage-caption p{display:none}.guide-sales .guide-conversation{padding:20px}.guide-sales .guide-stage-caption{bottom:18px}}

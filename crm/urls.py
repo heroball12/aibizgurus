@@ -1,7 +1,19 @@
 from django.urls import path
 from . import views
+from . import workspace_views
+from . import sheet_views
 urlpatterns = [
+    path("sheets/", sheet_views.hub, name="lead_sheets"),
+    path("sheets/new/", sheet_views.editor, name="lead_sheet_new"),
+    path("sheets/save/", sheet_views.save, name="lead_sheet_save"),
+    path("sheets/open-file/", sheet_views.import_preview, name="lead_sheet_import"),
+    path("sheets/export/", sheet_views.export, name="lead_sheet_export"),
+    path("sheets/<uuid:pk>/", sheet_views.editor, name="lead_sheet"),
+    path("sheets/<uuid:pk>/export/", sheet_views.export, name="lead_sheet_file"),
     path("", views.crm_home, name="crm_home"),
+    path("pipeline/", workspace_views.pipeline, name="sales_pipeline"),
+    path("assessments/", workspace_views.assessments, name="sales_assessments"),
+    path("leads/<int:pk>/progress/", workspace_views.lead_progress, name="lead_progress"),
     path("lead-finder/", views.lead_finder, name="lead_finder"),
     path("lead-finder/history/", views.lead_generation_history, name="lead_generation_history"),
     path("lead-finder/batches/<int:pk>/status/", views.lead_generation_batch_status, name="lead_generation_batch_status"),
