@@ -1,0 +1,15 @@
+{% if owner %}
+  {% if version.status == 'published' %}
+    <div class="academy-approval-live" role="status">✓ Approved &amp; published{% if not compact %}<span>Employees assigned to this track can start learning.</span>{% endif %}</div>
+  {% elif version.status != 'retired' %}
+    <form method="post" action="{% url 'training_publication' version.pk %}" class="academy-approval{% if compact %} compact{% endif %}">
+      {% csrf_token %}
+      <input type="hidden" name="status" value="approve_publish">
+      {% if compact %}<input type="hidden" name="return_to" value="management">{% else %}
+        <div><strong>Ready for your team?</strong><p>Your approval accepts this lesson’s video and captions and publishes it for assigned employees.</p></div>
+      {% endif %}
+      <button class="academy-button" {% if not version.has_review_media %}disabled title="Attach the finished video and captions first."{% endif %}>Approve &amp; publish ✓</button>
+      {% if not version.has_review_media %}<small>Video and captions required.</small>{% endif %}
+    </form>
+  {% endif %}
+{% endif %}

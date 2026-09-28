@@ -1,9 +1,11 @@
 import math
 import uuid
+from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.db import transaction
+from django.db import connection, transaction
 from django.utils import timezone
 from .models import (
+    Module,
     ModuleVersion,
     EmployeeProgress,
     QuizAttempt,
@@ -28,6 +30,24 @@ def require_manager(user):
 
 def is_owner(user):
     return user.is_authenticated and user.is_owner()
+
+
+def can_preview_locally(user, version):
+    """Allow explicitly permitted, enrolled employees to watch local review films."""
+    return bool(
+        settings.DEBUG
+        and connection.vendor == "sqlite"
+        and user.is_authenticated
+        and user.is_active
+        and user.is_employee_or_admin()
+        and user.has_perm("training.view_moduleversion")
+        and version.status == "owner_review"
+        and version.module.track.is_active
+        and version.assets.filter(kind="video").exists()
+        and CertificationAttempt.objects.filter(
+            employee=user, track=version.module.track
+        ).exists()
+    )
 
 
 def can_learn(user, version):
@@ -417,6 +437,7 @@ def certify(manager, enrollment, note):
 def transition(user, version, target):
     if not is_owner(user):
         raise PermissionDenied("Only the owner can approve and publish training.")
+    Module.objects.select_for_update().get(pk=version.module_id)
     version = ModuleVersion.objects.select_for_update().get(pk=version.pk)
     allowed = {
         "draft": {"owner_review"},
@@ -464,6 +485,33 @@ def transition(user, version, target):
     version._transition = True
     version.save()
     return version
+
+
+@transaction.atomic
+def approve_and_publish(user, version):
+    """The owner's single click accepts the current assets and releases the lesson."""
+    if not is_owner(user):
+        raise PermissionDenied("Only the owner can approve and publish training.")
+    Module.objects.select_for_update().get(pk=version.module_id)
+    version = ModuleVersion.objects.select_for_update().get(pk=version.pk)
+    if version.status == "published":
+        return version
+    if version.status == "retired":
+        raise ValidationError(
+            "Create a new draft revision to release a retired lesson."
+        )
+    if not version.has_review_media:
+        raise ValidationError(
+            "Attach the finished video and captions before approving this lesson."
+        )
+    if version.status == "draft":
+        version = transition(user, version, "owner_review")
+    if version.status == "owner_review":
+        for asset in version.assets.select_for_update():
+            asset.reviewed = True
+            asset.save(update_fields=["reviewed"])
+        version = transition(user, version, "approved")
+    return transition(user, version, "published")
 
 
 @transaction.atomic

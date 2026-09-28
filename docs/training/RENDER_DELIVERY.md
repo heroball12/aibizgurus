@@ -44,6 +44,6 @@ If verification reports a missing file, size/hash mismatch or different deployed
 
 Sign in with the owner account. Open **Training → Manage training → Content**, then preview the Core lessons. Check the real deployed player with sound, captions, chapter seeking, playback beyond five minutes, speed controls, resume and phone layout. Confirm that a signed-out visitor cannot play the private media. A local technical report does not replace this production check.
 
-After accepting a lesson, mark its video, captions and poster assets reviewed in content administration. Use the owner controls to move **Owner review → Approved → Published**. Assign the Core SDR track to employees through the manager workspace. Only published lessons count toward progress; quizzes, reviewed practice and manager practical approval still govern certification.
+After reviewing a lesson, click **Approve & publish ✓** above its video or beside the lesson in Training content. This owner-only button accepts the attached media and publishes the lesson in one step; it shows **Approved & published** afterward. Assign the Core SDR track to employees through the manager workspace. Only published lessons count toward progress; quizzes, reviewed practice and manager practical approval still govern certification.
 
 Keep this delivery and a database backup outside the service as recovery copies. Media folders contain no API credentials. Existing application/Runway/OpenAI credentials remain environment settings in Render, not files in this package.

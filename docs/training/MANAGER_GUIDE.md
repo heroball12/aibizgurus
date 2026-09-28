@@ -1,6 +1,6 @@
 # Manager guide
 
-Open **Training → Manage training** from the staff workspace. Admin and owner roles manage learner evidence; the owner approves official content. No real training is published yet.
+Open **Training → Manage training** from the staff workspace. Admin and owner roles manage learner evidence; the owner approves official content.
 
 ## Assign and coach
 
@@ -22,7 +22,7 @@ To address a weak skill, assign retraining to a published module, add the skill/
 
 The content list starts with Owner review. Use Show content to find drafts, published lessons or retired versions. Open a lesson from this list. All 16 Core lessons include their complete scripts, visual notes, questions, job aids and practice scenarios. The final Core lesson contains the capstone. Learner quiz/practice controls remain disabled for review-only drafts. Use the content administration link to edit draft fields; Quiz, Question, Scenario and LessonAsset records are also available in the admin.
 
-The written-package review comes first. Approving the script authorizes the next pilot stage only. For the complete delivery folder, follow [Render delivery](RENDER_DELIVERY.md) to verify and import private videos with their measured chapter timings. The private disk and S3 backends both enforce staff access through the lesson player. After reviewing each full film and its captions, mark assets reviewed and use the owner publication control: Owner review → Approved → Published. A successful generation does not publish anything. Revisions of approved lessons start in Draft with asset review flags cleared.
+For the complete delivery folder, follow [Render delivery](RENDER_DELIVERY.md) to verify and import private videos with their measured chapter timings. The private disk and S3 backends both enforce staff access through the lesson player. After reviewing a lesson, click the gold **Approve & publish ✓** button above its video or beside it in Training content. This owner-only action accepts its media, records approval and publishes the lesson for assigned employees in one step. Missing media or incomplete content prevents publication without changing the lesson. Published lessons show **Approved & published**. A successful generation or import does not publish anything. Revisions of approved lessons start in Draft with asset review flags cleared.
 
 ## Limits to know
 

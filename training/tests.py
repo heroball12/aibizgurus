@@ -172,6 +172,59 @@ class AcademyTests(TestCase):
             200,
         )
 
+    @override_settings(DEBUG=True)
+    def test_explicit_local_preview_allows_watching_without_learning_credit(self):
+        from django.contrib.auth.models import Permission
+
+        self.version = services.transition(self.owner, self.version, "owner_review")
+        permission = Permission.objects.get(
+            content_type__app_label="training", codename="view_moduleversion"
+        )
+        self.assertFalse(services.can_preview_locally(self.rep, self.version))
+        self.rep.user_permissions.add(permission)
+        self.rep = get_user_model().objects.get(pk=self.rep.pk)
+        self.assertTrue(services.can_preview_locally(self.rep, self.version))
+        self.assertFalse(services.can_learn(self.rep, self.version))
+        home = self.client.get(reverse("training_home"))
+        self.assertContains(home, "Local preview · watch now")
+        self.assertContains(home, reverse("training_lesson", args=[self.version.pk]))
+        lesson = self.client.get(reverse("training_lesson", args=[self.version.pk]))
+        self.assertContains(lesson, "LOCAL LEARNING PREVIEW")
+        self.assertContains(lesson, 'data-official="false"')
+        self.assertContains(lesson, "disabled")
+        self.assertNotContains(lesson, "Manage this lesson")
+        with patch(
+            "training.media.media_url", return_value="https://example.com/video"
+        ):
+            self.assertEqual(
+                self.client.get(
+                    reverse("training_asset", args=[self.version.pk, "video"])
+                ).status_code,
+                302,
+            )
+        with self.assertRaises(PermissionDenied):
+            services.heartbeat(self.rep, self.version, {})
+        with self.assertRaises(PermissionDenied):
+            services.submit_quiz(self.rep, self.quiz, {}, uuid.uuid4())
+        self.assertFalse(EmployeeProgress.objects.filter(employee=self.rep).exists())
+        self.assertEqual(
+            self.client.get(reverse("training_management")).status_code, 403
+        )
+        with override_settings(DEBUG=False):
+            self.assertFalse(services.can_preview_locally(self.rep, self.version))
+            self.assertEqual(
+                self.client.get(
+                    reverse("training_lesson", args=[self.version.pk])
+                ).status_code,
+                403,
+            )
+        with patch("training.services.connection.vendor", "postgresql"):
+            self.assertFalse(services.can_preview_locally(self.rep, self.version))
+        self.other.user_permissions.add(permission)
+        self.assertFalse(services.can_preview_locally(self.other, self.version))
+        draft = ModuleVersion.objects.create(module=self.module, number=2)
+        self.assertFalse(services.can_preview_locally(self.rep, draft))
+
     def test_only_owner_can_approve_and_publish(self):
         with self.assertRaises(PermissionDenied):
             services.transition(self.rep, self.version, "owner_review")
@@ -187,10 +240,123 @@ class AcademyTests(TestCase):
         with self.assertRaises(ValidationError):
             services.transition(self.owner, self.version, "approved")
 
+    def test_one_click_approval_publishes_and_records_the_owner_once(self):
+        self.version = services.transition(self.owner, self.version, "owner_review")
+        self.version.assets.update(reviewed=False)
+        self.client.force_login(self.owner)
+        for url in [
+            reverse("training_lesson", args=[self.version.pk]),
+            reverse("training_management"),
+        ]:
+            self.assertContains(self.client.get(url), "Approve &amp; publish")
+        response = self.client.post(
+            reverse("training_publication", args=[self.version.pk]),
+            {"status": "approve_publish"},
+            follow=True,
+        )
+        self.assertContains(response, "Approved &amp; published")
+        self.assertNotContains(response, "OWNER REVIEW PREVIEW")
+        self.version.refresh_from_db()
+        self.assertEqual(self.version.status, "published")
+        self.assertEqual(self.version.approved_by, self.owner)
+        self.assertFalse(self.version.assets.filter(reviewed=False).exists())
+        original_times = (self.version.approved_at, self.version.published_at)
+        services.approve_and_publish(self.owner, self.version)
+        self.version.refresh_from_db()
+        self.assertEqual(
+            original_times, (self.version.approved_at, self.version.published_at)
+        )
+        self.assertTrue(services.can_learn(self.rep, self.version))
+        self.assertFalse(EmployeeProgress.objects.exists())
+
+    def test_one_click_approval_rejects_missing_media_without_mutation(self):
+        self.version.assets.filter(kind="captions").delete()
+        self.version.assets.update(reviewed=False)
+        with self.assertRaises(ValidationError):
+            services.approve_and_publish(self.owner, self.version)
+        self.version.refresh_from_db()
+        self.assertEqual(self.version.status, "draft")
+        self.assertIsNone(self.version.approved_at)
+        self.assertFalse(self.version.assets.filter(reviewed=True).exists())
+
+    def test_one_click_approval_rolls_back_review_on_invalid_quiz_or_storage(self):
+        self.version.assets.update(reviewed=False)
+        self.question.correct_index = 10
+        self.question.save()
+        with self.assertRaises(ValidationError):
+            services.approve_and_publish(self.owner, self.version)
+        self.version.refresh_from_db()
+        self.assertEqual(self.version.status, "draft")
+        self.assertFalse(self.version.assets.filter(reviewed=True).exists())
+        self.question.correct_index = 0
+        self.question.save()
+        with override_settings(TRAINING_S3_BUCKET="", TRAINING_MEDIA_ROOT=""):
+            with self.assertRaises(ValidationError):
+                services.approve_and_publish(self.owner, self.version)
+        self.version.refresh_from_db()
+        self.assertEqual(self.version.status, "draft")
+        self.assertIsNone(self.version.approved_by)
+        self.assertFalse(self.version.assets.filter(reviewed=True).exists())
+
+    def test_one_click_approval_is_owner_only_and_requires_post(self):
+        endpoint = reverse("training_publication", args=[self.version.pk])
+        admin = get_user_model().objects.create_user(
+            username="approval-admin", role="admin"
+        )
+        for user in [self.rep, admin]:
+            self.client.force_login(user)
+            self.assertEqual(
+                self.client.post(endpoint, {"status": "approve_publish"}).status_code,
+                403,
+            )
+        self.client.force_login(admin)
+        self.assertNotContains(
+            self.client.get(reverse("training_lesson", args=[self.version.pk])),
+            "Approve &amp; publish",
+        )
+        self.assertNotContains(
+            self.client.get(reverse("training_management")), "Approve &amp; publish"
+        )
+        self.client.force_login(self.owner)
+        self.assertEqual(self.client.get(endpoint).status_code, 405)
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.force_login(self.owner)
+        self.assertEqual(
+            csrf_client.post(endpoint, {"status": "approve_publish"}).status_code, 403
+        )
+        self.version.refresh_from_db()
+        self.assertEqual(self.version.status, "draft")
+
+    def test_one_click_approval_supports_approved_content_and_catalog_return(self):
+        for state in ["owner_review", "approved"]:
+            self.version = services.transition(self.owner, self.version, state)
+        self.client.force_login(self.owner)
+        response = self.client.post(
+            reverse("training_publication", args=[self.version.pk]),
+            {"status": "approve_publish", "return_to": "management"},
+        )
+        self.assertRedirects(response, reverse("training_management"))
+        self.version.refresh_from_db()
+        self.assertEqual(self.version.status, "published")
+
+    def test_one_click_approval_preserves_published_and_retired_versions(self):
+        self.publish()
+        revision = services.clone_version(self.owner, self.version)
+        with self.assertRaises(ValidationError):
+            services.approve_and_publish(self.owner, revision)
+        revision.refresh_from_db()
+        self.assertEqual(revision.status, "draft")
+        self.assertFalse(revision.assets.filter(reviewed=True).exists())
+        self.version.refresh_from_db()
+        self.assertEqual(self.version.status, "published")
+        self.version = services.transition(self.owner, self.version, "retired")
+        with self.assertRaises(ValidationError):
+            services.approve_and_publish(self.owner, self.version)
+
     def test_publication_requires_durable_media_configuration(self):
         self.version = services.transition(self.owner, self.version, "owner_review")
         self.version = services.transition(self.owner, self.version, "approved")
-        with override_settings(TRAINING_S3_BUCKET=""):
+        with override_settings(TRAINING_S3_BUCKET="", TRAINING_MEDIA_ROOT=""):
             with self.assertRaises(ValidationError):
                 services.transition(self.owner, self.version, "published")
 

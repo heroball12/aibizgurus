@@ -111,6 +111,12 @@ class ModuleVersion(models.Model):
         minutes, seconds = divmod(self.duration_seconds, 60)
         return f"{minutes}:{seconds:02d}"
 
+    @property
+    def has_review_media(self):
+        return {"video", "captions"} <= {
+            asset.kind for asset in self.assets.all() if asset.storage_key.strip()
+        }
+
     def save(self, *args, **kwargs):
         if self.pk:
             previous = type(self).objects.get(pk=self.pk)

@@ -62,9 +62,14 @@ def failure(exc):
 
 def lesson_for(request, pk):
     version = get_object_or_404(
-        ModuleVersion.objects.select_related("module__track"), pk=pk
+        ModuleVersion.objects.select_related("module__track").prefetch_related(
+            "assets"
+        ),
+        pk=pk,
     )
-    if not services.is_manager(request.user):
+    if not services.is_manager(request.user) and not services.can_preview_locally(
+        request.user, version
+    ):
         services.require_learning(request.user, version)
     return version
 
@@ -85,6 +90,16 @@ def home(request):
             version = (
                 module.versions.filter(status="published").order_by("-number").first()
             )
+            local_preview = False
+            if not version:
+                candidate = (
+                    module.versions.filter(status="owner_review")
+                    .order_by("-number")
+                    .first()
+                )
+                if candidate and services.can_preview_locally(request.user, candidate):
+                    version = candidate
+                    local_preview = True
             assignment = (
                 enrollment.assignments.filter(version__module=module, active=True)
                 .order_by("-created_at")
@@ -100,12 +115,19 @@ def home(request):
                         else None
                     ),
                 )
-                if version
+                if version and not local_preview
                 else None
             )
-            cards.append({"module": module, "version": version, "state": state})
+            cards.append(
+                {
+                    "module": module,
+                    "version": version,
+                    "state": state,
+                    "local_preview": local_preview,
+                }
+            )
             if (
-                version
+                state
                 and state["percent"] > 0
                 and not state["complete"]
                 and continuation is None
@@ -149,6 +171,8 @@ def lesson(request, pk):
         {
             "version": version,
             "official": official,
+            "local_preview": not official
+            and services.can_preview_locally(request.user, version),
             "state": state,
             "quiz": quiz,
             "questions": quiz.questions.all() if quiz else [],
@@ -449,8 +473,10 @@ def management(request):
     content_status = request.GET.get("status", "owner_review")
     if content_status not in dict(ModuleVersion.STATES) and content_status != "all":
         content_status = "owner_review"
-    content = ModuleVersion.objects.select_related("module__track").order_by(
-        "module__track_id", "module__position", "-number"
+    content = (
+        ModuleVersion.objects.select_related("module__track")
+        .prefetch_related("assets")
+        .order_by("module__track_id", "module__position", "-number")
     )
     if content_status != "all":
         content = content.filter(status=content_status)
@@ -468,6 +494,7 @@ def management(request):
             "drafts": content,
             "content_status": content_status,
             "content_states": ModuleVersion.STATES,
+            "owner": request.user.is_owner(),
         },
     )
 
@@ -686,12 +713,25 @@ def manager_action(request, pk):
 @require_POST
 def publication(request, pk):
     version = get_object_or_404(ModuleVersion, pk=pk)
+    quick_approval = request.POST.get("status") == "approve_publish"
     try:
-        services.transition(request.user, version, request.POST.get("status"))
+        if quick_approval:
+            services.approve_and_publish(request.user, version)
+        else:
+            services.transition(request.user, version, request.POST.get("status"))
     except ValidationError as exc:
         messages.error(request, " ".join(exc.messages))
     else:
-        messages.success(request, "Content state updated.")
+        messages.success(
+            request,
+            (
+                f"{version.module.title} is approved and published. Assigned employees can start learning."
+                if quick_approval
+                else "Content state updated."
+            ),
+        )
+    if request.POST.get("return_to") == "management":
+        return redirect("training_management")
     return redirect("training_lesson", pk=pk)
 
 
