@@ -12,6 +12,14 @@ Open **Training → Manage training** from the staff workspace. Admin and owner 
 
 For live mock calls, record the observed practical evidence yourself. The app does not record or automatically grade live microphone calls. Use fictional businesses and sample details for exercises; training does not contact real prospects or write real leads.
 
+## Carry over local or offline completion
+
+Open the employee under **Manage training → Your learners**. The owner sees **Carry over completed training** at the top of the record. Choose the last completed module (or **Entire track**) and choose **Videos watched** or **Full lessons completed — videos, quizzes & practice**, then click **Apply completion ✓**. For someone who finished all of modules 1 and 2 locally, select Module 2 and Full lessons completed. Their online path resumes at Module 3.
+
+The action credits every module through that stopping point, using assigned published versions. It records the owner's name, note, time and lesson versions in **Prior-learning credit**, visible in the employee's own record too. It does not invent playback time, quiz answers or practice attempts. Video-only credit leaves assessments outstanding; full lesson credit counts toward module completion. Final certification still needs the capstone, practical evaluation and manager sign-off.
+
+Use **Undo this credit** in the history to correct a mistake. Recorded online attempts remain intact; a certification that depends on undone credit is revoked. Later retraining requires fresh evidence or fresh owner credit, and credit does not transfer to a revised lesson automatically. Local preview playback was not recorded, so the owner supplies the actual stopping point.
+
 ## Certification and remediation
 
 The readiness panel lists missing prerequisites. Record a practical call evaluation and demonstrated CRM handoff. When all configured requirements are met, choose Approve certification and document your basis. A failed requirement cannot be bypassed by the form.

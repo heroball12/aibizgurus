@@ -32,6 +32,11 @@ urlpatterns = [
     path("manage/assign/", views.assign, name="training_assign"),
     path("manage/<int:pk>/", views.employee_record, name="training_employee"),
     path(
+        "manage/<int:pk>/completion/",
+        views.transfer_progress,
+        name="training_transfer_progress",
+    ),
+    path(
         "manage/<int:pk>/action/", views.manager_action, name="training_manager_action"
     ),
 ]

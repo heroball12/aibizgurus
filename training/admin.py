@@ -66,6 +66,7 @@ for model in [
     admin.site.register(model, ContentAdmin)
 for model in [
     models.EmployeeProgress,
+    models.ProgressTransfer,
     models.QuizAttempt,
     models.RolePlayAttempt,
     models.EmployeeSkill,

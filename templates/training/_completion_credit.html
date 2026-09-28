@@ -1,0 +1,16 @@
+{% if owner %}
+<section class="academy-panel academy-transfer">
+  <span class="academy-kicker">OWNER CONTROL</span><h2>Carry over completed training.</h2>
+  <p>Move {{ enrollment.employee.get_full_name|default:enrollment.employee.username }} forward to match training already completed locally or offline.</p>
+  <form method="post" action="{% url 'training_transfer_progress' enrollment.pk %}">
+    {% csrf_token %}<input type="hidden" name="action" value="apply"><input type="hidden" name="nonce" value="{{ credit_nonce }}">
+    <div class="academy-transfer-fields">
+      <div><label for="creditThrough">Completed through</label><select id="creditThrough" name="through" required><option value="">Choose the last completed module</option>{% for module in credit_modules %}<option value="{{ module.pk }}">Module {{ module.position }} — {{ module.title }}</option>{% endfor %}<option value="all">Entire track — all modules</option></select></div>
+      <div><label for="creditScope">Completion credit</label><select id="creditScope" name="scope"><option value="video">Videos watched</option><option value="lesson">Full lessons completed — videos, quizzes &amp; practice</option></select></div>
+    </div>
+    <label>Completion note<textarea name="note" rows="2" maxlength="3000" required>Completed locally before moving to the online Academy.</textarea></label>
+    <p class="academy-small">Includes every module through your selection. Full lesson credit updates module completion; final certification still requires capstone, practical evaluation and manager sign-off. You can undo a credit below.</p>
+    <button class="academy-button">Apply completion ✓</button>
+  </form>
+</section>
+{% endif %}

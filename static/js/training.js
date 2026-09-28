@@ -14,7 +14,7 @@
     const update=async()=>{
       if(sending || player.dataset.official!=='true' || !Number.isFinite(video.currentTime))return;
       sending=true;const position=video.currentTime;
-      try { const result=await post(player.dataset.progressUrl,{session:player.dataset.session,start:anchor,position,playing:!video.paused&&!document.hidden&&!seeked});anchor=position;seeked=false;status.textContent=`${result.percent}% watched · ${result.label}`; }
+      try { const result=await post(player.dataset.progressUrl,{session:player.dataset.session,start:anchor,position,playing:!video.paused&&!document.hidden&&!seeked});anchor=position;seeked=false;status.textContent=result.credited_video?result.label:`${result.percent}% watched · ${result.label}`; }
       catch(e){status.textContent='Progress could not sync. Keep this page open to retry.';}
       finally{sending=false;}
     };

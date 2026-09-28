@@ -293,6 +293,34 @@ class EmployeeProgress(models.Model):
         ]
 
 
+class ProgressTransfer(models.Model):
+    """Owner-attested prior learning, separate from measured playback and attempts."""
+
+    SCOPES = [("video", "Videos watched"), ("lesson", "Full lessons completed")]
+    enrollment = models.ForeignKey(
+        CertificationAttempt, on_delete=models.PROTECT, related_name="transfers"
+    )
+    credited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
+    nonce = models.UUIDField(unique=True)
+    through_module = models.ForeignKey(
+        Module, on_delete=models.PROTECT, null=True, blank=True
+    )
+    scope = models.CharField(max_length=10, choices=SCOPES)
+    versions = models.ManyToManyField(ModuleVersion, related_name="progress_transfers")
+    note = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    revoked_at = models.DateTimeField(null=True, blank=True)
+    revoked_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="+",
+        null=True,
+        blank=True,
+    )
+
+
 class QuizAttempt(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)

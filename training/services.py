@@ -14,6 +14,7 @@ from .models import (
     TrainingAssignment,
     ManagerReview,
     Certification,
+    ProgressTransfer,
 )
 
 
@@ -197,6 +198,19 @@ def module_state(user, version, since=None):
             .first()
         )
         since = assignment.created_at if assignment else None
+    credits = ProgressTransfer.objects.filter(
+        enrollment__employee=user,
+        enrollment__track=version.module.track,
+        versions=version,
+        revoked_at__isnull=True,
+    )
+    if since:
+        credits = credits.filter(created_at__gte=since)
+    credit_rows = (
+        list(credits.values("pk", "scope")) if version.status == "published" else []
+    )
+    credited_video = bool(credit_rows)
+    credited_lesson = any(row["scope"] == "lesson" for row in credit_rows)
     progress = (
         EmployeeProgress.objects.filter(employee=user, version=version)
         .order_by("-cycle")
@@ -231,11 +245,14 @@ def module_state(user, version, since=None):
             attempts = attempts.filter(created_at__gte=since)
         if not attempts.exists():
             practice = False
+    video = video or credited_video
+    quiz = quiz or credited_lesson
+    practice = practice or credited_lesson
     complete = version.status == "published" and video and quiz and practice
     if since and not complete:
         label = "Retraining required"
     elif complete:
-        label = "Complete"
+        label = "Complete · owner credit" if credited_lesson else "Complete"
     elif not video:
         label = "In progress" if progress and watched(progress) > 0 else "Not started"
     elif not quiz:
@@ -244,13 +261,22 @@ def module_state(user, version, since=None):
         label = "Practice / manager review required"
     else:
         label = "Video complete"
+    if credited_video and not complete:
+        label = "Video credited · " + label
     return {
         "video": video,
         "quiz": quiz,
         "practice": practice,
         "complete": complete,
         "label": label,
-        "percent": min(100, round(100 * watched(progress) / version.duration_seconds)),
+        "percent": (
+            100
+            if credited_video
+            else min(100, round(100 * watched(progress) / version.duration_seconds))
+        ),
+        "credited_video": credited_video,
+        "credited_lesson": credited_lesson,
+        "credit_ids": [row["pk"] for row in credit_rows],
         "position": progress.position_seconds if progress else 0,
         "active_seconds": round(progress.active_seconds) if progress else 0,
     }
@@ -356,6 +382,102 @@ def enroll(manager, employee, track):
                 enrollment=enrollment, version=version, assigned_by=manager
             )
     return enrollment
+
+
+@transaction.atomic
+def transfer_progress(owner, enrollment, through, scope, note, nonce):
+    if not is_owner(owner):
+        raise PermissionDenied("Only the owner can credit prior learning.")
+    enrollment = (
+        CertificationAttempt.objects.select_for_update()
+        .select_related("employee", "track")
+        .get(pk=enrollment.pk)
+    )
+    if not enrollment.track.is_active or not enrollment.employee.is_active:
+        raise ValidationError("Choose an active employee and track.")
+    if scope not in dict(ProgressTransfer.SCOPES):
+        raise ValidationError("Choose video credit or full lesson completion.")
+    if not isinstance(note, str) or not 1 <= len(note.strip()) <= 3000:
+        raise ValidationError("Add a completion note of 1–3,000 characters.")
+    try:
+        nonce = uuid.UUID(str(nonce))
+    except (ValueError, TypeError):
+        raise ValidationError("Reload the training record before applying credit.")
+    modules = list(enrollment.track.modules.order_by("position", "pk"))
+    if not modules:
+        raise ValidationError("This track has no modules to complete.")
+    target = None
+    if through != "all":
+        target = next((m for m in modules if str(m.pk) == str(through)), None)
+        if not target:
+            raise ValidationError("Choose a stopping point from this track.")
+        modules = modules[: modules.index(target) + 1]
+    existing = ProgressTransfer.objects.filter(nonce=nonce).first()
+    if existing:
+        if (
+            existing.enrollment_id != enrollment.pk
+            or existing.scope != scope
+            or existing.through_module_id != (target.pk if target else None)
+            or existing.credited_by_id != owner.pk
+            or existing.revoked_at
+        ):
+            raise ValidationError(
+                "Reload the training record before applying new credit."
+            )
+        return existing
+    versions = []
+    for module in modules:
+        assignment = (
+            enrollment.assignments.filter(version__module=module, active=True)
+            .select_related("version")
+            .order_by("-created_at")
+            .first()
+        )
+        version = (
+            assignment.version
+            if assignment
+            else module.versions.filter(status="published").order_by("-number").first()
+        )
+        if not version or version.status != "published":
+            raise ValidationError(
+                f"Publish and assign the current lesson for {module.title} first. No progress was changed."
+            )
+        versions.append(version)
+    transfer = ProgressTransfer.objects.create(
+        enrollment=enrollment,
+        credited_by=owner,
+        nonce=nonce,
+        through_module=target,
+        scope=scope,
+        note=note.strip(),
+    )
+    transfer.versions.set(versions)
+    return transfer
+
+
+@transaction.atomic
+def undo_progress_transfer(owner, enrollment, transfer_id):
+    if not is_owner(owner):
+        raise PermissionDenied("Only the owner can undo prior-learning credit.")
+    enrollment = CertificationAttempt.objects.select_for_update().get(pk=enrollment.pk)
+    transfer = enrollment.transfers.select_for_update().filter(pk=transfer_id).first()
+    if not transfer:
+        raise ValidationError("Choose a credit from this employee’s training record.")
+    if transfer.revoked_at:
+        return transfer
+    transfer.revoked_at = timezone.now()
+    transfer.revoked_by = owner
+    transfer.save(update_fields=["revoked_at", "revoked_by"])
+    if (
+        enrollment.certifications.filter(revoked_at__isnull=True).exists()
+        and requirements(enrollment)["gaps"]
+    ):
+        revoke(
+            owner,
+            enrollment,
+            "Prior-learning credit was undone; current requirements must be met again.",
+        )
+    return transfer
 
 
 @transaction.atomic

@@ -33,6 +33,7 @@ from .models import (
     TrainingAssignment,
     ManagerReview,
     ProctorSession,
+    ProgressTransfer,
 )
 from . import services, proctor
 
@@ -84,6 +85,7 @@ def home(request):
     )
     panels = []
     continuation = None
+    assessment_continuation = None
     for enrollment in enrollments:
         cards = []
         for module in enrollment.track.modules.all():
@@ -126,13 +128,11 @@ def home(request):
                     "local_preview": local_preview,
                 }
             )
-            if (
-                state
-                and state["percent"] > 0
-                and not state["complete"]
-                and continuation is None
-            ):
-                continuation = version
+            if state and not state["complete"]:
+                if state["credited_video"]:
+                    assessment_continuation = assessment_continuation or version
+                else:
+                    continuation = continuation or version
         panels.append(
             {
                 "enrollment": enrollment,
@@ -151,7 +151,7 @@ def home(request):
         "training/home.html",
         {
             "panels": panels,
-            "continue_version": continuation,
+            "continue_version": continuation or assessment_continuation,
             "tracks": Track.objects.filter(is_active=True),
             "is_training_manager": services.is_manager(request.user),
         },
@@ -548,9 +548,11 @@ def employee_record(request, pk):
         CertificationAttempt.objects.select_related("employee", "track"), pk=pk
     )
     states = []
-    for version in ModuleVersion.objects.filter(
-        module__track=enrollment.track, status="published"
-    ).select_related("module__track"):
+    for version in (
+        ModuleVersion.objects.filter(module__track=enrollment.track, status="published")
+        .select_related("module__track")
+        .order_by("module__position", "module_id")
+    ):
         states.append(
             {
                 "version": version,
@@ -581,8 +583,53 @@ def employee_record(request, pk):
             .select_related("skill", "attempt")
             .order_by("-created_at")[:50],
             "phases": CertificationAttempt.PHASES[:3],
+            "owner": request.user.is_owner(),
+            "credit_modules": enrollment.track.modules.order_by("position", "pk"),
+            "credit_nonce": uuid.uuid4(),
+            "transfers": enrollment.transfers.select_related(
+                "credited_by", "revoked_by", "through_module"
+            )
+            .prefetch_related("versions__module")
+            .order_by("-created_at"),
         },
     )
+
+
+@employee_required
+@never_cache
+@require_POST
+def transfer_progress(request, pk):
+    if not services.is_owner(request.user):
+        raise PermissionDenied("Only the owner can credit prior learning.")
+    enrollment = get_object_or_404(CertificationAttempt, pk=pk)
+    try:
+        if request.POST.get("action") == "undo":
+            transfer_id = request.POST.get("transfer", "")
+            if not transfer_id.isdigit():
+                raise ValidationError("Choose a completion credit to undo.")
+            services.undo_progress_transfer(request.user, enrollment, transfer_id)
+            messages.success(
+                request,
+                "Completion credit undone. Recorded playback and attempts are unchanged.",
+            )
+        elif request.POST.get("action") == "apply":
+            transfer = services.transfer_progress(
+                request.user,
+                enrollment,
+                request.POST.get("through"),
+                request.POST.get("scope"),
+                request.POST.get("note", ""),
+                request.POST.get("nonce"),
+            )
+            messages.success(
+                request,
+                f"{transfer.get_scope_display()} credited for {transfer.versions.count()} modules. The learning path is updated.",
+            )
+        else:
+            raise ValidationError("Choose a completion action.")
+    except ValidationError as exc:
+        messages.error(request, " ".join(exc.messages))
+    return redirect("training_employee", pk=pk)
 
 
 @employee_required
@@ -764,6 +811,12 @@ def history(request):
             )
             .select_related("enrollment__track", "review")
             .order_by("-awarded_at"),
+            "transfers": ProgressTransfer.objects.filter(
+                enrollment__employee=request.user
+            )
+            .select_related("enrollment__track", "credited_by", "through_module")
+            .prefetch_related("versions__module")
+            .order_by("-created_at"),
         },
     )
 

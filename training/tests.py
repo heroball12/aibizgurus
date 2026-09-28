@@ -134,6 +134,292 @@ class AcademyTests(TestCase):
             200,
         )
 
+    def another_published_module(self, position):
+        module = Module.objects.create(
+            track=self.track,
+            title=f"Lesson {position}",
+            slug=f"lesson-{position}",
+            position=position,
+        )
+        version = ModuleVersion.objects.create(
+            module=module, transcript="Finished lesson."
+        )
+        quiz = Quiz.objects.create(version=version)
+        Question.objects.create(
+            quiz=quiz,
+            prompt="Ready?",
+            choices=["Yes", "No"],
+            correct_index=0,
+            explanation="Review the lesson.",
+        )
+        for kind in ["video", "captions"]:
+            LessonAsset.objects.create(
+                version=version, kind=kind, storage_key=f"lesson-{position}/{kind}"
+            )
+        return services.approve_and_publish(self.owner, version)
+
+    def test_owner_can_credit_first_two_lessons_and_resume_third(self):
+        self.publish()
+        second = self.another_published_module(2)
+        third = self.another_published_module(3)
+        self.client.force_login(self.owner)
+        url = reverse("training_transfer_progress", args=[self.enrollment.pk])
+        response = self.client.post(
+            url,
+            {
+                "action": "apply",
+                "through": second.module_id,
+                "scope": "lesson",
+                "note": "Erika finished modules 1 and 2 locally.",
+                "nonce": uuid.uuid4(),
+            },
+        )
+        self.assertRedirects(
+            response, reverse("training_employee", args=[self.enrollment.pk])
+        )
+        for version in [self.version, second]:
+            state = services.module_state(self.rep, version)
+            self.assertTrue(state["complete"])
+            self.assertTrue(state["credited_lesson"])
+            self.assertEqual(state["active_seconds"], 0)
+        self.assertFalse(services.module_state(self.rep, third)["complete"])
+        transfer = ProgressTransfer.objects.get()
+        self.assertEqual(transfer.credited_by, self.owner)
+        self.assertEqual(transfer.versions.count(), 2)
+        self.assertFalse(EmployeeProgress.objects.exists())
+        self.assertFalse(QuizAttempt.objects.exists())
+        self.assertFalse(RolePlayAttempt.objects.exists())
+        self.client.force_login(self.rep)
+        home = self.client.get(reverse("training_home"))
+        self.assertEqual(home.context["continue_version"], third)
+        self.assertContains(home, "2 / 3 modules complete")
+        self.assertContains(
+            self.client.get(reverse("training_history")),
+            "Erika finished modules 1 and 2 locally.",
+        )
+        self.client.force_login(self.other)
+        self.assertNotContains(
+            self.client.get(reverse("training_history")),
+            "Erika finished modules 1 and 2 locally.",
+        )
+        self.assertFalse(Certification.objects.exists())
+
+    def test_video_credit_does_not_complete_assessments_or_invent_watch_time(self):
+        self.publish()
+        second = self.another_published_module(2)
+        services.transfer_progress(
+            self.owner,
+            self.enrollment,
+            str(self.module.pk),
+            "video",
+            "Watched locally.",
+            uuid.uuid4(),
+        )
+        state = services.module_state(self.rep, self.version)
+        self.assertTrue(state["video"])
+        self.assertEqual(state["percent"], 100)
+        self.assertFalse(state["quiz"])
+        self.assertFalse(state["practice"])
+        self.assertFalse(state["complete"])
+        self.assertEqual(state["active_seconds"], 0)
+        self.assertEqual(
+            self.client.get(reverse("training_home")).context["continue_version"],
+            second,
+        )
+        self.assertContains(
+            self.client.get(reverse("training_lesson", args=[self.version.pk])),
+            "Video completion credited",
+        )
+
+    def test_entire_track_credit_still_requires_certification_signoff(self):
+        self.publish()
+        self.another_published_module(2)
+        transfer = services.transfer_progress(
+            self.owner,
+            self.enrollment,
+            "all",
+            "lesson",
+            "All course lessons finished offline.",
+            uuid.uuid4(),
+        )
+        self.assertEqual(transfer.versions.count(), 2)
+        snapshot = services.requirements(self.enrollment)
+        self.assertTrue(all(row["state"]["complete"] for row in snapshot["modules"]))
+        self.assertEqual(len(snapshot["gaps"]), 2)  # capstone + practical
+        with self.assertRaises(ValidationError):
+            services.certify(self.owner, self.enrollment, "Ready")
+        self.enrollment.refresh_from_db()
+        self.assertEqual(self.enrollment.phase, "training")
+
+    def test_progress_credit_rejects_invalid_input_and_unpublished_modules_atomically(
+        self,
+    ):
+        self.publish()
+        for through, scope, note, nonce in [
+            ("bad", "video", "note", uuid.uuid4()),
+            ("all", "invented", "note", uuid.uuid4()),
+            ("all", "lesson", "", uuid.uuid4()),
+            ("all", "lesson", "x" * 3001, uuid.uuid4()),
+            ("all", "lesson", "note", "invalid"),
+        ]:
+            with self.subTest(through=through, scope=scope), self.assertRaises(
+                ValidationError
+            ):
+                services.transfer_progress(
+                    self.owner, self.enrollment, through, scope, note, nonce
+                )
+        other_track = Track.objects.create(
+            course=self.course, title="Other", slug="other", kind="core"
+        )
+        other_module = Module.objects.create(
+            track=other_track, title="Other", slug="other", position=2
+        )
+        with self.assertRaises(ValidationError):
+            services.transfer_progress(
+                self.owner,
+                self.enrollment,
+                str(other_module.pk),
+                "lesson",
+                "note",
+                uuid.uuid4(),
+            )
+        Module.objects.create(
+            track=self.track, title="Unpublished", slug="unpublished", position=2
+        )
+        with self.assertRaises(ValidationError):
+            services.transfer_progress(
+                self.owner, self.enrollment, "all", "lesson", "note", uuid.uuid4()
+            )
+        self.assertFalse(ProgressTransfer.objects.exists())
+
+    def test_progress_credit_owner_permissions_csrf_and_post_only(self):
+        self.publish()
+        admin = get_user_model().objects.create_user(
+            username="credit-admin", role="admin"
+        )
+        url = reverse("training_transfer_progress", args=[self.enrollment.pk])
+        data = {
+            "action": "apply",
+            "through": "all",
+            "scope": "lesson",
+            "note": "note",
+            "nonce": uuid.uuid4(),
+        }
+        for user in [self.rep, self.other, admin]:
+            with self.assertRaises(PermissionDenied):
+                services.transfer_progress(
+                    user, self.enrollment, "all", "lesson", "note", uuid.uuid4()
+                )
+            self.client.force_login(user)
+            self.assertEqual(self.client.post(url, data).status_code, 403)
+        self.assertNotContains(
+            self.client.get(reverse("training_employee", args=[self.enrollment.pk])),
+            "Apply completion",
+        )
+        self.client.force_login(self.owner)
+        self.assertEqual(self.client.get(url).status_code, 405)
+        self.assertContains(
+            self.client.get(reverse("training_employee", args=[self.enrollment.pk])),
+            "Apply completion",
+        )
+        secured = Client(enforce_csrf_checks=True)
+        secured.force_login(self.owner)
+        self.assertEqual(secured.post(url, data).status_code, 403)
+        self.assertFalse(ProgressTransfer.objects.exists())
+
+    def test_credit_retries_undo_and_new_retraining_preserve_real_evidence(self):
+        self.publish()
+        progress = EmployeeProgress.objects.create(
+            employee=self.rep,
+            version=self.version,
+            watched_ranges=[[0, 20]],
+            active_seconds=20,
+        )
+        nonce = uuid.uuid4()
+        credit = services.transfer_progress(
+            self.owner, self.enrollment, "all", "lesson", "Finished offline.", nonce
+        )
+        self.assertEqual(
+            services.transfer_progress(
+                self.owner, self.enrollment, "all", "lesson", "Finished offline.", nonce
+            ),
+            credit,
+        )
+        self.assertEqual(ProgressTransfer.objects.count(), 1)
+        with self.assertRaises(ValidationError):
+            services.transfer_progress(
+                self.owner, self.enrollment, "all", "video", "note", nonce
+            )
+        with self.assertRaises(PermissionDenied):
+            services.undo_progress_transfer(self.rep, self.enrollment, credit.pk)
+        other_enrollment = services.enroll(self.owner, self.other, self.track)
+        with self.assertRaises(ValidationError):
+            services.undo_progress_transfer(self.owner, other_enrollment, credit.pk)
+        services.undo_progress_transfer(self.owner, self.enrollment, credit.pk)
+        services.undo_progress_transfer(self.owner, self.enrollment, credit.pk)
+        state = services.module_state(self.rep, self.version)
+        self.assertFalse(state["complete"])
+        self.assertEqual(state["percent"], 20)
+        progress.refresh_from_db()
+        self.assertEqual(progress.watched_ranges, [[0, 20]])
+        with self.assertRaises(ValidationError):
+            services.transfer_progress(
+                self.owner, self.enrollment, "all", "lesson", "note", nonce
+            )
+        credit = services.transfer_progress(
+            self.owner, self.enrollment, "all", "lesson", "Offline work.", uuid.uuid4()
+        )
+        services.assign_retraining(
+            self.owner, self.enrollment, self.version, "Fresh practice needed."
+        )
+        self.assertFalse(services.module_state(self.rep, self.version)["complete"])
+        self.assertFalse(
+            services.module_state(self.rep, self.version)["credited_video"]
+        )
+        self.assertEqual(
+            services.module_state(self.rep, self.version)["label"],
+            "Retraining required",
+        )
+
+    def test_credit_is_version_specific_and_undo_revokes_dependent_certification(self):
+        self.complete_evidence()
+        second = self.another_published_module(2)
+        credit = services.transfer_progress(
+            self.owner,
+            self.enrollment,
+            "all",
+            "lesson",
+            "Finished offline.",
+            uuid.uuid4(),
+        )
+        award = services.certify(
+            self.owner, self.enrollment, "Observed all practical work."
+        )
+        self.client.force_login(self.owner)
+        response = self.client.post(
+            reverse("training_transfer_progress", args=[self.enrollment.pk]),
+            {"action": "undo", "transfer": credit.pk},
+            follow=True,
+        )
+        self.assertContains(response, "Completion credit undone")
+        award.refresh_from_db()
+        self.assertIsNotNone(award.revoked_at)
+        self.assertTrue(services.module_state(self.rep, self.version)["complete"])
+        self.assertFalse(services.module_state(self.rep, second)["complete"])
+        services.transfer_progress(
+            self.owner,
+            self.enrollment,
+            "all",
+            "lesson",
+            "Finished offline.",
+            uuid.uuid4(),
+        )
+        revision = services.clone_version(self.owner, second)
+        self.assertFalse(services.module_state(self.rep, revision)["credited_video"])
+        services.transition(self.owner, second, "retired")
+        services.approve_and_publish(self.owner, revision)
+        self.assertFalse(services.module_state(self.rep, revision)["complete"])
+
     def test_drafts_cannot_be_accessed_as_active_lessons_or_earn_credit(self):
         self.assertEqual(
             self.client.get(

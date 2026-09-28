@@ -1,0 +1,10 @@
+<section class="academy-panel"><h2>Prior-learning credit</h2>
+{% for transfer in transfers %}
+  <details class="academy-scene"><summary>{{ transfer.get_scope_display }} · {{ transfer.created_at|date:'M j, Y, g:i A' }}{% if transfer.revoked_at %} · Undone{% endif %}</summary>
+    <p>{{ transfer.enrollment.track.title }} · Credited by {{ transfer.credited_by.get_full_name|default:transfer.credited_by.username }}</p>
+    {{ transfer.note|linebreaks }}
+    <p>{% for version in transfer.versions.all %}Module {{ version.module.position }}: {{ version.module.title }} (v{{ version.number }}){% if not forloop.last %}<br>{% endif %}{% endfor %}</p>
+    {% if transfer.revoked_at %}<p class="academy-small">Undone {{ transfer.revoked_at|date:'M j, Y, g:i A' }}.</p>{% elif owner %}<form method="post" action="{% url 'training_transfer_progress' enrollment.pk %}">{% csrf_token %}<input type="hidden" name="action" value="undo"><input type="hidden" name="transfer" value="{{ transfer.pk }}"><button class="academy-button secondary">Undo this credit</button></form>{% endif %}
+  </details>
+{% empty %}<p>No prior-learning credit applied.</p>{% endfor %}
+</section>
