@@ -1,0 +1,1152 @@
+[
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Your job begins with their business.",
+        "kind": "cards",
+        "items": [
+          [
+            "Listen",
+            "Find the actual problem."
+          ],
+          [
+            "Ask",
+            "Follow their answer."
+          ],
+          [
+            "Tell the truth",
+            "Separate what you know from what you need to verify."
+          ],
+          [
+            "Hand off",
+            "Leave useful information."
+          ]
+        ]
+      },
+      {
+        "phrase": "Here is the principle",
+        "title": "Problem first. Technology second.",
+        "kind": "focus",
+        "items": [
+          [
+            "01 / THE BUSINESS",
+            "Understand the working day."
+          ],
+          [
+            "02 / THE TECHNOLOGY",
+            "Explore a relevant fit."
+          ]
+        ]
+      },
+      {
+        "phrase": "They wake up thinking",
+        "title": "Start with their working day.",
+        "kind": "flow",
+        "items": [
+          [
+            "Customers",
+            "Who did not call back?"
+          ],
+          [
+            "People",
+            "Where does repetitive work build up?"
+          ],
+          [
+            "Handoffs",
+            "What gets lost between systems?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Your job starts there",
+        "title": "Make the next conversation better.",
+        "kind": "cards",
+        "items": [
+          [
+            "Explain the mission",
+            "Help the business explore a useful outcome."
+          ],
+          [
+            "Qualify the assessment",
+            "Confirm fit, interest and the next step."
+          ],
+          [
+            "Prepare the handoff",
+            "Give the human specialist useful context."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Technology follows the business problem.",
+        "kind": "cards",
+        "items": [
+          [
+            "Incoming inquiries",
+            "Phone and website assistants"
+          ],
+          [
+            "Customer follow-up",
+            "Reactivation and appointment workflows"
+          ],
+          [
+            "Repetitive work",
+            "Process automation"
+          ],
+          [
+            "Disconnected systems",
+            "Integrations and custom software"
+          ]
+        ]
+      },
+      {
+        "phrase": "The important word is can",
+        "title": "A possibility is not a promise.",
+        "kind": "focus",
+        "items": [
+          [
+            "CAN",
+            "Recognize a possible solution."
+          ],
+          [
+            "VERIFY",
+            "Check the workflow, access and fit."
+          ]
+        ]
+      },
+      {
+        "phrase": "Imagine a company",
+        "title": "Calls answered. Quotes left waiting.",
+        "kind": "flow",
+        "items": [
+          [
+            "Quote sent",
+            "The inquiry was handled."
+          ],
+          [
+            "Follow-up missed",
+            "The next step is inconsistent."
+          ],
+          [
+            "Explore the process",
+            "Another receptionist may not solve this."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Learn the possibilities",
+        "title": "Product knowledge should improve your questions.",
+        "kind": "quote",
+        "items": [
+          [
+            "ASK",
+            "What must we verify before calling this a fit?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Own the conversation. Prepare the handoff.",
+        "kind": "compare",
+        "items": [
+          [
+            "SDR",
+            "Prospect • discover • qualify\nArrange the next conversation\nDocument accurately"
+          ],
+          [
+            "HUMAN AI SPECIALIST",
+            "Deeper discovery • technical scope\nProposals • closing\nPricing only in a Growth Assessment"
+          ]
+        ]
+      },
+      {
+        "phrase": "Calls are your primary",
+        "title": "Calls are a tool. Quality is the objective.",
+        "kind": "flow",
+        "items": [
+          [
+            "Activity",
+            "Create an opportunity to speak."
+          ],
+          [
+            "Discovery",
+            "Understand a relevant problem."
+          ],
+          [
+            "Qualified next step",
+            "Earn the assessment."
+          ]
+        ]
+      },
+      {
+        "phrase": "Senior leadership",
+        "title": "Bring in the right person.",
+        "kind": "focus",
+        "items": [
+          [
+            "GURU",
+            "AI trainer and practice coach"
+          ],
+          [
+            "AI SPECIALIST",
+            "Qualified human who evaluates the build"
+          ]
+        ]
+      },
+      {
+        "phrase": "When you reach the edge",
+        "title": "A clear boundary builds trust.",
+        "kind": "quote",
+        "items": [
+          [
+            "SAY IT CLEARLY",
+            "That is something our specialist needs to verify."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Follow the complete customer journey.",
+        "kind": "flow",
+        "items": [
+          [
+            "Research",
+            "Legitimate business"
+          ],
+          [
+            "Conversation",
+            "Current process"
+          ],
+          [
+            "Discovery",
+            "Problem and interest"
+          ],
+          [
+            "Assessment",
+            "Human specialist"
+          ]
+        ]
+      },
+      {
+        "phrase": "Confirm an available time",
+        "title": "A request is not a confirmed booking.",
+        "kind": "crm",
+        "items": [
+          [
+            "CALENDAR FIRST",
+            "Agree an available date and time."
+          ],
+          [
+            "THEN RECORD",
+            "Save confirmed details and useful notes."
+          ]
+        ],
+        "capture": "booking"
+      },
+      {
+        "phrase": "The human specialist",
+        "title": "Your handoff continues the conversation.",
+        "kind": "flow",
+        "items": [
+          [
+            "Explore",
+            "Verify the workflow and relevant integrations."
+          ],
+          [
+            "Evaluate",
+            "Determine the recommended build."
+          ],
+          [
+            "Agree",
+            "Decide whether working together makes sense."
+          ]
+        ]
+      },
+      {
+        "phrase": "A Won status",
+        "title": "A sales stage is a record.",
+        "kind": "compare",
+        "items": [
+          [
+            "WON",
+            "Records a sales outcome."
+          ],
+          [
+            "IMPLEMENTATION",
+            "A separate delivery process."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Hear the problem the prospect actually named.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "PROSPECT",
+            "We get inquiries. Getting people to respond after we send a quote is the hard part."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Bad response",
+        "title": "A feature list loses the thread.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "SDR / MISSED THE PROBLEM",
+            "We have an AI receptionist, appointment booking, automation, websites and a chatbot. Would you like a demo?"
+          ]
+        ],
+        "tone": "bad",
+        "fictional": true
+      },
+      {
+        "phrase": "That rep heard",
+        "title": "What went wrong?",
+        "kind": "compare",
+        "items": [
+          [
+            "PROSPECT SAID",
+            "Quote follow-up is inconsistent."
+          ],
+          [
+            "REP PITCHED",
+            "A tool for answering incoming calls."
+          ]
+        ],
+        "tone": "bad",
+        "fictional": true
+      },
+      {
+        "phrase": "Now the useful version",
+        "title": "Follow the answer.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "SDR",
+            "How are you following up after the quote goes out?"
+          ],
+          [
+            "PROSPECT",
+            "The estimator emails them. After that, it depends on how busy we are."
+          ],
+          [
+            "SDR",
+            "What tends to happen when everyone gets busy?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "The sequence is problem",
+        "title": "Follow the problem through to a next step.",
+        "kind": "flow",
+        "items": [
+          [
+            "Problem",
+            "Listen"
+          ],
+          [
+            "Discovery",
+            "Understand"
+          ],
+          [
+            "Impact",
+            "Explore"
+          ],
+          [
+            "Solution",
+            "Relevant fit"
+          ],
+          [
+            "Next step",
+            "Agree"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Choose your next direction.",
+        "kind": "choices",
+        "items": [
+          [
+            "01",
+            "Explain the AI receptionist."
+          ],
+          [
+            "02",
+            "Ask what happens after the quotation is sent."
+          ],
+          [
+            "03",
+            "Claim they must be losing thousands."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "The strongest direction",
+        "title": "Explore the quote follow-up process.",
+        "kind": "quote",
+        "items": [
+          [
+            "A USEFUL NEXT QUESTION",
+            "What are you doing to follow up on those quotes right now?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Now follow the next answer",
+        "title": "The next answer decides the next question.",
+        "kind": "compare",
+        "items": [
+          [
+            "MANUAL FOLLOW-UP",
+            "Ask when and how it happens."
+          ],
+          [
+            "CONSISTENT SYSTEM",
+            "Ask how it is working and whether a meaningful gap exists."
+          ]
+        ]
+      },
+      {
+        "phrase": "There might not be one",
+        "title": "A credible gap is not guaranteed.",
+        "kind": "focus",
+        "items": [
+          [
+            "LISTEN",
+            "Acknowledge what works."
+          ],
+          [
+            "VERIFY",
+            "Do not manufacture a need."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Earn attention for one useful question.",
+        "kind": "compare",
+        "items": [
+          [
+            "TOO MUCH",
+            "Explain the entire company before they speak."
+          ],
+          [
+            "USEFUL",
+            "Give a short reason and invite an answer."
+          ]
+        ]
+      },
+      {
+        "phrase": "You can ask for help",
+        "title": "Ask for help.",
+        "kind": "quote",
+        "items": [
+          [
+            "NATURAL OPENING",
+            "Hey, maybe you can help me real quick. Who normally handles customer follow-up?"
+          ]
+        ]
+      },
+      {
+        "phrase": "You can be direct",
+        "title": "Give a clear reason for the call.",
+        "kind": "quote",
+        "items": [
+          [
+            "DIRECT OPENING",
+            "Hey, quick reason for the call. I'm trying to understand how businesses handle quote follow-up when the team gets busy."
+          ]
+        ]
+      },
+      {
+        "phrase": "If a receptionist answers",
+        "title": "Gatekeepers are people.",
+        "kind": "cards",
+        "items": [
+          [
+            "Be honest",
+            "Never invent familiarity or a previous call."
+          ],
+          [
+            "Ask for help",
+            "Find the appropriate person."
+          ],
+          [
+            "Stay professional",
+            "Use light humor only when it fits."
+          ]
+        ]
+      },
+      {
+        "phrase": "A script helps",
+        "title": "Learn the purpose behind the words.",
+        "kind": "focus",
+        "items": [
+          [
+            "PRACTICE",
+            "Use the script to learn."
+          ],
+          [
+            "CONVERSATION",
+            "Carry the purpose in your own words."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "What makes an assessment qualified?",
+        "kind": "qualification",
+        "items": [
+          [
+            "Business",
+            "Legitimate operation"
+          ],
+          [
+            "Decision maker",
+            "Authority or a realistic path"
+          ],
+          [
+            "Need",
+            "Problem or credible opportunity"
+          ],
+          [
+            "Solution",
+            "A plausible AIBG fit"
+          ],
+          [
+            "Interest",
+            "Genuine desire to explore"
+          ],
+          [
+            "Purpose",
+            "Understands the assessment"
+          ],
+          [
+            "Time",
+            "Date and time confirmed"
+          ],
+          [
+            "Notes",
+            "Useful discovery context"
+          ]
+        ]
+      },
+      {
+        "phrase": "Budget does not",
+        "title": "Earn trust before deeper financial qualification.",
+        "kind": "focus",
+        "items": [
+          [
+            "SDR",
+            "Understand need, interest and next step."
+          ],
+          [
+            "AI SPECIALIST",
+            "Discuss the custom build and pricing during the assessment."
+          ]
+        ]
+      },
+      {
+        "phrase": "Now compare two",
+        "title": "A qualified conversation beats a name on a calendar.",
+        "kind": "compare",
+        "items": [
+          [
+            "POSSIBLE QUALIFIED FIT",
+            "Owner identifies a gap, wants to explore, understands the assessment and confirms a time."
+          ],
+          [
+            "NOT A QUALIFIED WIN",
+            "Expects free software, has no authority or path, and no relevant need."
+          ]
+        ],
+        "fictional": true
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "The Complimentary Growth Assessment",
+        "kind": "meeting",
+        "items": [
+          [
+            "15–20 minutes",
+            "A focused video conversation"
+          ],
+          [
+            "Human AI Specialist",
+            "A qualified person leads the assessment"
+          ],
+          [
+            "Your current workflow",
+            "Review operations before selecting a build"
+          ]
+        ]
+      },
+      {
+        "phrase": "The purpose is",
+        "title": "Understand the business before recommending the build.",
+        "kind": "flow",
+        "items": [
+          [
+            "Review",
+            "Current operations"
+          ],
+          [
+            "Identify",
+            "Useful opportunities"
+          ],
+          [
+            "Evaluate",
+            "Solutions and integrations"
+          ],
+          [
+            "Determine fit",
+            "Custom implementation"
+          ]
+        ]
+      },
+      {
+        "phrase": "A natural invitation",
+        "title": "Make the next step relevant.",
+        "kind": "quote",
+        "items": [
+          [
+            "INVITATION",
+            "Let's get you fifteen to twenty minutes with our team so we can review the process and talk through what we'd recommend."
+          ]
+        ]
+      },
+      {
+        "phrase": "Then listen",
+        "title": "Recognize interest. Clarify the next step.",
+        "kind": "cards",
+        "items": [
+          [
+            "Buying signal",
+            "Who should I speak with?"
+          ],
+          [
+            "Buying signal",
+            "I'd like to see how it works."
+          ],
+          [
+            "Next action",
+            "Agree the calendar time and prepare the handoff."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Interested in AI. Call Thursday.",
+        "kind": "focus",
+        "items": [
+          [
+            "WHAT IS MISSING?",
+            "Who? Which problem? Current process? Confirmed time?"
+          ]
+        ],
+        "tone": "bad",
+        "fictional": true
+      },
+      {
+        "phrase": "A stronger fictional handoff",
+        "title": "Write what the prospect actually told you.",
+        "kind": "crm",
+        "items": [
+          [
+            "FACT",
+            "Taylor says quote follow-up is manual."
+          ],
+          [
+            "UNKNOWN",
+            "CRM name and quote volume are not yet confirmed."
+          ]
+        ],
+        "capture": "handoff",
+        "fictional": true
+      },
+      {
+        "phrase": "That is the factual part",
+        "title": "Label a hypothesis as a hypothesis.",
+        "kind": "cards",
+        "items": [
+          [
+            "FACT",
+            "Manual follow-up when time allows."
+          ],
+          [
+            "HYPOTHESIS",
+            "A consistent follow-up workflow may help."
+          ],
+          [
+            "VERIFY",
+            "Tools, permissions and desired process."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Finally record",
+        "title": "Record the actual agreement.",
+        "kind": "crm",
+        "items": [
+          [
+            "BOOKED",
+            "Save the confirmed time zone and meeting details."
+          ],
+          [
+            "SUGGESTED",
+            "Keep the time explicitly unconfirmed."
+          ]
+        ],
+        "capture": "booking"
+      },
+      {
+        "phrase": "Capture contact",
+        "title": "Leave the next person useful information.",
+        "kind": "cards",
+        "items": [
+          [
+            "People",
+            "Contact, role and decision-maker status"
+          ],
+          [
+            "Business",
+            "Process, pain, tools and desired outcome"
+          ],
+          [
+            "Next step",
+            "Opportunity, objections and agreed follow-up"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Trust is a working requirement.",
+        "kind": "cards",
+        "items": [
+          [
+            "Be accurate",
+            "No invented research, results or capabilities."
+          ],
+          [
+            "Be honest",
+            "No revenue, ROI or appointment guarantees."
+          ],
+          [
+            "Respect boundaries",
+            "Honor restrictions and requests to stop."
+          ]
+        ]
+      },
+      {
+        "phrase": "A price question",
+        "title": "Pricing follows the recommended build.",
+        "kind": "flow",
+        "items": [
+          [
+            "Business",
+            "Understand the current workflow."
+          ],
+          [
+            "Build",
+            "Identify the best-fitting implementation."
+          ],
+          [
+            "Custom pricing",
+            "AI Specialist • Growth Assessment"
+          ]
+        ]
+      },
+      {
+        "phrase": "As an SDR",
+        "title": "Your role is to arrange the assessment.",
+        "kind": "compare",
+        "items": [
+          [
+            "DO",
+            "Acknowledge the interest. Explain the process. Offer the next step."
+          ],
+          [
+            "DO NOT",
+            "Give starting prices, ranges, estimates, package figures or discounts."
+          ]
+        ]
+      },
+      {
+        "phrase": "A useful response",
+        "title": "Give a clear answer about the process.",
+        "kind": "quote",
+        "items": [
+          [
+            "SDR RESPONSE",
+            "Pricing depends on the build that best fits your business. Our AI Specialist will review your workflow and discuss custom pricing during your Growth Assessment."
+          ]
+        ]
+      },
+      {
+        "phrase": "You are explaining",
+        "title": "Custom pricing belongs in the Growth Assessment.",
+        "kind": "focus",
+        "items": [
+          [
+            "ONLY",
+            "A qualified human AI Specialist"
+          ],
+          [
+            "WHEN",
+            "During a Growth Assessment"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "We already have someone.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "PROSPECT",
+            "We already have someone."
+          ],
+          [
+            "EXPLORE",
+            "What do they handle, and how is it working?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Use this framework",
+        "title": "A useful response starts with understanding.",
+        "kind": "flow",
+        "items": [
+          [
+            "Acknowledge",
+            "Hear them"
+          ],
+          [
+            "Understand",
+            "Clarify"
+          ],
+          [
+            "Ask",
+            "Explore"
+          ],
+          [
+            "Respond",
+            "Relevant"
+          ],
+          [
+            "Next step",
+            "Appropriate"
+          ]
+        ]
+      },
+      {
+        "phrase": "If someone says send",
+        "title": "Make the information relevant.",
+        "kind": "quote",
+        "items": [
+          [
+            "USEFUL CLARIFIER",
+            "Absolutely. Just so I send something useful, how are you handling quote follow-up today?"
+          ]
+        ]
+      },
+      {
+        "phrase": "If they request no",
+        "title": "A request to stop means stop.",
+        "kind": "focus",
+        "items": [
+          [
+            "STOP",
+            "Respect the contact restriction."
+          ],
+          [
+            "RECORD",
+            "Leave clear, accurate notes."
+          ]
+        ]
+      },
+      {
+        "phrase": "The right result",
+        "title": "Success can have more than one next step.",
+        "kind": "cards",
+        "items": [
+          [
+            "Continue",
+            "Callback or referral"
+          ],
+          [
+            "Nurture",
+            "An appropriate agreed follow-up"
+          ],
+          [
+            "Exit",
+            "Disqualification or a respectful close"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Practice: one useful follow-up question.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "FICTIONAL OWNER",
+            "We answer the phones fine. We lose track after sending quotes."
+          ],
+          [
+            "YOUR TASK",
+            "Ask one follow-up question. Explain why you chose it."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "If your answer",
+        "title": "Specific feedback gives you a better second attempt.",
+        "kind": "compare",
+        "items": [
+          [
+            "MISSED THE PROBLEM",
+            "Named the receptionist product."
+          ],
+          [
+            "RETRY",
+            "Ask what happens after the quote is sent and where the process breaks down."
+          ]
+        ]
+      },
+      {
+        "phrase": "Try again",
+        "title": "Try the question again.",
+        "kind": "quote",
+        "items": [
+          [
+            "A USEFUL REVISION",
+            "What does the follow-up look like after your estimator sends the quote?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Now write three",
+        "title": "Write a handoff in three lines.",
+        "kind": "cards",
+        "items": [
+          [
+            "FACT",
+            "A statement supported by the conversation."
+          ],
+          [
+            "HYPOTHESIS",
+            "A clearly labeled possibility to verify."
+          ],
+          [
+            "NEXT STEP",
+            "Actually agreed, or explicitly pending."
+          ]
+        ]
+      },
+      {
+        "phrase": "In the Academy",
+        "title": "Practice creates evidence.",
+        "kind": "flow",
+        "items": [
+          [
+            "Attempt",
+            "Save your work"
+          ],
+          [
+            "Feedback",
+            "Specific observations"
+          ],
+          [
+            "Retry",
+            "Show improvement"
+          ],
+          [
+            "Manager review",
+            "Evaluate the evidence"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Build a disciplined sales day.",
+        "kind": "cards",
+        "items": [
+          [
+            "Effort",
+            "Useful activity and conversations"
+          ],
+          [
+            "Quality",
+            "Discovery and qualified opportunities"
+          ],
+          [
+            "Records",
+            "Accurate notes and follow-up"
+          ],
+          [
+            "Improvement",
+            "Use feedback and campaign instructions"
+          ]
+        ]
+      },
+      {
+        "phrase": "Your manager",
+        "title": "Training and readiness are different.",
+        "kind": "flow",
+        "items": [
+          [
+            "Shadow",
+            "Learn from real work"
+          ],
+          [
+            "Supervised calls",
+            "Practice with support"
+          ],
+          [
+            "Evidence",
+            "Modules, checks and handoff"
+          ],
+          [
+            "Approval",
+            "Manager sign-off"
+          ]
+        ]
+      },
+      {
+        "phrase": "Take these five ideas",
+        "title": "Your standard in every conversation.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Start with the business problem."
+          ],
+          [
+            "02",
+            "Follow the answer."
+          ],
+          [
+            "03",
+            "Earn a qualified Growth Assessment."
+          ],
+          [
+            "04",
+            "Separate facts from hypotheses."
+          ],
+          [
+            "05",
+            "Make the specialist's next conversation better."
+          ]
+        ]
+      },
+      {
+        "phrase": "Now complete",
+        "title": "Turn this lesson into practice.",
+        "kind": "cards",
+        "items": [
+          [
+            "Knowledge check",
+            "Complete the scenario questions."
+          ],
+          [
+            "Practical task",
+            "Save your fact / hypothesis / next-step handoff."
+          ],
+          [
+            "Field guide",
+            "Use it before the next supervised exercise."
+          ]
+        ]
+      },
+      {
+        "phrase": "Don't aim to sound",
+        "title": "Understand why the next question matters.",
+        "kind": "quote",
+        "items": [
+          [
+            "YOUR NEXT CONVERSATION",
+            "Listen well. Qualify honestly. Hand off clearly."
+          ]
+        ]
+      }
+    ]
+  }
+]

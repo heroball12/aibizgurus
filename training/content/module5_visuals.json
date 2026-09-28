@@ -1,0 +1,687 @@
+[
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Make the next honest action obvious.",
+        "kind": "flow",
+        "items": [
+          [
+            "Find",
+            "A possible business"
+          ],
+          [
+            "Verify",
+            "Enough context to proceed"
+          ],
+          [
+            "Record",
+            "What actually happened"
+          ]
+        ]
+      },
+      {
+        "phrase": "Think of the process in three",
+        "title": "These are different states of knowledge.",
+        "kind": "compare",
+        "items": [
+          [
+            "SEARCH RESULT",
+            "A candidate to review"
+          ],
+          [
+            "QUALIFIED OPPORTUNITY",
+            "Evidence from a real conversation"
+          ]
+        ]
+      },
+      {
+        "phrase": "Your practical task is to create",
+        "title": "A useful record can survive a handoff.",
+        "kind": "cards",
+        "items": [
+          [
+            "Identity",
+            "The correct business"
+          ],
+          [
+            "Status",
+            "What is actually true"
+          ],
+          [
+            "Next action",
+            "A grounded step"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Search the assigned market.",
+        "kind": "workspace",
+        "items": [
+          [
+            "Industry",
+            "Campaign direction"
+          ],
+          [
+            "Location",
+            "Clear city and state"
+          ],
+          [
+            "Quantity",
+            "Requested limit"
+          ]
+        ],
+        "capture": "finder"
+      },
+      {
+        "phrase": "The current finder uses public business",
+        "title": "Public listings have coverage limits.",
+        "kind": "compare",
+        "items": [
+          [
+            "PROVIDES",
+            "Possible businesses with public phone details"
+          ],
+          [
+            "DOES NOT PROVE",
+            "Freshness, demand or qualification"
+          ]
+        ]
+      },
+      {
+        "phrase": "Small searches can run directly. Larger",
+        "title": "Follow the actual search status.",
+        "kind": "flow",
+        "items": [
+          [
+            "Small search",
+            "May run immediately"
+          ],
+          [
+            "Large search",
+            "Worker may be required"
+          ],
+          [
+            "Unavailable",
+            "Use an approved alternative"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Review the result before saving it.",
+        "kind": "flow",
+        "items": [
+          [
+            "Website",
+            "Confirm context"
+          ],
+          [
+            "Listing",
+            "Check identity"
+          ],
+          [
+            "Campaign",
+            "Assess relevance"
+          ]
+        ]
+      },
+      {
+        "phrase": "The available actions include adding a",
+        "title": "Result actions organize research.",
+        "kind": "cards",
+        "items": [
+          [
+            "Add to pipeline",
+            "Save a suitable prospect"
+          ],
+          [
+            "Later",
+            "Review when appropriate"
+          ],
+          [
+            "Remove from results",
+            "Keep the queue useful"
+          ]
+        ]
+      },
+      {
+        "phrase": "Imagine a fictional search returns three",
+        "title": "Choose based on evidence.",
+        "kind": "compare",
+        "items": [
+          [
+            "CLEAR MATCH",
+            "Check history and consider saving"
+          ],
+          [
+            "UNCERTAIN MATCH",
+            "Resolve the conflict first"
+          ]
+        ],
+        "fictional": true
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Check history before creating more records.",
+        "kind": "cards",
+        "items": [
+          [
+            "Ownership",
+            "Who is working this business?"
+          ],
+          [
+            "History",
+            "What was agreed?"
+          ],
+          [
+            "Restrictions",
+            "What must be honored?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Do not create a duplicate to",
+        "title": "A new listing does not reset the relationship.",
+        "kind": "quote",
+        "items": [
+          [
+            "BOUNDARY",
+            "Never duplicate a lead to bypass ownership or contact restrictions."
+          ]
+        ]
+      },
+      {
+        "phrase": "When ownership is unclear, ask a",
+        "title": "Resolve uncertainty without erasing evidence.",
+        "kind": "flow",
+        "items": [
+          [
+            "Compare",
+            "Identity and context"
+          ],
+          [
+            "Record",
+            "The possible match"
+          ],
+          [
+            "Escalate",
+            "Manager resolves ownership"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Record what you know and how you know it.",
+        "kind": "cards",
+        "items": [
+          [
+            "Identity",
+            "Business and appropriate contact"
+          ],
+          [
+            "Source",
+            "Where the information came from"
+          ],
+          [
+            "Notes",
+            "Facts, hypotheses and unknowns"
+          ]
+        ]
+      },
+      {
+        "phrase": "After a conversation, record the outcome",
+        "title": "Match the status to the actual event.",
+        "kind": "compare",
+        "items": [
+          [
+            "VAGUE",
+            "Promising lead"
+          ],
+          [
+            "USEFUL",
+            "Requested callback about quotation follow-up"
+          ]
+        ]
+      },
+      {
+        "phrase": "Give the next action enough detail",
+        "title": "A callback is not a confirmed assessment.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Record the agreed timing, purpose and responsible person."
+          ]
+        ],
+        "fictional": true
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A spreadsheet editor inside the CRM.",
+        "kind": "workspace",
+        "items": [
+          [
+            "Prepared columns",
+            "Start with the required structure"
+          ],
+          [
+            "Direct editing",
+            "Use understandable business fields"
+          ],
+          [
+            "Save to CRM",
+            "Apply changes to app records"
+          ]
+        ],
+        "capture": "sheet"
+      },
+      {
+        "phrase": "Use the column groups to move",
+        "title": "Use the keyboard to work efficiently.",
+        "kind": "flow",
+        "items": [
+          [
+            "Tab",
+            "Next cell"
+          ],
+          [
+            "Enter",
+            "Next row"
+          ],
+          [
+            "Paste",
+            "A rectangular group of cells"
+          ],
+          [
+            "Find",
+            "Locate a row"
+          ]
+        ]
+      },
+      {
+        "phrase": "Editing a cell prepares a change.",
+        "title": "Review the meaning before saving the value.",
+        "kind": "workspace",
+        "items": [
+          [
+            "CHECK",
+            "Right row, right field, supported fact, valid format."
+          ]
+        ],
+        "capture": "sheet-save"
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Removing a row from a sheet keeps the CRM record.",
+        "kind": "compare",
+        "items": [
+          [
+            "SHEET ORGANIZATION",
+            "Remove the row from this working sheet"
+          ],
+          [
+            "CRM HISTORY",
+            "The underlying record remains"
+          ]
+        ]
+      },
+      {
+        "phrase": "Some fields may be visible only",
+        "title": "Permissions still apply inside the sheet.",
+        "kind": "cards",
+        "items": [
+          [
+            "Scope",
+            "Only authorized records"
+          ],
+          [
+            "Fields",
+            "Some actions require a manager"
+          ],
+          [
+            "Conflicts",
+            "Reopen the latest version"
+          ]
+        ]
+      },
+      {
+        "phrase": "A conflict message protects the other",
+        "title": "Reconcile a conflict before saving again.",
+        "kind": "flow",
+        "items": [
+          [
+            "Read",
+            "Understand the warning"
+          ],
+          [
+            "Refresh",
+            "Load current information"
+          ],
+          [
+            "Compare",
+            "Preserve accurate changes"
+          ],
+          [
+            "Save",
+            "Apply the intended result"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Open, review and save deliberately.",
+        "kind": "workspace",
+        "items": [
+          [
+            "File",
+            "Supported Excel or CSV"
+          ],
+          [
+            "Review",
+            "Check rows and mapping"
+          ],
+          [
+            "Save",
+            "Apply intended CRM changes"
+          ]
+        ],
+        "capture": "sheet"
+      },
+      {
+        "phrase": "Prepared columns reduce mapping mistakes, but",
+        "title": "Prepared columns still need data checks.",
+        "kind": "cards",
+        "items": [
+          [
+            "Phones",
+            "Preserve the correct values"
+          ],
+          [
+            "Dates",
+            "Use the expected format"
+          ],
+          [
+            "Columns",
+            "Confirm the information is aligned"
+          ]
+        ]
+      },
+      {
+        "phrase": "Use sample information for practice. Do",
+        "title": "Read the import result.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Accepted rows, duplicates and errors are different outcomes."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Export the information needed for the task.",
+        "kind": "workspace",
+        "items": [
+          [
+            "Scope",
+            "Relevant records"
+          ],
+          [
+            "Format",
+            "Excel or CSV"
+          ],
+          [
+            "Purpose",
+            "Approved business use"
+          ]
+        ],
+        "capture": "sheet"
+      },
+      {
+        "phrase": "Before sharing or editing an export,",
+        "title": "An exported file needs appropriate handling.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Keep lead information and internal notes within the approved workflow."
+          ]
+        ]
+      },
+      {
+        "phrase": "When you bring edited information back,",
+        "title": "A downloaded copy can become outdated.",
+        "kind": "compare",
+        "items": [
+          [
+            "EXPORT",
+            "A snapshot at one point in time"
+          ],
+          [
+            "CURRENT CRM",
+            "May contain newer agreements and restrictions"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Practice with Harbor Repair Workshop.",
+        "kind": "cards",
+        "items": [
+          [
+            "Reported process",
+            "Quote inquiries reviewed weekday afternoons"
+          ],
+          [
+            "Agreement",
+            "Reconnect next Wednesday"
+          ],
+          [
+            "Unknowns",
+            "Authority, systems and need"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Write a concise record with the",
+        "title": "Build the record before choosing a solution.",
+        "kind": "flow",
+        "items": [
+          [
+            "Known facts",
+            "With the source"
+          ],
+          [
+            "Next action",
+            "Actual callback agreement"
+          ],
+          [
+            "Question",
+            "Explore one uncertainty"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong record says who reported",
+        "title": "Keep the outcome accurate.",
+        "kind": "compare",
+        "items": [
+          [
+            "ACCURATE",
+            "Callback requested; qualification incomplete"
+          ],
+          [
+            "UNSUPPORTED",
+            "Assessment booked; needs automation"
+          ]
+        ],
+        "fictional": true
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A field is not permission to make a promise.",
+        "kind": "quote",
+        "items": [
+          [
+            "PRICING POLICY",
+            "Custom to the build. Human AI Specialist only, during the Growth Assessment."
+          ]
+        ]
+      },
+      {
+        "phrase": "Use the lead's assessment booking process",
+        "title": "Confirm meetings through the booking workflow.",
+        "kind": "flow",
+        "items": [
+          [
+            "Fit",
+            "Relevant reason to meet"
+          ],
+          [
+            "Agreement",
+            "Prospect accepts the next step"
+          ],
+          [
+            "Booking",
+            "Confirm actual meeting details"
+          ]
+        ]
+      },
+      {
+        "phrase": "Your job is to make the",
+        "title": "Prepare the specialist with accurate context.",
+        "kind": "cards",
+        "items": [
+          [
+            "Process",
+            "What happens now?"
+          ],
+          [
+            "Goal",
+            "What would improve?"
+          ],
+          [
+            "Open questions",
+            "What still needs evaluation?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Keep the routine simple and accurate.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Search the assigned market."
+          ],
+          [
+            "02",
+            "Verify identity and existing history."
+          ],
+          [
+            "03",
+            "Save suitable records."
+          ],
+          [
+            "04",
+            "Record actual outcomes."
+          ],
+          [
+            "05",
+            "Keep the next action clear."
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical submission, explain how",
+        "title": "Ask Guru to test the record.",
+        "kind": "cards",
+        "items": [
+          [
+            "Known",
+            "Supported facts"
+          ],
+          [
+            "Unknown",
+            "Visible uncertainty"
+          ],
+          [
+            "Action",
+            "Who does what next?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the scenario quiz and keep",
+        "title": "Make speed the result of a clear routine.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz and revise your fictional CRM exercise."
+          ]
+        ]
+      }
+    ]
+  }
+]

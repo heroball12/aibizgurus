@@ -1,0 +1,657 @@
+[
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Earn a little more attention.",
+        "kind": "flow",
+        "items": [
+          [
+            "Identify",
+            "Who is calling?"
+          ],
+          [
+            "Reason",
+            "Why this conversation?"
+          ],
+          [
+            "Question",
+            "Invite a real answer"
+          ]
+        ]
+      },
+      {
+        "phrase": "Think of the first ten seconds",
+        "title": "The opening earns the next 20–30 seconds.",
+        "kind": "compare",
+        "items": [
+          [
+            "HELPFUL",
+            "A short, relevant start"
+          ],
+          [
+            "UNHELPFUL",
+            "A compressed company presentation"
+          ]
+        ]
+      },
+      {
+        "phrase": "In this lesson, we will use",
+        "title": "Practice delivery and response.",
+        "kind": "cards",
+        "items": [
+          [
+            "Pace",
+            "Easy to follow"
+          ],
+          [
+            "Confidence",
+            "Clear and steady"
+          ],
+          [
+            "Listening",
+            "Ready for the answer"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use a short, honest opening.",
+        "kind": "quote",
+        "items": [
+          [
+            "PRACTICE OPENER",
+            "Hi, this is Alex with AI Business Gurus. Quick question: how does your team handle new inquiries after hours?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "You can also use a short",
+        "title": "Choose honesty over manufactured familiarity.",
+        "kind": "cards",
+        "items": [
+          [
+            "Identity",
+            "Say who you are."
+          ],
+          [
+            "Context",
+            "Use the real reason."
+          ],
+          [
+            "Respect",
+            "No invented relationship."
+          ]
+        ]
+      },
+      {
+        "phrase": "Keep the question narrow enough to",
+        "title": "Ask about one relevant process.",
+        "kind": "compare",
+        "items": [
+          [
+            "TOO BROAD",
+            "How is your entire business doing?"
+          ],
+          [
+            "SPECIFIC",
+            "How are new inquiries handled after hours?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Same words. Mechanical delivery.",
+        "kind": "quote",
+        "items": [
+          [
+            "ROBOTIC READ",
+            "Hi, this is Alex with AI Business Gurus. Quick question: how does your team handle new inquiries after hours?"
+          ]
+        ],
+        "tone": "bad",
+        "fictional": true
+      },
+      {
+        "phrase": "The correction is not to add",
+        "title": "Give the thought a natural shape.",
+        "kind": "flow",
+        "items": [
+          [
+            "Introduce",
+            "Clear identity"
+          ],
+          [
+            "Pause",
+            "Separate the thought"
+          ],
+          [
+            "Ask",
+            "Emphasize the process"
+          ],
+          [
+            "Stop",
+            "Leave room"
+          ]
+        ]
+      },
+      {
+        "phrase": "Practice the same opener once as",
+        "title": "Practice the contrast yourself.",
+        "kind": "compare",
+        "items": [
+          [
+            "ATTEMPT 1",
+            "Flat rhythm, no meaningful pause"
+          ],
+          [
+            "ATTEMPT 2",
+            "Natural question, space for an answer"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Same words. Too much intensity.",
+        "kind": "quote",
+        "items": [
+          [
+            "OVEREXCITED READ",
+            "Hi, this is Alex with AI Business Gurus. Quick question: how does your team handle new inquiries after hours?"
+          ]
+        ],
+        "tone": "bad",
+        "fictional": true
+      },
+      {
+        "phrase": "Bring the energy down to a",
+        "title": "Make the exchange easy to follow.",
+        "kind": "cards",
+        "items": [
+          [
+            "Pace",
+            "Understandable, not rushed"
+          ],
+          [
+            "Volume",
+            "Comfortable, not overpowering"
+          ],
+          [
+            "Energy",
+            "Interested, not theatrical"
+          ]
+        ]
+      },
+      {
+        "phrase": "Enthusiasm becomes useful when it responds",
+        "title": "Let enthusiasm respond to something real.",
+        "kind": "quote",
+        "items": [
+          [
+            "PRACTICE",
+            "Repeat the opener calmly and check whether a partner can restate the question."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Same words. An uncertain delivery.",
+        "kind": "quote",
+        "items": [
+          [
+            "APOLOGETIC READ",
+            "Hi, this is Alex with AI Business Gurus. Quick question: how does your team handle new inquiries after hours?"
+          ]
+        ],
+        "tone": "bad",
+        "fictional": true
+      },
+      {
+        "phrase": "Respect does not require an extended",
+        "title": "Respect and clarity belong together.",
+        "kind": "compare",
+        "items": [
+          [
+            "CLEAR",
+            "A relevant business question"
+          ],
+          [
+            "UNCLEAR",
+            "An introduction buried in apologies"
+          ]
+        ]
+      },
+      {
+        "phrase": "Practice finishing your statements without adding",
+        "title": "Finish the thought without chasing reassurance.",
+        "kind": "cards",
+        "items": [
+          [
+            "Purpose",
+            "Know why you are asking."
+          ],
+          [
+            "Clarity",
+            "Use only necessary qualifiers."
+          ],
+          [
+            "Respect",
+            "Accept the actual answer."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Same words. Calm and easy to follow.",
+        "kind": "quote",
+        "items": [
+          [
+            "NATURAL READ",
+            "Hi, this is Alex with AI Business Gurus. Quick question: how does your team handle new inquiries after hours?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "A natural opening allows variation. You",
+        "title": "Keep the structure; use your own voice.",
+        "kind": "flow",
+        "items": [
+          [
+            "Identity",
+            "Honest introduction"
+          ],
+          [
+            "Relevance",
+            "Specific process"
+          ],
+          [
+            "Question",
+            "Real curiosity"
+          ],
+          [
+            "Pause",
+            "Space to answer"
+          ]
+        ]
+      },
+      {
+        "phrase": "Record yourself in an approved practice",
+        "title": "Coach observable behavior.",
+        "kind": "cards",
+        "items": [
+          [
+            "Timing",
+            "How long did the opening take?"
+          ],
+          [
+            "Clarity",
+            "Could the listener follow it?"
+          ],
+          [
+            "Turn-taking",
+            "Did you leave room?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Follow the problem the prospect actually names.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "PROSPECT",
+            "After-hours calls are covered. Quote follow-up is the headache."
+          ],
+          [
+            "REP",
+            "What happens after a quote goes out?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "You might respond: understood, what happens",
+        "title": "Discovery comes before recommendation.",
+        "kind": "flow",
+        "items": [
+          [
+            "Process",
+            "What happens now?"
+          ],
+          [
+            "Frequency",
+            "How often?"
+          ],
+          [
+            "Impact",
+            "Why does it matter?"
+          ],
+          [
+            "Interest",
+            "Is improvement relevant?"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the person says everything is",
+        "title": "Accept evidence that changes your plan.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "The opener starts a conversation; it does not lock in a product pitch."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Guide the exchange without taking it over.",
+        "kind": "cards",
+        "items": [
+          [
+            "Acknowledge",
+            "Show that you heard the point."
+          ],
+          [
+            "Connect",
+            "Explain the transition."
+          ],
+          [
+            "Ask",
+            "Return to a useful question."
+          ]
+        ]
+      },
+      {
+        "phrase": "If the conversation wanders, acknowledge the",
+        "title": "A natural transition keeps the context.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "Bringing it back to those quote requests, who follows up when the team is out on a job?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "When you hear a question you",
+        "title": "Confidence includes a clear boundary.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Verify uncertain capabilities; reserve custom pricing for the human specialist during the assessment."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A busy response needs context.",
+        "kind": "cards",
+        "items": [
+          [
+            "Timing",
+            "Is this a practical interruption?"
+          ],
+          [
+            "Relevance",
+            "Is the purpose clear?"
+          ],
+          [
+            "Preference",
+            "Does the person want to continue?"
+          ]
+        ]
+      },
+      {
+        "phrase": "You can ask for an appropriate",
+        "title": "Confirm an actual next step.",
+        "kind": "flow",
+        "items": [
+          [
+            "Callback",
+            "Agreed timing and purpose"
+          ],
+          [
+            "Information",
+            "Specific and wanted"
+          ],
+          [
+            "Stop",
+            "Honor a clear request"
+          ]
+        ]
+      },
+      {
+        "phrase": "Do not treat every short answer",
+        "title": "Do not turn every short answer into an argument.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "End appropriately and record the real outcome."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "The prospect changes the direction.",
+        "kind": "quote",
+        "items": [
+          [
+            "FICTIONAL RESPONSE",
+            "Our phones are fine, but we lose track of people after sending quotes."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Pause and practice your opening and",
+        "title": "Practice two behaviors together.",
+        "kind": "flow",
+        "items": [
+          [
+            "Open",
+            "Calm and concise"
+          ],
+          [
+            "Listen",
+            "Hear the correction"
+          ],
+          [
+            "Pivot",
+            "Ask about quote follow-up"
+          ],
+          [
+            "Stop",
+            "Leave space"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong response asks what happens",
+        "title": "Retry the behavior that missed the mark.",
+        "kind": "compare",
+        "items": [
+          [
+            "MISSED",
+            "Continue the phone-agent pitch"
+          ],
+          [
+            "IMPROVED",
+            "Ask what happens after a quote is sent"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Feedback should name a changeable behavior.",
+        "kind": "compare",
+        "items": [
+          [
+            "VAGUE",
+            "You sounded bad."
+          ],
+          [
+            "SPECIFIC",
+            "You rushed the company name and did not pause for an answer."
+          ]
+        ]
+      },
+      {
+        "phrase": "Choose one adjustment for the next",
+        "title": "Change one thing and compare.",
+        "kind": "flow",
+        "items": [
+          [
+            "Attempt",
+            "Observe the behavior"
+          ],
+          [
+            "Feedback",
+            "Choose one adjustment"
+          ],
+          [
+            "Retry",
+            "Apply it"
+          ],
+          [
+            "Compare",
+            "What improved?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Guru's coaching should support that comparison,",
+        "title": "Match the evidence to the claim.",
+        "kind": "cards",
+        "items": [
+          [
+            "Written practice",
+            "Logic, listening and boundaries"
+          ],
+          [
+            "Spoken practice",
+            "Pace, clarity and pauses"
+          ],
+          [
+            "Manager review",
+            "Context and coaching"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Warm up before the call.",
+        "kind": "flow",
+        "items": [
+          [
+            "Prepare",
+            "One relevant question"
+          ],
+          [
+            "Say",
+            "The opening aloud"
+          ],
+          [
+            "Pause",
+            "Leave room"
+          ],
+          [
+            "Listen",
+            "Follow the answer"
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical submission, perform the",
+        "title": "Compare four deliveries of the same words.",
+        "kind": "cards",
+        "items": [
+          [
+            "Mechanical",
+            "Flat rhythm"
+          ],
+          [
+            "Overexcited / uncertain",
+            "Too much intensity or too little clarity"
+          ],
+          [
+            "Calm",
+            "Natural pace and a real pause"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the quiz and retain the",
+        "title": "Earn the next part through relevance and attention.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz, practice aloud and save your improved response."
+          ]
+        ]
+      }
+    ]
+  }
+]

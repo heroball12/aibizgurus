@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "accounts", "core.apps.CoreConfig", "clients", "assistant_ai", "crm", "voice",
     "billing",
     "audit.apps.AuditConfig",
+    "training",
 ]
 
 MIDDLEWARE = [
@@ -217,3 +218,11 @@ VIDEO_CONCIERGE_ENABLED = env_bool("VIDEO_CONCIERGE_ENABLED", default=False)
 VIDEO_CONCIERGE_DAILY_LIMIT = int(os.getenv("VIDEO_CONCIERGE_DAILY_LIMIT", "20"))
 VIDEO_CONCIERGE_HOURLY_LIMIT = int(os.getenv("VIDEO_CONCIERGE_HOURLY_LIMIT", "3"))
 VIDEO_CONCIERGE_MAX_SECONDS = max(60, min(300, int(os.getenv("VIDEO_CONCIERGE_MAX_SECONDS", "300"))))
+
+# Private durable Academy media. AWS credentials use the standard SDK credential chain.
+TRAINING_S3_BUCKET = os.getenv("TRAINING_S3_BUCKET", "")
+TRAINING_S3_REGION = os.getenv("TRAINING_S3_REGION", "us-east-1")
+TRAINING_S3_ENDPOINT = os.getenv("TRAINING_S3_ENDPOINT", "")
+# Private files on a Render persistent disk, as an alternative to S3.
+# This directory must not be exposed by a public static/media route.
+TRAINING_MEDIA_ROOT = os.getenv("TRAINING_MEDIA_ROOT", "")

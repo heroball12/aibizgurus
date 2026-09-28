@@ -14,6 +14,7 @@ urlpatterns = [
     path("billing/", include("billing.urls")),
     path("owner/", include("audit.urls")),
     path("team/", include("audit.team_urls")),
+    path("training/", include("training.urls")),
     path("ops/", core_views.ops_dashboard, name="ops_dashboard"),
     path("ops/client/<int:client_id>/", client_views.ops_client_detail, name="ops_client_detail"),
     path("ops/client/<int:client_id>/conversations/<int:conversation_id>/", client_views.ops_conversation_detail, name="ops_conversation_detail"),

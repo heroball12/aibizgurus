@@ -1,0 +1,690 @@
+[
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A useful day combines action and accuracy.",
+        "kind": "cards",
+        "items": [
+          [
+            "Priorities",
+            "The right work now"
+          ],
+          [
+            "Conversations",
+            "Relevant discovery and next steps"
+          ],
+          [
+            "Records",
+            "Context someone else can use"
+          ]
+        ]
+      },
+      {
+        "phrase": "The daily objective is to create",
+        "title": "The objective is a trustworthy pipeline of useful assessments.",
+        "kind": "compare",
+        "items": [
+          [
+            "PROGRESS",
+            "Qualified, understood next steps"
+          ],
+          [
+            "ACTIVITY ALONE",
+            "More actions with unclear outcomes"
+          ]
+        ]
+      },
+      {
+        "phrase": "This lesson connects the tools and",
+        "title": "Use current management guidance.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Campaigns, targets and cadence come from the approved operating process."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Review the commitments already made.",
+        "kind": "cards",
+        "items": [
+          [
+            "Follow-ups",
+            "What was agreed and when?"
+          ],
+          [
+            "Assessments",
+            "What needs preparation?"
+          ],
+          [
+            "Pending actions",
+            "Who owns the next step?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Confirm that you are the appropriate",
+        "title": "Read the latest history before acting.",
+        "kind": "flow",
+        "items": [
+          [
+            "Ownership",
+            "The responsible employee"
+          ],
+          [
+            "Activity",
+            "What changed?"
+          ],
+          [
+            "Restrictions",
+            "What must be honored?"
+          ],
+          [
+            "Action",
+            "The appropriate next move"
+          ]
+        ]
+      },
+      {
+        "phrase": "Then prepare a manageable working queue",
+        "title": "Build a queue with reasons, not just rows.",
+        "kind": "quote",
+        "items": [
+          [
+            "CHECK",
+            "Why does each action belong in the near-term working list?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Prepare a relevant first question.",
+        "kind": "flow",
+        "items": [
+          [
+            "Campaign",
+            "Assigned direction"
+          ],
+          [
+            "Identity",
+            "The correct business"
+          ],
+          [
+            "Source",
+            "A useful observation"
+          ],
+          [
+            "Question",
+            "An honest hypothesis to test"
+          ]
+        ]
+      },
+      {
+        "phrase": "A focused research block helps you",
+        "title": "Keep research proportionate.",
+        "kind": "compare",
+        "items": [
+          [
+            "TOO LITTLE",
+            "Unreliable identity and contact details"
+          ],
+          [
+            "TOO MUCH",
+            "Endless preparation without appropriate conversations"
+          ]
+        ]
+      },
+      {
+        "phrase": "Keep incomplete records visibly incomplete. If",
+        "title": "Make unresolved research visible.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "A verification task is better than a guessed fact."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Record the actual interaction.",
+        "kind": "cards",
+        "items": [
+          [
+            "Attempt",
+            "No completed conversation"
+          ],
+          [
+            "Conversation",
+            "What was learned"
+          ],
+          [
+            "Agreement",
+            "What next step was accepted"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong note identifies the relevant",
+        "title": "Keep the note concise and usable.",
+        "kind": "flow",
+        "items": [
+          [
+            "Person",
+            "Known role"
+          ],
+          [
+            "Process",
+            "The relevant workflow"
+          ],
+          [
+            "Answer",
+            "What changed your understanding"
+          ],
+          [
+            "Next step",
+            "Actual agreement or pending question"
+          ]
+        ]
+      },
+      {
+        "phrase": "Use the available follow-up fields for",
+        "title": "A status should describe reality.",
+        "kind": "compare",
+        "items": [
+          [
+            "ACCURATE",
+            "Assessment booked after confirmation"
+          ],
+          [
+            "INACCURATE",
+            "Won because someone accepted a meeting"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Label the strength of the information.",
+        "kind": "flow",
+        "items": [
+          [
+            "Fact",
+            "What was reported or verified"
+          ],
+          [
+            "Hypothesis",
+            "A possibility to evaluate"
+          ],
+          [
+            "Unknown",
+            "What still needs an answer"
+          ]
+        ]
+      },
+      {
+        "phrase": "For a fictional example, Northstar Service",
+        "title": "Northstar’s record should preserve the distinction.",
+        "kind": "cards",
+        "items": [
+          [
+            "Reported",
+            "Friday quote review"
+          ],
+          [
+            "Possible direction",
+            "Clearer ownership or workflow support"
+          ],
+          [
+            "Unverified",
+            "Current software capabilities"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "This distinction is especially important when",
+        "title": "Review AI summaries for changed certainty.",
+        "kind": "quote",
+        "items": [
+          [
+            "CHECK",
+            "Did the summary add a fact, promise or agreement that was never established?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Explain why the customer is attending.",
+        "kind": "cards",
+        "items": [
+          [
+            "Current process",
+            "Workflow and known tools"
+          ],
+          [
+            "Reason to improve",
+            "Bottleneck and desired outcome"
+          ],
+          [
+            "Questions",
+            "What needs specialist evaluation"
+          ]
+        ]
+      },
+      {
+        "phrase": "The current CRM brief provides fields",
+        "title": "Use the CRM brief to organize the facts.",
+        "kind": "crm",
+        "items": [
+          [
+            "Workflow and tools",
+            "Known information with source context"
+          ],
+          [
+            "Bottleneck and goal",
+            "The prospect’s stated priorities"
+          ]
+        ],
+        "capture": "handoff"
+      },
+      {
+        "phrase": "Keep the proposal out of the",
+        "title": "Prepare an evaluation, not an unauthorized proposal.",
+        "kind": "quote",
+        "items": [
+          [
+            "BOUNDARY",
+            "The human specialist evaluates the build and discusses custom pricing during the assessment."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A next step needs a responsible person.",
+        "kind": "cards",
+        "items": [
+          [
+            "Action",
+            "What should happen?"
+          ],
+          [
+            "Owner",
+            "Who will do it?"
+          ],
+          [
+            "Timing",
+            "What was actually agreed?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Do not assume that typing a",
+        "title": "Do not infer an action from a saved field.",
+        "kind": "compare",
+        "items": [
+          [
+            "CRM RECORD",
+            "Information has been stored."
+          ],
+          [
+            "EXTERNAL ACTION",
+            "A message, reservation or handoff has actually occurred."
+          ]
+        ]
+      },
+      {
+        "phrase": "When handing work to another employee,",
+        "title": "Make the handoff understandable to the recipient.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Who does what next, for which customer expectation, and by what agreed timing?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use a sheet for a clear structured task.",
+        "kind": "workspace",
+        "items": [
+          [
+            "Choose",
+            "The intended update"
+          ],
+          [
+            "Review",
+            "Current values and context"
+          ],
+          [
+            "Edit",
+            "Verified information"
+          ],
+          [
+            "Save",
+            "Apply intended CRM changes"
+          ]
+        ],
+        "capture": "sheet"
+      },
+      {
+        "phrase": "A sheet does not remove the",
+        "title": "Remember the sheet’s operational limits.",
+        "kind": "cards",
+        "items": [
+          [
+            "Remove row",
+            "CRM record remains"
+          ],
+          [
+            "Conflict",
+            "Reconcile newer work"
+          ],
+          [
+            "Export",
+            "A snapshot, not live synchronization"
+          ]
+        ]
+      },
+      {
+        "phrase": "Do not perform broad cleanup by",
+        "title": "Do not clean up uncertainty with an optimistic label.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Preserve actual outcomes and resolve the meaning of the record."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use the supplied Northstar facts.",
+        "kind": "cards",
+        "items": [
+          [
+            "Process",
+            "Friday quotation review"
+          ],
+          [
+            "Friction",
+            "Duplicated follow-up and unclear ownership"
+          ],
+          [
+            "Goal",
+            "One reliable next action"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Pause and write the specialist handoff.",
+        "title": "Write a handoff with visible boundaries.",
+        "kind": "flow",
+        "items": [
+          [
+            "Reported facts",
+            "What Taylor said"
+          ],
+          [
+            "Possible direction",
+            "What may help"
+          ],
+          [
+            "Open question",
+            "Compatibility unverified"
+          ],
+          [
+            "Meeting",
+            "Actual confirmed details"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong note explains Friday review,",
+        "title": "Remove invented diagnosis and commercial approval.",
+        "kind": "compare",
+        "items": [
+          [
+            "SUPPORTED",
+            "Evaluate the quotation ownership workflow"
+          ],
+          [
+            "UNSUPPORTED",
+            "Broken CRM; automation package already accepted"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Review activity and outcome quality together.",
+        "kind": "cards",
+        "items": [
+          [
+            "Discovery",
+            "What was learned?"
+          ],
+          [
+            "Assessments",
+            "Are purpose and handoff clear?"
+          ],
+          [
+            "Commitments",
+            "What remains genuinely due?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Look for recurring friction. Perhaps openings",
+        "title": "Choose one pattern to practice.",
+        "kind": "flow",
+        "items": [
+          [
+            "Notice",
+            "Where did conversations stall?"
+          ],
+          [
+            "Name",
+            "A specific behavior"
+          ],
+          [
+            "Practice",
+            "One relevant scenario"
+          ],
+          [
+            "Apply",
+            "Use the adjustment tomorrow"
+          ]
+        ]
+      },
+      {
+        "phrase": "Keep the evidence specific. Two prospects",
+        "title": "Keep observations proportional to the evidence.",
+        "kind": "compare",
+        "items": [
+          [
+            "SPECIFIC",
+            "Two prospects asked about staff involvement."
+          ],
+          [
+            "OVERGENERALIZED",
+            "Everyone in the market hates AI."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Ask Guru for a specific coaching target.",
+        "kind": "cards",
+        "items": [
+          [
+            "Teach",
+            "Clarify a concept"
+          ],
+          [
+            "Practice",
+            "Test a relevant scenario"
+          ],
+          [
+            "Coach",
+            "Identify one useful adjustment"
+          ]
+        ]
+      },
+      {
+        "phrase": "The Academy preserves practice and quiz",
+        "title": "Human review determines readiness.",
+        "kind": "compare",
+        "items": [
+          [
+            "GURU",
+            "Advisory feedback and practice support"
+          ],
+          [
+            "MANAGER",
+            "Reviews evidence and authorizes the appropriate phase"
+          ]
+        ]
+      },
+      {
+        "phrase": "Treat coaching as a loop: attempt,",
+        "title": "Demonstrate the improvement.",
+        "kind": "flow",
+        "items": [
+          [
+            "Attempt",
+            "A visible behavior"
+          ],
+          [
+            "Feedback",
+            "A specific correction"
+          ],
+          [
+            "Retry",
+            "Apply it"
+          ],
+          [
+            "Compare",
+            "What changed?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use a repeatable daily cycle.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Review real commitments."
+          ],
+          [
+            "02",
+            "Prepare relevant prospects."
+          ],
+          [
+            "03",
+            "Have focused conversations."
+          ],
+          [
+            "04",
+            "Record actual outcomes."
+          ],
+          [
+            "05",
+            "Complete handoffs and practice one improvement."
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical submission, build a",
+        "title": "Practice three different next actions.",
+        "kind": "cards",
+        "items": [
+          [
+            "Callback",
+            "Honor the agreement"
+          ],
+          [
+            "Research",
+            "Resolve an identity question"
+          ],
+          [
+            "Assessment",
+            "Prepare the specialist brief"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the quiz and ask for",
+        "title": "Leave work the team can continue.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz, review your handoff and choose one coaching target."
+          ]
+        ]
+      }
+    ]
+  }
+]

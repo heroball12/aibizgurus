@@ -1,0 +1,258 @@
+{
+  "title": "AI for Business — What We’re Actually Selling",
+  "short_title": "AI IN PLAIN LANGUAGE",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Explain AI through specific business work; separate information, assistance and action; identify human ownership and verification needs.",
+  "skills": [
+    "ai-fluency",
+    "accuracy",
+    "discovery",
+    "ethics",
+    "handoff"
+  ],
+  "scenes": [
+    {
+      "title": "Explain the work, not the acronym",
+      "narration": "Welcome back. In this lesson, you will explain business AI without making the prospect learn a new vocabulary. It is to help someone understand a possible improvement in a process they already recognize. \nStart with an ordinary working day. A customer asks a question. Someone finds information, decides what applies, writes a response, records an outcome and hands off an exception. Those are different tasks. Saying that AI can handle the whole thing hides the questions that determine whether a solution is useful.\nA clearer explanation names the work. For example: an assistant could help answer common questions using approved business information, collect the details your team needs, and pass an unusual request to a person. That description gives the customer something concrete to evaluate.\nNotice the boundaries. We said could, approved information and a person. We still need to understand the business, the channel, the required information and the point where human judgment takes over. Clarity is more persuasive than a bigger claim.",
+      "pauses": [],
+      "start": 0,
+      "end": 75,
+      "time": "00:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Explain a useful working process."
+    },
+    {
+      "title": "Four different kinds of help",
+      "narration": "When a prospect says AI, they may be imagining a robot, a search engine, an answering service or an automatic decision maker. Ask what they mean. Four practical categories help you explain the possibilities.\nFirst, language assistance can summarize, draft, classify or converse. A draft still needs the right facts and the right review. Second, knowledge assistance can help locate relevant approved material and use it to answer a question. Access to a document does not guarantee that every answer is correct or current.\nThird, workflow automation can move information through agreed steps, such as routing a request to the appropriate team. Fourth, custom software can provide the forms, rules and connections around that process. A useful build might combine these approaches, or might need a simpler non-AI change.\nDo not make the prospect choose a category. Ask what work is difficult, explain the relevant possibility and let the specialist evaluate the design. Your value is recognizing the difference between a task, a possible tool and a verified solution.",
+      "pauses": [],
+      "start": 75,
+      "end": 150,
+      "time": "01:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "What does “AI” mean to this customer?"
+    },
+    {
+      "title": "A conversation is not an integration",
+      "narration": "An assistant can sound confident and still lack the ability to change a business system. Explaining a booking process, collecting a preferred time, and creating a confirmed booking are three different capabilities. A fluent sentence does not prove that the final action happened.\nImagine a fictional salon. A website assistant asks which service the customer wants and when they would like to visit. That is useful intake. If it has no authorized connection to the salon calendar, it cannot confirm that a chair and stylist are available. Calling that exchange a booking would mislead the customer.\nA real connection needs more than a familiar product name. Someone must verify access, permissions, the information being exchanged, the supported actions and the response when a step fails. An integration that reads records may not be permitted to write them. \nYour explanation should preserve those differences. Say: we can explore collecting the request and connecting it to your process; our specialist would need to verify how your calendar works. Then ask who owns that workflow today. That question moves discovery forward without inventing a working connection.",
+      "pauses": [],
+      "start": 150,
+      "end": 225,
+      "time": "02:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A fluent reply is not proof of an action."
+    },
+    {
+      "title": "Why an answer can be wrong",
+      "narration": "Business owners may ask whether AI makes mistakes. The useful answer is yes, which is why the design, information and review process matter. A confident answer is not evidence that the information behind it is complete, current or appropriate for this request.\nThere are several ways a response can go wrong. The information supplied to the assistant may be outdated. The customer's question may be ambiguous. The system may not retrieve the right material. A generated response can also include unsupported details. \nConsider a fictional service company that changes its Saturday hours. If the assistant still uses an old schedule, a natural sounding answer can send a customer to a closed office. The business needs an owner for updating the source, a way to verify the change and a fallback for uncertainty.\nAs an SDR, ask where the authoritative information lives, who maintains it and which mistakes would matter most. You are discovering whether a reliable process exists and recording the questions the specialist must resolve before recommending a build.",
+      "pauses": [],
+      "start": 225,
+      "end": 300,
+      "time": "03:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Accuracy depends on the whole process."
+    },
+    {
+      "title": "Define the handoff before the exception",
+      "narration": "A human handoff is more than a sentence that says someone will get back to you. The customer needs to know what happens next, and the receiving person needs enough information to act. If nobody owns the queue, a polite handoff can still become a lost request.\nIn a fictional equipment company, most inquiries ask about delivery windows. A damaged item requires a person to review photographs and the order. The assistant might collect a reference number and a short description, then route the case. It should not invent a refund decision or promise a delivery time outside its authority.\nAsk what triggers escalation, where the request goes and who checks it. Ask what the customer should be told when the receiving team is unavailable. A system may need separate paths for a routine question, an urgent operational issue and a request it cannot safely interpret. \nThe sales lesson is simple: human support is part of the solution, not evidence that the solution failed. A well designed assistant can reduce repetitive work while making exceptions easier for people to handle. Verify the route and the responsibility before promising that the business will never miss anything again.",
+      "pauses": [],
+      "start": 300,
+      "end": 375,
+      "time": "05:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A handoff needs a working destination."
+    },
+    {
+      "title": "Practice a plain language explanation",
+      "narration": "Let's practice with a fictional business owner. They say: I keep hearing about AI agents. Does that mean it can just run my company? A weak answer would be: yes, it can automate everything and work around the clock without making mistakes. \nA better direction is to narrow the work. You might say: we usually start with a specific process, like answering common questions or organizing follow-up. The right design depends on your information, systems and where your team should stay involved. What is one repetitive task that takes more time than it should?\nNow try that in your own words. Explain a possibility, include a boundary and invite the owner to describe their process. Pause and say your answer aloud.\nCompare your answer with that standard. If you gave a feature list, choose one working task. If you promised that people are unnecessary, add the human handoff. If you asked three questions at once, keep the one that best reveals the current process. Try the improved version before moving on.",
+      "pauses": [
+        [
+          "Pause and say your answer aloud.",
+          15,
+          "Explain one possibility, one boundary and one useful question."
+        ]
+      ],
+      "start": 375,
+      "end": 450,
+      "time": "06:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "“Can it just run my company?”"
+    },
+    {
+      "title": "Think about information carefully",
+      "narration": "A useful assistant needs relevant information, but that does not mean every employee should paste everything into it. During prospecting, use public business information and the details the prospect chooses to share appropriately. Do not ask for passwords, payment information, private customer records or confidential documents to prove that you can build a demo.\nImagine a prospect offers to send a spreadsheet of customer medical details so you can show them an example. Stop that transfer and explain that a first demonstration can use fictional information. The specialist can later review appropriate access and requirements through the approved process. \nEven ordinary business material has an owner and a purpose. Ask what information a proposed assistant actually needs, who may access it and which system should remain the authoritative record. Unnecessary access can make a simple project harder to evaluate and operate responsibly.\nYour role is to surface those questions and protect the boundary. You can discuss the workflow without collecting the underlying records. Record that access and data requirements need review. Never turn a preliminary sales conversation into an improvised transfer of the customer's private information.",
+      "pauses": [],
+      "start": 450,
+      "end": 525,
+      "time": "07:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Discuss the process without collecting secrets."
+    },
+    {
+      "title": "Evaluate a useful outcome",
+      "narration": "A prospect may ask how much time an assistant will save. You can help define what should be measured without inventing the result. Start with the current process. How many requests arrive, what work does each one involve, who handles it and what happens when the team cannot keep up? \nUseful measures depend on the job. A question-answering workflow might track whether customers receive accurate answers and whether exceptions reach the right person. A follow-up workflow might track consistent completion of agreed steps. A drafting tool might track review time and correction effort. Faster output alone does not establish that the business is better off.\nUse a baseline and a limited test. The specialist can help decide what success would look like, which cases should be included and what would trigger a change or a stop. A pilot should make assumptions visible. It should not be presented as a guaranteed result or a promise of a particular return.\nWhen you hear a number, preserve its source. Taylor estimates five hours each week is different from we verified five hours. Ask how that estimate was formed and record the uncertainty. It does not authorize the SDR to calculate or quote a custom price.",
+      "pauses": [],
+      "start": 525,
+      "end": 600,
+      "time": "08:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Define the outcome before claiming the result."
+    },
+    {
+      "title": "Recognize when a simpler change may help",
+      "narration": "Not every process problem needs an AI assistant. Sometimes the team needs a clear owner, a shared checklist, an updated form or a consistent follow-up step. It shows that we care about the business outcome and gives the specialist a more honest starting point.\nConsider a fictional repair company that loses appointment requests. At first, the owner assumes they need an AI receptionist. Further questions reveal that calls are answered, details are written on paper and nobody knows who enters them into the calendar. The immediate issue may be ownership and a reliable handoff, with or without AI.\nCompare two responses. The weak rep says: our AI fixes all of that. The useful rep says: it sounds as though the details are being collected but the handoff is unclear. Who is responsible for the next step today? That question tests the problem before deciding what should be built.\nA specialist may still find a valuable role for automation or custom software. The difference is that the recommendation follows the workflow. Your job is to avoid forcing a technology label onto a process you have not understood. A credible no-fit or simpler solution can protect trust and prevent an unqualified meeting.",
+      "pauses": [],
+      "start": 600,
+      "end": 675,
+      "time": "10:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A simpler process change may be the answer."
+    },
+    {
+      "title": "Handle the impossible promise",
+      "narration": "Here is another fictional conversation. The owner says: if I buy this, can you guarantee it will answer every question correctly and bring in more customers? A guarantee we cannot support would make the conversation easier now and the relationship harder later.\nYou might say: I cannot guarantee those outcomes. We would need to understand the questions you receive, your information and how success should be measured. A focused build can be evaluated against that process, with human review where needed. Which kind of question causes your team the most difficulty today?\nTry responding yourself. Acknowledge the concern, state the limit and ask a question that helps evaluate a real use case. Avoid adding a guaranteed number after saying there are no guarantees. Pause and try your response.\nThe useful response does three things. It answers the actual question honestly. It explains what an assessment would investigate. It returns to the customer's work instead of debating whether AI is good or bad. If the owner insists on an impossible guarantee, do not disguise it as a qualification win. Respectfully explain the mismatch and record it.",
+      "pauses": [
+        [
+          "Pause and try your response.",
+          15,
+          "Answer the guarantee question without evading it."
+        ]
+      ],
+      "start": 675,
+      "end": 750,
+      "time": "11:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A demand for certainty needs an honest answer."
+    },
+    {
+      "title": "Prepare an informed specialist conversation",
+      "narration": "The best handoff from this lesson is not a technical specification. It is a clear description of the business process and the questions that need a qualified human to evaluate them. \nFor our fictional equipment company, a useful note might say: common questions concern delivery windows; damaged items require human review; current information comes from a policy document; the owner is unsure who updates that document. The prospect wants a more consistent response and a clear escalation route. Those are reported facts and an expressed outcome.\nA separate hypothesis could say: an assistant using maintained policy information may help with routine questions. Then list the unknowns: the order system, permitted actions, exception owner and measures of success. Do not quietly fill those gaps with what another customer happened to use. \nFinally, record the agreed next step. If the prospect is interested in a Growth Assessment, explain the fifteen to twenty minute video conversation with an AI Specialist. Pricing is custom to the recommended build and is discussed only by that qualified specialist during the assessment. Your role is to make that conversation informed and useful.",
+      "pauses": [],
+      "start": 750,
+      "end": 825,
+      "time": "12:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A good handoff is a clear discovery record."
+    },
+    {
+      "title": "Your plain language standard",
+      "narration": "Let's bring the lesson together. Explain AI through the work a customer recognizes. Distinguish language help, approved knowledge, workflow steps and custom software. A polished conversation does not prove an integration exists. A request is not a confirmed action. \nWhen a business asks about accuracy, answer honestly and explore the information behind the task. When they ask about people, explain the human handoff. When they ask about results, discuss what would need to be measured. When a simpler process change may help, do not force an AI product into the conversation.\nFor your practical task, write a three sentence explanation for a fictional business that spends time answering routine delivery questions. Sentence one should describe the possible assistance. Sentence two should name a limitation or verification need. Sentence three should ask one useful question about the current process. Then revise any sentence that promises more than you know.\nComplete the knowledge check and save your practice in the Academy. Ask Guru for feedback on clarity and boundaries, then make a second attempt. Your manager evaluates the evidence of readiness. It is to help a business owner understand a useful possibility and the next responsible step.",
+      "pauses": [],
+      "start": 825,
+      "end": 900,
+      "time": "13:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Explain the work clearly."
+    }
+  ],
+  "job_aid": "AI IN PLAIN LANGUAGE — FIELD GUIDE\nName the work before the technology.\nDISTINGUISH: language assistance / approved knowledge / workflow automation / custom software.\nVERIFY: authoritative information, update owner, system access, allowed actions and exception handling.\nA fluent answer is not proof of an integration. A request is not a confirmed action.\nASK: What happens today? Who maintains that information? When should a person take over?\nMEASURE: establish a baseline and useful quality measures; keep estimates labeled. Never guarantee accuracy, revenue or ROI.\nDATA: use appropriate public or fictional details in preliminary demos; do not collect private customer records or secrets.\nPRICING: custom to the recommended build; only AI Specialists discuss it, only during a Growth Assessment.\nPRACTICE: write a possibility, a boundary and one useful question. Revise after feedback.",
+  "questions": [
+    {
+      "skill": "ai-fluency",
+      "prompt": "A prospect asks whether an assistant can run the whole company. Which response creates useful discovery?",
+      "choices": [
+        "Say yes because AI works continuously.",
+        "List every product category.",
+        "Name one process, explain a boundary and ask how it works today.",
+        "Tell them technical details are too complicated."
+      ],
+      "correct_index": 2,
+      "explanation": "A specific process makes the possibility understandable and creates a useful question. Continuous operation does not prove broad capability; a list avoids discovery, and dismissing complexity does not explain the work."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "A salon assistant collects a preferred appointment time but has no calendar access. What may you accurately say?",
+      "choices": [
+        "The appointment is confirmed.",
+        "The assistant collected a request that needs calendar confirmation.",
+        "The assistant probably reserved the slot.",
+        "All calendars support automatic booking."
+      ],
+      "correct_index": 1,
+      "explanation": "Collecting a request is useful intake. Confirmation requires the authorized calendar action and a verified result. Probability and a familiar calendar name are not evidence of a booking."
+    },
+    {
+      "skill": "ai-fluency",
+      "prompt": "The assistant confidently states old Saturday hours. What is the useful next investigation?",
+      "choices": [
+        "Make its tone less confident.",
+        "Remove all human review.",
+        "Promise the next answer will be correct.",
+        "Find the authoritative schedule, its update owner and verification process."
+      ],
+      "correct_index": 3,
+      "explanation": "The information and maintenance process matter. Tone changes do not repair an outdated source; removing review increases risk, and a promise adds no evidence."
+    },
+    {
+      "skill": "discovery",
+      "prompt": "A business wants a human handoff for damaged orders. What should you discover?",
+      "choices": [
+        "The escalation trigger, required context, receiving owner and unavailable-team fallback.",
+        "Only the email address of any employee.",
+        "Whether the customer accepts a guaranteed refund.",
+        "How to avoid involving a person."
+      ],
+      "correct_index": 0,
+      "explanation": "A handoff needs an operational path. An inbox alone does not establish ownership, refund authority cannot be invented, and appropriate human review is part of the solution."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "A prospect offers sensitive customer records for an initial demo. What should an SDR do?",
+      "choices": [
+        "Accept them if the prospect sounds comfortable.",
+        "Upload them into a public chat to save time.",
+        "Use fictional details and refer data/access requirements to the approved specialist process.",
+        "Ask for account passwords too."
+      ],
+      "correct_index": 2,
+      "explanation": "The preliminary demonstration does not need private records. A casual offer does not replace the proper access and data process. Fictional information lets the conversation continue safely and usefully."
+    },
+    {
+      "skill": "qualification",
+      "prompt": "Calls are answered but paper requests have no clear calendar owner. What is the strongest next step?",
+      "choices": [
+        "Insist on an AI receptionist.",
+        "Ask who owns the handoff and explore a simpler process change if appropriate.",
+        "Guarantee AI will fix every missed request.",
+        "Mark the assessment qualified without further discussion."
+      ],
+      "correct_index": 1,
+      "explanation": "Understand the broken step first. A simple ownership or workflow change may be relevant. Product pushing, guarantees and premature qualification obscure the actual need."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "Taylor estimates five hours per week are spent on repetitive replies. How should the handoff record this?",
+      "choices": [
+        "Verified savings of five hours.",
+        "Guaranteed return from automation.",
+        "A basis for an SDR price quote.",
+        "Taylor estimates five hours; measurement and assumptions need review."
+      ],
+      "correct_index": 3,
+      "explanation": "Keep the source and uncertainty attached. A reported estimate is neither measured savings nor a pricing authorization. Only the qualified AI Specialist discusses custom pricing during the Growth Assessment."
+    },
+    {
+      "skill": "company-knowledge",
+      "prompt": "Which explanation best matches the SDR role?",
+      "choices": [
+        "I can describe a possible use case; our AI Specialist evaluates the build and discusses custom pricing during the Growth Assessment.",
+        "I can quote a starter package before discovery.",
+        "Guru can approve the design without a person.",
+        "Any familiar software logo proves integration compatibility."
+      ],
+      "correct_index": 0,
+      "explanation": "The SDR explains possibilities and prepares useful discovery. Technical feasibility and custom pricing require the qualified specialist; pricing belongs only in the Growth Assessment. Neither a demo nor a logo proves production capability."
+    }
+  ],
+  "scenario": {
+    "title": "Explain the delivery-question assistant",
+    "persona": "FICTIONAL business: Harbor Equipment. Jordan owns the company. Staff repeatedly answer delivery-window questions. Damaged items need human review. A policy document exists but its update owner is unclear. Calendar/order-system access, volume and financial impact are unknown. Ask naturally about accuracy, staff involvement and whether everything can be automated. Reveal details only when asked. Challenge unsupported guarantees. A no-fit conclusion is valid if expectations remain unrealistic.",
+    "opening": "Guru: I will play Jordan, a fictional equipment-company owner. Explain what an assistant might help with, then ask one useful discovery question.",
+    "rubric": {
+      "ai-fluency": "Uses plain language and distinguishes assistance from a completed system action.",
+      "accuracy": "States verification needs and avoids perfect-accuracy or outcome guarantees.",
+      "discovery": "Asks about the information, process or human handoff that Jordan actually described.",
+      "handoff": "Separates reported facts, possibilities, unknowns and the agreed next step."
+    }
+  }
+}

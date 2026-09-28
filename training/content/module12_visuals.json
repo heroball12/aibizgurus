@@ -1,0 +1,650 @@
+[
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Treat the concern as a reasonable question.",
+        "kind": "cards",
+        "items": [
+          [
+            "Price",
+            "What will the decision involve?"
+          ],
+          [
+            "Trust",
+            "What evidence supports the claim?"
+          ],
+          [
+            "AI risk",
+            "Where could the process fail?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Your answer should stay within the",
+        "title": "Answer within your evidence and authority.",
+        "kind": "flow",
+        "items": [
+          [
+            "Explain",
+            "A relevant possibility"
+          ],
+          [
+            "Bound",
+            "What is not yet verified"
+          ],
+          [
+            "Connect",
+            "The appropriate evaluation"
+          ]
+        ]
+      },
+      {
+        "phrase": "This lesson practices that balance. You",
+        "title": "Direct and accurate beats defensive certainty.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Name the concern, explain what is known and identify the useful next step."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Price curiosity can be a signal of interest.",
+        "kind": "cards",
+        "items": [
+          [
+            "Comparison",
+            "They want context"
+          ],
+          [
+            "Concern",
+            "They want to understand the commitment"
+          ],
+          [
+            "Interest",
+            "They may be considering the next step"
+          ]
+        ]
+      },
+      {
+        "phrase": "Our pricing is custom to the",
+        "title": "The pricing boundary is explicit.",
+        "kind": "quote",
+        "items": [
+          [
+            "OWNER POLICY",
+            "Custom to the build. Qualified human AI Specialist only, during the Growth Assessment. No SDR starting prices, ranges, estimates, packages or discounts."
+          ]
+        ]
+      },
+      {
+        "phrase": "A useful response is: pricing is",
+        "title": "Explain the process clearly.",
+        "kind": "flow",
+        "items": [
+          [
+            "Review",
+            "The actual business operation"
+          ],
+          [
+            "Recommend",
+            "An appropriate build"
+          ],
+          [
+            "Discuss",
+            "Custom pricing with the specialist"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Do not invent a number under pressure.",
+        "kind": "cards",
+        "items": [
+          [
+            "Boundary",
+            "No SDR ballpark quote"
+          ],
+          [
+            "Reason",
+            "Scope depends on the business"
+          ],
+          [
+            "Next step",
+            "Complimentary 15–20 minute assessment"
+          ]
+        ]
+      },
+      {
+        "phrase": "You can ask whether reviewing the",
+        "title": "A vague affordability promise is still a promise.",
+        "kind": "compare",
+        "items": [
+          [
+            "ACCURATE",
+            "The specialist discusses custom pricing during the assessment."
+          ],
+          [
+            "UNAUTHORIZED",
+            "It will definitely fit your budget."
+          ]
+        ]
+      },
+      {
+        "phrase": "If the person maintains that they",
+        "title": "Honor the policy across every channel.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "No workaround quote in email, text or CRM notes."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "An SDR clarifies the concern without negotiating.",
+        "kind": "flow",
+        "items": [
+          [
+            "Hear",
+            "What feels uncertain?"
+          ],
+          [
+            "Understand",
+            "The business decision behind it"
+          ],
+          [
+            "Handoff",
+            "Specialist handles commercial discussion"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the concern is whether the",
+        "title": "Discuss goals without inventing a return.",
+        "kind": "cards",
+        "items": [
+          [
+            "Administration",
+            "Time-consuming work"
+          ],
+          [
+            "Consistency",
+            "A reliable process"
+          ],
+          [
+            "Evaluation",
+            "Tradeoffs still need review"
+          ]
+        ]
+      },
+      {
+        "phrase": "Record the actual concern for the",
+        "title": "Record what remains unresolved.",
+        "kind": "quote",
+        "items": [
+          [
+            "FICTIONAL NOTE",
+            "Owner wants to understand implementation effort relative to the quotation follow-up goal."
+          ]
+        ],
+        "fictional": true
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Respect the role of human service.",
+        "kind": "cards",
+        "items": [
+          [
+            "Judgment",
+            "Complex decisions"
+          ],
+          [
+            "Relationship",
+            "The experience the business values"
+          ],
+          [
+            "Authority",
+            "Commitments a person should make"
+          ]
+        ]
+      },
+      {
+        "phrase": "A suitable opportunity might involve routine",
+        "title": "Explore support where the business wants it.",
+        "kind": "flow",
+        "items": [
+          [
+            "Routine",
+            "A bounded task"
+          ],
+          [
+            "Exception",
+            "A meaningful limit"
+          ],
+          [
+            "Human route",
+            "A person can take over"
+          ]
+        ]
+      },
+      {
+        "phrase": "For a fictional service business, the",
+        "title": "Separate collection from commitment.",
+        "kind": "compare",
+        "items": [
+          [
+            "POSSIBLE SUPPORT",
+            "Gather initial project details"
+          ],
+          [
+            "HUMAN RESPONSIBILITY",
+            "Evaluate and make the project commitment"
+          ]
+        ],
+        "fictional": true
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Acknowledge the possibility of error.",
+        "kind": "quote",
+        "items": [
+          [
+            "DIRECT ANSWER",
+            "AI can make mistakes. The task, information and consequences need to be evaluated."
+          ]
+        ]
+      },
+      {
+        "phrase": "Ask where an incorrect response would",
+        "title": "Ask where an error would matter most.",
+        "kind": "cards",
+        "items": [
+          [
+            "Information",
+            "What sources are authoritative?"
+          ],
+          [
+            "Actions",
+            "What commitments are allowed?"
+          ],
+          [
+            "Exceptions",
+            "When must a person decide?"
+          ]
+        ]
+      },
+      {
+        "phrase": "A relevant demonstration can show how",
+        "title": "A successful sample is not a universal guarantee.",
+        "kind": "compare",
+        "items": [
+          [
+            "DEMONSTRATION",
+            "One observed interaction"
+          ],
+          [
+            "EVALUATION",
+            "A defined use case, testing and appropriate limits"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Explore the specific concern when welcome.",
+        "kind": "cards",
+        "items": [
+          [
+            "Experience",
+            "What happened before?"
+          ],
+          [
+            "Risk",
+            "What are they worried about?"
+          ],
+          [
+            "Preference",
+            "What do they want to preserve?"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the problem was overpromising, demonstrate",
+        "title": "Let the concern change the response.",
+        "kind": "flow",
+        "items": [
+          [
+            "Overpromising",
+            "State verification limits"
+          ],
+          [
+            "Customer experience",
+            "Explore human involvement"
+          ],
+          [
+            "No interest",
+            "Respect the preference"
+          ]
+        ]
+      },
+      {
+        "phrase": "Avoid saying trust me as a",
+        "title": "Use evidence rather than a demand for trust.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Accurate examples, clear limits and an informed choice."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Record the requirement instead of guessing.",
+        "kind": "cards",
+        "items": [
+          [
+            "Storage",
+            "Where would information live?"
+          ],
+          [
+            "Access",
+            "Who would be authorized?"
+          ],
+          [
+            "Handling",
+            "What data and restrictions matter?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Keep early discovery at the level",
+        "title": "Discuss categories and workflows without collecting secrets.",
+        "kind": "compare",
+        "items": [
+          [
+            "APPROPRIATE EARLY DISCOVERY",
+            "Types of information and process needs"
+          ],
+          [
+            "UNNECESSARY",
+            "Passwords or private customer records for a quick demo"
+          ]
+        ]
+      },
+      {
+        "phrase": "If a question concerns an industry",
+        "title": "Specific obligations require qualified review.",
+        "kind": "quote",
+        "items": [
+          [
+            "BOUNDARY",
+            "No universal security, compliance or legal guarantees from an SDR."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Lakeview raises two concerns together.",
+        "kind": "quote",
+        "items": [
+          [
+            "PROSPECT",
+            "I do not want an expensive tool giving wrong answers. Tell me the price and promise it will work."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Pause and give your response aloud.",
+        "title": "Respond without evading or overpromising.",
+        "kind": "flow",
+        "items": [
+          [
+            "Acknowledge",
+            "The concern is reasonable"
+          ],
+          [
+            "Boundaries",
+            "No SDR quote or perfection guarantee"
+          ],
+          [
+            "Question",
+            "Which interaction creates the greatest concern?"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong response says the concern",
+        "title": "Correct either kind of weak response.",
+        "kind": "compare",
+        "items": [
+          [
+            "OVERPROMISE",
+            "Low cost and flawless performance"
+          ],
+          [
+            "POLICY ONLY",
+            "No connection to the business concern"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Match the claim to the evidence.",
+        "kind": "compare",
+        "items": [
+          [
+            "FICTIONAL EXAMPLE",
+            "Illustrates a possible process"
+          ],
+          [
+            "CUSTOMER RESULT",
+            "Requires approved, accurate supporting evidence"
+          ]
+        ]
+      },
+      {
+        "phrase": "If you do not know whether",
+        "title": "Verify before repeating a credibility claim.",
+        "kind": "cards",
+        "items": [
+          [
+            "Customer names",
+            "No invented relationships"
+          ],
+          [
+            "Results",
+            "No fabricated improvements"
+          ],
+          [
+            "Credentials",
+            "No unsupported certifications"
+          ]
+        ]
+      },
+      {
+        "phrase": "When the prospect asks for evidence",
+        "title": "Record an evidence request accurately.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Confirm what is available before promising a document or proof point."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Preserve the concern instead of smoothing it away.",
+        "kind": "cards",
+        "items": [
+          [
+            "Concern",
+            "What creates hesitation?"
+          ],
+          [
+            "Context",
+            "Which process or experience matters?"
+          ],
+          [
+            "Questions",
+            "What should the specialist address?"
+          ]
+        ]
+      },
+      {
+        "phrase": "For Lakeview, a useful note might",
+        "title": "A useful handoff includes the promises not made.",
+        "kind": "quote",
+        "items": [
+          [
+            "FICTIONAL NOTE",
+            "Concern: incorrect customer commitments. Review limits, human handling and custom pricing. No guarantees or SDR quote given."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Also record what remains unknown. The",
+        "title": "Keep unresolved requirements visible.",
+        "kind": "flow",
+        "items": [
+          [
+            "Systems",
+            "Current setup"
+          ],
+          [
+            "Sources",
+            "Authoritative information"
+          ],
+          [
+            "Access",
+            "Requirements for review"
+          ],
+          [
+            "Next step",
+            "Appropriate specialist evaluation"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use one consistent response standard.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Acknowledge the real concern."
+          ],
+          [
+            "02",
+            "Answer with accurate information."
+          ],
+          [
+            "03",
+            "State the relevant boundary."
+          ],
+          [
+            "04",
+            "Ask a useful business question."
+          ],
+          [
+            "05",
+            "Prepare an honest specialist handoff."
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical submission, respond to",
+        "title": "Practice separate and combined concerns.",
+        "kind": "cards",
+        "items": [
+          [
+            "Pricing",
+            "A demand for a ballpark"
+          ],
+          [
+            "People",
+            "Human customer service"
+          ],
+          [
+            "Reliability",
+            "Incorrect or unsupported answers"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the quiz and compare the",
+        "title": "Confidence does not require invented certainty.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz and revise every unsupported promise in your role-play."
+          ]
+        ]
+      }
+    ]
+  }
+]

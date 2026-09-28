@@ -1,0 +1,665 @@
+[
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Treat the first contact as a professional.",
+        "kind": "cards",
+        "items": [
+          [
+            "Time",
+            "They help protect it."
+          ],
+          [
+            "Routing",
+            "They understand the organization."
+          ],
+          [
+            "Context",
+            "They may know the process."
+          ]
+        ]
+      },
+      {
+        "phrase": "Your objective is to identify the",
+        "title": "Find an honest path to the right conversation.",
+        "kind": "compare",
+        "items": [
+          [
+            "USEFUL",
+            "A relevant contact or agreed next step"
+          ],
+          [
+            "DAMAGING",
+            "A transfer won through a false claim"
+          ]
+        ]
+      },
+      {
+        "phrase": "In this lesson, we will practice",
+        "title": "Leave with accurate knowledge.",
+        "kind": "flow",
+        "items": [
+          [
+            "Responsibility",
+            "Who handles the process?"
+          ],
+          [
+            "Route",
+            "How should you reach them?"
+          ],
+          [
+            "Agreement",
+            "What was actually invited?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Titles do not reveal the whole decision process.",
+        "kind": "cards",
+        "items": [
+          [
+            "Process owner",
+            "Understands the work"
+          ],
+          [
+            "Influencer",
+            "Helps evaluate change"
+          ],
+          [
+            "Approver",
+            "Authorizes the decision"
+          ]
+        ]
+      },
+      {
+        "phrase": "For example, you might ask who",
+        "title": "Ask a question the first contact can route.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "Who oversees how new quotation requests are followed up?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "If the first contact knows the",
+        "title": "Use process knowledge without inventing authority.",
+        "kind": "compare",
+        "items": [
+          [
+            "ACCURATE",
+            "Coordinator described the workflow."
+          ],
+          [
+            "UNSUPPORTED",
+            "Coordinator is the confirmed buyer."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Answer the reason-for-call question directly.",
+        "kind": "compare",
+        "items": [
+          [
+            "CLEAR",
+            "Company, relevant process and purpose"
+          ],
+          [
+            "MISLEADING",
+            "A vague personal matter or invented partnership"
+          ]
+        ]
+      },
+      {
+        "phrase": "Try a relevant version of this:",
+        "title": "Give enough context to route the call.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "I am calling about quotation follow-up and hoped to ask the person responsible for that process a couple of questions."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Then allow the person to respond.",
+        "title": "Use the response to choose the next step.",
+        "kind": "flow",
+        "items": [
+          [
+            "Name",
+            "Confirm responsibility"
+          ],
+          [
+            "Email",
+            "Send relevant information if invited"
+          ],
+          [
+            "Unavailable",
+            "Clarify an appropriate route"
+          ],
+          [
+            "Decline",
+            "Respect it"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Never invent a reason to receive priority.",
+        "kind": "cards",
+        "items": [
+          [
+            "No false appointment",
+            "Do not claim they expected the call."
+          ],
+          [
+            "No fake urgency",
+            "Do not invent an account issue."
+          ],
+          [
+            "No false relationship",
+            "Do not pose as an existing provider."
+          ]
+        ]
+      },
+      {
+        "phrase": "The same rule applies to a",
+        "title": "A routing suggestion is not an endorsement.",
+        "kind": "compare",
+        "items": [
+          [
+            "ACCURATE",
+            "The coordinator directed me to you."
+          ],
+          [
+            "UNSUPPORTED",
+            "The coordinator recommends buying from us."
+          ]
+        ]
+      },
+      {
+        "phrase": "If someone asks whether the person",
+        "title": "Answer “Are they expecting you?” honestly.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "This is a new business inquiry. What is the preferred way to reach the person responsible?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A transfer is a new beginning to explain clearly.",
+        "kind": "flow",
+        "items": [
+          [
+            "Confirm",
+            "Name and responsibility if appropriate"
+          ],
+          [
+            "Thank",
+            "Acknowledge the help"
+          ],
+          [
+            "Introduce",
+            "Explain yourself to the next person"
+          ]
+        ]
+      },
+      {
+        "phrase": "When the next person answers, introduce",
+        "title": "Describe the routing accurately.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "The front desk directed me to whoever oversees quotation follow-up. Is that part of your role?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Be ready for the routing to",
+        "title": "Accept a correction without arguing.",
+        "kind": "cards",
+        "items": [
+          [
+            "Acknowledge",
+            "Understand the updated responsibility."
+          ],
+          [
+            "Clarify",
+            "Ask about an appropriate path."
+          ],
+          [
+            "Record",
+            "Preserve the accurate role."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Ask for an appropriate route, not repeated transfers.",
+        "kind": "cards",
+        "items": [
+          [
+            "Preferred channel",
+            "How should you reach them?"
+          ],
+          [
+            "Suggested window",
+            "When may contact be appropriate?"
+          ],
+          [
+            "Actual callback",
+            "What was explicitly agreed?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Be specific about what is agreed.",
+        "title": "Keep these outcomes distinct.",
+        "kind": "compare",
+        "items": [
+          [
+            "SUGGESTION",
+            "Tuesday mornings are usually better."
+          ],
+          [
+            "AGREEMENT",
+            "A particular person requested a callback at a stated time."
+          ]
+        ]
+      },
+      {
+        "phrase": "Avoid turning a helpful hint into",
+        "title": "Do not convert a hint into a promise.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Record who said what, and use that context honestly on the next contact."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "An information request needs context.",
+        "kind": "cards",
+        "items": [
+          [
+            "Routing",
+            "Normal business process"
+          ],
+          [
+            "Sharing",
+            "Useful internal reference"
+          ],
+          [
+            "Preference",
+            "They may only want the email"
+          ]
+        ]
+      },
+      {
+        "phrase": "You might say: absolutely, so I",
+        "title": "Clarify relevance briefly when welcome.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "So I keep it useful, is quotation follow-up something the operations team handles?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Send through the approved outreach workflow",
+        "title": "Record the actual request and next step.",
+        "kind": "flow",
+        "items": [
+          [
+            "Topic",
+            "Relevant information"
+          ],
+          [
+            "Channel",
+            "Confirmed business route"
+          ],
+          [
+            "Follow-up",
+            "Only what was agreed"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Honor a clear contact boundary.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Do not use another extension, record or colleague to bypass a request to stop."
+          ]
+        ]
+      },
+      {
+        "phrase": "There is a difference between clarification",
+        "title": "Clarification is different from ignoring the answer.",
+        "kind": "compare",
+        "items": [
+          [
+            "AMBIGUOUS",
+            "A brief respectful clarification may help."
+          ],
+          [
+            "CLEAR",
+            "Honor the instruction and end appropriately."
+          ]
+        ]
+      },
+      {
+        "phrase": "Record the business context and the",
+        "title": "Leave a factual restriction note.",
+        "kind": "cards",
+        "items": [
+          [
+            "Request",
+            "What was actually said?"
+          ],
+          [
+            "Context",
+            "Which business and interaction?"
+          ],
+          [
+            "Action",
+            "How was the boundary honored?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Riley asks: what is the call about?",
+        "kind": "cards",
+        "items": [
+          [
+            "Business",
+            "Summit Design Workshop"
+          ],
+          [
+            "Topic",
+            "New project inquiries"
+          ],
+          [
+            "Known relationship",
+            "No prior appointment"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Pause and say your response aloud.",
+        "title": "Give a truthful explanation and routing question.",
+        "kind": "flow",
+        "items": [
+          [
+            "Identity",
+            "Who you are"
+          ],
+          [
+            "Process",
+            "Why you called"
+          ],
+          [
+            "Responsibility",
+            "Who handles it?"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong response might say you",
+        "title": "Improve the response without inventing authority.",
+        "kind": "compare",
+        "items": [
+          [
+            "INCOMPLETE",
+            "Can I speak to the owner?"
+          ],
+          [
+            "USEFUL",
+            "Who oversees how new project inquiries are handled?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "The first contact may know the workflow best.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "RILEY",
+            "I collect project details before a designer reviews them."
+          ],
+          [
+            "REP",
+            "What happens between collecting the details and that review?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Riley explains that they collect basic",
+        "title": "Understand the handoff before judging it.",
+        "kind": "cards",
+        "items": [
+          [
+            "Current process",
+            "What happens now?"
+          ],
+          [
+            "Strengths",
+            "What works well?"
+          ],
+          [
+            "Friction",
+            "Where do delays matter, if any?"
+          ]
+        ]
+      },
+      {
+        "phrase": "If improvement appears relevant, ask who",
+        "title": "Ask who should evaluate a possible change.",
+        "kind": "flow",
+        "items": [
+          [
+            "Knowledge",
+            "Who understands the process?"
+          ],
+          [
+            "Participation",
+            "Who should join?"
+          ],
+          [
+            "Authority",
+            "Who approves a change?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Leave a note the next rep can use.",
+        "kind": "cards",
+        "items": [
+          [
+            "Role",
+            "Known responsibility"
+          ],
+          [
+            "Route",
+            "Appropriate contact channel"
+          ],
+          [
+            "Agreement",
+            "Actual timing or next step"
+          ]
+        ]
+      },
+      {
+        "phrase": "For Summit Design Workshop, a factual",
+        "title": "Keep the conclusion within the evidence.",
+        "kind": "compare",
+        "items": [
+          [
+            "ACCURATE",
+            "Coordinator suggested the operations manager by email."
+          ],
+          [
+            "UNSUPPORTED",
+            "Owner requested an automation proposal."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Review the next action against the",
+        "title": "Name the actual next action.",
+        "kind": "flow",
+        "items": [
+          [
+            "Information",
+            "Send what was requested"
+          ],
+          [
+            "Callback",
+            "Honor the agreed timing"
+          ],
+          [
+            "Discovery",
+            "Explore the current process"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use an honest, respectful routing standard.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Identify yourself truthfully."
+          ],
+          [
+            "02",
+            "Name the relevant process."
+          ],
+          [
+            "03",
+            "Ask about responsibility."
+          ],
+          [
+            "04",
+            "Follow the actual response."
+          ],
+          [
+            "05",
+            "Record the agreed next step."
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical exercise, handle three",
+        "title": "Practice common responses and a clear stop.",
+        "kind": "cards",
+        "items": [
+          [
+            "Reason for call",
+            "Explain concisely"
+          ],
+          [
+            "Unavailable / information",
+            "Find the appropriate route"
+          ],
+          [
+            "Stop",
+            "Honor and record the boundary"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the scenario quiz, ask Guru",
+        "title": "Improve one response, then retry.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz and practice the routing scenario with Guru."
+          ]
+        ]
+      }
+    ]
+  }
+]

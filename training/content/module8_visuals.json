@@ -1,0 +1,653 @@
+[
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Understand the business before choosing a direction.",
+        "kind": "flow",
+        "items": [
+          [
+            "Workflow",
+            "What happens now?"
+          ],
+          [
+            "Friction",
+            "Where is it difficult?"
+          ],
+          [
+            "Impact",
+            "Why does it matter?"
+          ],
+          [
+            "Interest",
+            "Is improvement relevant?"
+          ]
+        ]
+      },
+      {
+        "phrase": "An SDR needs enough understanding to",
+        "title": "SDR discovery prepares the appropriate next step.",
+        "kind": "compare",
+        "items": [
+          [
+            "SDR",
+            "Establish relevance and useful context"
+          ],
+          [
+            "SPECIALIST",
+            "Evaluate scope, implementation and custom pricing"
+          ]
+        ]
+      },
+      {
+        "phrase": "This lesson develops the most important",
+        "title": "Let the answer shape the next question.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "The prospect should recognize their own business in your summary."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Ask about the working process.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "Walk me through what happens after a quotation goes out."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "For our fictional example, Brookside Project",
+        "title": "Listen for the sequence.",
+        "kind": "flow",
+        "items": [
+          [
+            "Person",
+            "Who acts?"
+          ],
+          [
+            "Information",
+            "What do they use?"
+          ],
+          [
+            "Record",
+            "Where is it kept?"
+          ],
+          [
+            "Trigger",
+            "What happens next?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Do not turn the sequence into",
+        "title": "Use one answer to choose the next question.",
+        "kind": "cards",
+        "items": [
+          [
+            "Explore",
+            "The step they describe"
+          ],
+          [
+            "Acknowledge",
+            "What already works"
+          ],
+          [
+            "Avoid",
+            "A memorized interrogation"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "The prospect has corrected the direction.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "PROSPECT",
+            "Phones are fine. People stop responding after we send quotes."
+          ],
+          [
+            "REP",
+            "How are you following up after sending those quotes today?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "A good response might be: understood,",
+        "title": "Explore before choosing the fix.",
+        "kind": "cards",
+        "items": [
+          [
+            "Process",
+            "How does follow-up happen?"
+          ],
+          [
+            "Information",
+            "What does the team know?"
+          ],
+          [
+            "Timing",
+            "When is action taken?"
+          ]
+        ]
+      },
+      {
+        "phrase": "The listening test is simple: could",
+        "title": "Listening shows up in the next question.",
+        "kind": "quote",
+        "items": [
+          [
+            "SELF-CHECK",
+            "Did the prospect’s answer change what I asked next?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A symptom is not a proven cause.",
+        "kind": "compare",
+        "items": [
+          [
+            "SYMPTOM",
+            "Quotes remain unanswered."
+          ],
+          [
+            "POSSIBLE CAUSE",
+            "Follow-up may be inconsistent."
+          ]
+        ]
+      },
+      {
+        "phrase": "If the owner says customers forget",
+        "title": "Different causes can require different responses.",
+        "kind": "cards",
+        "items": [
+          [
+            "Reminder",
+            "The timing may be unclear."
+          ],
+          [
+            "Clarification",
+            "The quote may raise questions."
+          ],
+          [
+            "Decision",
+            "The customer may have chosen elsewhere."
+          ]
+        ]
+      },
+      {
+        "phrase": "Use language that keeps the distinction",
+        "title": "Keep facts, hypotheses and unsupported claims separate.",
+        "kind": "flow",
+        "items": [
+          [
+            "Reported fact",
+            "What the prospect said"
+          ],
+          [
+            "Hypothesis",
+            "What needs testing"
+          ],
+          [
+            "Unsupported claim",
+            "What the evidence does not establish"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Ask for context the business can actually provide.",
+        "kind": "cards",
+        "items": [
+          [
+            "Recent example",
+            "What happened last time?"
+          ],
+          [
+            "Typical period",
+            "What is normal?"
+          ],
+          [
+            "Pattern",
+            "When does it occur?"
+          ]
+        ]
+      },
+      {
+        "phrase": "You might ask how many quotations",
+        "title": "Unknown frequency may reveal a visibility question.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "How does the team know which quotations still need follow-up?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Avoid leading arithmetic that creates a",
+        "title": "Do not manufacture a revenue calculation.",
+        "kind": "compare",
+        "items": [
+          [
+            "USEFUL",
+            "Prospect-reported estimate with limits"
+          ],
+          [
+            "UNSUPPORTED",
+            "Guessed opportunities multiplied by an invented sale value"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Let the prospect define the impact.",
+        "kind": "cards",
+        "items": [
+          [
+            "Time",
+            "What work is displaced?"
+          ],
+          [
+            "Experience",
+            "What does the customer encounter?"
+          ],
+          [
+            "Visibility",
+            "What does the team struggle to see?"
+          ]
+        ]
+      },
+      {
+        "phrase": "At Brookside Project Studio, the owner",
+        "title": "Explore a concrete consequence.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "When Friday is spent reconstructing the follow-up list, what does that take time away from?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Reflect the impact without exaggeration. If",
+        "title": "Reflect the stated impact without inflating it.",
+        "kind": "compare",
+        "items": [
+          [
+            "REPORTED",
+            "Extra administrative work and frustration"
+          ],
+          [
+            "INVENTED",
+            "A guaranteed financial loss"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Ask what a better process would look like.",
+        "kind": "cards",
+        "items": [
+          [
+            "Speed",
+            "A timely next step"
+          ],
+          [
+            "Ownership",
+            "Someone clearly responsible"
+          ],
+          [
+            "Visibility",
+            "A reliable view of outstanding work"
+          ]
+        ]
+      },
+      {
+        "phrase": "Suppose the owner wants one reliable",
+        "title": "An outcome is not an implementation promise.",
+        "kind": "compare",
+        "items": [
+          [
+            "GOAL",
+            "Consistent quotation follow-up"
+          ],
+          [
+            "TO EVALUATE",
+            "The appropriate process, tools and integration"
+          ]
+        ]
+      },
+      {
+        "phrase": "Clarify priorities when the person names",
+        "title": "Clarify the priority before expanding the scope.",
+        "kind": "quote",
+        "items": [
+          [
+            "QUESTION",
+            "Which improvement would matter most first, and why?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Summarize to invite a correction.",
+        "kind": "flow",
+        "items": [
+          [
+            "Process",
+            "What happens now"
+          ],
+          [
+            "Friction",
+            "What becomes difficult"
+          ],
+          [
+            "Goal",
+            "What they want to improve"
+          ],
+          [
+            "Check",
+            "Did I understand?"
+          ]
+        ]
+      },
+      {
+        "phrase": "For Brookside, you might say: quotations",
+        "title": "Keep the summary close to their words.",
+        "kind": "quote",
+        "items": [
+          [
+            "FICTIONAL SUMMARY",
+            "Quotes go out by email, follow-up is manual and Fridays become catch-up time. You want a clearer view of what needs attention. Is that right?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "If they correct you, update your",
+        "title": "A correction improves the discovery.",
+        "kind": "compare",
+        "items": [
+          [
+            "INITIAL HYPOTHESIS",
+            "The spreadsheet is the problem."
+          ],
+          [
+            "CORRECTION",
+            "Ownership of the next action is unclear."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Listen to all of the supplied evidence.",
+        "kind": "quote",
+        "items": [
+          [
+            "PROSPECT",
+            "Calls are covered. Nobody knows who should follow up on quotes, so I check on Fridays."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Pause and ask your next question",
+        "title": "Choose the next direction.",
+        "kind": "choices",
+        "items": [
+          [
+            "A",
+            "Phone coverage"
+          ],
+          [
+            "B",
+            "Ownership after a quotation"
+          ],
+          [
+            "C",
+            "A new website"
+          ],
+          [
+            "D",
+            "A price package"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong question is: how is",
+        "title": "Follow the responsibility problem.",
+        "kind": "quote",
+        "items": [
+          [
+            "STRONG QUESTION",
+            "How is responsibility assigned after a quotation goes out?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Unverified technical details become assessment questions.",
+        "kind": "cards",
+        "items": [
+          [
+            "Current tools",
+            "What setup needs review?"
+          ],
+          [
+            "Exceptions",
+            "What unusual cases matter?"
+          ],
+          [
+            "Verification",
+            "What must the specialist confirm?"
+          ]
+        ]
+      },
+      {
+        "phrase": "The same boundary applies to pricing.",
+        "title": "Keep pricing with the qualified human specialist.",
+        "kind": "quote",
+        "items": [
+          [
+            "POLICY",
+            "Custom pricing is discussed only during the Growth Assessment. No SDR starting prices, ranges or estimates."
+          ]
+        ]
+      },
+      {
+        "phrase": "A suitable transition might say that",
+        "title": "Connect the assessment to the discovered process.",
+        "kind": "flow",
+        "items": [
+          [
+            "Review",
+            "Current workflow and tools"
+          ],
+          [
+            "Identify",
+            "Relevant opportunities"
+          ],
+          [
+            "Evaluate",
+            "Approach and custom pricing"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Record a compact account of the business.",
+        "kind": "cards",
+        "items": [
+          [
+            "Process and friction",
+            "What happens and where it is difficult"
+          ],
+          [
+            "Impact and goal",
+            "Why improvement matters"
+          ],
+          [
+            "Source and limits",
+            "Who reported it and what is unknown"
+          ]
+        ]
+      },
+      {
+        "phrase": "For the fictional studio, the note",
+        "title": "Preserve the questions still needing evaluation.",
+        "kind": "quote",
+        "items": [
+          [
+            "FICTIONAL NOTE",
+            "Manual quote follow-up; unclear ownership; Friday catch-up. Goal: clearer responsibility and visibility. Compatibility unverified."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Before saving, look for unsupported labels",
+        "title": "Replace dramatic labels with evidence.",
+        "kind": "compare",
+        "items": [
+          [
+            "LABEL",
+            "Urgent buyer with huge losses"
+          ],
+          [
+            "EVIDENCE",
+            "The prospect’s actual process, impact and stated priority"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use a sequence that supports judgment.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Understand the process."
+          ],
+          [
+            "02",
+            "Explore friction and frequency."
+          ],
+          [
+            "03",
+            "Clarify impact and desired outcome."
+          ],
+          [
+            "04",
+            "Summarize and invite correction."
+          ],
+          [
+            "05",
+            "Record the appropriate next step."
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical role-play, ask Guru",
+        "title": "Practice the conversation and the handoff.",
+        "kind": "flow",
+        "items": [
+          [
+            "Discover",
+            "Follow quotation ownership"
+          ],
+          [
+            "Summarize",
+            "Check the interpretation"
+          ],
+          [
+            "Record",
+            "Facts and unknowns"
+          ],
+          [
+            "Retry",
+            "Apply specific feedback"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the quiz and compare your",
+        "title": "Let new evidence change your next move.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz, role-play with Guru and revise your discovery note."
+          ]
+        ]
+      }
+    ]
+  }
+]

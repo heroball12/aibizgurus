@@ -7,3 +7,8 @@ __pycache__/
 db.sqlite3
 staticfiles/
 .DS_Store
+
+# Local production masters and QA media; never commit large video/audio.
+.local-artifacts/
+# Packaged video delivery; uploaded separately to durable storage.
+deliverables/

@@ -1,0 +1,254 @@
+{
+  "title": "Discovery & Listening",
+  "short_title": "DISCOVERY + LISTENING",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Follow the prospect’s stated workflow, distinguish symptoms from causes and prepare an accurate assessment handoff.",
+  "skills": [
+    "discovery",
+    "listening",
+    "business-case",
+    "accuracy",
+    "handoff",
+    "ethics"
+  ],
+  "scenes": [
+    {
+      "title": "Discovery follows the business, not the product list",
+      "narration": "Discovery is the work of understanding how a business operates, where a process becomes difficult and whether improvement matters enough to explore. It is not a series of questions designed to force the prospect toward the product you planned to pitch. The answer may change your direction, reveal that no change is needed or show that another person should be involved.\nAn SDR needs enough understanding to establish a relevant reason for a Growth Assessment. You are not conducting the specialist's complete technical investigation on an unexpected call. Focus on the current workflow, the stated friction, its practical impact and the person's interest in a better outcome. Then decide whether the next step would actually help.\nThis lesson develops the most important habit in that process: let the answer shape the next question. We will examine a quotation follow-up problem, distinguish facts from assumptions and practice summarizing what you heard. The prospect should recognize their own business in your summary, rather than hearing a description of the solution you wanted to sell before the call began.",
+      "pauses": [],
+      "start": 0,
+      "end": 75,
+      "time": "00:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Understand the business before choosing a direction."
+    },
+    {
+      "title": "Start with the current process",
+      "narration": "A process question gives the conversation something concrete to work with. Instead of asking whether the business wants AI, ask what happens when a customer requests a quote, misses a call or needs a service appointment. Choose the process that fits the campaign and the person's actual answer. Broad enthusiasm about technology is not the same as understanding a business need.\nFor our fictional example, Brookside Project Studio sends quotations to potential customers. A useful opening is: walk me through what happens after a quotation goes out. That invites a sequence rather than a yes or no. Listen for who acts, what information they use, where it is recorded and what triggers the next step.\nDo not turn the sequence into an interrogation. One answer may reveal enough to choose the next question naturally. If the owner says the office manager tracks quotes in a spreadsheet, explore that step. If the team already has an effective process, acknowledge it. Your task is to understand the workflow as described before deciding where a possible opportunity might exist.",
+      "pauses": [],
+      "start": 75,
+      "end": 150,
+      "time": "01:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Ask about the working process."
+    },
+    {
+      "title": "Hear the problem they actually named",
+      "narration": "Listen carefully to this fictional response: we do not really have a problem answering phones. Our issue is getting people who asked for quotes to respond afterward. Several services might exist in our catalog, but only one problem has just been identified. The next useful direction is quotation follow-up, not a phone-answering presentation.\nA good response might be: understood, how are you following up after sending those quotes today? That question acknowledges the correction and explores the stated issue. It does not yet assume that automation is the answer. The process could be unclear, the information could be incomplete or the timing could be wrong for reasons that need understanding.\nThe listening test is simple: could your next question have been asked before you heard the answer? Sometimes a planned question is still relevant, but if every response leads you to the same pitch, you are not using discovery. Let the specific words change the conversation. Good listening is visible in the next action you take, not merely in saying I understand.",
+      "pauses": [],
+      "start": 150,
+      "end": 225,
+      "time": "02:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "The prospect has corrected the direction."
+    },
+    {
+      "title": "Separate a symptom from a cause",
+      "narration": "A symptom is what the person observes: quotes sit unanswered, appointments are missed or information has to be entered twice. A cause is an explanation for why that happens. The prospect may have a theory, and you may have one too, but neither should become a proven diagnosis without enough evidence.\nIf the owner says customers forget to respond, ask what the team currently does and what they have noticed. Perhaps reminders are inconsistent. Perhaps the quotation needs clarification. Perhaps the customer chose another provider. Different explanations can lead to different next steps, and a single automation cannot responsibly be promised to solve every possible cause.\nUse language that keeps the distinction clear. The owner reports unanswered quotations is a fact about what they told you. Inconsistent follow-up may contribute is a hypothesis to test. They are losing half their revenue because they need AI is an unsupported claim unless reliable evidence actually establishes it. Discovery should make the uncertainty more specific, not hide it beneath confident language.",
+      "pauses": [],
+      "start": 225,
+      "end": 300,
+      "time": "03:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A symptom is not a proven cause."
+    },
+    {
+      "title": "Explore frequency without manufacturing precision",
+      "narration": "Frequency helps establish whether the issue is occasional, recurring or not yet understood. Ask about a normal week, a recent example or the circumstances in which it happens. The goal is useful context, not forcing the owner to produce an exact number they do not track. An honest estimate should remain an estimate in the CRM.\nYou might ask how many quotations the team typically sends and how they know which ones need follow-up. If the owner says they are not sure, that is information about visibility. You can explore how the team currently reviews outstanding work without turning the uncertainty into an invented loss calculation.\nAvoid leading arithmetic that creates a dramatic result from guessed inputs. Ten missed opportunities times an imagined sale value is not established revenue impact. If the prospect supplies approximate figures, record their source and limits. The specialist can later evaluate whether more reliable measurement is needed. Your role is to identify what the business knows, what it estimates and what remains unmeasured.",
+      "pauses": [],
+      "start": 300,
+      "end": 375,
+      "time": "05:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Ask for context the business can actually provide."
+    },
+    {
+      "title": "Understand impact in the prospect’s terms",
+      "narration": "Impact explains why the issue matters to this business. It might involve staff time, customer experience, delayed decisions, duplicated work or missed visibility. Do not assume every operational problem should be described as lost revenue. Ask what happens when the process does not go as intended and listen for the consequence the person actually cares about.\nAt Brookside Project Studio, the owner says the office manager spends Friday afternoon reconstructing which customers need a reminder. A useful follow-up is: what does that take time away from? The answer may reveal a meaningful priority, or it may show that the task is manageable and not worth changing. Both outcomes improve your understanding.\nReflect the impact without exaggeration. If the owner describes frustration and extra administration, say that. Do not rewrite it as a guaranteed financial loss. A relevant business case begins with the customer's own process and priorities. The specialist can evaluate implementation tradeoffs later, but an SDR should never need inflated pain to make a suitable assessment sound worthwhile.",
+      "pauses": [],
+      "start": 375,
+      "end": 450,
+      "time": "06:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Let the prospect define the impact."
+    },
+    {
+      "title": "Ask about the desired outcome",
+      "narration": "A problem becomes more useful when you understand what a better process would look like to the person who owns it. Ask what they would want to improve first. The answer may be faster response, clearer ownership, fewer repeated questions or simply confidence that agreed follow-up happens. Those are outcomes, not a shopping list of features.\nSuppose the owner wants one reliable view of outstanding quotations and a consistent way to follow up. That gives the specialist a direction to evaluate. It does not mean you should promise a particular integration or recommend a custom build on the spot. The desired outcome and the implementation approach are related, but they are not the same decision.\nClarify priorities when the person names several goals. Which improvement would matter most in the near term, and why? Keep the question proportionate to the conversation. You are helping establish relevance for a fifteen to twenty minute Growth Assessment, not demanding a complete transformation plan before the prospect has agreed to speak with the specialist.",
+      "pauses": [],
+      "start": 450,
+      "end": 525,
+      "time": "07:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Ask what a better process would look like."
+    },
+    {
+      "title": "Use summaries to check your understanding",
+      "narration": "A short summary gives the prospect a chance to correct your interpretation. It is not a speech proving that you listened. Use their process, the difficulty they described and the outcome they want. Then ask whether you have understood correctly. The correction may be the most valuable part of the exchange.\nFor Brookside, you might say: quotations go out by email, the team tracks follow-up manually and Fridays become a catch-up exercise. You would like a clearer view of what needs attention. Have I understood that correctly? This summary stays close to the reported facts and leaves room for the owner to explain a nuance you missed.\nIf they correct you, update your understanding without defending the original version. Perhaps the spreadsheet is fine and the issue is that nobody owns the next action. That changes the hypothesis. A good summary is a checkpoint that can change the direction, not a closing technique that pressures the prospect to agree with your framing.",
+      "pauses": [],
+      "start": 525,
+      "end": 600,
+      "time": "08:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Summarize to invite a correction."
+    },
+    {
+      "title": "Practice choosing the next question",
+      "narration": "Here is the fictional prospect's statement: our receptionist catches the calls. We send plenty of quotes, but nobody knows who should follow up, and I end up checking on Fridays. What should you explore next? Choose between phone coverage, the handoff after a quote, a new website design or a price package.\nPause and ask your next question aloud. Make it specific to the responsibility problem the prospect described. Do not recommend a tool yet. Your goal is to understand what happens after the quote is sent and how the team decides who owns the next action.\nA strong question is: how is responsibility assigned after a quotation goes out? You could then ask what happens when no one takes that step. If you chose phone coverage, you missed the first sentence. If you chose a price package, you skipped discovery and crossed the pricing boundary. Retry with one question that follows the stated workflow, then briefly explain why that question is more useful.",
+      "pauses": [
+        [
+          "Pause and ask your next question aloud.",
+          25,
+          "Ask one relevant question about ownership after a quotation."
+        ]
+      ],
+      "start": 600,
+      "end": 675,
+      "time": "10:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Listen to all of the supplied evidence."
+    },
+    {
+      "title": "Know what belongs in the specialist conversation",
+      "narration": "Discovery sometimes reaches a technical detail you cannot verify. The prospect may ask whether a particular CRM can support a workflow or whether a system can handle an unusual exception. Record the question and explain that the specialist needs to evaluate the actual setup. Do not convert an interesting possibility into a guaranteed capability.\nThe same boundary applies to pricing. Pricing is custom to the build identified as best for the business. Only a qualified human AI Specialist discusses it, and only during the Growth Assessment. An SDR should not provide starting prices, ranges or estimates to keep the conversation moving. Explain the process and connect the next step to the prospect's stated goal.\nA suitable transition might say that the assessment would review their quotation process, current tools and ownership problem, then evaluate an appropriate approach. Keep the invitation specific to what was discovered. You are not promising that every issue will be solved in the call or that a particular implementation is already approved. You are proposing the right evaluation with the right person.",
+      "pauses": [],
+      "start": 675,
+      "end": 750,
+      "time": "11:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Unverified technical details become assessment questions."
+    },
+    {
+      "title": "Write a discovery note another person can use",
+      "narration": "A useful discovery note is a compact account of the business, not a transcript of everything said. Capture the current process, the stated friction, the practical impact and the desired outcome. Identify who supplied the information, which figures are estimates and what remains unknown. Add the actual next agreement when there is one.\nFor the fictional studio, the note might say the owner reports manual quotation follow-up with unclear responsibility and Friday catch-up work. They want clearer ownership and visibility. Current software compatibility is unverified. That note gives the specialist a place to begin without suggesting that a solution has already been scoped or that the prospect has accepted a commercial proposal.\nBefore saving, look for unsupported labels such as huge loss, urgent buyer or perfect fit. Replace them with the evidence that led you to that impression, or remove them if there is none. Clear discovery notes help the team ask better follow-up questions and prevent an assessment from beginning with promises the specialist never made.",
+      "pauses": [],
+      "start": 750,
+      "end": 825,
+      "time": "12:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Record a compact account of the business."
+    },
+    {
+      "title": "Build a listening habit you can improve",
+      "narration": "Use this sequence as a guide, not a script: understand the process, explore the friction, clarify frequency and impact, identify the desired outcome and summarize. Some conversations need only a few focused questions. Others reveal that there is no relevant need or no interest in a change. The sequence should support judgment, not replace it.\nFor your practical role-play, ask Guru to be the owner of Brookside Project Studio. Discover the quotation handoff without pitching phone coverage. Summarize what you learned and write a short handoff note. Then ask for feedback on the first point where your question stopped following the answer, and retry that part of the conversation.\nComplete the quiz and compare your first and revised attempts. Improvement should show up in more relevant questions, fewer unsupported assumptions and a summary the prospect would recognize. Listening is not passive. It is the disciplined choice to let new evidence change your next move. That habit makes the Growth Assessment more useful because it begins with the business's actual needs.",
+      "pauses": [],
+      "start": 825,
+      "end": 900,
+      "time": "13:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Use a sequence that supports judgment."
+    }
+  ],
+  "job_aid": "DISCOVERY FIELD GUIDE\nSEQUENCE: current workflow → friction → frequency → impact → desired outcome → summary.\nLISTEN: the answer determines the next useful question. Phones fine + quotes unanswered means explore quotation follow-up.\nSYMPTOM VS CAUSE: what happens is not yet proof of why.\nNUMBERS: preserve estimates as estimates; unknown measurement is not permission to invent a loss.\nIMPACT: ask what the issue changes for staff, customers, time or visibility.\nGOAL: what would a better process look like, and what matters first?\nSUMMARY: process + friction + desired outcome + Did I understand? Accept corrections.\nHANDOFF: source, known facts, estimates, unknowns and actual next agreement.\nBOUNDARIES: specialist verifies technical scope; custom pricing only by a qualified human AI Specialist during the Growth Assessment.\nCOACHABILITY: identify where the next question stopped following the answer, then retry.",
+  "questions": [
+    {
+      "skill": "listening",
+      "prompt": "Phones are covered, but customers stop responding after quotes. What should you explore?",
+      "choices": [
+        "Phone-answering capacity.",
+        "Quotation follow-up.",
+        "A website redesign immediately.",
+        "A price package."
+      ],
+      "correct_index": 1,
+      "explanation": "Follow the problem the prospect named. The corrected direction is quote follow-up, and discovery should precede a solution."
+    },
+    {
+      "skill": "discovery",
+      "prompt": "Which question best begins understanding a workflow?",
+      "choices": [
+        "Would you like revolutionary AI?",
+        "Are you losing money?",
+        "Walk me through what happens after a quotation goes out.",
+        "Can you buy today?"
+      ],
+      "correct_index": 2,
+      "explanation": "A concrete process question reveals sequence, responsibility and triggers without assuming a failure or purchase intent."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "The owner estimates ten quotes per week but does not track lost revenue. What should you record?",
+      "choices": [
+        "The reported estimate and the fact that revenue impact is unmeasured.",
+        "A guaranteed revenue loss.",
+        "A precise conversion rate.",
+        "Your imagined sale value."
+      ],
+      "correct_index": 0,
+      "explanation": "Preserve the source and limits of the estimate. Do not manufacture precision or a financial impact from guessed inputs."
+    },
+    {
+      "skill": "discovery",
+      "prompt": "The owner corrects your summary: the spreadsheet works, but ownership is unclear. What next?",
+      "choices": [
+        "Defend the software diagnosis.",
+        "Ignore the correction.",
+        "Pitch a new CRM.",
+        "Update the hypothesis and explore how responsibility is assigned."
+      ],
+      "correct_index": 3,
+      "explanation": "A summary invites correction. New evidence should change the next question and any proposed direction."
+    },
+    {
+      "skill": "business-case",
+      "prompt": "What is the best way to understand impact?",
+      "choices": [
+        "Assume every issue means lost revenue.",
+        "Ask what happens when the process fails and why that consequence matters to them.",
+        "Use dramatic industry statistics.",
+        "Promise a return on investment."
+      ],
+      "correct_index": 1,
+      "explanation": "Impact may concern time, experience or visibility. Use the prospect’s actual consequences rather than inflated claims."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "During discovery the prospect requests a price range. What should an SDR do?",
+      "choices": [
+        "Quote a typical range.",
+        "Offer a starting price.",
+        "Explain custom pricing is discussed by a qualified human AI Specialist during the Growth Assessment.",
+        "Invent a package."
+      ],
+      "correct_index": 2,
+      "explanation": "The owner policy reserves all pricing discussions for qualified human AI Specialists during the assessment. SDRs provide no ranges or estimates."
+    },
+    {
+      "skill": "handoff",
+      "prompt": "Which handoff is most useful?",
+      "choices": [
+        "Reported process, friction, impact, desired outcome, source, unknowns and actual agreement.",
+        "Perfect fit; will definitely buy.",
+        "Every word of the call without a summary.",
+        "A proposed implementation presented as confirmed."
+      ],
+      "correct_index": 0,
+      "explanation": "The specialist needs usable business context and limits of the evidence. Unsupported certainty creates a poor handoff."
+    },
+    {
+      "skill": "listening",
+      "prompt": "What best demonstrates that listening occurred?",
+      "choices": [
+        "Saying I understand repeatedly.",
+        "Asking every question on the list.",
+        "Giving the planned pitch unchanged.",
+        "A relevant next question that responds to the specific answer."
+      ],
+      "correct_index": 3,
+      "explanation": "Listening is observable in the next action. The prospect’s answer should influence the conversation."
+    }
+  ],
+  "scenario": {
+    "title": "Brookside quotation follow-up",
+    "persona": "FICTIONAL owner of Brookside Project Studio. Phones are handled well. Quotations go out by email, follow-up is tracked manually and responsibility is unclear. You spend Fridays reconstructing what needs attention. Do not supply every fact at once; reveal it through relevant questions. You want clearer ownership and visibility, not a phone receptionist. Approximate weekly volume is ten quotes, explicitly an estimate. Revenue impact and technical compatibility are unknown. Correct assumptions that the spreadsheet itself is necessarily broken.",
+    "opening": "Owner: Our receptionist catches the calls. The issue is getting people who asked for quotes to respond afterward.",
+    "rubric": {
+      "listening": "Follows quotation follow-up rather than the rejected phone direction.",
+      "discovery": "Explores sequence, ownership, frequency, impact and desired outcome proportionately.",
+      "accuracy": "Separates estimates and hypotheses from established facts.",
+      "handoff": "Summarizes with correction invited and records useful context plus unknowns.",
+      "ethics": "No invented financial losses, integration guarantees or SDR pricing."
+    }
+  }
+}

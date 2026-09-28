@@ -1,0 +1,254 @@
+{
+  "title": "Relevant AI Demonstrations",
+  "short_title": "SHOW WHAT MATTERS",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Run a focused industry demonstration, distinguish fictional actions from real integrations and connect the result to a useful assessment.",
+  "skills": [
+    "demo",
+    "discovery",
+    "accuracy",
+    "ethics",
+    "handoff",
+    "assessment-close"
+  ],
+  "scenes": [
+    {
+      "title": "A demonstration should answer a business question",
+      "narration": "A useful AI demonstration connects something the prospect described with a specific interaction they can understand. It is not a tour of every feature you can find. If the prospect cares about quotation follow-up, showing an unrelated restaurant conversation may be entertaining but may not help them evaluate the problem they actually raised.\nBefore opening the demo, identify the question it should answer. Perhaps the prospect wants to understand how an assistant collects initial details, responds to a routine inquiry or hands an exception to a person. A clear purpose makes it easier to choose the right example and recognize when the demonstration has done enough.\nIn this lesson, we will use the website's industry employee demos responsibly. These are fictional business examples that illustrate an experience. They are not proof that a customer's live systems are already connected or that a particular implementation is ready. Your job is to show something relevant, explain its limits honestly and invite the next business question.",
+      "pauses": [],
+      "start": 0,
+      "end": 75,
+      "time": "00:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Choose the question before opening the demo."
+    },
+    {
+      "title": "Get enough discovery to choose an example",
+      "narration": "Do a little discovery before selecting the demonstration. Ask which part of the process the prospect wants to see and what concern they are trying to resolve. The same assistant could be interesting for several reasons, but your example should follow the stated priority. A demonstration becomes more persuasive when it is easier to connect to a real question.\nFor our fictional prospect, Juniper Home Services receives calls asking whether the team covers a particular area and how to request a project estimate. The owner wants staff to spend less time repeating basic information while keeping people involved in unusual situations. That gives you a clear demonstration purpose: routine information, useful detail collection and an appropriate handoff.\nYou have not established that their phone system, scheduling software or CRM is compatible with a proposed build. Those questions remain for evaluation. Keep them separate from the example you are about to show. The goal is to help the owner understand a possible interaction, not to imply that the entire business process has already been designed and approved.",
+      "pauses": [],
+      "start": 75,
+      "end": 150,
+      "time": "01:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Let discovery select the example."
+    },
+    {
+      "title": "Set expectations before the first click",
+      "narration": "Explain what the prospect is about to see in one or two sentences. Tell them it is a fictional industry example and name the interaction you will test. If the assistant produces a sample booking or request, be clear that the demonstration is not creating a real customer transaction. Use sample details rather than personal or confidential information.\nFor Juniper, you might say: let us look at how a sample home-services assistant handles a routine question and asks for the next useful detail. This is a fictional business demo, so it is showing the conversation rather than connecting to your systems. That introduction makes the purpose and limits easy to understand without burying the experience in technical language.\nAsk the prospect to notice one or two things. For example, whether the response is understandable and whether an unusual request should go to a person. Too many instructions turn a short demonstration into a lecture. Give enough context to evaluate the interaction, then let the example do its work.",
+      "pauses": [],
+      "start": 150,
+      "end": 225,
+      "time": "02:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Frame the example clearly."
+    },
+    {
+      "title": "Choose the relevant industry employee",
+      "narration": "On the demo page, choose the industry category that best matches the process you want to illustrate. The categories group many business types, so the label may not exactly match the prospect's company. Explain the relevant workflow rather than pretending the sample employee was built for that specific business.\nThe interface offers text conversation and, where the live connection is available, video and voice. Choose the mode that serves the demonstration and the current setting. Text can make the exact exchange easy to review. Video can help someone understand the experience of interacting with an AI employee. Neither mode changes the need for accurate expectations about the sample business.\nPrepare the interaction before a customer-facing call. Check the selected category and the available connection in your own practice. If the connection is unavailable, do not imply that you are in a live conversation. Use the available text mode or an approved alternative, explain the limitation briefly and keep the focus on the business question you were trying to answer.",
+      "pauses": [],
+      "start": 225,
+      "end": 300,
+      "time": "03:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Choose by relevant workflow."
+    },
+    {
+      "title": "Show one ordinary customer journey",
+      "narration": "Begin with a realistic routine question. For Juniper's example, a sample customer might ask whether the business handles a particular kind of home project and how to request an estimate. Keep the prompt simple enough that the prospect can understand why the response matters. A deliberately bizarre question is usually a poor opening demonstration of everyday business value.\nFollow the answer with one relevant detail, using fictional information. Notice whether the assistant stays within the sample business context, asks a useful follow-up and explains the next step. Do not feed it a perfect script solely to manufacture a flawless impression. The point is to evaluate a representative interaction, including where a person may still need to help.\nPause after the meaningful exchange. Ask what the prospect notices and whether that resembles the interaction their team handles. Their response may reveal that the real issue is different from your initial hypothesis. If so, adjust the discussion. A good demo provides new information for discovery; it does not end the need to listen.",
+      "pauses": [],
+      "start": 300,
+      "end": 375,
+      "time": "05:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Start with an ordinary customer question."
+    },
+    {
+      "title": "Demonstrate an appropriate limit",
+      "narration": "A credible demonstration includes a limit, not only a smooth routine answer. Ask an unusual question that should require clarification or human involvement. For a home-services example, that might be a request for a firm commitment on a complex project without enough details. The assistant should not be presented as qualified to invent an answer simply because the customer asked confidently.\nExplain what a responsible handoff would need: the relevant context, the customer's actual question and a clear route to someone who can decide. Do not claim that the sample has executed a real escalation inside the prospect's business unless that action is actually part of a verified integration. In the demo, you are illustrating the behavior and the boundary.\nIf the response is imperfect, acknowledge the specific issue. An incorrect or overconfident answer is something to evaluate, not something to hide with more enthusiastic narration. The specialist would need to consider knowledge sources, constraints, testing and human support in a real build. Showing that judgment can answer an AI concern more honestly than claiming the system never makes mistakes.",
+      "pauses": [],
+      "start": 375,
+      "end": 450,
+      "time": "06:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Test a boundary as well as a routine answer."
+    },
+    {
+      "title": "Keep simulated actions separate from real actions",
+      "narration": "A conversational example can sound as though something happened: a booking was made, a delivery was arranged or a request was saved. In a fictional demo, do not treat those words as evidence of a real transaction. Explain which actions are simulated and which capabilities would require a verified connection to actual business systems.\nFor example, an assistant asking for a preferred appointment time may illustrate information collection. It does not prove that the prospect's calendar has been checked or reserved. A product answer may illustrate a customer conversation, but it does not establish live stock or a current policy for the prospect's company. The distinction should remain clear throughout the demonstration.\nIf the prospect asks whether the same interaction can connect to their tools, record the tools and the desired action as assessment questions. Avoid a universal yes. The specialist needs to verify access, supported operations, business rules and the appropriate implementation. A relevant demo creates a concrete question for that evaluation; it does not replace the evaluation.",
+      "pauses": [],
+      "start": 450,
+      "end": 525,
+      "time": "07:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Conversation is not proof of a completed transaction."
+    },
+    {
+      "title": "Do not drown the useful moment in more features",
+      "narration": "When the prospect says that looks useful, resist the urge to open three more categories and demonstrate everything else. You may already have answered the question that made the example relevant. Ask what they would want to explore in their own process. Their response will tell you whether more discovery or an assessment is the appropriate next move.\nBuying signals can sound like can this work with our CRM, who would review this with us or can we schedule something. They are not guarantees of a purchase, but they may show readiness for the next conversation. Acknowledge the question and connect the Growth Assessment to evaluating the real setup instead of returning to a feature tour.\nKeep the close within your authority. Explain the complimentary fifteen to twenty minute call with a human AI Specialist, the review of current operations and the discussion of an appropriate implementation and custom pricing. Do not quote a price to celebrate the prospect's interest. The useful moment should lead to a clear next step, not a new unsupported promise.",
+      "pauses": [],
+      "start": 525,
+      "end": 600,
+      "time": "08:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Recognize when the example has done enough."
+    },
+    {
+      "title": "Practice framing the demonstration",
+      "narration": "Your fictional prospect says their staff repeat basic service questions all day, but they worry that unusual customer requests will receive confident wrong answers. You have a relevant industry employee demo available. Give a short introduction that explains what you will show and what the example does not prove about their actual systems.\nPause and frame the demonstration aloud. Name the routine question and the exception you want to test. Explain that the business is fictional and that you will use sample details. Keep it short enough that the prospect can still remember what to watch for when the interaction begins.\nA strong frame might say you will show a routine service question and then a request that should need human help. You can add that this illustrates the conversation, while their knowledge sources and integrations would need specialist review. If you promised a perfect answer or live compatibility before showing anything, revise that statement. Credibility comes from helping the prospect evaluate the example accurately.",
+      "pauses": [
+        [
+          "Pause and frame the demonstration aloud.",
+          25,
+          "Introduce the routine question, the exception and the demo’s limits."
+        ]
+      ],
+      "start": 600,
+      "end": 675,
+      "time": "10:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Frame two relevant moments."
+    },
+    {
+      "title": "Handle a live demo problem calmly",
+      "narration": "Live systems can have connection delays, unavailable features or an answer that needs correction. If that happens, explain the actual issue briefly. Do not pretend an old response is live or describe a failed action as successful. The prospect is also learning how you handle uncertainty, so calm accuracy matters more than maintaining an illusion of perfection.\nUse an approved fallback when it serves the same purpose. Text may let you continue examining the conversation if video is unavailable. If the whole demo is unavailable, describe the intended example honestly and arrange an appropriate next step rather than spending the entire call refreshing the page. The business question should remain the center of the discussion.\nRecord a meaningful failure for the team with the relevant context, avoiding unnecessary personal data. Do not promise that a future custom build can never experience a similar problem. Instead, explain that reliability, fallback behavior and human escalation are part of a proper implementation review. A setback can still produce a useful conversation when you handle it transparently and keep the scope accurate.",
+      "pauses": [],
+      "start": 675,
+      "end": 750,
+      "time": "11:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Name the actual issue without inventing success."
+    },
+    {
+      "title": "Capture what the demonstration revealed",
+      "narration": "After the example, ask what felt useful and what would need to be different for their business. This is a chance to learn, not a request for praise. The prospect may care about a specific handoff, a knowledge source, the wording of a response or whether a current tool can participate. Capture those details accurately.\nA useful note for Juniper might say the owner wants routine service questions handled consistently, with complex project commitments sent to staff. They asked whether the current CRM can receive the collected details. Compatibility remains unverified. That gives the specialist a concrete workflow and a clear technical question without implying the demo already solved it.\nDo not record watched demo as though it automatically means qualified. Add the actual reaction, remaining concerns and agreed next step. A demonstration can clarify fit, uncover a mismatch or show that more discovery is needed. The record should reflect the outcome that happened, including a polite lack of interest if that is what the prospect expressed.",
+      "pauses": [],
+      "start": 750,
+      "end": 825,
+      "time": "12:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Ask what would need to change for their business."
+    },
+    {
+      "title": "Your focused demonstration routine",
+      "narration": "Use this routine: discover the question, choose a relevant example, frame the fictional context, show one ordinary interaction and one useful boundary, then return to the prospect. Stop when the example has clarified the issue. The strongest demonstration may be short because every step has a purpose.\nFor your practical submission, prepare a demo frame for Juniper Home Services and a sample routine question. Add an exception that should involve a person, then write the question you would ask the prospect afterward. Ask Guru to identify any point where you implied a real integration or guaranteed an outcome without evidence. Revise that wording and try again.\nComplete the scenario quiz and keep the field guide near your practice workspace. A good demo helps someone understand a possible customer experience and decide whether further evaluation is useful. It supports discovery and a relevant Growth Assessment. It does not replace technical scoping, establish custom pricing or turn a fictional conversation into a promise about the prospect's live business.",
+      "pauses": [],
+      "start": 825,
+      "end": 900,
+      "time": "13:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Keep the demonstration focused."
+    }
+  ],
+  "job_aid": "DEMO FIELD GUIDE\nPURPOSE: one business question from discovery.\nPREPARE: relevant industry category, available mode and sample prompts. Check the connection before presenting.\nFRAME: fictional business, sample details, what to notice, limits of the example.\nSHOW: one routine interaction + one exception needing clarification or a person.\nDISTINGUISH: conversation vs real action; sample booking vs verified reservation; sample facts vs current business knowledge.\nINTEGRATION: record current tools and desired action; specialist verifies compatibility, access and rules.\nDEBRIEF: what is useful, what must differ and what remains unresolved?\nSIGNAL: if ready for evaluation, stop the feature tour and propose the assessment.\nFAILURE: explain accurately, use an approved fallback, record meaningful issues.\nPRICING: custom discussion only with a qualified human AI Specialist during the Growth Assessment.",
+  "questions": [
+    {
+      "skill": "demo",
+      "prompt": "What should determine which demo you show?",
+      "choices": [
+        "Whichever avatar looks most impressive.",
+        "The prospect’s stated workflow and the question the example should answer.",
+        "Every available feature.",
+        "The longest possible tour."
+      ],
+      "correct_index": 1,
+      "explanation": "A relevant demonstration addresses a business question from discovery. Appearance and volume do not establish relevance."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "A fictional assistant collects a preferred appointment time. What does that prove?",
+      "choices": [
+        "The prospect’s calendar is reserved.",
+        "Every calendar integration is supported.",
+        "The sample illustrates information collection; a real reservation requires a verified system action.",
+        "The implementation is complete."
+      ],
+      "correct_index": 2,
+      "explanation": "Conversational output is not evidence of a real transaction. Explain which actions are simulated and which require integration."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "What information should you use in a practice demo?",
+      "choices": [
+        "Fictional sample details.",
+        "Customer passwords.",
+        "Confidential staff records.",
+        "An unrelated real customer’s contact details."
+      ],
+      "correct_index": 0,
+      "explanation": "Sample data demonstrates the interaction without exposing unnecessary personal or confidential information."
+    },
+    {
+      "skill": "demo",
+      "prompt": "The prospect says the example is useful and asks who can review their setup. What next?",
+      "choices": [
+        "Show every other category.",
+        "Quote a starting price.",
+        "Promise compatibility.",
+        "Connect the question to a relevant Growth Assessment with the human specialist."
+      ],
+      "correct_index": 3,
+      "explanation": "The signal may indicate readiness for the next conversation. Stop the feature tour and explain the appropriate evaluation."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "Video fails to connect during a demo. What is appropriate?",
+      "choices": [
+        "Pretend the last recorded response is live.",
+        "Explain the limitation and use an available approved fallback that serves the same purpose.",
+        "Claim the connection succeeded.",
+        "Guarantee future zero downtime."
+      ],
+      "correct_index": 1,
+      "explanation": "Transparency and a relevant fallback preserve an accurate conversation. A failed connection should not be represented as success."
+    },
+    {
+      "skill": "demo",
+      "prompt": "Why include an exception requiring a person?",
+      "choices": [
+        "To embarrass the assistant.",
+        "To prove it never needs help.",
+        "To examine responsible limits and the context needed for human handling.",
+        "To guarantee every escalation is already integrated."
+      ],
+      "correct_index": 2,
+      "explanation": "A useful demo evaluates boundaries as well as routine answers. The sample does not establish a real connection to the prospect’s staff."
+    },
+    {
+      "skill": "handoff",
+      "prompt": "Which note best follows a demo?",
+      "choices": [
+        "Owner wants routine FAQs plus staff handling of complex commitments; CRM transfer question remains unverified.",
+        "Perfect fit; every integration confirmed.",
+        "Watched demo, guaranteed buyer.",
+        "Price accepted without discussion."
+      ],
+      "correct_index": 0,
+      "explanation": "Record the actual use case, reaction and open question. Watching a sample does not establish technical or commercial approval."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "Who discusses custom pricing after a promising demo?",
+      "choices": [
+        "Any SDR with a rough estimate.",
+        "Guru during the demo.",
+        "The receptionist who answered.",
+        "A qualified human AI Specialist during the Growth Assessment."
+      ],
+      "correct_index": 3,
+      "explanation": "The demo does not change the owner’s pricing policy. No starting prices, ranges or discounts from SDRs or Guru."
+    }
+  ],
+  "scenario": {
+    "title": "Juniper’s focused AI demonstration",
+    "persona": "FICTIONAL owner of Juniper Home Services. Staff repeat service-area and estimate-process questions. You want consistent routine answers but worry about confident wrong commitments on unusual projects. Ask whether collected details can reach your CRM; compatibility is unverified. Respond well to a clearly framed fictional example with sample data, routine interaction and human-help boundary. Challenge claims of perfect accuracy, live booking or guaranteed integration. If the example is relevant, ask who can review your actual setup.",
+    "opening": "Owner: Show me how it would handle common questions, but I do not want it making promises about complicated projects.",
+    "rubric": {
+      "demo": "Frames a relevant fictional example, routine question, exception and debrief.",
+      "accuracy": "Separates sample dialogue from verified live actions.",
+      "discovery": "Uses the prospect’s concern to choose the demonstration.",
+      "ethics": "No personal data, guarantees or unauthorized pricing.",
+      "assessment-close": "Recognizes readiness and proposes the appropriate specialist evaluation."
+    }
+  }
+}

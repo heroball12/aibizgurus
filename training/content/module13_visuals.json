@@ -1,0 +1,659 @@
+[
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Continue the conversation the prospect actually had.",
+        "kind": "cards",
+        "items": [
+          [
+            "Context",
+            "What was discussed?"
+          ],
+          [
+            "Value",
+            "What would be useful now?"
+          ],
+          [
+            "Next step",
+            "What decision or action follows?"
+          ]
+        ]
+      },
+      {
+        "phrase": "The best follow-up begins before the",
+        "title": "Agree the follow-up before the call ends.",
+        "kind": "flow",
+        "items": [
+          [
+            "Topic",
+            "Relevant interest"
+          ],
+          [
+            "Channel",
+            "Appropriate route"
+          ],
+          [
+            "Timing",
+            "Actual agreement"
+          ],
+          [
+            "Preference",
+            "Respect the stated limit"
+          ]
+        ]
+      },
+      {
+        "phrase": "In this lesson, we will write",
+        "title": "More messages do not automatically mean progress.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "A follow-up should help the prospect make an informed next-step decision."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Keep different agreements distinct.",
+        "kind": "compare",
+        "items": [
+          [
+            "INFORMATION",
+            "Send a relevant overview."
+          ],
+          [
+            "MEETING",
+            "Attend a confirmed assessment at a specific time."
+          ]
+        ]
+      },
+      {
+        "phrase": "For a fictional example, Jordan at",
+        "title": "Willow’s actual agreement.",
+        "kind": "cards",
+        "items": [
+          [
+            "Topic",
+            "Quotation reminder support"
+          ],
+          [
+            "Channel",
+            "Appropriate business route"
+          ],
+          [
+            "Timing",
+            "Thursday afternoon callback context"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Keep the source of the agreement",
+        "title": "Identify who agreed and how firm it is.",
+        "kind": "quote",
+        "items": [
+          [
+            "CHECK",
+            "Was this an actual request, a suggestion or a tentative possibility?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use three purposeful parts.",
+        "kind": "flow",
+        "items": [
+          [
+            "Context",
+            "The relevant conversation"
+          ],
+          [
+            "Useful content",
+            "The stated interest"
+          ],
+          [
+            "Next step",
+            "One clear action"
+          ]
+        ]
+      },
+      {
+        "phrase": "For Willow, the opening might say",
+        "title": "Connect the content to the real process.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "Following up on the quotation reminder process you described…"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Avoid including several competing requests. Please",
+        "title": "Choose one primary next action.",
+        "kind": "compare",
+        "items": [
+          [
+            "CLEAR",
+            "Confirm the requested callback."
+          ],
+          [
+            "CLUTTERED",
+            "Read, watch, complete, compare and book all at once."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Choose a resource that answers the actual question.",
+        "kind": "cards",
+        "items": [
+          [
+            "Relevant",
+            "Matches the workflow"
+          ],
+          [
+            "Approved",
+            "Appropriate for customer use"
+          ],
+          [
+            "Framed",
+            "Explains what to notice"
+          ]
+        ]
+      },
+      {
+        "phrase": "Label examples accurately. A fictional demonstration",
+        "title": "Label the evidence correctly.",
+        "kind": "compare",
+        "items": [
+          [
+            "FICTIONAL DEMO",
+            "An illustrative interaction"
+          ],
+          [
+            "VERIFIED CUSTOMER RESULT",
+            "Requires accurate supporting evidence"
+          ]
+        ]
+      },
+      {
+        "phrase": "When no approved resource directly answers",
+        "title": "Do not invent a resource to fill the gap.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Record the question and connect it to an appropriate specialist evaluation."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "AI can help draft; the employee reviews the message.",
+        "kind": "flow",
+        "items": [
+          [
+            "Facts",
+            "Appropriate supplied context"
+          ],
+          [
+            "Draft",
+            "Clearer wording"
+          ],
+          [
+            "Review",
+            "Verify every claim"
+          ],
+          [
+            "Use",
+            "Approved outreach workflow"
+          ]
+        ]
+      },
+      {
+        "phrase": "Give a drafting tool only the",
+        "title": "Check common drafting errors.",
+        "kind": "cards",
+        "items": [
+          [
+            "Familiarity",
+            "No invented prior relationship"
+          ],
+          [
+            "Commitments",
+            "No false booking or capability"
+          ],
+          [
+            "Pricing",
+            "No unauthorized number or package"
+          ]
+        ]
+      },
+      {
+        "phrase": "A useful review asks whether the",
+        "title": "Review substance before tone.",
+        "kind": "quote",
+        "items": [
+          [
+            "CHECK",
+            "Would the recipient recognize this conversation and its actual commitments?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Silence does not explain itself.",
+        "kind": "cards",
+        "items": [
+          [
+            "Possibilities",
+            "Missed message or changed timing"
+          ],
+          [
+            "Unknown",
+            "Current interest is not established"
+          ],
+          [
+            "Action",
+            "Use approved guidance and context"
+          ]
+        ]
+      },
+      {
+        "phrase": "A later message, when appropriate, should",
+        "title": "Add relevance without guilt or false urgency.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "Is reviewing the quotation follow-up process still useful for your team?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "There is no universal Academy rule",
+        "title": "Use current campaign guidance.",
+        "kind": "compare",
+        "items": [
+          [
+            "APPROPRIATE",
+            "Approved cadence and stated preferences"
+          ],
+          [
+            "UNSUPPORTED",
+            "A universal touch count invented by the rep"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "New evidence should change the follow-up.",
+        "kind": "flow",
+        "items": [
+          [
+            "Update",
+            "What changed?"
+          ],
+          [
+            "Reassess",
+            "Is the original topic still relevant?"
+          ],
+          [
+            "Agree",
+            "What should happen now?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Suppose Jordan explains that quotation follow-up",
+        "title": "Follow the revised process, not the old pitch.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "JORDAN",
+            "Quote reminders are handled now. Inquiry assignment is still unclear."
+          ],
+          [
+            "REP",
+            "How are new inquiries assigned today?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Record the change in the CRM,",
+        "title": "Keep the CRM aligned with the current facts.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Update the reason, status and next action when the business context changes."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Check the relationship before the next contact.",
+        "kind": "cards",
+        "items": [
+          [
+            "Owner",
+            "Who is responsible?"
+          ],
+          [
+            "Recent activity",
+            "What already happened?"
+          ],
+          [
+            "Meetings and restrictions",
+            "What changes the next step?"
+          ]
+        ]
+      },
+      {
+        "phrase": "If ownership or responsibility is unclear,",
+        "title": "Record actions at their actual stage.",
+        "kind": "compare",
+        "items": [
+          [
+            "DRAFT",
+            "Prepared but not sent"
+          ],
+          [
+            "SENT / COMPLETED",
+            "The action actually occurred"
+          ]
+        ]
+      },
+      {
+        "phrase": "The handoff should also preserve any",
+        "title": "Preserve pending commitments.",
+        "kind": "flow",
+        "items": [
+          [
+            "Promise",
+            "What was requested?"
+          ],
+          [
+            "Owner",
+            "Who will act?"
+          ],
+          [
+            "Timing",
+            "When was it agreed?"
+          ],
+          [
+            "Record",
+            "Make the commitment visible"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use Willow’s supplied facts.",
+        "kind": "cards",
+        "items": [
+          [
+            "Interest",
+            "Quotation reminder support"
+          ],
+          [
+            "Boundary",
+            "Staff handle unusual questions"
+          ],
+          [
+            "Agreement",
+            "Reconnect Thursday afternoon"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Pause and draft your message. Use",
+        "title": "Draft three concise parts.",
+        "kind": "flow",
+        "items": [
+          [
+            "Context",
+            "The conversation"
+          ],
+          [
+            "Useful explanation",
+            "Relevant example and limits"
+          ],
+          [
+            "Next step",
+            "The agreed reconnection"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong draft references quotation follow-up,",
+        "title": "Remove claims that exceed the agreement.",
+        "kind": "compare",
+        "items": [
+          [
+            "SUPPORTED",
+            "Review reminder support with human handling"
+          ],
+          [
+            "UNSUPPORTED",
+            "A completed custom build, guaranteed result or booked assessment"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A meeting reminder supports attendance.",
+        "kind": "cards",
+        "items": [
+          [
+            "Details",
+            "Actual time, timezone and video route"
+          ],
+          [
+            "Purpose",
+            "The relevant business review"
+          ],
+          [
+            "Participants",
+            "Who is expected to join"
+          ]
+        ]
+      },
+      {
+        "phrase": "If a prospect needs to reschedule,",
+        "title": "Reconcile changes through the booking process.",
+        "kind": "flow",
+        "items": [
+          [
+            "Request",
+            "A change is needed"
+          ],
+          [
+            "Confirm",
+            "The new arrangement"
+          ],
+          [
+            "Update",
+            "CRM and relevant participants"
+          ]
+        ]
+      },
+      {
+        "phrase": "Keep the specialist informed of meaningful",
+        "title": "Handle a missed meeting respectfully.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Clarify whether reconnecting is useful; record the real outcome without blame."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A follow-up process needs an appropriate endpoint.",
+        "kind": "cards",
+        "items": [
+          [
+            "Decline",
+            "The person does not want the next step"
+          ],
+          [
+            "No fit",
+            "The opportunity is no longer relevant"
+          ],
+          [
+            "Process complete",
+            "Approved sequence reaches its limit"
+          ]
+        ]
+      },
+      {
+        "phrase": "When an appropriate final message is",
+        "title": "Close without guilt or manufactured urgency.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "A final message, when appropriate, clarifies the status; it does not pressure the recipient."
+          ]
+        ]
+      },
+      {
+        "phrase": "Record why the next action ended",
+        "title": "Preserve the reason for closure.",
+        "kind": "compare",
+        "items": [
+          [
+            "DISTINCT OUTCOMES",
+            "No response, no current interest or contact restriction"
+          ],
+          [
+            "WEAK RECORD",
+            "One vague label that hides the actual interaction"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Check the context before every follow-up.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Read the last real interaction."
+          ],
+          [
+            "02",
+            "Check owner, channel and restrictions."
+          ],
+          [
+            "03",
+            "Choose relevant content and one next step."
+          ],
+          [
+            "04",
+            "Review claims and actual agreements."
+          ],
+          [
+            "05",
+            "Record the action after it happens."
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical submission, write an",
+        "title": "Practice three useful messages.",
+        "kind": "cards",
+        "items": [
+          [
+            "Information",
+            "A relevant requested overview"
+          ],
+          [
+            "Callback",
+            "An actual agreed reconnection"
+          ],
+          [
+            "Closure",
+            "A respectful end to the current follow-up"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the quiz and retain the",
+        "title": "Follow-up is listening over time.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz, revise one message and preserve the evidence for your improvement."
+          ]
+        ]
+      }
+    ]
+  }
+]

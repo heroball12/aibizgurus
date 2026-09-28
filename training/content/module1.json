@@ -1,0 +1,251 @@
+{
+  "title": "Welcome to AI Business Gurus & The SDR Mission",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Explain the SDR mission and human specialist boundary; use problem-first discovery; recognize a qualified Complimentary Growth Assessment; separate facts from hypotheses in the CRM; practice an honest next step.",
+  "skills": [
+    "company-knowledge",
+    "listening",
+    "discovery",
+    "accuracy",
+    "ethics",
+    "handoff"
+  ],
+  "scenes": [
+    {
+      "title": "Your job begins with their business",
+      "start": 0,
+      "end": 60,
+      "time": "00:00",
+      "visual": "Guru in a medium-wide frame; sealed helmet, gold joints and violet audio-reactive light. A phone waveform becomes a simple customer journey.",
+      "overlay": "PROBLEM FIRST. TECHNOLOGY SECOND.",
+      "narration": "Welcome to AI Business Gurus. I'm Guru, your AI sales trainer. \nYou do not need to become a software engineer before your first supervised call. You do need to listen, ask useful questions, tell the truth, and leave the next person with useful information.\nHere is the principle that runs through this Academy: problem first, technology second. A business owner rarely wakes up hoping to hear a list of artificial intelligence features. They wake up thinking about customers who did not call back, employees buried in repetitive work, and opportunities that disappeared between one system and another.\nYour job starts there. By the end of this lesson, you should be able to explain our mission, recognize a qualified assessment, and write a handoff that helps our human specialist move the conversation forward."
+    },
+    {
+      "title": "What AI Business Gurus does",
+      "start": 60,
+      "end": 120,
+      "time": "01:00",
+      "visual": "Four workflow panels: inquiry handling, follow-up, repetitive work, disconnected systems. Show possible services only after each problem.",
+      "overlay": "BUSINESS PROBLEM → POSSIBLE SOLUTION → VERIFY",
+      "narration": "AI Business Gurus helps businesses evaluate and build technology around useful business outcomes. That can involve phone agents, website assistants, appointment-setting workflows, customer service, customer reactivation, automation, integrations, marketing, websites, or custom software.\nThe important word is can. We do not assume every business needs every service, and we do not assume every connection is ready to install.\nImagine a company that answers every incoming call but loses track of quotations after sending them. Another phone-answering tool may not solve its problem. A consistent follow-up process, connected to the right records and human team, might be worth exploring.\n\nLearn the possibilities so you can recognize a fit. Then ask what must be verified. Product knowledge should make your questions better, not make your monologues longer."
+    },
+    {
+      "title": "The SDR mission and boundaries",
+      "start": 120,
+      "end": 180,
+      "time": "02:00",
+      "visual": "Split screen: SDR owns conversation and handoff; human specialist owns scope, proposal and close. Icons settle into the correct lane.",
+      "overlay": "CREATE QUALIFIED CONVERSATIONS. EARN QUALIFIED ASSESSMENTS.",
+      "narration": "Your entry-level role is Sales Development Representative, or SDR. You prospect, reach the appropriate people, discover a real problem or credible opportunity, qualify interest, arrange the next conversation, and document it accurately.\nCalls are your primary tool. Calls are not the entire objective. \nYou are not expected to close a complicated software project on a cold call. You do not approve custom prices, negotiate discounts, or promise an integration you have not verified.\nSenior leadership or a designated human AI Specialist owns deeper discovery, technical scoping, proposals and closing. I help you learn and practice. I am not that human specialist, and I am not secretly closing deals behind this screen.\nWhen you reach the edge of your knowledge, say so clearly and bring in the right person."
+    },
+    {
+      "title": "The complete customer journey",
+      "start": 180,
+      "end": 240,
+      "time": "03:00",
+      "visual": "Animate research → conversation → discovery → assessment → scope/proposal → implementation. Show two distinct labels: REQUEST and CONFIRMED BOOKING.",
+      "overlay": "A REQUEST IS NOT A BOOKING. A STAGE CHANGE IS NOT A DEPLOYMENT.",
+      "narration": "Let's follow the whole journey. First, identify a legitimate business and do a little useful research. Next, start a natural conversation and understand how something works today. If there is a plausible fit and genuine interest, earn a Complimentary Growth Assessment.\nConfirm an available time through the actual booking calendar. Then record the confirmed meeting and discovery notes in the CRM. Submitting a request or saving an assessment brief does not, by itself, create a calendar invitation.\nThe human specialist uses your handoff to explore the opportunity further. They can evaluate the workflow, discuss integrations, demonstrate relevant technology, and determine whether working together makes sense. \nA Won status is a record of the sales outcome. It is not a button that automatically installs every service.\nYour handoff is the bridge between an interesting conversation and an informed assessment."
+    },
+    {
+      "title": "Problem first: hear the difference",
+      "start": 240,
+      "end": 315,
+      "time": "04:00",
+      "visual": "Fictional quote-based service business. Red feature cards crowd a bad response; rewind; reveal a concise discovery question. Guru gestures toward the contrast.",
+      "overlay": "BAD: FEATURE DUMP. GOOD: FOLLOW THE PROBLEM.",
+      "narration": "Let's hear two versions of the same fictional conversation.\nProspect: We get inquiries. Getting people to respond after we send a quote is the hard part.\nBad response: Perfect. We have an AI receptionist that can answer calls, book appointments, and do all kinds of advanced automation. We also build websites, and we have a chatbot. Would you like a demo?\nThat rep heard a business problem and immediately walked away from it. The prospect said quote follow-up. The rep wanted to sell a receptionist. \nNow the useful version.\nSDR: How are you following up after the quote goes out?\nProspect: Usually the estimator emails them. After that, it depends on how busy we are.\nSDR: What tends to happen when everyone gets busy?\nThat is discovery. We are learning where work breaks down.\nThe sequence is problem, discovery, impact, relevant solution, next step. If you skip straight to the solution, you may give a perfectly accurate explanation of the wrong thing."
+    },
+    {
+      "title": "Your turn: follow the answer",
+      "start": 315,
+      "end": 390,
+      "time": "05:15",
+      "visual": "Pause card with three choices. Reveal quote-follow-up as the next topic; put UNKNOWN badges on lead counts and lost revenue.",
+      "overlay": "LISTEN → FOLLOW THE ANSWER → ASK ONE USEFUL QUESTION",
+      "narration": "Your turn. The prospect says: We don't really have a problem answering phones. Our issue is getting people who asked for quotes to actually respond afterward.\nChoose your next direction. One: explain that our AI receptionist works after hours. Two: ask what happens after the quotation is sent. Three: tell them they must be losing thousands of dollars.\nPause here and say your next question out loud. Use your own words.\nThe strongest direction is two. You might ask: What are you doing to follow up on those quotes right now? If you chose the receptionist pitch, you responded to the product you wanted to sell. If you chose the money claim, you invented a number.\nNow follow the next answer. If they say their estimator follows up manually, ask when or how that follow-up happens. If they say they already have a consistent system, ask how it is working and whether there is a meaningful gap.\nThere might not be one."
+    },
+    {
+      "title": "Natural openings and helpful gatekeepers",
+      "start": 390,
+      "end": 465,
+      "time": "06:30",
+      "visual": "Same opener shown with short vs overlong introduction. Receptionist scenario; three approved approaches appear as choices, not a compulsory script.",
+      "overlay": "SCRIPTS ARE TRAINING WHEELS. GATEKEEPERS ARE PEOPLE.",
+      "narration": "The prospect did not ask for your call. In the first few seconds, your goal is to earn enough attention for the next useful question. It is not to explain the entire company before the person can speak.\nYou can ask for help: Hey, maybe you can help me real quick. Who normally handles customer follow-up?\nYou can be direct: Hey, quick reason for the call. I'm trying to understand how businesses handle quote follow-up when the team gets busy.\n\nSound calm, curious and professional, rather than reading a paragraph at someone.\nIf a receptionist answers, treat them as someone who may help you find the right person. Be direct when appropriate, ask for help, and use honest light humor only when it fits. Never pretend to know the owner or invent a previous call.\nA script helps you learn the purpose of the words. Your aim is to eventually carry that purpose without needing the script."
+    },
+    {
+      "title": "What makes an assessment qualified",
+      "start": 465,
+      "end": 540,
+      "time": "07:45",
+      "visual": "Eight qualification tiles fill only when evidence is known. Compare an interested owner with an unqualified name on a calendar.",
+      "overlay": "FIT + INTEREST + UNDERSTOOD PURPOSE + CONFIRMED TIME + NOTES",
+      "narration": "An appointment is not automatically a qualified opportunity. For a qualified Complimentary Growth Assessment, we need a legitimate business, an appropriate decision maker or a realistic path to one, and an identifiable problem or credible opportunity.\nThere must be at least one plausible AIBG solution worth evaluating. The prospect should genuinely want to explore it and understand what the meeting is for. We also need a confirmed meeting date and time, and useful discovery notes.\nBudget does not have to be established on every cold call. Do not turn an early conversation with a small-business owner into an aggressive financial interrogation. The specialist can handle deeper financial qualification.\nNow compare two fictional outcomes. An owner describes inconsistent quote follow-up, wants to explore improvement, understands the assessment, and confirms a time. That may be a qualified opportunity once the notes are complete.\nSomeone agrees to anything because they think they are getting free software, has no authority or path to a decision maker, and has no relevant need. That is not a qualified win."
+    },
+    {
+      "title": "Earn the Complimentary Growth Assessment",
+      "start": 540,
+      "end": 600,
+      "time": "09:00",
+      "visual": "Guru beside a meeting card: Complimentary / 15–20 minutes / Human AI Specialist / Current process. Buying-signal waveform transitions directly to a calendar.",
+      "overlay": "WHEN THEY ARE READY, ASK FOR THE NEXT STEP.",
+      "narration": "Here is what you are offering: a Complimentary Growth Assessment, typically fifteen to twenty minutes with senior leadership or a designated human AI Specialist.\nThe purpose is to understand the business and its current workflow, identify useful opportunities, evaluate relevant solutions and integrations, and determine whether working together makes sense. It is not a guaranteed return-on-investment report. \nA natural invitation might sound like this: It sounds like there may be something worth looking at. Rather than trying to unpack everything on this call, let's get you fifteen to twenty minutes with our team so we can review the process and talk through what we'd recommend.\nThen listen. If they ask who to speak with or say they would like to see how it works, recognize that interest. \nClarify the next step, agree the actual calendar time, and prepare the handoff."
+    },
+    {
+      "title": "The handoff is part of the win",
+      "start": 600,
+      "end": 660,
+      "time": "10:00",
+      "visual": "Actual CRM assessment form with synthetic values only. Facts and hypotheses appear in separate note blocks; unconfirmed timing stays blank.",
+      "overlay": "FACT / HYPOTHESIS / NEXT STEP",
+      "narration": "Imagine you are the specialist opening this note: Interested in AI. Call Thursday.\nInterested in what? Who are we speaking with? What happens today? Is Thursday confirmed? \nA stronger fictional handoff says: Taylor, the owner, says the estimator emails quotes and follows up manually when time allows. Taylor wants a more consistent process. Current CRM and quote volume are not yet confirmed.\nThat is the factual part. Then label the hypothesis: A follow-up workflow may be relevant; the specialist needs to verify the current tools, permissions and desired process.\nFinally record the agreed next step. If a time was truly booked, save it with the correct time zone and meeting details. If it was only suggested, say it remains unconfirmed.\nCapture contact, role, business, outcome, process, pain, tools, opportunity, objections and decision-maker status when known."
+    },
+    {
+      "title": "Ethics, accuracy and price boundaries",
+      "start": 660,
+      "end": 720,
+      "time": "11:00",
+      "visual": "A price question routes through business discovery to the recommended custom build and an AI Specialist in a Growth Assessment. No price figures or package cards.",
+      "overlay": "CUSTOM BUILD. SPECIALIST PRICING. GROWTH ASSESSMENT.",
+      "narration": "Trust is a working requirement, not a decorative value. Do not invent research, prior conversations, customer results or technical capabilities. Do not guarantee revenue, return on investment or appointments. Respect contact restrictions and an explicit request to stop.\nA price question is not automatically a rejection. It can be genuine interest. Our pricing is custom, based on the build identified as best for that particular business. Only a qualified human AI Specialist discusses pricing, and only during a Growth Assessment.\nAs an SDR, do not offer a starting price, a range, an estimate, a package figure or a discount. Even a number from an old page is not yours to quote.\nA useful response is: Pricing depends on the build that best fits your business. Our AI Specialist will review your workflow and discuss custom pricing during your Growth Assessment. Would that be a useful next step?\nYou are explaining the process, not avoiding the question. Record their interest, help arrange the assessment, and let the specialist handle scope and pricing there. Never promise unlimited usage or an integration that has not been verified."
+    },
+    {
+      "title": "Objections and knowing when to leave",
+      "start": 720,
+      "end": 780,
+      "time": "12:00",
+      "visual": "Acknowledge → Understand → Ask → Respond → Next step. Two branches end differently: useful gap vs respectful exit.",
+      "overlay": "A RELEVANT NEXT STEP CAN ALSO BE A RESPECTFUL EXIT.",
+      "narration": "Suppose the prospect says: We already have someone. Your response is not to attack that provider. Ask what they handle and how it is working. There may be a gap we could help with, or their current setup may solve the problem well.\nUse this framework: acknowledge, understand, ask, respond, next step. \nIf someone says send information, you can ask a short question to make it relevant: Absolutely. Just so I send something useful, how are you handling quote follow-up today? If they engage, discover. If they truly only want information, respect that, capture the relevant interest and agree an appropriate follow-up.\nIf they request no further contact, stop and record the restriction. If there is no credible need or no realistic path to a decision maker, do not manufacture an assessment.\nThe right result may be a callback, a referral, nurture, disqualification or a respectful exit."
+    },
+    {
+      "title": "Practice, feedback and the second attempt",
+      "start": 780,
+      "end": 840,
+      "time": "13:00",
+      "visual": "Learner attempt → specific feedback → retry. Show a revised question, then a factual handoff. No permanent employee score or fabricated audio metrics.",
+      "overlay": "THE RESPONSE TO COACHING MATTERS.",
+      "narration": "Let's practice the important part again. A fictional owner says: We answer the phones fine. We lose track after sending quotes. Give one follow-up question and then explain why you chose it. Pause and say it out loud.\nIf your answer was another explanation of our receptionist, here is your feedback: You named a product, but you did not follow the problem. Ask what happens after the quote is sent and where the process breaks down.\nTry again. A useful revision might be: What does the follow-up look like after your estimator sends the quote? \nNow write three short lines: a fact from the conversation, a clearly labeled hypothesis, and a next step that was actually agreed or is still pending.\nIn the Academy, you will save practice attempts, receive specific feedback and retry. Your manager reviews the evidence. A video ending or a friendly coaching response does not certify you."
+    },
+    {
+      "title": "Your standard and next action",
+      "start": 840,
+      "end": 900,
+      "time": "14:00",
+      "visual": "Guru returns to a medium-wide frame. Recap shows qualification, accurate notes and appropriate next step; transition to the quiz and job aid.",
+      "overlay": "LISTEN WELL. QUALIFY HONESTLY. HAND OFF CLEARLY.",
+      "narration": "A good day in this role includes effort, useful activity, decision-maker conversations, discovery, qualified opportunities, accurate records and disciplined follow-up. Raw dial volume alone is not success. We have not set one universal quota or follow-up cadence in this Academy. Follow your campaign's instructions and honor requested callback times. Your individual compensation agreement controls any commission or incentive arrangement.\nYour manager can move you into shadowing or supervised calling while you train. Independent readiness requires the agreed modules, knowledge checks, practice, a sound CRM handoff and manager approval. Advanced closing work belongs in the advanced track and requires the appropriate authority.\nTake these five ideas with you: start with the business problem; follow the answer; earn a qualified Complimentary Growth Assessment; separate facts from hypotheses; and make the specialist's next conversation better.\nNow complete the scenario questions, save your practice handoff and use the field guide before your next supervised exercise.\nDon't aim to sound like this video. Aim to understand why the next question matters. That is how you become useful in a real business conversation."
+    }
+  ],
+  "job_aid": "THE SDR FIELD GUIDE — OWNER POLICY 2026-09-27\nMISSION: Qualified conversations and qualified Complimentary Growth Assessments.\nMETHOD: Problem → Discovery → Impact → Relevant solution → Next step.\nASK: How are you handling that today? What happens next? Where does it get difficult?\nQUALIFY: Legitimate business; decision-maker/path; relevant problem/opportunity; plausible solution; genuine interest; understood purpose; confirmed time; useful notes. Budget is not mandatory on every cold call.\nASSESSMENT: Complimentary, 15–20 minutes, with a designated HUMAN AI Specialist.\nHANDOFF: Contact, role, business, outcome, process, pain, tools, opportunity, objections, decision-maker status, follow-up, confirmed meeting details when known.\nSEPARATE: FACT / HYPOTHESIS / NEXT STEP. Leave unknowns explicit.\nBOUNDARIES: No invented research, results, quotes, discounts, guarantees or integrations. Respect DNC and clear requests to stop. Only qualified human AI Specialists discuss pricing, only during a Growth Assessment.\nPRICING: Custom to the recommended build. SDRs do not give starting prices, ranges, estimates, package figures or discounts. Explain the process and invite the Growth Assessment.\nDAILY STANDARD: Quality, discovery, accurate records, follow-up and improvement. Campaign cadence and individual compensation agreement control.\nNEXT: Take the quiz. Practice. Ask for specific feedback. Try again.",
+  "questions": [
+    {
+      "prompt": "An owner says phones are covered, but quote follow-up is inconsistent. What should you explore next?",
+      "choices": [
+        "How much they would save by firing their receptionist",
+        "How they follow up after sending a quote",
+        "Every AI product AIBG offers",
+        "Their willingness to buy today"
+      ],
+      "correct_index": 1,
+      "explanation": "Follow the problem the prospect described. Understand the current quote follow-up process before selecting a solution.",
+      "skill": "listening"
+    },
+    {
+      "prompt": "Who may discuss pricing, and when?",
+      "choices": [
+        "Guru during a website chat",
+        "An SDR who found an old pricing page",
+        "A qualified human AI Specialist, only during a Growth Assessment",
+        "Anyone after a calendar request is saved"
+      ],
+      "correct_index": 2,
+      "explanation": "Pricing is custom to the recommended build. Only a qualified human AI Specialist discusses it, only during a Growth Assessment. SDRs explain the process and arrange that next step.",
+      "skill": "accuracy"
+    },
+    {
+      "prompt": "A prospect agrees to a meeting thinking they will receive free software. What should you do?",
+      "choices": [
+        "Book it so the team hits its target",
+        "Clarify the assessment purpose and confirm genuine interest",
+        "Record it as a closed sale",
+        "Promise free software and let the specialist fix it"
+      ],
+      "correct_index": 1,
+      "explanation": "The prospect must understand the meeting purpose. A misleading booking is not a qualified assessment.",
+      "skill": "ethics"
+    },
+    {
+      "prompt": "Which CRM note separates fact from hypothesis?",
+      "choices": [
+        "They lose $10,000 monthly; AI will fix it",
+        "Interested in AI. Call sometime",
+        "Fact: owner says follow-up is manual. Hypothesis: automation may help; verify their tools. Time not confirmed.",
+        "Their CRM is bad and they need ours"
+      ],
+      "correct_index": 2,
+      "explanation": "This note identifies a reported fact, labels an opportunity hypothesis and preserves an unknown booking status.",
+      "skill": "handoff"
+    },
+    {
+      "prompt": "A business asks whether AIBG already connects to its particular POS. You have not verified it. What is the best reply?",
+      "choices": [
+        "Yes, we integrate with everything",
+        "That is something our technical team needs to verify for your setup",
+        "Buy first and we will figure it out",
+        "Their POS is outdated"
+      ],
+      "correct_index": 1,
+      "explanation": "Do not promise unverified integrations. Identify the system and bring the question to the technical specialist.",
+      "skill": "accuracy"
+    },
+    {
+      "prompt": "The owner says: We have a receptionist. What is the strongest response?",
+      "choices": [
+        "Our AI is cheaper; replace them",
+        "Got it. Are they able to catch everything when the phones get busy or after hours?",
+        "AI is always better than people",
+        "Then there is no possible service we can offer"
+      ],
+      "correct_index": 1,
+      "explanation": "Explore a relevant gap without assuming one. AI can support staff; replacing employees is not the default pitch.",
+      "skill": "discovery"
+    },
+    {
+      "prompt": "A prospect clearly asks for no more contact. What is the correct next step?",
+      "choices": [
+        "Try another phone number",
+        "Keep calling until they explain why",
+        "Stop, record the restriction and follow the contact policy",
+        "Send a generic email sequence instead"
+      ],
+      "correct_index": 2,
+      "explanation": "Respect the request and restrictions. Circumventing it is a critical failure, not persistence.",
+      "skill": "ethics"
+    },
+    {
+      "prompt": "A prospect asks an SDR for a rough price before an assessment. What should the SDR do?",
+      "choices": [
+        "Give an old starting price with a disclaimer",
+        "Offer a price range but avoid an exact quote",
+        "Explain that the recommended build determines custom pricing and invite a Growth Assessment with an AI Specialist",
+        "Promise a discount if the prospect books today"
+      ],
+      "correct_index": 2,
+      "explanation": "A rough range or old starting figure is still a pricing discussion. SDRs acknowledge the interest and explain the process; only an AI Specialist discusses pricing during the Growth Assessment.",
+      "skill": "accuracy"
+    }
+  ],
+  "scenario": {
+    "title": "The quote-follow-up conversation",
+    "persona": "FICTIONAL business: Northstar Service Studio. Taylor is the busy owner. Phones are covered; estimator emails quotes and follows up manually when time allows. CRM name, volume and revenue impact are unknown. Taylor is curious about consistent follow-up. Do not reveal all information until asked. If learner fabricates numbers or promises an integration, challenge the claim. If learner listens, explore an assessment with a HUMAN specialist. If pressured or ignored, decline; a respectful exit is valid.",
+    "opening": "Guru: We are practicing with a fictional business. I will play Taylor, the owner. Start the conversation naturally.",
+    "rubric": {
+      "listening": "Follows the quote-follow-up problem instead of forcing a phone pitch.",
+      "accuracy": "Explains the HUMAN specialist, assessment purpose and verification boundaries.",
+      "handoff": "Separates reported facts, hypotheses and unknown next-step details."
+    }
+  }
+}

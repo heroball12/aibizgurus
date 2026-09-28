@@ -1,0 +1,672 @@
+[
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Choose the question before opening the demo.",
+        "kind": "cards",
+        "items": [
+          [
+            "Collection",
+            "How are initial details gathered?"
+          ],
+          [
+            "Response",
+            "How is a routine inquiry handled?"
+          ],
+          [
+            "Handoff",
+            "When does a person take over?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Before opening the demo, identify the",
+        "title": "A clear purpose keeps the example focused.",
+        "kind": "flow",
+        "items": [
+          [
+            "Stated need",
+            "What did the prospect describe?"
+          ],
+          [
+            "Example",
+            "Which interaction is relevant?"
+          ],
+          [
+            "Learning",
+            "What should the demo clarify?"
+          ]
+        ]
+      },
+      {
+        "phrase": "In this lesson, we will use",
+        "title": "An industry demo is a fictional example.",
+        "kind": "quote",
+        "items": [
+          [
+            "BOUNDARY",
+            "It does not prove live customer integrations, inventory, bookings or implementation readiness."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Let discovery select the example.",
+        "kind": "cards",
+        "items": [
+          [
+            "Process",
+            "What interaction matters?"
+          ],
+          [
+            "Concern",
+            "What uncertainty should the demo address?"
+          ],
+          [
+            "Priority",
+            "What should the prospect notice?"
+          ]
+        ]
+      },
+      {
+        "phrase": "For our fictional prospect, Juniper Home",
+        "title": "Juniper’s demonstration purpose.",
+        "kind": "flow",
+        "items": [
+          [
+            "Routine question",
+            "Service area and estimate process"
+          ],
+          [
+            "Useful details",
+            "What the customer needs"
+          ],
+          [
+            "Exception",
+            "Bring in a person"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "You have not established that their",
+        "title": "Keep implementation questions visible.",
+        "kind": "compare",
+        "items": [
+          [
+            "ILLUSTRATED",
+            "A possible customer interaction"
+          ],
+          [
+            "UNVERIFIED",
+            "Compatibility with current phone, calendar and CRM systems"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Frame the example clearly.",
+        "kind": "workspace",
+        "items": [
+          [
+            "Fictional",
+            "A sample business"
+          ],
+          [
+            "Purpose",
+            "One relevant interaction"
+          ],
+          [
+            "Data",
+            "Use sample details only"
+          ]
+        ],
+        "capture": "demo-modes",
+        "capture_caption": "ACTUAL DEMO CENTER  /  FICTIONAL BUSINESS  /  TWO CONVERSATION MODES"
+      },
+      {
+        "phrase": "For Juniper, you might say: let",
+        "title": "A short introduction sets useful expectations.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "This shows a sample conversation, not a connection to your live systems."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Ask the prospect to notice one",
+        "title": "Give the prospect one or two things to notice.",
+        "kind": "flow",
+        "items": [
+          [
+            "Clarity",
+            "Can a customer understand the response?"
+          ],
+          [
+            "Boundary",
+            "When should a person become involved?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Choose by relevant workflow.",
+        "kind": "flow",
+        "items": [
+          [
+            "Category",
+            "The closest useful industry example"
+          ],
+          [
+            "Employee",
+            "The sample business assistant"
+          ],
+          [
+            "Interaction",
+            "The process you want to test"
+          ]
+        ]
+      },
+      {
+        "phrase": "The interface offers text conversation and,",
+        "title": "Use the mode that helps the conversation.",
+        "kind": "compare",
+        "items": [
+          [
+            "TEXT",
+            "Easy to review the exact exchange"
+          ],
+          [
+            "VIDEO / VOICE",
+            "Experience the live interaction when available"
+          ]
+        ]
+      },
+      {
+        "phrase": "Prepare the interaction before a customer-facing",
+        "title": "Verify availability before presenting.",
+        "kind": "cards",
+        "items": [
+          [
+            "Prepare",
+            "Check category and connection"
+          ],
+          [
+            "Explain",
+            "Name an actual limitation"
+          ],
+          [
+            "Adapt",
+            "Use an approved available mode"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Start with an ordinary customer question.",
+        "kind": "quote",
+        "items": [
+          [
+            "SAMPLE PROMPT",
+            "Do you handle this kind of home project, and how would I request an estimate?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Follow the answer with one relevant",
+        "title": "Observe the useful behaviors.",
+        "kind": "cards",
+        "items": [
+          [
+            "Context",
+            "Stays within the sample business"
+          ],
+          [
+            "Follow-up",
+            "Asks a relevant next detail"
+          ],
+          [
+            "Next step",
+            "Explains what should happen"
+          ]
+        ]
+      },
+      {
+        "phrase": "Pause after the meaningful exchange. Ask",
+        "title": "Pause and return to the prospect.",
+        "kind": "quote",
+        "items": [
+          [
+            "QUESTION",
+            "Does that resemble the kind of interaction your team handles?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Test a boundary as well as a routine answer.",
+        "kind": "cards",
+        "items": [
+          [
+            "Complex request",
+            "Not enough information for a commitment"
+          ],
+          [
+            "Clarification",
+            "Ask what is needed"
+          ],
+          [
+            "Human help",
+            "Escalate an appropriate exception"
+          ]
+        ]
+      },
+      {
+        "phrase": "Explain what a responsible handoff would",
+        "title": "A handoff needs context and a real route.",
+        "kind": "flow",
+        "items": [
+          [
+            "Context",
+            "What the customer explained"
+          ],
+          [
+            "Question",
+            "What requires a decision"
+          ],
+          [
+            "Person",
+            "Who can responsibly decide"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the response is imperfect, acknowledge",
+        "title": "Acknowledge an imperfect answer specifically.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Evaluate knowledge, constraints, testing and human support; do not claim infallibility."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Conversation is not proof of a completed transaction.",
+        "kind": "compare",
+        "items": [
+          [
+            "SAMPLE DIALOGUE",
+            "A preferred appointment time is collected."
+          ],
+          [
+            "REAL ACTION",
+            "An authorized calendar reservation is verified."
+          ]
+        ]
+      },
+      {
+        "phrase": "For example, an assistant asking for",
+        "title": "Keep live business facts separate from sample answers.",
+        "kind": "cards",
+        "items": [
+          [
+            "Inventory",
+            "Requires a current source"
+          ],
+          [
+            "Policy",
+            "Requires approved business knowledge"
+          ],
+          [
+            "Booking",
+            "Requires a verified system action"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the prospect asks whether the",
+        "title": "Turn integration interest into an assessment question.",
+        "kind": "flow",
+        "items": [
+          [
+            "Tool",
+            "What does the business use?"
+          ],
+          [
+            "Action",
+            "What should happen?"
+          ],
+          [
+            "Rules",
+            "What must be respected?"
+          ],
+          [
+            "Verify",
+            "Specialist evaluates the setup"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Recognize when the example has done enough.",
+        "kind": "quote",
+        "items": [
+          [
+            "PROSPECT",
+            "That looks useful. Could it work with our CRM?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Buying signals can sound like can",
+        "title": "Use the signal to choose the next conversation.",
+        "kind": "flow",
+        "items": [
+          [
+            "Acknowledge",
+            "The real question"
+          ],
+          [
+            "Connect",
+            "Evaluate their actual setup"
+          ],
+          [
+            "Invite",
+            "A relevant Growth Assessment"
+          ]
+        ]
+      },
+      {
+        "phrase": "Keep the close within your authority.",
+        "title": "Do not add an unauthorized promise.",
+        "kind": "cards",
+        "items": [
+          [
+            "Assessment",
+            "Complimentary, 15–20 minutes"
+          ],
+          [
+            "Specialist",
+            "Qualified human AI Specialist"
+          ],
+          [
+            "Pricing",
+            "Custom discussion during that assessment only"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Frame two relevant moments.",
+        "kind": "cards",
+        "items": [
+          [
+            "Routine",
+            "A common service question"
+          ],
+          [
+            "Exception",
+            "A request needing human help"
+          ],
+          [
+            "Concern",
+            "Avoid confident unsupported answers"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Pause and frame the demonstration aloud.",
+        "title": "Set the purpose and limits clearly.",
+        "kind": "flow",
+        "items": [
+          [
+            "Fictional business",
+            "Sample details only"
+          ],
+          [
+            "Interaction",
+            "Routine response and exception"
+          ],
+          [
+            "Evaluation",
+            "Actual setup remains to be reviewed"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong frame might say you",
+        "title": "Replace a guarantee with an honest evaluation.",
+        "kind": "compare",
+        "items": [
+          [
+            "UNSUPPORTED",
+            "It will always answer correctly and connect to your tools."
+          ],
+          [
+            "USEFUL",
+            "Let’s examine the response and the point where a person should help."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Name the actual issue without inventing success.",
+        "kind": "cards",
+        "items": [
+          [
+            "Connection",
+            "A live session may be unavailable"
+          ],
+          [
+            "Answer",
+            "A response may need correction"
+          ],
+          [
+            "Action",
+            "A failed step is not completed"
+          ]
+        ]
+      },
+      {
+        "phrase": "Use an approved fallback when it",
+        "title": "Use a fallback that serves the same purpose.",
+        "kind": "crm",
+        "items": [
+          [
+            "Name the mode",
+            "A guided preview uses sample replies."
+          ],
+          [
+            "Keep it useful",
+            "Explain the example honestly and choose an appropriate next step."
+          ]
+        ],
+        "capture": "demo-guided",
+        "capture_caption": "ACTUAL DEMO CENTER  /  GUIDED PREVIEW  /  SAMPLE REPLIES"
+      },
+      {
+        "phrase": "Record a meaningful failure for the",
+        "title": "Treat reliability as an implementation question.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Record meaningful failures and evaluate fallback behavior; do not promise zero failures."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Ask what would need to change for their business.",
+        "kind": "cards",
+        "items": [
+          [
+            "Useful",
+            "What addressed the real need?"
+          ],
+          [
+            "Different",
+            "What context or wording matters?"
+          ],
+          [
+            "Unresolved",
+            "What requires verification?"
+          ]
+        ]
+      },
+      {
+        "phrase": "A useful note for Juniper might",
+        "title": "Leave the specialist a concrete question.",
+        "kind": "quote",
+        "items": [
+          [
+            "FICTIONAL NOTE",
+            "Routine service questions plus human handling of complex commitments. CRM detail transfer requested; compatibility unverified."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Do not record watched demo as",
+        "title": "A watched demo is not automatic qualification.",
+        "kind": "compare",
+        "items": [
+          [
+            "ACTIVITY",
+            "An example was shown."
+          ],
+          [
+            "OUTCOME",
+            "Actual reaction, concerns and agreed next step."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Keep the demonstration focused.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Discover the question."
+          ],
+          [
+            "02",
+            "Choose and frame the example."
+          ],
+          [
+            "03",
+            "Show a routine interaction."
+          ],
+          [
+            "04",
+            "Test an appropriate boundary."
+          ],
+          [
+            "05",
+            "Ask what the prospect learned."
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical submission, prepare a",
+        "title": "Practice the frame, example and debrief.",
+        "kind": "flow",
+        "items": [
+          [
+            "Frame",
+            "Purpose and fictional context"
+          ],
+          [
+            "Test",
+            "Routine plus exception"
+          ],
+          [
+            "Debrief",
+            "Useful, different and unresolved"
+          ],
+          [
+            "Retry",
+            "Remove unsupported implications"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the scenario quiz and keep",
+        "title": "Use the example to support a better decision.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz and practice a focused, accurately framed demonstration."
+          ]
+        ]
+      }
+    ]
+  }
+]

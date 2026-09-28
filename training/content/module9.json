@@ -1,0 +1,252 @@
+{
+  "title": "Qualification & Knowing When to Walk Away",
+  "short_title": "QUALIFY WITH JUDGMENT",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Decide whether an assessment is useful, resolve incomplete participation paths and close unsuitable opportunities respectfully.",
+  "skills": [
+    "qualification",
+    "ethics",
+    "accuracy",
+    "assessment-close",
+    "crm-discipline"
+  ],
+  "scenes": [
+    {
+      "title": "A qualified assessment should have a reason to exist",
+      "narration": "Qualification is the judgment that a Growth Assessment would be a useful next step for this business and the people involved. It is not a reward for anyone who stays on the phone. A calendar full of meetings can still be a poor result if the attendees do not understand the purpose, have no relevant need or were pressured into agreeing.\nThe SDR should establish a plausible business fit, a real process worth exploring, interest in an appropriate improvement and a realistic path to the people who should participate. Those are practical considerations, not a rigid interrogation. The conversation may provide enough evidence quickly, or it may show that more discovery is needed before an invitation makes sense.\nThis lesson will help you distinguish qualified, incomplete and unsuitable opportunities. We will also practice walking away professionally. Good judgment protects the prospect's time, the specialist's time and the accuracy of the pipeline. The goal is an assessment that begins with a shared purpose, not a meeting count built from uncertainty disguised as confidence.",
+      "pauses": [],
+      "start": 0,
+      "end": 75,
+      "time": "00:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A qualified assessment has a useful purpose."
+    },
+    {
+      "title": "Establish a relevant business fit",
+      "narration": "Business fit begins with whether the organization and the process are within the company's legitimate scope and current campaign direction. We work with businesses on suitable uses of AI and related implementation. That does not mean every request is appropriate, every system is compatible or every problem requires a custom technical build.\nIf the prospect wants help organizing repetitive inquiry handling, that may be a relevant direction to evaluate. If they want an unsupported guarantee, an inappropriate use of data or something outside the approved service scope, do not book a meeting as though those expectations have already been accepted. Clarify the boundary and seek specialist or management guidance where appropriate.\nAvoid qualifying from industry alone. Two businesses in the same market may operate very differently. A familiar logo, a large staff or a polished website does not establish need. Use the actual process and the person's stated goal to judge relevance. When you are uncertain about scope, label the uncertainty and ask for internal guidance rather than inventing a capability to keep the opportunity alive.",
+      "pauses": [],
+      "start": 75,
+      "end": 150,
+      "time": "01:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Fit depends on the actual request."
+    },
+    {
+      "title": "Find a process worth evaluating",
+      "narration": "A prospect saying AI sounds interesting is an opening, not a complete qualification. Ask what part of the business they would want to improve. The answer should connect to a current workflow or a meaningful goal. Without that connection, the assessment risks becoming a generic product tour with no clear basis for evaluating what would help.\nFor a fictional example, Maple Service Group says customer requests are copied from email into a spreadsheet and sometimes assigned late. That is a process worth understanding. Ask who handles it, what happens when assignment is delayed and what a better outcome would look like. You do not need to diagnose the final solution to establish that the evaluation could be relevant.\nA useful process can involve growth, staff support, customer experience or operational consistency. It does not have to involve a dramatic failure. At the same time, do not manufacture pain when the person says the process works well and there is no interest in changing it. Qualification should reflect the business's actual priorities rather than the rep's need for a reason to book.",
+      "pauses": [],
+      "start": 150,
+      "end": 225,
+      "time": "02:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Interest in AI needs a business connection."
+    },
+    {
+      "title": "Understand interest and timing without pressure",
+      "narration": "Interest means the person sees enough relevance to consider a next step. It does not mean they are ready to buy today. Timing means understanding when an evaluation could be useful, not inventing urgency. Ask in a way that allows an honest answer, including that the issue is not a current priority.\nYou might ask whether improving that handoff is something the team wants to explore now or later. If they describe an upcoming busy period, understand what that changes without promising an implementation date. If they say the next quarter is more realistic, record the context and discuss an appropriate follow-up only if they want one.\nDo not use false scarcity to convert uncertainty into a meeting. A Growth Assessment should be scheduled because it is relevant and agreed, not because you claimed a nonexistent deadline or limited offer. When timing is unclear, distinguish between a possible future interest and a current commitment. The CRM should make that difference visible to anyone who picks up the record.",
+      "pauses": [],
+      "start": 225,
+      "end": 300,
+      "time": "03:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Interest and timing are separate questions."
+    },
+    {
+      "title": "Identify the people who should participate",
+      "narration": "An assessment is more useful when the people involved can explain the process and participate in the evaluation. That may include a business owner, operations manager or another responsible person. Ask who should be part of the conversation rather than assuming a title tells you everything about authority or knowledge.\nA contact who is not the final approver may still offer a realistic path to the appropriate people. For example, an office manager may understand inquiry handling and agree to invite the owner. Record that as a planned invitation until the participation is actually confirmed. Do not claim the owner is attending merely because someone said they would ask.\nWhen the contact cannot explain the process or identify an appropriate path, more work may be needed before scheduling. Respect the person's role and avoid interrogating them about status. A useful question is who else would help review how this works today. The objective is a productive assessment with relevant participants, not a hierarchy test that dismisses anyone below the top title.",
+      "pauses": [],
+      "start": 300,
+      "end": 375,
+      "time": "05:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Include process knowledge and the appropriate decision path."
+    },
+    {
+      "title": "Do not use pricing as an SDR qualification shortcut",
+      "narration": "Some sales frameworks begin by asking for a budget or presenting a standard price range. Our current pricing policy requires a different boundary. Pricing is custom to the build identified as best for the business, and only qualified human AI Specialists discuss it during a Growth Assessment. SDRs should not introduce estimates or package prices as a shortcut to qualification.\nIf a prospect asks how much it costs, explain that the specialist first reviews the business, current operations and appropriate approach. The assessment is complimentary and lasts fifteen to twenty minutes. That explanation should connect to the process you have already discussed, not sound like a way to avoid a reasonable question indefinitely.\nYou can identify that the prospect has commercial questions and pass them to the specialist without supplying an answer you are not authorized to give. Do not promise affordability, discounts or a particular return. Qualification at this stage is about a relevant evaluation and a clear next step. The specialist handles the custom commercial discussion in the assessment where scope can be considered properly.",
+      "pauses": [],
+      "start": 375,
+      "end": 450,
+      "time": "06:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Pricing is not an SDR qualification shortcut."
+    },
+    {
+      "title": "Distinguish incomplete from unsuitable",
+      "narration": "An incomplete opportunity has unanswered questions that could reasonably be resolved. An unsuitable opportunity has evidence that the next step does not fit, or expectations that cannot be accepted. Treating both as simply hot or cold hides useful information. The right action depends on what is missing or what has actually been ruled out.\nConsider two fictional contacts. One describes a clear process issue but needs to identify the operations lead who should join. That may call for an agreed follow-up or introduction. The other insists that we guarantee a specific revenue increase before discussing the business. That expectation needs a clear boundary, and you should not mark the meeting qualified as though the guarantee were available.\nUse precise notes. Authority path not yet confirmed is more useful than bad lead. Requires a guarantee we do not offer is more useful than difficult prospect. Good qualification language explains the decision and makes it easier for a manager to review. It also helps the team distinguish a legitimate future opportunity from a request that should not be pursued on the stated terms.",
+      "pauses": [],
+      "start": 450,
+      "end": 525,
+      "time": "07:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Incomplete and unsuitable require different actions."
+    },
+    {
+      "title": "Recognize when a booking would be premature",
+      "narration": "A booking is premature when the prospect does not understand why they are attending or when the rep has not established a relevant purpose. Someone saying sure, send something is not necessarily agreeing to a video assessment. Someone accepting a calendar invitation under a misleading description has not received a proper explanation of the next step.\nBefore booking, briefly connect the meeting to the stated process and explain who they will meet. It is a complimentary fifteen to twenty minute video call with a human AI Specialist. The specialist reviews operations, identifies suitable AI opportunities and discusses an implementation approach and custom pricing. Ask whether that evaluation sounds useful for the issue they described.\nIf the person is not ready, clarify only as appropriate and respect the answer. More explanation is not always the solution. You may need another relevant question, a better participant, a later follow-up or a professional close. A meeting becomes stronger when the purpose is understood, not when the rep keeps talking until the prospect stops objecting.",
+      "pauses": [],
+      "start": 525,
+      "end": 600,
+      "time": "08:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Do not confuse these agreements."
+    },
+    {
+      "title": "Practice a qualification decision",
+      "narration": "Your fictional prospect is Maple Service Group. The office manager describes delayed inquiry assignments and wants a more reliable handoff. They can explain the workflow, but they say the owner must be involved in any technology evaluation. They have not asked the owner yet. Is the opportunity ready for a confirmed assessment, incomplete or clearly unsuitable?\nPause and state your decision and next question. Use the supplied facts. Do not invent an owner approval or assume that the office manager is irrelevant. Your answer should preserve the useful process information while addressing the missing participation path.\nThe strongest direction is incomplete but potentially relevant. Ask how to involve the owner in reviewing that handoff, or agree to an appropriate next step the manager is willing to take. If you marked an owner-attended assessment as confirmed, you went beyond the evidence. If you rejected the contact solely because of the title, you discarded a person who understands the workflow. Retry with a realistic path and an accurate note.",
+      "pauses": [
+        [
+          "Pause and state your decision and next question.",
+          25,
+          "Choose the qualification state and one appropriate next question."
+        ]
+      ],
+      "start": 600,
+      "end": 675,
+      "time": "10:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Evaluate Maple Service Group."
+    },
+    {
+      "title": "Walk away professionally",
+      "narration": "Walking away is appropriate when there is no suitable fit, no wanted next step or a clear boundary that ends the conversation. It is not a failure of confidence. A professional rep can recognize that the assessment would not help under the current circumstances and close without arguing, shaming or manufacturing a new problem.\nYou might say that it sounds as though the current process is working well and there is no reason to force a meeting. Thank the person for the context and follow their preference about any future contact. If they request no further outreach, honor it through the approved process. Do not add a follow-up simply because every lead feels as though it should have one.\nRecord the reason accurately and without personal judgment. No current interest in changing the process is different from outside approved scope or contact restriction requested. That distinction helps management understand pipeline quality and prevents another employee from repeating the same pressure. Good sales judgment includes knowing which conversations should end and leaving them in a respectful, understandable state.",
+      "pauses": [],
+      "start": 675,
+      "end": 750,
+      "time": "11:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A professional close can be the right outcome."
+    },
+    {
+      "title": "Make the qualification note reviewable",
+      "narration": "A manager should be able to understand your qualification decision from the evidence in the record. Capture the relevant workflow, the problem or goal, the person's stated interest, the participation path and the timing context. Mark what is confirmed and what remains unresolved. Add the actual meeting details only after the booking is agreed and confirmed.\nFor Maple Service Group, the note might state that the office manager reports delayed assignment, wants a clearer handoff and will ask how the owner can participate. The next action is that agreed coordination step. The note should not say owner approved, pricing accepted or implementation ready when none of those events occurred.\nIf you later receive new information, update the decision rather than clinging to the first label. A promising opportunity can become unsuitable, and an incomplete one can become ready. Qualification is an evidence-based judgment that changes with the conversation. Clear notes make that change visible and give the specialist a truthful starting point when an assessment is appropriate.",
+      "pauses": [],
+      "start": 750,
+      "end": 825,
+      "time": "12:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Make the decision understandable from the record."
+    },
+    {
+      "title": "Your qualification and judgment routine",
+      "narration": "Before proposing an assessment, ask yourself whether you can explain why it would be useful to this business now. Identify the process, the desired improvement and the appropriate people. Check that expectations are accurate and that the prospect understands the next step. If an important piece is missing, decide whether a reasonable question can resolve it.\nFor your practical submission, classify three fictional opportunities as ready, incomplete or unsuitable and explain your evidence. Practice an invitation for the ready case, a focused follow-up for the incomplete case and a respectful close for the unsuitable case. Ask Guru to challenge any claim that is stronger than the facts support.\nComplete the quiz and revise the weakest decision. The objective is not to reject as many leads as possible or to book everyone who answers. It is to make a sound judgment about the next conversation. A useful Growth Assessment begins with relevance, accurate expectations and willing participation, giving the human specialist a real business question to evaluate.",
+      "pauses": [],
+      "start": 825,
+      "end": 900,
+      "time": "13:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Check the reason before proposing the meeting."
+    }
+  ],
+  "job_aid": "QUALIFICATION FIELD GUIDE\nREADY: relevant business process + stated improvement goal + interest + appropriate participation path + accurate expectations + actual agreement.\nINCOMPLETE: a useful opportunity with a specific unresolved question; clarify or agree an appropriate next step.\nUNSUITABLE: no relevant fit, no wanted step or unacceptable expectations; close respectfully.\nPARTICIPANTS: process knowledge, influence and approval may be held by different people. A plan to invite is not confirmed attendance.\nTIMING: use the prospect’s real context; no invented urgency.\nPRICING: custom to the build; only qualified human AI Specialists discuss it during Growth Assessments.\nASSESSMENT: complimentary 15–20 minute video call to review operations, identify suitable AI opportunities and discuss implementation approach and custom pricing.\nCRM: evidence, unknowns, reason for the decision and actual next agreement.\nWALK AWAY: respect no interest and contact restrictions; never force a meeting to improve a count.",
+  "questions": [
+    {
+      "skill": "qualification",
+      "prompt": "AI sounds interesting, but no business process has been discussed. What next?",
+      "choices": [
+        "Mark fully qualified.",
+        "Ask what part of the business they would want to improve.",
+        "Quote a package.",
+        "Guarantee an implementation."
+      ],
+      "correct_index": 1,
+      "explanation": "General curiosity is a starting point. Connect it to a concrete workflow or goal before treating an assessment as clearly relevant."
+    },
+    {
+      "skill": "qualification",
+      "prompt": "The office manager knows the process and wants improvement but needs the owner involved. What is appropriate?",
+      "choices": [
+        "Reject them solely for their title.",
+        "Mark owner attendance confirmed.",
+        "Clarify a realistic participation path and record the opportunity as incomplete until the necessary agreement exists.",
+        "Assume they can approve technology."
+      ],
+      "correct_index": 2,
+      "explanation": "Knowledge and authority differ. The contact can be useful while the participation path remains unresolved."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "A prospect requires a guaranteed revenue increase before meeting. What should you do?",
+      "choices": [
+        "Clarify that no such guarantee is available and avoid recording the expectation as accepted.",
+        "Promise it to get the meeting.",
+        "Hide the condition from the specialist.",
+        "Invent a case study."
+      ],
+      "correct_index": 0,
+      "explanation": "Unsupported guarantees are not acceptable. Qualification requires accurate expectations and an honest record."
+    },
+    {
+      "skill": "qualification",
+      "prompt": "Which statement supports an assessment best?",
+      "choices": [
+        "They stayed on the phone.",
+        "Their website looks expensive.",
+        "They accepted generic information.",
+        "They described a relevant workflow, want to evaluate improvement and understand the proposed meeting."
+      ],
+      "correct_index": 3,
+      "explanation": "Relevance, interest and accurate expectations support a useful next step. Attention or appearance alone does not."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "How should an SDR use pricing during qualification?",
+      "choices": [
+        "Offer a typical range.",
+        "Reserve pricing for the qualified human AI Specialist during the Growth Assessment.",
+        "Promise affordability.",
+        "Offer a discount for booking now."
+      ],
+      "correct_index": 1,
+      "explanation": "All pricing is custom and reserved for the specialist in the assessment. SDRs do not use estimates or discounts as qualification shortcuts."
+    },
+    {
+      "skill": "qualification",
+      "prompt": "The process works well and the prospect wants no change or follow-up. What is appropriate?",
+      "choices": [
+        "Invent a hidden problem.",
+        "Schedule anyway.",
+        "Close respectfully and record the actual preference.",
+        "Keep calling until interest develops."
+      ],
+      "correct_index": 2,
+      "explanation": "A professional close is a valid outcome. Do not manufacture need or add unwanted follow-up."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "The manager says they will ask the owner to join. What is confirmed?",
+      "choices": [
+        "The manager’s stated plan to ask, not the owner’s attendance.",
+        "Owner attendance.",
+        "Final buying approval.",
+        "Accepted pricing."
+      ],
+      "correct_index": 0,
+      "explanation": "A planned invitation is not confirmed participation or commercial approval. Preserve that distinction."
+    },
+    {
+      "skill": "crm-discipline",
+      "prompt": "What makes a qualification note useful?",
+      "choices": [
+        "A hot lead label without evidence.",
+        "Only the meeting count.",
+        "A guess about personality.",
+        "Workflow, goal, interest, participation path, timing, unknowns and actual agreement."
+      ],
+      "correct_index": 3,
+      "explanation": "The note should let a manager understand and review the decision from facts, not unsupported labels."
+    }
+  ],
+  "scenario": {
+    "title": "Maple Service Group qualification",
+    "persona": "FICTIONAL office manager at Maple Service Group. Requests are copied from email to a spreadsheet; assignment is sometimes delayed. You want a more reliable handoff and can explain the workflow. The owner must participate in technology evaluation but has not been asked yet. Respond positively to a realistic coordination question, but correct any claim that owner attendance or a meeting is already confirmed. A separate branch requires a guaranteed revenue increase; expect the learner to state the boundary and reassess suitability.",
+    "opening": "Office manager: The handoff could be better, but the owner needs to be involved in any technology discussion.",
+    "rubric": {
+      "qualification": "Distinguishes incomplete from unsuitable and proposes a realistic participation path.",
+      "accuracy": "Does not invent owner attendance, timing or approval.",
+      "assessment-close": "Explains why a relevant assessment could help without prematurely confirming it.",
+      "ethics": "No guarantees, pressure or SDR pricing."
+    }
+  }
+}

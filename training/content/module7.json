@@ -1,0 +1,252 @@
+{
+  "title": "Gatekeepers & Reaching Decision-Makers",
+  "short_title": "REACH THE RIGHT CONVERSATION",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Navigate gatekeepers honestly, identify process responsibility and record realistic contact paths without pressure or false familiarity.",
+  "skills": [
+    "gatekeepers",
+    "opening",
+    "accuracy",
+    "ethics",
+    "crm-discipline"
+  ],
+  "scenes": [
+    {
+      "title": "The gatekeeper is part of the business",
+      "narration": "A receptionist, coordinator or assistant is not an obstacle to defeat. They are doing a job that often includes protecting time, routing requests and keeping the business moving. If you treat that person as a barrier, your tone and questions will usually reveal it. Treat them as a professional who may understand how to reach the right conversation.\nYour objective is to identify the appropriate person or a realistic path to them. It is not to obtain a transfer by any means available. A dishonest transfer can damage trust before you ever reach the owner. A clear, respectful exchange can provide useful context even when the immediate result is a better contact route rather than a live conversation.\nIn this lesson, we will practice explaining the reason for the call, asking about responsibility, handling requests for information and knowing when to stop. The standard is honest navigation. You should finish the exchange with accurate knowledge about who handles the relevant process and what next step, if any, the business actually invited.",
+      "pauses": [],
+      "start": 0,
+      "end": 75,
+      "time": "00:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Treat the first contact as a professional."
+    },
+    {
+      "title": "Ask about responsibility before guessing authority",
+      "narration": "A title can be a clue, but it is not the entire decision process. In a small business, the owner may handle everything. In another company, an operations manager may own the workflow while a different person approves technology. Your question should help reveal that structure instead of assuming every conversation must begin with the person at the top.\nFor example, you might ask who oversees how new quotation requests are followed up. That is more specific than demanding the decision maker without explaining the subject. It gives the first contact a practical way to route you. It also allows them to explain that responsibility is shared or that the process belongs to a team rather than a single individual.\nIf the first contact knows the workflow, listen. They may be an important source of process information even if they cannot approve a purchase. Record what they report and their role accurately. Do not upgrade them to a confirmed buyer, and do not dismiss useful knowledge because their title is not the one you expected. Responsibility, influence and approval authority can belong to different people.",
+      "pauses": [],
+      "start": 75,
+      "end": 150,
+      "time": "01:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Titles do not reveal the whole decision process."
+    },
+    {
+      "title": "Explain why you are calling",
+      "narration": "When someone asks what the call is about, answer directly. A concise explanation helps them decide where the inquiry belongs. Hiding the subject behind personal matter or a vague partnership can make the call harder to route and can imply a relationship that does not exist. You should be able to explain the business reason without launching a product presentation.\nTry a relevant version of this: I am calling from AI Business Gurus about how the team handles quotation follow-up. I was hoping to ask the person responsible for that process a couple of questions. The example names the company and topic, and it explains what you are asking for. It does not claim that the business has already expressed interest.\nThen allow the person to respond. They may provide a name, ask for an email, explain a policy or say the appropriate person is unavailable. Each answer gives you information about the next appropriate move. Repeating your explanation more loudly will not improve the routing. Use the response to clarify the path while keeping the exchange brief and professional.",
+      "pauses": [],
+      "start": 150,
+      "end": 225,
+      "time": "02:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Answer the reason-for-call question directly."
+    },
+    {
+      "title": "Do not borrow authority you do not have",
+      "narration": "Never claim that the owner asked you to call if that did not happen. Do not imply you are returning a personal call, handling an urgent account issue or acting as an existing provider when none of those things is true. Those tactics may sound like shortcuts, but they begin the relationship with a false statement.\nThe same rule applies to a referral. If a coordinator suggests contacting an operations manager, you can accurately say the coordinator directed you to that person. You cannot turn that routing suggestion into an endorsement of our services. Directed me to the right contact and recommended your company for a purchase are very different claims.\nIf someone asks whether the person is expecting your call, answer honestly. You can say it is a new business inquiry about a specific process and ask for the preferred way to reach them. A truthful answer may lead to email or a callback instead of an immediate transfer. That is an acceptable outcome. Trust is part of the sales process, not something to repair after gaining access.",
+      "pauses": [],
+      "start": 225,
+      "end": 300,
+      "time": "03:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Never invent a reason to receive priority."
+    },
+    {
+      "title": "Make a transfer useful",
+      "narration": "If the first contact offers a transfer, thank them and keep the transition simple. Where appropriate, confirm the person's name and responsibility so you do not arrive with the wrong assumption. A transfer to someone who handles the process is progress, but it does not establish that they know why you are calling or have agreed to a sales presentation.\nWhen the next person answers, introduce yourself again and state the reason briefly. Do not say we were just discussing your AI implementation if the only prior exchange was a routing question. A natural opening might explain that the front desk directed you to the person who oversees quotation follow-up, then ask about that process.\nBe ready for the routing to be imperfect. The new contact may explain that someone else owns the workflow. Acknowledge the correction and ask for an appropriate path if they are willing. Do not argue that the first person said otherwise. Organizations are complicated, and preserving a respectful exchange is more useful than proving that your transfer was technically justified.",
+      "pauses": [],
+      "start": 300,
+      "end": 375,
+      "time": "05:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A transfer is a new beginning to explain clearly."
+    },
+    {
+      "title": "Use an unavailable response constructively",
+      "narration": "The appropriate person may be unavailable for many ordinary reasons. Do not assume the first contact is hiding them or that persistence means repeatedly asking for the same transfer. A useful response is to ask for the preferred way to reach the person or whether there is an appropriate time to try again.\nBe specific about what is agreed. If the coordinator says Tuesday mornings are usually better, record that as a suggested contact window. It is not a confirmed appointment with the owner. If the person explicitly requests a callback at a particular time, record that actual agreement and who made it. The difference matters to your next opening.\nAvoid turning a helpful hint into pressure. You should not call and say the owner promised to speak with you when a coordinator merely described office hours. Use the information honestly, check any CRM ownership or restrictions and follow the campaign's contact process. If there is no appropriate next step, end courteously rather than creating one in the notes.",
+      "pauses": [],
+      "start": 375,
+      "end": 450,
+      "time": "06:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Ask for an appropriate route, not repeated transfers."
+    },
+    {
+      "title": "Handle the request to send information",
+      "narration": "A first contact may ask you to email information. That may be the normal routing process, a useful way to share internally or a polite way to end an unwanted call. Do not assume you know which. If they are willing, ask what information would be most relevant and confirm the appropriate business address or channel.\nYou might say: absolutely, so I keep it useful, is quotation follow-up something the operations team handles? That question helps tailor the material without demanding a full discovery conversation from someone whose role is routing. If they only want the information sent, respect that preference. Do not make answering more questions a condition of receiving it.\nSend through the approved outreach workflow and use a concise, relevant message. Record what was requested, the contact route and any actual follow-up agreement. Do not send a giant catalog by default or describe the recipient as a qualified buyer because someone accepted an email. The useful outcome is an accurate route and appropriate information, with the next step only as specific as the agreement supports.",
+      "pauses": [],
+      "start": 450,
+      "end": 525,
+      "time": "07:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "An information request needs context."
+    },
+    {
+      "title": "Respect a clear boundary",
+      "narration": "Some businesses do not accept unsolicited calls, and some people will clearly ask you to stop contacting them. Respect the stated boundary and follow the approved contact-restriction process. Do not call another extension, use a different record or ask a colleague to repeat the same approach in order to get around the request.\nThere is a difference between clarification and persistence that ignores an answer. If a response is ambiguous, one brief, respectful clarification may be useful. If the instruction is clear, the next step is to honor it. A rep does not earn skill credit for keeping someone on the phone after they have expressly ended the conversation.\nRecord the business context and the restriction accurately, without hostile commentary about the person. Managers need to understand what was requested and how it was handled. If the scope is unclear, preserve the uncertainty and seek guidance before further contact. A clean record protects the prospect's preference and prevents the next employee from unknowingly repeating an unwanted interaction.",
+      "pauses": [],
+      "start": 525,
+      "end": 600,
+      "time": "08:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Honor a clear contact boundary."
+    },
+    {
+      "title": "Practice the honest routing conversation",
+      "narration": "Your fictional business is Summit Design Workshop. Riley answers the general office line and asks what your call is about. You want to learn how new project inquiries are handled. You have not spoken with the owner before, and there is no appointment. Give Riley a concise, truthful explanation and ask who handles that process.\nPause and say your response aloud. Include your identity, the relevant process and the routing question. Do not invent a referral, an urgent matter or a request from the owner. Your goal is to make the inquiry understandable enough that Riley can decide whether and how to help.\nA strong response might say you are calling from AI Business Gurus about how new project inquiries are handled and ask who oversees that process. If your answer is just can I speak to the owner, add the useful context. If you claimed the owner was expecting you, remove it and retry. Good routing begins with a reason someone else can understand and repeat accurately.",
+      "pauses": [
+        [
+          "Pause and say your response aloud.",
+          20,
+          "Introduce yourself, explain the process and ask who handles it."
+        ]
+      ],
+      "start": 600,
+      "end": 675,
+      "time": "10:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Riley asks: what is the call about?"
+    },
+    {
+      "title": "Continue when the first contact knows the process",
+      "narration": "Suppose Riley says they handle incoming project requests before passing them to a designer. That is useful information. You can ask a relevant question if they are willing: what happens after a request arrives? Do not rush past the person who may understand the workflow better than anyone else in the office.\nRiley explains that they collect basic details and sometimes wait for a designer to review them. You can acknowledge that process and explore the handoff without assuming it is broken. Ask what works well and where delays matter, if any. The goal is understanding, not turning every ordinary coordination step into a problem that needs our product.\nIf improvement appears relevant, ask who would need to be involved in evaluating it. Riley may be able to join the discussion, introduce a manager or explain the approval process. Record that path accurately. A knowledgeable coordinator can help establish a useful conversation, but their process knowledge alone does not confirm buying authority or a booked Growth Assessment.",
+      "pauses": [],
+      "start": 675,
+      "end": 750,
+      "time": "11:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "The first contact may know the workflow best."
+    },
+    {
+      "title": "Record the route and the limits of the evidence",
+      "narration": "A good CRM note after a routing call is specific and modest. Record the person's name or role as known, what responsibility they described, the appropriate contact route and any instruction about timing or follow-up. Distinguish a suggested route from an introduction that actually occurred. Keep the note useful to the next employee.\nFor Summit Design Workshop, a factual note might say Riley coordinates incoming project requests and suggested contacting the operations manager by business email. No assessment was discussed or booked. If Riley also described a review delay, note that as their report and preserve the remaining questions. Do not turn the note into a claim that the owner wants an automation proposal.\nReview the next action against the evidence. Are you sending requested information, following an agreed callback or preparing to ask a new contact about the process? Those are different tasks. The clearer the note, the easier it is to continue respectfully and avoid repeating questions the business already answered. Accurate routing information is valuable even before an opportunity is qualified.",
+      "pauses": [],
+      "start": 750,
+      "end": 825,
+      "time": "12:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Leave a note the next rep can use."
+    },
+    {
+      "title": "Your gatekeeper practice standard",
+      "narration": "Use a simple standard: be honest about who you are, specific about the process and respectful of the person routing the call. Ask about responsibility, listen to the answer and choose the next step the evidence supports. Do not confuse access with qualification or a transfer with permission to deliver a long presentation.\nFor your practical exercise, handle three responses from Riley: what is this about, the owner is unavailable and send information to the operations team. Practice a concise response to each. Then add a clear request to stop and demonstrate that you can end appropriately and record the restriction without trying another route.\nComplete the scenario quiz, ask Guru for one specific correction and retry the response that needs the most work. The best improvement may be a shorter explanation or a more precise responsibility question. You are learning to navigate a real organization, not win a contest against its receptionist. A professional exchange creates the foundation for a useful business conversation when the fit and timing are right.",
+      "pauses": [],
+      "start": 825,
+      "end": 900,
+      "time": "13:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Use an honest, respectful routing standard."
+    }
+  ],
+  "job_aid": "GATEKEEPER FIELD GUIDE\nMINDSET: a professional who helps the business, not an obstacle.\nEXPLAIN: identity + relevant process + why you want the conversation.\nASK: who oversees that process? Responsibility, influence and approval may differ.\nHONESTY: no fake appointment, personal relationship, urgent account issue or referral endorsement.\nTRANSFER: thank, confirm role if appropriate, introduce yourself again.\nUNAVAILABLE: ask for the preferred route; a suggested window is not a confirmed meeting.\nINFORMATION: clarify relevance briefly when welcome; use the confirmed business channel.\nBOUNDARY: honor clear stop requests; never bypass through another extension, colleague or record.\nCRM: name/role as known, reported process, actual route, actual agreement, remaining unknowns.\nPRACTICE: reason for call → unavailable → information request → clear stop; get feedback and retry.",
+  "questions": [
+    {
+      "skill": "gatekeepers",
+      "prompt": "A receptionist asks what the call is about. What is strongest?",
+      "choices": [
+        "It is personal.",
+        "Name your company, the relevant process and whom you hope to ask about it.",
+        "Say the owner is expecting you.",
+        "Refuse to explain."
+      ],
+      "correct_index": 1,
+      "explanation": "Useful context makes routing easier. Vague or false claims undermine trust and do not establish relevance."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "A coordinator directs you to an operations manager. What may you say?",
+      "choices": [
+        "The coordinator recommended buying from us.",
+        "The owner approved our proposal.",
+        "The coordinator directed me to you about this process.",
+        "We already have a partnership."
+      ],
+      "correct_index": 2,
+      "explanation": "A routing suggestion is not an endorsement, approval or existing relationship. Describe it accurately."
+    },
+    {
+      "skill": "gatekeepers",
+      "prompt": "The first contact owns the workflow but cannot approve technology. What should you do?",
+      "choices": [
+        "Listen to their process knowledge and ask who should evaluate a change if relevant.",
+        "Dismiss them.",
+        "Mark them as the confirmed final buyer.",
+        "Demand the owner without context."
+      ],
+      "correct_index": 0,
+      "explanation": "Process knowledge and approval authority differ. The contact may provide useful context and a realistic path."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "Tuesday mornings are usually better is what kind of outcome?",
+      "choices": [
+        "Confirmed assessment.",
+        "A promise from the owner.",
+        "A booked sales presentation.",
+        "A suggested contact window."
+      ],
+      "correct_index": 3,
+      "explanation": "A suggested window is not a specific meeting agreement. Record who supplied the information and use it honestly."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "The business clearly requests no more calls. What is appropriate?",
+      "choices": [
+        "Try another extension.",
+        "Honor the boundary and record it through the approved process.",
+        "Ask another rep to call.",
+        "Create a fresh lead."
+      ],
+      "correct_index": 1,
+      "explanation": "Do not bypass a clear request using another route, colleague or record. Preserve the restriction for the team."
+    },
+    {
+      "skill": "gatekeepers",
+      "prompt": "The business asks for information by email. What is useful when they are willing?",
+      "choices": [
+        "Demand discovery first.",
+        "Send every service catalog.",
+        "Briefly clarify the relevant topic and confirm the business route.",
+        "Mark the lead qualified."
+      ],
+      "correct_index": 2,
+      "explanation": "Clarify relevance without making more questions a condition. An accepted email does not establish qualification."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "Someone asks whether the owner expects your new business call. What should you do?",
+      "choices": [
+        "Answer honestly and ask for the preferred contact route.",
+        "Say yes to get transferred.",
+        "Invent an urgent account problem.",
+        "Imply you are a current supplier."
+      ],
+      "correct_index": 0,
+      "explanation": "Honest access matters. A different appropriate route is better than beginning with a false relationship claim."
+    },
+    {
+      "skill": "crm-discipline",
+      "prompt": "Which note best supports the next action?",
+      "choices": [
+        "Hot lead, owner loves AI.",
+        "Gatekeeper was difficult.",
+        "Guaranteed proposal opportunity.",
+        "Riley coordinates inquiries; suggested operations email; no assessment agreed."
+      ],
+      "correct_index": 3,
+      "explanation": "The factual note identifies role, route and the limit of the agreement. Unsupported labels and hostile commentary do not help the handoff."
+    }
+  ],
+  "scenario": {
+    "title": "Riley at Summit Design Workshop",
+    "persona": "FICTIONAL Riley, office coordinator at Summit Design Workshop. Ask what the call is about. You coordinate incoming project details before designer review but cannot approve technology. A respectful relevant question earns an explanation; vague demands for the owner do not. The owner is unavailable. Suggest the operations manager by business email if appropriate. Do not let the learner claim a referral endorsement or confirmed appointment. In a later branch, clearly request no further calls and expect that boundary to be honored.",
+    "opening": "Riley: Summit Design Workshop. What is your call about?",
+    "rubric": {
+      "gatekeepers": "Explains the process and asks about responsibility; uses the response to choose a realistic route.",
+      "accuracy": "Does not turn routing suggestions into endorsements or meetings.",
+      "ethics": "Honest identity, no fake urgency and respects a clear stop.",
+      "crm-discipline": "Records role, contact route and actual agreement."
+    }
+  }
+}

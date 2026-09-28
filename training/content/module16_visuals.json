@@ -1,0 +1,673 @@
+[
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Demonstrate judgment across the conversation.",
+        "kind": "flow",
+        "items": [
+          [
+            "Prepare",
+            "An honest starting point"
+          ],
+          [
+            "Discover",
+            "The actual business process"
+          ],
+          [
+            "Decide",
+            "The appropriate next step"
+          ],
+          [
+            "Handoff",
+            "An accurate record"
+          ]
+        ]
+      },
+      {
+        "phrase": "You do not need to force",
+        "title": "Use the skill the moment requires.",
+        "kind": "cards",
+        "items": [
+          [
+            "Question",
+            "Resolve a relevant uncertainty"
+          ],
+          [
+            "Boundary",
+            "State a responsible limit"
+          ],
+          [
+            "Close",
+            "Continue or end appropriately"
+          ]
+        ]
+      },
+      {
+        "phrase": "Guru will help you practice and",
+        "title": "Practice and readiness have different roles.",
+        "kind": "compare",
+        "items": [
+          [
+            "GURU",
+            "Supports practice and advisory feedback"
+          ],
+          [
+            "HUMAN MANAGER",
+            "Reviews evidence and determines readiness"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Ridgeway Service Company is fictional.",
+        "kind": "cards",
+        "items": [
+          [
+            "Observed",
+            "Website invites project quotation requests"
+          ],
+          [
+            "Contact",
+            "General office route"
+          ],
+          [
+            "Unknown",
+            "Process quality, systems, interest and authority"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Casey answers the office line and",
+        "title": "Navigate the roles honestly.",
+        "kind": "flow",
+        "items": [
+          [
+            "Casey",
+            "Coordinates inquiries"
+          ],
+          [
+            "Jordan",
+            "Owner who can explain operations"
+          ],
+          [
+            "Your task",
+            "Find the appropriate conversation"
+          ]
+        ]
+      },
+      {
+        "phrase": "During the role-play, new information will",
+        "title": "Use new information as it appears.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "No invented familiarity, missed revenue or real production outreach for the exercise."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Give Casey a reason that can be routed.",
+        "kind": "flow",
+        "items": [
+          [
+            "Identity",
+            "Who you are"
+          ],
+          [
+            "Topic",
+            "Quotation request handling"
+          ],
+          [
+            "Responsibility",
+            "Who oversees it?"
+          ]
+        ]
+      },
+      {
+        "phrase": "If Casey explains part of the",
+        "title": "A transfer still needs an honest introduction.",
+        "kind": "compare",
+        "items": [
+          [
+            "ACCURATE",
+            "Casey directed me to you about this process."
+          ],
+          [
+            "UNSUPPORTED",
+            "We already agreed on your AI implementation."
+          ]
+        ]
+      },
+      {
+        "phrase": "Pause and practice the opening and",
+        "title": "Practice the opening and an unavailable response.",
+        "kind": "quote",
+        "items": [
+          [
+            "YOUR TASK",
+            "Introduce yourself, ask about responsibility and describe an appropriate alternative route."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "The real issue is quotation ownership.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "JORDAN",
+            "Calls are covered. Quote follow-up is duplicated or missed because ownership is unclear."
+          ],
+          [
+            "REP",
+            "How is responsibility assigned after a quote goes out?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Ask how the team decides who",
+        "title": "Explore the sequence and the handoff.",
+        "kind": "cards",
+        "items": [
+          [
+            "Record",
+            "Where is the information kept?"
+          ],
+          [
+            "Review",
+            "How are outstanding quotes checked?"
+          ],
+          [
+            "Responsibility",
+            "Who takes the next action?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Clarify the impact and desired outcome",
+        "title": "Summarize the stated impact without exaggeration.",
+        "kind": "flow",
+        "items": [
+          [
+            "Process",
+            "Current quotation follow-up"
+          ],
+          [
+            "Friction",
+            "Unclear ownership"
+          ],
+          [
+            "Goal",
+            "Consistent next actions"
+          ],
+          [
+            "Check",
+            "Have I understood?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Address the concern without attacking the existing setup.",
+        "kind": "cards",
+        "items": [
+          [
+            "Provider",
+            "Clarify the relevant scope"
+          ],
+          [
+            "Staff",
+            "Preserve desired responsibilities"
+          ],
+          [
+            "Workflow",
+            "Follow the actual ownership issue"
+          ]
+        ]
+      },
+      {
+        "phrase": "If Jordan also worries about AI",
+        "title": "Explore limits and human decisions.",
+        "kind": "quote",
+        "items": [
+          [
+            "QUESTION",
+            "Which customer commitments should always remain with your team?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Keep the response concise enough to",
+        "title": "A clear refusal can require a professional close.",
+        "kind": "compare",
+        "items": [
+          [
+            "SKILLED",
+            "Respect the boundary and record it"
+          ],
+          [
+            "UNSKILLED",
+            "Force a meeting to make the exercise look successful"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "The pricing boundary holds during the capstone.",
+        "kind": "quote",
+        "items": [
+          [
+            "POLICY",
+            "Custom pricing: qualified human AI Specialist only, during the Growth Assessment. No SDR or Guru quotes, ranges, packages, estimates or discounts."
+          ]
+        ]
+      },
+      {
+        "phrase": "Explain the complimentary fifteen to twenty",
+        "title": "Connect the explanation to the actual workflow.",
+        "kind": "flow",
+        "items": [
+          [
+            "Review",
+            "Quotation ownership and current tools"
+          ],
+          [
+            "Evaluate",
+            "An appropriate build"
+          ],
+          [
+            "Discuss",
+            "Custom pricing with the specialist"
+          ]
+        ]
+      },
+      {
+        "phrase": "Pause and answer Jordan's price question",
+        "title": "Answer directly without an unauthorized promise.",
+        "kind": "cards",
+        "items": [
+          [
+            "Clear",
+            "Explain the actual process"
+          ],
+          [
+            "Relevant",
+            "Use the discovered need"
+          ],
+          [
+            "Bounded",
+            "No number or affordability guarantee"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Make a qualification decision from the evidence.",
+        "kind": "cards",
+        "items": [
+          [
+            "Relevance",
+            "A process worth evaluating"
+          ],
+          [
+            "Interest",
+            "A wanted improvement discussion"
+          ],
+          [
+            "Readiness",
+            "Appropriate people and expectations"
+          ]
+        ]
+      },
+      {
+        "phrase": "Do not confuse interest in a",
+        "title": "Use a demo only when it serves the next question.",
+        "kind": "flow",
+        "items": [
+          [
+            "Question",
+            "What should the example clarify?"
+          ],
+          [
+            "Frame",
+            "Fictional context and limits"
+          ],
+          [
+            "Stop",
+            "Return to the prospect when useful"
+          ]
+        ]
+      },
+      {
+        "phrase": "If Jordan insists on a guarantee",
+        "title": "A correct decision may be a follow-up or close.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Do not fabricate qualification to make the scenario end in a booking."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Explain the sequence without creating a real training booking.",
+        "kind": "flow",
+        "items": [
+          [
+            "Calendar",
+            "Complete and verify the actual reservation"
+          ],
+          [
+            "CRM",
+            "Record confirmed details"
+          ],
+          [
+            "Recap",
+            "Date, timezone, people and video route"
+          ]
+        ]
+      },
+      {
+        "phrase": "Confirm the date, time, timezone, appropriate",
+        "title": "Keep pending and confirmed steps distinct.",
+        "kind": "compare",
+        "items": [
+          [
+            "PENDING",
+            "Link requested or time being considered"
+          ],
+          [
+            "CONFIRMED",
+            "Calendar reservation completed and agreed"
+          ]
+        ]
+      },
+      {
+        "phrase": "Write the specialist brief with the",
+        "title": "Prepare the human specialist with the actual business question.",
+        "kind": "cards",
+        "items": [
+          [
+            "Workflow",
+            "Quotation follow-up ownership"
+          ],
+          [
+            "Goal",
+            "Consistent next actions"
+          ],
+          [
+            "Unknowns",
+            "Tools, limits and implementation approach"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Submit an honest record of the work.",
+        "kind": "cards",
+        "items": [
+          [
+            "Learning",
+            "Assigned video and quiz requirements"
+          ],
+          [
+            "Practice",
+            "The actual role-play"
+          ],
+          [
+            "Handoff",
+            "A note consistent with that conversation"
+          ]
+        ]
+      },
+      {
+        "phrase": "Guru's feedback is advisory. A human",
+        "title": "Different evidence supports different judgments.",
+        "kind": "compare",
+        "items": [
+          [
+            "TEXT PRACTICE",
+            "Reasoning, listening and boundaries"
+          ],
+          [
+            "SPOKEN OBSERVATION",
+            "Pace, clarity and turn-taking"
+          ]
+        ]
+      },
+      {
+        "phrase": "The configured passing requirements are shown",
+        "title": "Use the current Academy readiness requirements.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Published content and reviewed evidence count; preview drafts and skipped requirements do not."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Some failures cannot be offset by a polished performance.",
+        "kind": "cards",
+        "items": [
+          [
+            "Dishonesty",
+            "Invented relationships, facts or notes"
+          ],
+          [
+            "Unauthorized promises",
+            "Prices, integrations or guaranteed results"
+          ],
+          [
+            "Disregard",
+            "Contact restrictions or deliberately unqualified meetings"
+          ]
+        ]
+      },
+      {
+        "phrase": "If one of those behaviors appears",
+        "title": "Own the decision and demonstrate a correction.",
+        "kind": "flow",
+        "items": [
+          [
+            "Acknowledge",
+            "Name the actual failure"
+          ],
+          [
+            "Understand",
+            "Why it undermines the process"
+          ],
+          [
+            "Retry",
+            "Change the behavior"
+          ],
+          [
+            "Record",
+            "Preserve accurate evidence"
+          ]
+        ]
+      },
+      {
+        "phrase": "Pause and audit your own draft",
+        "title": "Audit the handoff before submission.",
+        "kind": "quote",
+        "items": [
+          [
+            "YOUR TASK",
+            "Remove unsupported claims and identify the actual agreement and remaining unknowns."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Coachability shows up in the next attempt.",
+        "kind": "flow",
+        "items": [
+          [
+            "Attempt",
+            "A specific behavior"
+          ],
+          [
+            "Feedback",
+            "A precise correction"
+          ],
+          [
+            "Retry",
+            "Apply the correction"
+          ],
+          [
+            "Compare",
+            "Visible evidence of improvement"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the feedback says you pitched",
+        "title": "Match the correction to the actual miss.",
+        "kind": "cards",
+        "items": [
+          [
+            "Wrong direction",
+            "Follow quotation ownership"
+          ],
+          [
+            "Unclear invitation",
+            "Explain the assessment accurately"
+          ],
+          [
+            "Invented compatibility",
+            "Record an unverified question"
+          ]
+        ]
+      },
+      {
+        "phrase": "Compare the attempts using evidence. The",
+        "title": "Show a repeatable change, not a personality label.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Managers assess the evidence and appropriate next practice in context."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Readiness progresses through human review.",
+        "kind": "flow",
+        "items": [
+          [
+            "Training",
+            "Learn and practice"
+          ],
+          [
+            "Shadowing",
+            "Observe the work"
+          ],
+          [
+            "Supervised",
+            "Apply with oversight"
+          ],
+          [
+            "Independent",
+            "Manager-approved readiness"
+          ]
+        ]
+      },
+      {
+        "phrase": "Certification also does not turn an",
+        "title": "Certification does not expand commercial authority.",
+        "kind": "quote",
+        "items": [
+          [
+            "BOUNDARY",
+            "SDR pricing and system-access limits remain. Complete assigned retraining when required."
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the capstone quiz, submit the",
+        "title": "Bring the evidence to your manager.",
+        "kind": "cards",
+        "items": [
+          [
+            "Complete",
+            "Quiz, capstone and handoff"
+          ],
+          [
+            "Review",
+            "Remaining readiness requirements"
+          ],
+          [
+            "Apply",
+            "Accurate conversations and useful assessments"
+          ]
+        ]
+      }
+    ]
+  }
+]

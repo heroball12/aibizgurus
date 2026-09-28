@@ -1,0 +1,650 @@
+[
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Understand the concern before answering it.",
+        "kind": "flow",
+        "items": [
+          [
+            "Acknowledge",
+            "Show that you heard it"
+          ],
+          [
+            "Clarify",
+            "Explore when welcome"
+          ],
+          [
+            "Respond",
+            "Address the actual concern"
+          ],
+          [
+            "Next step",
+            "Agree or close appropriately"
+          ]
+        ]
+      },
+      {
+        "phrase": "Use a short sequence: acknowledge what",
+        "title": "The next action depends on the context.",
+        "kind": "cards",
+        "items": [
+          [
+            "Discover",
+            "A relevant question remains"
+          ],
+          [
+            "Follow up",
+            "A specific wanted next step"
+          ],
+          [
+            "Close",
+            "No useful or welcome continuation"
+          ]
+        ]
+      },
+      {
+        "phrase": "This lesson focuses on interest, time,",
+        "title": "A memorized rebuttal is not the goal.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Respond to this person’s concern, not a guessed meaning of the phrase."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Acknowledge a lack of interest.",
+        "kind": "cards",
+        "items": [
+          [
+            "Relevance",
+            "The subject may not matter"
+          ],
+          [
+            "Timing",
+            "The moment may be wrong"
+          ],
+          [
+            "Preference",
+            "They may not want to continue"
+          ]
+        ]
+      },
+      {
+        "phrase": "For example, you might ask whether",
+        "title": "Clarify once when the context welcomes it.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "Is quotation follow-up not a priority, or have I caught you at a poor time?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "A repeated or clear refusal ends",
+        "title": "Honor a clear or repeated refusal.",
+        "kind": "quote",
+        "items": [
+          [
+            "BOUNDARY",
+            "Do not manufacture a problem or argue for more time after the answer is clear."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Respect the practical time constraint.",
+        "kind": "compare",
+        "items": [
+          [
+            "HELPFUL",
+            "A brief question about a wanted next step"
+          ],
+          [
+            "UNHELPFUL",
+            "The same long pitch delivered faster"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the prospect says tomorrow afternoon",
+        "title": "Record the agreement at its actual level.",
+        "kind": "flow",
+        "items": [
+          [
+            "Maybe later",
+            "No specific commitment"
+          ],
+          [
+            "Callback",
+            "Agreed reconnection"
+          ],
+          [
+            "Assessment",
+            "A confirmed video evaluation"
+          ]
+        ]
+      },
+      {
+        "phrase": "When there is no agreed next",
+        "title": "No invented urgency and no unwanted sequence.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Timing should reflect the prospect’s real context and preference."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "The phrase has several possible meanings.",
+        "kind": "cards",
+        "items": [
+          [
+            "Interest",
+            "They want a relevant reference"
+          ],
+          [
+            "Sharing",
+            "Someone else should review it"
+          ],
+          [
+            "Timing",
+            "They may only have time for information"
+          ]
+        ]
+      },
+      {
+        "phrase": "You might say: absolutely, just so",
+        "title": "Clarify relevance when welcome.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "Absolutely. So I keep it relevant, how are you handling quotation follow-up today?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Confirm the appropriate business address or",
+        "title": "Confirm what should be sent and what follows.",
+        "kind": "flow",
+        "items": [
+          [
+            "Topic",
+            "Specific interest"
+          ],
+          [
+            "Channel",
+            "Appropriate business address"
+          ],
+          [
+            "Timing",
+            "Only the follow-up they want"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Match the message to the request.",
+        "kind": "flow",
+        "items": [
+          [
+            "Recap",
+            "The process they named"
+          ],
+          [
+            "Material",
+            "A relevant approved resource"
+          ],
+          [
+            "Next step",
+            "A clear and appropriate invitation"
+          ]
+        ]
+      },
+      {
+        "phrase": "For a fictional example, an office",
+        "title": "Keep the message within the evidence.",
+        "kind": "compare",
+        "items": [
+          [
+            "USEFUL",
+            "Quotation reminder support for staff"
+          ],
+          [
+            "UNSUPPORTED",
+            "A proposal with invented losses and unauthorized pricing"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "The follow-up record should say what",
+        "title": "Record what was actually sent and agreed.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "A follow-up should continue the conversation, not rewrite it."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Acknowledge the existing relationship.",
+        "kind": "cards",
+        "items": [
+          [
+            "Satisfaction",
+            "The current approach may work"
+          ],
+          [
+            "Scope",
+            "Some processes may be covered"
+          ],
+          [
+            "Context",
+            "Existing arrangements matter"
+          ]
+        ]
+      },
+      {
+        "phrase": "You might say: that makes sense.",
+        "title": "Explore the relevant scope without an attack.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "Is quotation follow-up part of what they handle, or is that managed internally?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Do not invent comparisons, competitor limitations",
+        "title": "Do not invent a competitor comparison.",
+        "kind": "compare",
+        "items": [
+          [
+            "EVALUATE",
+            "The actual workflow and current arrangement"
+          ],
+          [
+            "AVOID",
+            "Universal superiority claims or fabricated limitations"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "An existing employee is part of the context.",
+        "kind": "cards",
+        "items": [
+          [
+            "Support",
+            "Repetitive tasks or overflow"
+          ],
+          [
+            "Coverage",
+            "Specific periods if relevant"
+          ],
+          [
+            "Respect",
+            "Do not lead with replacement"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the prospect says the receptionist",
+        "title": "Follow the actual answer.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "PROSPECT",
+            "Calls are covered. Follow-up after quotes is the issue."
+          ],
+          [
+            "REP",
+            "How is that follow-up handled today?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Avoid promising that AI can take",
+        "title": "Evaluate support without promising total replacement.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Understand responsibilities, limits and human involvement before proposing a change."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Acknowledge the context and connect the next question.",
+        "kind": "flow",
+        "items": [
+          [
+            "Hear",
+            "The concern or experience"
+          ],
+          [
+            "Connect",
+            "Why the next question follows"
+          ],
+          [
+            "Ask",
+            "A useful condition or process detail"
+          ]
+        ]
+      },
+      {
+        "phrase": "For example: I understand why you",
+        "title": "Use a transition with a purpose.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "What would need to be handled differently before another evaluation would be useful?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Keep your own answer short. If",
+        "title": "Keep your own answer proportionate.",
+        "kind": "compare",
+        "items": [
+          [
+            "CONVERSATION",
+            "A concise response and useful question"
+          ],
+          [
+            "MONOLOGUE",
+            "A long defense before the prospect can reply"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Riverbend’s manager is busy.",
+        "kind": "quote",
+        "items": [
+          [
+            "PROSPECT",
+            "Just send me something."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Pause and respond aloud. Do not",
+        "title": "Balance relevance with the stated time limit.",
+        "kind": "flow",
+        "items": [
+          [
+            "Agree",
+            "Relevant information"
+          ],
+          [
+            "Clarify",
+            "One optional question"
+          ],
+          [
+            "Confirm",
+            "The appropriate route"
+          ],
+          [
+            "Respect",
+            "Information only if that is their choice"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong response agrees to send",
+        "title": "Record the actual outcome.",
+        "kind": "compare",
+        "items": [
+          [
+            "SUPPORTED",
+            "Information requested; follow-up only if agreed"
+          ],
+          [
+            "UNSUPPORTED",
+            "Qualified assessment booked"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Recognize when the concern has been resolved.",
+        "kind": "quote",
+        "items": [
+          [
+            "SIGNAL",
+            "Who could review how this would work for our business?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "The assessment is a complimentary fifteen",
+        "title": "Explain the appropriate next step.",
+        "kind": "cards",
+        "items": [
+          [
+            "Who",
+            "Human AI Specialist"
+          ],
+          [
+            "Format",
+            "Complimentary 15–20 minute video call"
+          ],
+          [
+            "Purpose",
+            "Review operations and evaluate approach and custom pricing"
+          ]
+        ]
+      },
+      {
+        "phrase": "Then ask for the next step",
+        "title": "Stop answering objections that are no longer being raised.",
+        "kind": "flow",
+        "items": [
+          [
+            "Connect",
+            "The stated process"
+          ],
+          [
+            "Invite",
+            "A relevant assessment"
+          ],
+          [
+            "Pause",
+            "Let the person answer"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Evaluate the decision beneath the delivery.",
+        "kind": "cards",
+        "items": [
+          [
+            "Understanding",
+            "What did the concern mean here?"
+          ],
+          [
+            "Relevance",
+            "Did the answer address it?"
+          ],
+          [
+            "Next action",
+            "Was the step appropriate and wanted?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Useful feedback might say: you answered",
+        "title": "Different misses need different corrections.",
+        "kind": "compare",
+        "items": [
+          [
+            "MISSED RELEVANCE",
+            "Clarify the requested topic briefly."
+          ],
+          [
+            "IGNORED BOUNDARY",
+            "End promptly and respect the preference."
+          ]
+        ]
+      },
+      {
+        "phrase": "Retry the same scenario with one",
+        "title": "Retry one adjustment and compare.",
+        "kind": "flow",
+        "items": [
+          [
+            "Attempt",
+            "Observe the specific miss"
+          ],
+          [
+            "Feedback",
+            "Name a changeable behavior"
+          ],
+          [
+            "Retry",
+            "Apply it"
+          ],
+          [
+            "Evidence",
+            "What improved?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use a framework that supports judgment.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Acknowledge the concern."
+          ],
+          [
+            "02",
+            "Clarify briefly when welcome."
+          ],
+          [
+            "03",
+            "Respond to the actual issue."
+          ],
+          [
+            "04",
+            "Agree a useful next step."
+          ],
+          [
+            "05",
+            "Respect a clear stop."
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical submission, handle not",
+        "title": "Practice both continuation and closure.",
+        "kind": "cards",
+        "items": [
+          [
+            "Common concerns",
+            "Interest, time, information and provider"
+          ],
+          [
+            "Opportunity",
+            "Clarification reveals relevance"
+          ],
+          [
+            "Boundary",
+            "The person clearly wants to stop"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the quiz and save a",
+        "title": "Make the booked assessments more meaningful.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz, practice the difficult response and apply one specific correction."
+          ]
+        ]
+      }
+    ]
+  }
+]

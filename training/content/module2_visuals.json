@@ -1,0 +1,871 @@
+[
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Explain a useful working process.",
+        "kind": "cards",
+        "items": [
+          [
+            "Information",
+            "Find what is relevant."
+          ],
+          [
+            "Decision",
+            "Know what can be handled."
+          ],
+          [
+            "Handoff",
+            "Bring in the right person."
+          ]
+        ]
+      },
+      {
+        "phrase": "Start with an ordinary",
+        "title": "One workflow contains different tasks.",
+        "kind": "flow",
+        "items": [
+          [
+            "Question",
+            "What is being asked?"
+          ],
+          [
+            "Information",
+            "What is approved?"
+          ],
+          [
+            "Response",
+            "What action is allowed?"
+          ],
+          [
+            "Exception",
+            "Who takes over?"
+          ]
+        ]
+      },
+      {
+        "phrase": "A clearer explanation",
+        "title": "Make the possibility concrete.",
+        "kind": "quote",
+        "items": [
+          [
+            "PLAIN LANGUAGE",
+            "Answer common questions, collect useful details, and hand exceptions to a person."
+          ]
+        ]
+      },
+      {
+        "phrase": "Notice the boundaries",
+        "title": "The boundaries are part of the explanation.",
+        "kind": "cards",
+        "items": [
+          [
+            "Could",
+            "A possibility to evaluate."
+          ],
+          [
+            "Approved information",
+            "A source to verify."
+          ],
+          [
+            "Human judgment",
+            "A defined point of escalation."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "What does “AI” mean to this customer?",
+        "kind": "focus",
+        "items": [
+          [
+            "ASK",
+            "Which task are you picturing?"
+          ],
+          [
+            "CLARIFY",
+            "What useful result would change the day?"
+          ]
+        ]
+      },
+      {
+        "phrase": "First, language assistance",
+        "title": "Language and knowledge are different jobs.",
+        "kind": "compare",
+        "items": [
+          [
+            "LANGUAGE",
+            "Draft, summarize, classify, converse."
+          ],
+          [
+            "KNOWLEDGE",
+            "Locate and use approved information."
+          ]
+        ]
+      },
+      {
+        "phrase": "Third, workflow automation",
+        "title": "Useful systems can combine approaches.",
+        "kind": "flow",
+        "items": [
+          [
+            "Language",
+            "Understand or draft"
+          ],
+          [
+            "Knowledge",
+            "Find the source"
+          ],
+          [
+            "Workflow",
+            "Route the work"
+          ],
+          [
+            "Software",
+            "Provide the controls"
+          ]
+        ]
+      },
+      {
+        "phrase": "Do not make the prospect",
+        "title": "Own the question. Let the specialist design.",
+        "kind": "quote",
+        "items": [
+          [
+            "SDR STANDARD",
+            "Recognize a possible fit without declaring a finished solution."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A fluent reply is not proof of an action.",
+        "kind": "flow",
+        "items": [
+          [
+            "Explain",
+            "Describe the process."
+          ],
+          [
+            "Request",
+            "Collect a preference."
+          ],
+          [
+            "Confirm",
+            "Verify the completed action."
+          ]
+        ]
+      },
+      {
+        "phrase": "Imagine a fictional salon",
+        "title": "Intake can help before a booking exists.",
+        "kind": "compare",
+        "items": [
+          [
+            "KNOWN",
+            "Customer prefers a service and time."
+          ],
+          [
+            "NOT VERIFIED",
+            "Stylist, chair and calendar availability."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "A real connection",
+        "title": "Integration questions require verification.",
+        "kind": "cards",
+        "items": [
+          [
+            "Access",
+            "Which system and permissions?"
+          ],
+          [
+            "Actions",
+            "Read, write or request?"
+          ],
+          [
+            "Failure",
+            "What happens when the step fails?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Your explanation should",
+        "title": "Explain the possibility accurately.",
+        "kind": "quote",
+        "items": [
+          [
+            "SAY",
+            "We can explore the workflow; our specialist needs to verify how your calendar works."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Accuracy depends on the whole process.",
+        "kind": "cards",
+        "items": [
+          [
+            "Information",
+            "Is it current?"
+          ],
+          [
+            "Question",
+            "Is it clear?"
+          ],
+          [
+            "Response",
+            "Is it supported?"
+          ]
+        ]
+      },
+      {
+        "phrase": "There are several ways",
+        "title": "Locate the source of the risk.",
+        "kind": "flow",
+        "items": [
+          [
+            "Outdated source",
+            "Wrong facts in"
+          ],
+          [
+            "Missing context",
+            "Unclear request"
+          ],
+          [
+            "Retrieval gap",
+            "Wrong material"
+          ],
+          [
+            "Unsupported detail",
+            "Wrong claim out"
+          ]
+        ]
+      },
+      {
+        "phrase": "Consider a fictional service",
+        "title": "A small update can matter to a customer.",
+        "kind": "compare",
+        "items": [
+          [
+            "OLD HOURS",
+            "Assistant uses the old Saturday schedule."
+          ],
+          [
+            "MAINTENANCE",
+            "Named owner updates and verifies the source."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "As an SDR, ask",
+        "title": "Turn uncertainty into useful discovery.",
+        "kind": "quote",
+        "items": [
+          [
+            "ASK",
+            "Where is the current information, who maintains it, and what must be verified?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A handoff needs a working destination.",
+        "kind": "flow",
+        "items": [
+          [
+            "Trigger",
+            "Why escalate?"
+          ],
+          [
+            "Context",
+            "What does the person need?"
+          ],
+          [
+            "Owner",
+            "Who receives it?"
+          ],
+          [
+            "Next step",
+            "What should the customer expect?"
+          ]
+        ]
+      },
+      {
+        "phrase": "In a fictional equipment",
+        "title": "Different requests need different authority.",
+        "kind": "compare",
+        "items": [
+          [
+            "ROUTINE",
+            "Explain an approved delivery policy."
+          ],
+          [
+            "EXCEPTION",
+            "Route damage details for human review."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Ask what triggers",
+        "title": "Discover the exception path.",
+        "kind": "cards",
+        "items": [
+          [
+            "Routing",
+            "Queue or named team"
+          ],
+          [
+            "Availability",
+            "What happens after hours?"
+          ],
+          [
+            "Responsibility",
+            "Who checks and responds?"
+          ]
+        ]
+      },
+      {
+        "phrase": "The sales lesson",
+        "title": "Human support belongs in the design.",
+        "kind": "quote",
+        "items": [
+          [
+            "PRINCIPLE",
+            "Reduce repetitive work. Make exceptions easier for people to handle."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "“Can it just run my company?”",
+        "kind": "dialogue",
+        "items": [
+          [
+            "FICTIONAL OWNER",
+            "Does AI mean you can automate everything?"
+          ],
+          [
+            "WEAK RESPONSE",
+            "Yes. Everything, all the time, without mistakes."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "A better direction",
+        "title": "Narrow the work before expanding the promise.",
+        "kind": "quote",
+        "items": [
+          [
+            "USEFUL RESPONSE",
+            "Start with one process, the relevant information and the role of the human team."
+          ]
+        ]
+      },
+      {
+        "phrase": "Now try that",
+        "title": "Build a short, useful explanation.",
+        "kind": "cards",
+        "items": [
+          [
+            "Possibility",
+            "One specific task"
+          ],
+          [
+            "Boundary",
+            "What must be verified"
+          ],
+          [
+            "Question",
+            "How is it handled today?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Compare your answer",
+        "title": "Use the feedback to revise.",
+        "kind": "compare",
+        "items": [
+          [
+            "IF YOU LISTED FEATURES",
+            "Choose one task the business recognizes."
+          ],
+          [
+            "IF YOU OVERPROMISED",
+            "Restore verification and the human handoff."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Discuss the process without collecting secrets.",
+        "kind": "cards",
+        "items": [
+          [
+            "Use",
+            "Relevant public business facts"
+          ],
+          [
+            "Ask",
+            "Appropriate workflow questions"
+          ],
+          [
+            "Avoid",
+            "Passwords and private customer records"
+          ]
+        ]
+      },
+      {
+        "phrase": "Imagine a prospect offers",
+        "title": "A first demonstration can use fictional information.",
+        "kind": "compare",
+        "items": [
+          [
+            "UNNECESSARY RISK",
+            "Collect sensitive records for a quick example."
+          ],
+          [
+            "USEFUL ALTERNATIVE",
+            "Use sample details and note access questions."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Even ordinary business",
+        "title": "Access should match the task.",
+        "kind": "flow",
+        "items": [
+          [
+            "Purpose",
+            "What information is needed?"
+          ],
+          [
+            "Owner",
+            "Who controls it?"
+          ],
+          [
+            "Access",
+            "Who may use it?"
+          ],
+          [
+            "Record",
+            "Which source is authoritative?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Your role is",
+        "title": "Record the requirement. Preserve the boundary.",
+        "kind": "quote",
+        "items": [
+          [
+            "HANDOFF NOTE",
+            "Data and access requirements need specialist review; no private records collected."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Define the outcome before claiming the result.",
+        "kind": "cards",
+        "items": [
+          [
+            "Baseline",
+            "Understand the current work."
+          ],
+          [
+            "Measure",
+            "Choose what matters."
+          ],
+          [
+            "Verify",
+            "Keep estimates labeled."
+          ]
+        ]
+      },
+      {
+        "phrase": "Useful measures depend",
+        "title": "Speed is only one possible measure.",
+        "kind": "compare",
+        "items": [
+          [
+            "OUTPUT",
+            "How much work is produced?"
+          ],
+          [
+            "USEFULNESS",
+            "Is it accurate, reviewed and routed correctly?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Use a baseline",
+        "title": "A limited test should expose assumptions.",
+        "kind": "flow",
+        "items": [
+          [
+            "Baseline",
+            "Current process"
+          ],
+          [
+            "Test",
+            "Bounded use case"
+          ],
+          [
+            "Review",
+            "Quality and exceptions"
+          ],
+          [
+            "Decision",
+            "Continue, change or stop"
+          ]
+        ]
+      },
+      {
+        "phrase": "When you hear a number",
+        "title": "Keep the source attached to the number.",
+        "kind": "compare",
+        "items": [
+          [
+            "ESTIMATE",
+            "Taylor estimates five hours."
+          ],
+          [
+            "VERIFIED",
+            "A measured result with supporting evidence."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A simpler process change may be the answer.",
+        "kind": "cards",
+        "items": [
+          [
+            "Ownership",
+            "Who does the next step?"
+          ],
+          [
+            "Consistency",
+            "Is the process followed?"
+          ],
+          [
+            "Technology",
+            "What would actually improve it?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Consider a fictional repair",
+        "title": "The calls are answered. The handoff is unclear.",
+        "kind": "flow",
+        "items": [
+          [
+            "Call",
+            "Answered by a person"
+          ],
+          [
+            "Details",
+            "Written on paper"
+          ],
+          [
+            "Calendar",
+            "Ownership unknown"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Compare two responses",
+        "title": "Test the problem before selecting a tool.",
+        "kind": "compare",
+        "items": [
+          [
+            "WEAK",
+            "Our AI fixes all of that."
+          ],
+          [
+            "USEFUL",
+            "Who is responsible for the next step today?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "A specialist may still",
+        "title": "Let the workflow drive the recommendation.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "A relevant build starts with an understood process."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A demand for certainty needs an honest answer.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "FICTIONAL OWNER",
+            "Can you guarantee perfect answers and more customers?"
+          ],
+          [
+            "YOUR TASK",
+            "Address risk without inventing certainty."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "You might say",
+        "title": "State the limit and invite useful discovery.",
+        "kind": "quote",
+        "items": [
+          [
+            "RESPONSE",
+            "I cannot guarantee that. We need to understand your information, workflow and measures of success."
+          ]
+        ]
+      },
+      {
+        "phrase": "Try responding yourself",
+        "title": "Practice a clear answer.",
+        "kind": "cards",
+        "items": [
+          [
+            "Acknowledge",
+            "Hear the concern."
+          ],
+          [
+            "Boundary",
+            "State what you cannot promise."
+          ],
+          [
+            "Question",
+            "Explore one relevant use case."
+          ]
+        ]
+      },
+      {
+        "phrase": "The useful response",
+        "title": "Honesty is part of qualification.",
+        "kind": "focus",
+        "items": [
+          [
+            "CONTINUE",
+            "Explore a realistic use case."
+          ],
+          [
+            "EXIT",
+            "Respect a mismatch in expectations."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A good handoff is a clear discovery record.",
+        "kind": "cards",
+        "items": [
+          [
+            "Process",
+            "What happens today?"
+          ],
+          [
+            "Outcome",
+            "What would improve?"
+          ],
+          [
+            "Unknowns",
+            "What must the specialist verify?"
+          ]
+        ]
+      },
+      {
+        "phrase": "For our fictional equipment",
+        "title": "Keep reported facts together.",
+        "kind": "quote",
+        "items": [
+          [
+            "FICTIONAL HANDOFF",
+            "Routine delivery questions; damaged items need review; document ownership is unclear."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "A separate hypothesis",
+        "title": "Separate a possible fit from a verified design.",
+        "kind": "compare",
+        "items": [
+          [
+            "HYPOTHESIS",
+            "Maintained knowledge may help routine questions."
+          ],
+          [
+            "VERIFY",
+            "System access, actions, owner and success measures."
+          ]
+        ]
+      },
+      {
+        "phrase": "Finally, record",
+        "title": "Make the next conversation informed.",
+        "kind": "meeting",
+        "items": [
+          [
+            "15–20 minutes",
+            "Focused video Growth Assessment"
+          ],
+          [
+            "Human AI Specialist",
+            "Evaluates the build"
+          ],
+          [
+            "Custom pricing",
+            "Discussed only during the assessment"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Explain the work clearly.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Name the task."
+          ],
+          [
+            "02",
+            "Separate assistance from action."
+          ],
+          [
+            "03",
+            "Include information and human ownership."
+          ],
+          [
+            "04",
+            "Measure without promising."
+          ],
+          [
+            "05",
+            "Give the specialist useful questions."
+          ]
+        ]
+      },
+      {
+        "phrase": "When a business asks",
+        "title": "Match the answer to the concern.",
+        "kind": "cards",
+        "items": [
+          [
+            "Accuracy",
+            "Information and verification"
+          ],
+          [
+            "People",
+            "Human handoff"
+          ],
+          [
+            "Results",
+            "Appropriate measures"
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical task",
+        "title": "Write three useful sentences.",
+        "kind": "flow",
+        "items": [
+          [
+            "Possibility",
+            "What assistance may help?"
+          ],
+          [
+            "Boundary",
+            "What must be verified?"
+          ],
+          [
+            "Question",
+            "How does the process work today?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the knowledge check",
+        "title": "Practice clarity. Review. Try again.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz, save your explanation and revise it using specific feedback."
+          ]
+        ]
+      }
+    ]
+  }
+]

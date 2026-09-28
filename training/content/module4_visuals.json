@@ -1,0 +1,666 @@
+[
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Research should improve the first question.",
+        "kind": "cards",
+        "items": [
+          [
+            "Legitimacy",
+            "The right business"
+          ],
+          [
+            "Relevance",
+            "A plausible reason to talk"
+          ],
+          [
+            "Honesty",
+            "Evidence separated from assumptions"
+          ]
+        ]
+      },
+      {
+        "phrase": "A useful first pass can often",
+        "title": "Make a focused first pass.",
+        "kind": "flow",
+        "items": [
+          [
+            "Campaign",
+            "Approved direction"
+          ],
+          [
+            "Business",
+            "Confirm identity"
+          ],
+          [
+            "Source",
+            "Relevant public evidence"
+          ],
+          [
+            "Question",
+            "One useful next step"
+          ]
+        ]
+      },
+      {
+        "phrase": "The danger is turning a clue",
+        "title": "A clue is not a confirmed pain point.",
+        "kind": "compare",
+        "items": [
+          [
+            "OBSERVATION",
+            "A contact form exists."
+          ],
+          [
+            "HYPOTHESIS",
+            "The response process may be worth asking about."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use the campaign you were assigned.",
+        "kind": "cards",
+        "items": [
+          [
+            "Who",
+            "Industry and territory"
+          ],
+          [
+            "Why",
+            "Relevant process"
+          ],
+          [
+            "How",
+            "Approved channels and records"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the brief says to explore",
+        "title": "More results do not mean better fit.",
+        "kind": "compare",
+        "items": [
+          [
+            "CAMPAIGN",
+            "Quote follow-up with service businesses"
+          ],
+          [
+            "DISTRACTION",
+            "An unrelated market with a larger list"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "A practical brief should leave you",
+        "title": "The brief guides research. The prospect confirms reality.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Campaign direction is a starting point, not proof of a business problem."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Confirm which business the record represents.",
+        "kind": "flow",
+        "items": [
+          [
+            "Name",
+            "Possible match"
+          ],
+          [
+            "Location",
+            "Right operation"
+          ],
+          [
+            "Website",
+            "Supporting evidence"
+          ],
+          [
+            "Contact",
+            "Appropriate business route"
+          ]
+        ]
+      },
+      {
+        "phrase": "For a fictional example, suppose you",
+        "title": "Similar names can represent different businesses.",
+        "kind": "compare",
+        "items": [
+          [
+            "ENTRY A",
+            "Cedar Home Services in one city"
+          ],
+          [
+            "ENTRY B",
+            "Same name in another city"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "If the source is incomplete, keep",
+        "title": "An honest unknown is useful information.",
+        "kind": "quote",
+        "items": [
+          [
+            "RECORD",
+            "Source, checked details and unresolved identity questions."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Observe how a customer starts the process.",
+        "kind": "cards",
+        "items": [
+          [
+            "Call",
+            "A conversation"
+          ],
+          [
+            "Request",
+            "An inquiry or quotation"
+          ],
+          [
+            "Purchase",
+            "A transaction path"
+          ]
+        ]
+      },
+      {
+        "phrase": "Imagine a fictional landscaping company with",
+        "title": "Separate observation, hypothesis and conclusion.",
+        "kind": "flow",
+        "items": [
+          [
+            "Observed",
+            "Quote request page"
+          ],
+          [
+            "Hypothesis",
+            "Follow-up process exists"
+          ],
+          [
+            "Not established",
+            "A problem or need for automation"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Turn the observation into a neutral",
+        "title": "Ask about the step behind the page.",
+        "kind": "quote",
+        "items": [
+          [
+            "OPEN QUESTION",
+            "When a quote request arrives, how does your team handle the next step?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Match confidence to the source.",
+        "kind": "compare",
+        "items": [
+          [
+            "PUBLIC OBSERVATION",
+            "A page or listing states something."
+          ],
+          [
+            "CONFIRMED PROCESS",
+            "The appropriate person explains current operations."
+          ]
+        ]
+      },
+      {
+        "phrase": "Suppose a review says a fictional",
+        "title": "A review is a clue with limits.",
+        "kind": "cards",
+        "items": [
+          [
+            "Context",
+            "When and what happened?"
+          ],
+          [
+            "Restraint",
+            "No accusation or invented audit"
+          ],
+          [
+            "Question",
+            "Explore current handling"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "When sources conflict, record the conflict",
+        "title": "Conflicting sources create a verification question.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Record the discrepancy; do not choose the version that sells harder."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Find the owner of the process and the path forward.",
+        "kind": "cards",
+        "items": [
+          [
+            "Role",
+            "What is known?"
+          ],
+          [
+            "Responsibility",
+            "Who handles this work?"
+          ],
+          [
+            "Authority",
+            "Who needs to be involved?"
+          ]
+        ]
+      },
+      {
+        "phrase": "For a fictional multi-location company, the",
+        "title": "A useful contact may provide a realistic path.",
+        "kind": "flow",
+        "items": [
+          [
+            "Local manager",
+            "Understands the workflow"
+          ],
+          [
+            "Technology owner",
+            "Evaluates a change"
+          ],
+          [
+            "Introduction",
+            "Only when actually agreed"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "At the same time, do not",
+        "title": "Record authority honestly.",
+        "kind": "quote",
+        "items": [
+          [
+            "BOUNDARY",
+            "A title or guessed name is not a confirmed decision-maker conversation."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Check the existing relationship before outreach.",
+        "kind": "cards",
+        "items": [
+          [
+            "Owner",
+            "Who is working the lead?"
+          ],
+          [
+            "History",
+            "What was already discussed?"
+          ],
+          [
+            "Restrictions",
+            "What must be honored?"
+          ]
+        ]
+      },
+      {
+        "phrase": "The Lead Finder screens for matching",
+        "title": "Automated matching still needs context.",
+        "kind": "compare",
+        "items": [
+          [
+            "TOOL",
+            "Helps identify matching records."
+          ],
+          [
+            "EMPLOYEE",
+            "Understands the business and prior instructions."
+          ]
+        ]
+      },
+      {
+        "phrase": "If you find an existing record,",
+        "title": "Do not create a duplicate to bypass history.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Preserve ownership, callback agreements and contact restrictions."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Prioritize an appropriate next action.",
+        "kind": "flow",
+        "items": [
+          [
+            "Campaign",
+            "Relevant direction"
+          ],
+          [
+            "Evidence",
+            "Usable information"
+          ],
+          [
+            "Agreement",
+            "Requested follow-up"
+          ],
+          [
+            "Action",
+            "Research or conversation"
+          ]
+        ]
+      },
+      {
+        "phrase": "Compare two fictional records. One is",
+        "title": "Usable facts beat a dramatic prediction.",
+        "kind": "compare",
+        "items": [
+          [
+            "RECORD A",
+            "Confirmed business and relevant process"
+          ],
+          [
+            "RECORD B",
+            "Uncertain identity and invented buying intent"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Use honest reasons when deciding what",
+        "title": "A score is a review aid, not proof of demand.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Explain priority with evidence and actual agreements."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use only the supplied public facts.",
+        "kind": "cards",
+        "items": [
+          [
+            "Observed",
+            "Residential quote requests"
+          ],
+          [
+            "Contact",
+            "General office phone"
+          ],
+          [
+            "Unknown",
+            "Response speed, systems and follow-up"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Take a short research pass using",
+        "title": "Write three lines without inventing a problem.",
+        "kind": "flow",
+        "items": [
+          [
+            "Fact",
+            "What was observed?"
+          ],
+          [
+            "Hypothesis",
+            "What might be worth exploring?"
+          ],
+          [
+            "Question",
+            "How would you test it?"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong answer might record that",
+        "title": "Replace unsupported conclusions with questions.",
+        "kind": "compare",
+        "items": [
+          [
+            "UNSUPPORTED",
+            "Their busy team needs AI."
+          ],
+          [
+            "USEFUL",
+            "What happens after a quotation request arrives?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use the one observation that makes the question relevant.",
+        "kind": "flow",
+        "items": [
+          [
+            "Reason",
+            "Why this process?"
+          ],
+          [
+            "Observation",
+            "What you actually saw"
+          ],
+          [
+            "Question",
+            "Invite the real answer"
+          ]
+        ]
+      },
+      {
+        "phrase": "For Cedar Landscape Studio, you might",
+        "title": "A researched opening can stay natural.",
+        "kind": "quote",
+        "items": [
+          [
+            "FICTIONAL OPENING",
+            "I saw that customers can request project quotations. How does your team handle the next step?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Try an opening aloud in your",
+        "title": "Adapt when the prospect corrects you.",
+        "kind": "cards",
+        "items": [
+          [
+            "Acknowledge",
+            "Accept the correction."
+          ],
+          [
+            "Clarify",
+            "Understand the current process."
+          ],
+          [
+            "Continue",
+            "Follow the answer."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Keep research tied to the business purpose.",
+        "kind": "focus",
+        "items": [
+          [
+            "USEFUL",
+            "Relevant public professional context"
+          ],
+          [
+            "UNNECESSARY",
+            "Unrelated personal details"
+          ]
+        ]
+      },
+      {
+        "phrase": "Record the business identity, relevant source,",
+        "title": "Leave a concise, usable record.",
+        "kind": "cards",
+        "items": [
+          [
+            "Identity and source",
+            "Which business and evidence?"
+          ],
+          [
+            "Observation and question",
+            "What is known and worth asking?"
+          ],
+          [
+            "Ownership and restrictions",
+            "Who acts, and under what agreement?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Before moving to the next record,",
+        "title": "Read the note as the next employee.",
+        "kind": "quote",
+        "items": [
+          [
+            "CHECK",
+            "Can someone else distinguish the fact, hypothesis and next action?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Make the routine repeatable.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Read the campaign."
+          ],
+          [
+            "02",
+            "Confirm the business."
+          ],
+          [
+            "03",
+            "Inspect a relevant source."
+          ],
+          [
+            "04",
+            "Check CRM history and restrictions."
+          ],
+          [
+            "05",
+            "Prepare one honest question."
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical submission, create a",
+        "title": "Submit a note that survives scrutiny.",
+        "kind": "flow",
+        "items": [
+          [
+            "Observation",
+            "Supported fact"
+          ],
+          [
+            "Hypothesis",
+            "Labeled possibility"
+          ],
+          [
+            "Question",
+            "Test the uncertainty"
+          ],
+          [
+            "Opener",
+            "Natural and honest"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the scenario quiz and save",
+        "title": "Research starts the conversation. Discovery changes the picture.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz, revise the note and practice your opener."
+          ]
+        ]
+      }
+    ]
+  }
+]

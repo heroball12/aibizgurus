@@ -1,0 +1,252 @@
+{
+  "title": "CRM Handoff & Running a Disciplined Sales Day",
+  "short_title": "A DISCIPLINED SALES DAY",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Prioritize real commitments, maintain accurate CRM records and prepare specialist handoffs with a focused coaching routine.",
+  "skills": [
+    "crm-discipline",
+    "handoff",
+    "accuracy",
+    "ethics",
+    "listening"
+  ],
+  "scenes": [
+    {
+      "title": "A disciplined day makes the next action easier",
+      "narration": "A productive sales day is a sequence of clear priorities, useful conversations and accurate records. It is not simply the largest number of actions you can fit into the CRM. When ownership, follow-up and handoffs are clear, the team spends less time reconstructing what happened and more time having relevant conversations.\nThe daily objective is to create qualified Growth Assessments while preserving a trustworthy pipeline. That means preparing the right work, following the prospect's actual answers and leaving the next employee or specialist enough context to act. A busy day can still be a poor day if it creates duplicated outreach, misleading statuses or commitments nobody owns.\nThis lesson connects the tools and habits you have practiced across the Academy. We will review a practical start-of-day routine, concise notes, specialist handoffs and a short coaching loop. Use your manager's current campaign and performance guidance. The Academy does not invent a universal quota, compensation rule or outreach cadence for every employee and every market.",
+      "pauses": [],
+      "start": 0,
+      "end": 75,
+      "time": "00:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A useful day combines action and accuracy."
+    },
+    {
+      "title": "Begin with existing commitments",
+      "narration": "Start by reviewing the work already promised. Check due follow-ups, confirmed assessments and any pending action assigned to you. A requested callback deserves attention because it is an actual agreement, not merely because a dashboard tile looks urgent. Read the record before contacting the business so you understand the reason and the current context.\nConfirm that you are the appropriate owner and that no newer activity changes the next step. Another employee may have booked a meeting, recorded a restriction or resolved a question since you last opened the lead. The latest history matters more than an old personal reminder. If responsibility is unclear, coordinate through the approved process before creating duplicated contact.\nThen prepare a manageable working queue consistent with the campaign. Do not treat a large queue as proof that the day is organized. You should know why each near-term action belongs there: an agreed callback, a relevant prospect to research or a handoff that needs completion. Clear reasons make it easier to adjust when the day changes.",
+      "pauses": [],
+      "start": 75,
+      "end": 150,
+      "time": "01:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Review the commitments already made."
+    },
+    {
+      "title": "Prepare new prospects in a focused block",
+      "narration": "When it is time for new prospecting, use the campaign brief and the research method from the earlier lessons. Confirm the business, review a relevant public source and prepare one useful process question. Use Lead Finder as a starting point when it serves the market, then verify results and check existing CRM history before adding more records.\nA focused research block helps you avoid switching between unrelated tasks every minute. It should still remain proportionate. Do not spend the entire day perfecting notes about businesses you never approach, and do not rush so quickly that identities, phone numbers and restrictions become unreliable. The right balance supports a relevant first conversation.\nKeep incomplete records visibly incomplete. If a listing has conflicting contact information, leave a verification task or use the approved review process. Do not fill the gap with a guess merely to make the queue look ready. The point of preparation is to reduce avoidable uncertainty before outreach while preserving the questions that only the prospect can answer.",
+      "pauses": [],
+      "start": 150,
+      "end": 225,
+      "time": "02:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Prepare a relevant first question."
+    },
+    {
+      "title": "Capture the outcome while the conversation is fresh",
+      "narration": "After an interaction, record what actually happened before moving to the next business. An unanswered attempt, a gatekeeper conversation, an information request and a confirmed assessment are different outcomes. Choose the appropriate status and write a concise note that preserves the useful context. Do not rely on memory to reconstruct a full day of calls later.\nA strong note identifies the relevant person or role, the process discussed, the important answer and the next agreement. If no agreement exists, say what remains pending. Avoid vague labels such as great conversation or probably interested when the evidence can be stated more clearly. The next person should not have to guess what made the conversation useful.\nUse the available follow-up fields for an actual next step and check the date. Do not mark a lead won because an assessment was booked, or completed because the person accepted a calendar invitation. Accurate stages let the team understand where work is really happening. A status is a statement about the relationship, not a motivational label.",
+      "pauses": [],
+      "start": 225,
+      "end": 300,
+      "time": "03:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Record the actual interaction."
+    },
+    {
+      "title": "Separate facts, hypotheses and unknowns",
+      "narration": "A handoff becomes unreliable when assumptions are written in the same voice as confirmed facts. The owner reports manual quotation follow-up is different from we verified a broken CRM. A possible automation opportunity is different from a solution that has been scoped. Use language that makes the source and confidence of each statement clear.\nFor a fictional example, Northstar Service Studio says its office team reviews outstanding quotes on Fridays. You think clearer ownership might reduce the catch-up work, but you have not evaluated the software. The fact is the reported review process. The hypothesis is that ownership or workflow support may help. The unknown is what the current systems can support.\nThis distinction is especially important when AI helps summarize notes. Review the summary against the original interaction. A cleaner sentence can accidentally sound more certain than the evidence. Correct any invented detail, implied promise or changed next step before it becomes the record another employee relies on.",
+      "pauses": [],
+      "start": 300,
+      "end": 375,
+      "time": "05:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Label the strength of the information."
+    },
+    {
+      "title": "Build a specialist handoff around the business",
+      "narration": "The specialist should be able to open the assessment brief and understand why the customer is attending. Start with the current workflow and tools as known. Add the main bottleneck, the desired outcome and the person's actual questions. Include the participation path and the confirmed meeting details through the booking workflow.\nThe current CRM brief provides fields for how the business operates, current tools, the main bottleneck and desired outcome. Use them to organize the relevant facts. If a tool or responsibility is unknown, preserve that gap. A clear unknown gives the specialist a question to ask; an invented answer can send the assessment in the wrong direction.\nKeep the proposal out of the SDR handoff unless you are recording an actual authorized specialist action through the approved process. SDRs do not promise the final design or discuss custom pricing. The handoff should explain the business and the evaluation needed, giving the human AI Specialist room to identify the build that is appropriate for that customer.",
+      "pauses": [],
+      "start": 375,
+      "end": 450,
+      "time": "06:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Explain why the customer is attending."
+    },
+    {
+      "title": "Make ownership of the next step explicit",
+      "narration": "A good note is not enough if nobody knows who should act on it. Use the approved team workflow to make the next responsibility clear. If you promised a resource, know who will send it. If the specialist needs to review a concern before the assessment, make that concern available through the proper internal route.\nDo not assume that typing a field automatically sends a notification, creates a calendar event or transfers ownership. Verify the behavior of the tool you are using and follow the current process. The CRM's assessment form, for example, records confirmed booking details; it does not send invitations. Similar distinctions matter throughout a shared workflow.\nWhen handing work to another employee, provide the context and the actual deadline or agreement. Avoid vague requests such as handle this without explaining what the customer expects. A clear handoff states who does what next and why. That makes it easier for the receiving person to confirm whether the action is understood and feasible.",
+      "pauses": [],
+      "start": 450,
+      "end": 525,
+      "time": "07:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A next step needs a responsible person."
+    },
+    {
+      "title": "Use lead sheets for structured cleanup",
+      "narration": "The built-in lead sheet can make structured updates easier when you need to work across several records. Use the prepared columns, review the current values and save intended changes to the CRM. Keep the editing focused on a clear task, such as correcting verified contact details or organizing known follow-up information.\nA sheet does not remove the need to understand history. Removing a row from the sheet keeps the underlying CRM record. A conflict means newer work may need reconciliation. An exported file is a snapshot that can become outdated. Review those distinctions before making a large update, especially when other employees are working the same business relationships.\nDo not perform broad cleanup by changing every uncertain status to the same optimistic label. Preserve accurate outcomes and ask a manager when ownership or record meaning is unclear. Efficient editing should reduce confusion, not hide it. The best cleanup leaves the next rep with more reliable information and fewer ambiguous actions.",
+      "pauses": [],
+      "start": 525,
+      "end": 600,
+      "time": "08:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Use a sheet for a clear structured task."
+    },
+    {
+      "title": "Practice the handoff note",
+      "narration": "Your fictional prospect is Taylor at Northstar Service Studio. Taylor reports that the office team reviews outstanding quotations on Fridays, sometimes duplicating follow-up because ownership is unclear. The goal is a reliable next action for each quote. Current software compatibility is unknown. A Growth Assessment has been confirmed through the calendar, and the actual meeting details are available.\nPause and write the specialist handoff. Separate the reported process, the possible direction and the questions still needing evaluation. Include the real meeting details in the appropriate fields, using sample information only in this exercise. Do not add a price, a guaranteed result or a final implementation design.\nA strong note explains Friday review, duplicated follow-up, unclear ownership and the desired improvement. It labels software compatibility as unverified and connects the assessment to evaluating that workflow. If your note says the CRM is broken or the customer accepted our automation package, remove those unsupported claims. Retry until another person could begin the assessment from your note without being misled.",
+      "pauses": [
+        [
+          "Pause and write the specialist handoff.",
+          25,
+          "Record facts, desired outcome, unknowns and the assessment purpose."
+        ]
+      ],
+      "start": 600,
+      "end": 675,
+      "time": "10:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Use the supplied Northstar facts."
+    },
+    {
+      "title": "Review the day using evidence",
+      "narration": "At the end of a work block or day, review both activity and the quality of the outcomes. Which conversations produced useful discovery? Which assessments have a clear purpose and accurate handoff? Which tasks remain because of an actual customer agreement? Use the current management metrics, but do not let a number replace understanding of the underlying work.\nLook for recurring friction. Perhaps openings are too long, information requests end without a relevant topic or handoffs omit the current workflow. Choose one pattern to practice. A short reflection can ask what worked, where conversations stopped and what you want to improve tomorrow. You do not need an essay to identify a useful coaching target.\nKeep the evidence specific. Two prospects asked how staff would stay involved is more actionable than people hate AI. A manager can help decide whether the pattern calls for a wording change, a relevant demonstration or more discovery. Avoid turning a small sample into a universal market conclusion. Use it as a reason to investigate and improve.",
+      "pauses": [],
+      "start": 675,
+      "end": 750,
+      "time": "11:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Review activity and outcome quality together."
+    },
+    {
+      "title": "Use Guru and human coaching deliberately",
+      "narration": "Guru can help explain a lesson, practice a scenario and provide advisory feedback. Use that support to work on a specific behavior rather than asking for a generic confidence boost. Bring a fictionalized situation or the appropriate approved context, and ask for a correction you can apply in the next attempt.\nThe Academy preserves practice and quiz evidence, while managers review the relevant work and determine readiness. Guru's feedback does not independently authorize selling, pricing or access to systems. A human manager can also observe spoken practice and supervised calls, which provide evidence that a written role-play cannot establish by itself.\nTreat coaching as a loop: attempt, feedback, retry and compare. If the feedback says you pitched before understanding the handoff, practice asking one more relevant process question. Show the change in the second attempt. Improvement is more useful when it is tied to observable behavior than when it becomes a permanent label about the employee's personality or potential.",
+      "pauses": [],
+      "start": 750,
+      "end": 825,
+      "time": "12:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Ask Guru for a specific coaching target."
+    },
+    {
+      "title": "Your disciplined sales-day routine",
+      "narration": "Use a repeatable cycle: review commitments, prepare relevant prospects, conduct focused conversations, record actual outcomes and complete the handoffs you own. Leave the workspace ready for the next responsible action. That routine makes the system easier to trust and gives your manager a clearer picture of where coaching or support is needed.\nFor your practical submission, build a fictional daily queue with one due callback, one prospect needing verification and one confirmed assessment needing a brief. Explain the priority and next action for each. Then write the assessment handoff and choose one short practice exercise based on an observed weakness in your earlier role-plays.\nComplete the quiz and ask for feedback on the clarity of your records. The standard is not a perfect-looking dashboard. It is a day of honest, purposeful work that the team can continue without reconstructing your intentions. Accurate CRM habits and useful coaching turn individual conversations into a reliable process for setting Growth Assessments.",
+      "pauses": [],
+      "start": 825,
+      "end": 900,
+      "time": "13:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Use a repeatable daily cycle."
+    }
+  ],
+  "job_aid": "SALES-DAY FIELD GUIDE\nSTART: real commitments, due follow-ups, upcoming assessments, ownership and recent history.\nPREPARE: campaign → verified identity → relevant source → honest process question.\nRECORD: person/role + process + important answer + actual outcome + next agreement. Do it while fresh.\nDISTINGUISH: fact, hypothesis, unknown; attempt, conversation, information request, callback and assessment.\nHANDOFF: current workflow/tools, bottleneck, goal, participants, concerns, unknowns and confirmed meeting details.\nOWNERSHIP: who does what next and by what actual agreed timing? Saved fields do not automatically prove notifications or reservations.\nSHEETS: review before saving; removing a row keeps the CRM record; reconcile conflicts and outdated exports.\nREFLECT: what worked, where conversations stalled, one behavior to practice. No invented universal quota or cadence.\nCOACH: attempt → specific feedback → retry → compare. Guru is advisory; human managers determine readiness.",
+  "questions": [
+    {
+      "skill": "crm-discipline",
+      "prompt": "What should a disciplined day begin by reviewing?",
+      "choices": [
+        "Only new lead counts.",
+        "Existing commitments, due follow-ups, confirmed assessments and current ownership/history.",
+        "Every unassigned record regardless of campaign.",
+        "An invented universal quota."
+      ],
+      "correct_index": 1,
+      "explanation": "Real agreements and current context guide useful priorities. Management supplies campaign and performance expectations."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "Which note separates evidence correctly?",
+      "choices": [
+        "Broken CRM, guaranteed fix.",
+        "Customer accepted a package.",
+        "Owner reports Friday quote review; clearer ownership may help; compatibility unverified.",
+        "Perfect fit based on the website."
+      ],
+      "correct_index": 2,
+      "explanation": "The note distinguishes reported fact, hypothesis and unknown. That gives the specialist an honest starting point."
+    },
+    {
+      "skill": "crm-discipline",
+      "prompt": "When should a conversation outcome be recorded?",
+      "choices": [
+        "While it is fresh, using the actual event and agreement.",
+        "At the end of the week from memory.",
+        "Before the call using the desired outcome.",
+        "Only after a sale."
+      ],
+      "correct_index": 0,
+      "explanation": "Prompt factual recording reduces invented detail, forgotten commitments and misleading stages."
+    },
+    {
+      "skill": "handoff",
+      "prompt": "What makes ownership of the next step clear?",
+      "choices": [
+        "A vague handle this note.",
+        "Assuming every saved field sends a notification.",
+        "Leaving the responsible person unknown.",
+        "A defined action, responsible person, context and actual timing agreement."
+      ],
+      "correct_index": 3,
+      "explanation": "A useful handoff explains who does what next and why. Storing information alone does not prove notification or transfer of responsibility."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "An AI summary turns a possible fit into a guaranteed integration. What should happen?",
+      "choices": [
+        "Keep it because the wording is polished.",
+        "Correct the claim against the actual conversation before saving or using it.",
+        "Add a price estimate.",
+        "Treat it as verified."
+      ],
+      "correct_index": 1,
+      "explanation": "AI assistance does not establish facts or authority. Review summaries for changed certainty, promises and agreements."
+    },
+    {
+      "skill": "crm-discipline",
+      "prompt": "Removing a row from a lead sheet does what?",
+      "choices": [
+        "Deletes the CRM relationship history.",
+        "Books an assessment.",
+        "Removes it from the sheet while retaining the underlying CRM record.",
+        "Reassigns the lead automatically."
+      ],
+      "correct_index": 2,
+      "explanation": "Sheet organization and CRM record deletion are different operations. Preserve that distinction during cleanup."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "Two prospects asked about staff involvement. What is a proportionate conclusion?",
+      "choices": [
+        "This is a pattern worth exploring and practicing, not proof that the whole market rejects AI.",
+        "Everyone hates AI.",
+        "No business should be contacted.",
+        "A guaranteed industry-wide objection rate."
+      ],
+      "correct_index": 0,
+      "explanation": "Use the observed sample as a coaching clue without exaggerating its scope."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "What does Guru advisory feedback authorize?",
+      "choices": [
+        "Independent selling automatically.",
+        "SDR pricing.",
+        "Access to any customer system.",
+        "Practice guidance; human management still reviews readiness and role authority."
+      ],
+      "correct_index": 3,
+      "explanation": "Guru supports learning. Manager review determines readiness, and certification does not expand commercial or access authority."
+    }
+  ],
+  "scenario": {
+    "title": "Northstar handoff and daily priorities",
+    "persona": "FICTIONAL Taylor at Northstar Service Studio. Office staff review outstanding quotations on Fridays. Follow-up is sometimes duplicated because ownership is unclear. Desired outcome: one reliable next action for each quote. Compatibility with current tools is unverified. In this exercise the calendar booking is confirmed and sample details are available; no real invitation is sent. Ask the learner to write a handoff, distinguish fact from hypothesis and prioritize a due callback, an uncertain prospect identity and this assessment brief.",
+    "opening": "Guru: Prepare Northstar’s specialist handoff and explain the next actions in your fictional daily queue.",
+    "rubric": {
+      "crm-discipline": "Accurate status, current history, clear priority and actual next action.",
+      "handoff": "Useful workflow, friction, goal, participants, meeting context and open questions.",
+      "accuracy": "Separates reported facts, hypotheses and unknowns; reviews AI summaries.",
+      "ethics": "No invented commercial promises, restrictions bypass or automatic authority from coaching."
+    }
+  }
+}

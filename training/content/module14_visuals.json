@@ -1,0 +1,658 @@
+[
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Connect the close to the discovered need.",
+        "kind": "flow",
+        "items": [
+          [
+            "Process",
+            "What happens today?"
+          ],
+          [
+            "Goal",
+            "What would improve?"
+          ],
+          [
+            "Evaluation",
+            "What should the specialist review?"
+          ]
+        ]
+      },
+      {
+        "phrase": "The goal is a qualified Growth",
+        "title": "A qualified meeting begins with understanding.",
+        "kind": "cards",
+        "items": [
+          [
+            "Purpose",
+            "A relevant reason to meet"
+          ],
+          [
+            "People",
+            "Appropriate participants"
+          ],
+          [
+            "Expectations",
+            "No unsupported promises"
+          ]
+        ]
+      },
+      {
+        "phrase": "In this lesson, we will practice",
+        "title": "Calendar booking and CRM recording are separate steps.",
+        "kind": "compare",
+        "items": [
+          [
+            "CALENDAR",
+            "Confirms an actual reservation"
+          ],
+          [
+            "CRM",
+            "Records the confirmed details and context"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Describe the actual assessment.",
+        "kind": "cards",
+        "items": [
+          [
+            "Format",
+            "Complimentary 15–20 minute video call"
+          ],
+          [
+            "Person",
+            "Qualified human AI Specialist"
+          ],
+          [
+            "Purpose",
+            "Review operations, identify opportunities and discuss approach"
+          ]
+        ]
+      },
+      {
+        "phrase": "The Guru character on the website",
+        "title": "Keep the roles clear.",
+        "kind": "compare",
+        "items": [
+          [
+            "GURU CHARACTER",
+            "Guides, demonstrates and coaches"
+          ],
+          [
+            "HUMAN AI SPECIALIST",
+            "Conducts the Growth Assessment"
+          ]
+        ]
+      },
+      {
+        "phrase": "Custom pricing belongs in that specialist",
+        "title": "Pricing follows the recommended build.",
+        "kind": "quote",
+        "items": [
+          [
+            "POLICY",
+            "Only qualified human AI Specialists discuss custom pricing, only during the Growth Assessment."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Make the invitation specific to the conversation.",
+        "kind": "compare",
+        "items": [
+          [
+            "GENERIC",
+            "Would you like to learn about AI?"
+          ],
+          [
+            "RELEVANT",
+            "Would it be useful to review the quotation handoff you described?"
+          ]
+        ]
+      },
+      {
+        "phrase": "You might say: based on the",
+        "title": "A clear invitation has three parts.",
+        "kind": "flow",
+        "items": [
+          [
+            "Reason",
+            "The stated workflow"
+          ],
+          [
+            "Assessment",
+            "Accurate format and purpose"
+          ],
+          [
+            "Question",
+            "Would that be useful?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Keep the invitation proportionate. Do not",
+        "title": "Ask, pause and follow the answer.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "When they agree, move to scheduling instead of restarting the product presentation."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Notice a practical readiness signal.",
+        "kind": "cards",
+        "items": [
+          [
+            "Who",
+            "Who would review this with us?"
+          ],
+          [
+            "How",
+            "How do we schedule?"
+          ],
+          [
+            "Setup",
+            "Could the specialist evaluate our current tools?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Do not continue a ten-minute feature",
+        "title": "Move from interest to an actual next step.",
+        "kind": "flow",
+        "items": [
+          [
+            "Confirm",
+            "The relevant purpose"
+          ],
+          [
+            "Explain",
+            "The assessment"
+          ],
+          [
+            "Schedule",
+            "Use the real booking process"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the person is interested but",
+        "title": "A planned invitation is not confirmed attendance.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Record participant agreements at the level the evidence supports."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use the calendar to confirm availability.",
+        "kind": "flow",
+        "items": [
+          [
+            "Open",
+            "The actual booking calendar"
+          ],
+          [
+            "Choose",
+            "An available agreed slot"
+          ],
+          [
+            "Complete",
+            "The required booking steps"
+          ],
+          [
+            "Verify",
+            "The resulting confirmation"
+          ]
+        ]
+      },
+      {
+        "phrase": "Follow the calendar's current steps and",
+        "title": "Confirm details explicitly.",
+        "kind": "cards",
+        "items": [
+          [
+            "Date and time",
+            "Use a complete, unambiguous date"
+          ],
+          [
+            "Timezone",
+            "Check both parties understand it"
+          ],
+          [
+            "Attendees",
+            "Correct contact information"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the booking only for the",
+        "title": "A failed or incomplete booking is not confirmed.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Check the result before recording a reservation."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Record the confirmed details in the lead brief.",
+        "kind": "crm",
+        "items": [
+          [
+            "Confirmed time",
+            "Match the displayed CRM timezone"
+          ],
+          [
+            "Video link",
+            "Use the actual meeting route"
+          ]
+        ],
+        "capture": "booking"
+      },
+      {
+        "phrase": "The confirmation checkbox states that the",
+        "title": "This form records; it does not send invitations.",
+        "kind": "quote",
+        "items": [
+          [
+            "CHECKBOX STANDARD",
+            "Select confirmed only after the customer has agreed and the calendar booking is complete."
+          ]
+        ]
+      },
+      {
+        "phrase": "Save the assessment brief and verify",
+        "title": "Verify the saved result.",
+        "kind": "flow",
+        "items": [
+          [
+            "Status",
+            "Assessment booked when actually confirmed"
+          ],
+          [
+            "Details",
+            "Correct time and meeting route"
+          ],
+          [
+            "Completion",
+            "Only after the assessment occurs"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Give the specialist the business context.",
+        "kind": "crm",
+        "items": [
+          [
+            "Current operation",
+            "Workflow, tools and reported friction"
+          ],
+          [
+            "Desired outcome",
+            "The improvement the prospect wants"
+          ]
+        ],
+        "capture": "handoff"
+      },
+      {
+        "phrase": "For our fictional example, Northstar Service",
+        "title": "Use facts and preserve the unknowns.",
+        "kind": "cards",
+        "items": [
+          [
+            "Reported",
+            "Manual quotation follow-up"
+          ],
+          [
+            "Goal",
+            "Clearer ownership"
+          ],
+          [
+            "Unverified",
+            "Current CRM compatibility"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "The form also contains strategy and",
+        "title": "Field visibility does not expand your authority.",
+        "kind": "quote",
+        "items": [
+          [
+            "POLICY",
+            "SDRs provide accurate context. The qualified human specialist handles custom pricing during the assessment."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Recap the real meeting details.",
+        "kind": "cards",
+        "items": [
+          [
+            "When",
+            "Date, time and timezone"
+          ],
+          [
+            "Who",
+            "Expected participants"
+          ],
+          [
+            "Where",
+            "Actual video meeting route"
+          ]
+        ]
+      },
+      {
+        "phrase": "You can suggest that the prospect",
+        "title": "Keep preparation proportionate.",
+        "kind": "quote",
+        "items": [
+          [
+            "PREPARATION",
+            "Be ready to describe the workflow and current tools. Follow any specific approved specialist instructions."
+          ]
+        ]
+      },
+      {
+        "phrase": "Check any immediate uncertainty while the",
+        "title": "Resolve practical uncertainty before ending.",
+        "kind": "flow",
+        "items": [
+          [
+            "Confirmation",
+            "Can they find the booking?"
+          ],
+          [
+            "Join route",
+            "Is the video access clear?"
+          ],
+          [
+            "Purpose",
+            "Do they understand the review?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "The prospect has a relevant reason to meet.",
+        "kind": "cards",
+        "items": [
+          [
+            "Process",
+            "Quotation follow-up"
+          ],
+          [
+            "Goal",
+            "Clearer responsibility"
+          ],
+          [
+            "Readiness",
+            "Appropriate participants and interest"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Pause and practice the invitation and",
+        "title": "Practice without sending a real invitation.",
+        "kind": "flow",
+        "items": [
+          [
+            "Invite",
+            "Accurate purpose and format"
+          ],
+          [
+            "Book",
+            "Complete the actual calendar process"
+          ],
+          [
+            "Record",
+            "Confirmed CRM details"
+          ],
+          [
+            "Recap",
+            "Practical meeting information"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong answer connects the stated",
+        "title": "Correct the common mistakes.",
+        "kind": "compare",
+        "items": [
+          [
+            "INCORRECT",
+            "CRM checkbox sends the calendar invitation."
+          ],
+          [
+            "ACCURATE",
+            "Calendar confirms; CRM records the confirmed meeting."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "These are next steps, not confirmed bookings.",
+        "kind": "cards",
+        "items": [
+          [
+            "Link requested",
+            "Customer will review availability"
+          ],
+          [
+            "Participant needed",
+            "Attendance path remains open"
+          ],
+          [
+            "Time undecided",
+            "No slot agreed yet"
+          ]
+        ]
+      },
+      {
+        "phrase": "If a slot changes or a",
+        "title": "Reconcile changes across calendar and CRM.",
+        "kind": "flow",
+        "items": [
+          [
+            "Change",
+            "Requested or confirmed"
+          ],
+          [
+            "Calendar",
+            "Update through the approved process"
+          ],
+          [
+            "CRM",
+            "Reflect the actual current status"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the customer asks for a",
+        "title": "Do not promise an unavailable slot.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Seek the appropriate scheduling help and preserve what remains unconfirmed."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Explain why the customer is attending.",
+        "kind": "cards",
+        "items": [
+          [
+            "Business",
+            "Workflow, friction and desired outcome"
+          ],
+          [
+            "Setup",
+            "Current tools and unverified questions"
+          ],
+          [
+            "People",
+            "Known participants and decision path"
+          ]
+        ]
+      },
+      {
+        "phrase": "Be explicit about important limits. If",
+        "title": "Preserve important limits.",
+        "kind": "compare",
+        "items": [
+          [
+            "CLEAR",
+            "Compatibility unverified; specialist to review"
+          ],
+          [
+            "MISLEADING",
+            "Integration already promised by the SDR"
+          ]
+        ]
+      },
+      {
+        "phrase": "Use the approved internal route to",
+        "title": "Make ownership of the next step explicit.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Use the approved internal handoff route; a saved note does not automatically prove notification."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Use the complete booking sequence.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Establish a relevant purpose."
+          ],
+          [
+            "02",
+            "Invite with accurate expectations."
+          ],
+          [
+            "03",
+            "Complete and verify the calendar booking."
+          ],
+          [
+            "04",
+            "Record confirmed CRM details."
+          ],
+          [
+            "05",
+            "Recap and hand off useful context."
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical submission, rehearse the",
+        "title": "Demonstrate the workflow in a practice environment.",
+        "kind": "cards",
+        "items": [
+          [
+            "Rehearse",
+            "A natural invitation"
+          ],
+          [
+            "Distinguish",
+            "Pending versus confirmed steps"
+          ],
+          [
+            "Review",
+            "Manager checks practical accuracy"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the quiz and revise any",
+        "title": "Make the assessment useful before it begins.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz and practice the invitation, booking record and handoff."
+          ]
+        ]
+      }
+    ]
+  }
+]

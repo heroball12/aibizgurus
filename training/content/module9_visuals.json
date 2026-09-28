@@ -1,0 +1,657 @@
+[
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A qualified assessment has a useful purpose.",
+        "kind": "cards",
+        "items": [
+          [
+            "Fit",
+            "A relevant business context"
+          ],
+          [
+            "Process",
+            "Something worth exploring"
+          ],
+          [
+            "Interest",
+            "An appropriate reason to evaluate change"
+          ]
+        ]
+      },
+      {
+        "phrase": "The SDR should establish a plausible",
+        "title": "Qualification supports a decision.",
+        "kind": "flow",
+        "items": [
+          [
+            "Evidence",
+            "What has been established?"
+          ],
+          [
+            "Unknowns",
+            "What still matters?"
+          ],
+          [
+            "Next step",
+            "Assess, discover more or close respectfully"
+          ]
+        ]
+      },
+      {
+        "phrase": "This lesson will help you distinguish",
+        "title": "Protect the quality of the calendar.",
+        "kind": "compare",
+        "items": [
+          [
+            "USEFUL",
+            "A shared reason for the assessment"
+          ],
+          [
+            "WEAK",
+            "A meeting booked only to increase the count"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Fit depends on the actual request.",
+        "kind": "cards",
+        "items": [
+          [
+            "Business context",
+            "A legitimate service opportunity"
+          ],
+          [
+            "Process",
+            "A suitable area to evaluate"
+          ],
+          [
+            "Scope",
+            "No assumed universal capability"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the prospect wants help organizing",
+        "title": "Clarify an expectation before treating it as accepted.",
+        "kind": "compare",
+        "items": [
+          [
+            "RELEVANT",
+            "Explore repetitive inquiry handling"
+          ],
+          [
+            "UNACCEPTED",
+            "Promise unsupported guarantees or inappropriate data use"
+          ]
+        ]
+      },
+      {
+        "phrase": "Avoid qualifying from industry alone. Two",
+        "title": "Industry alone does not establish need.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Judge relevance from the process, stated goal and verified scope."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Interest in AI needs a business connection.",
+        "kind": "flow",
+        "items": [
+          [
+            "Curiosity",
+            "AI sounds interesting"
+          ],
+          [
+            "Question",
+            "What would you improve?"
+          ],
+          [
+            "Process",
+            "A concrete workflow or goal"
+          ]
+        ]
+      },
+      {
+        "phrase": "For a fictional example, Maple Service",
+        "title": "Explore a specific operational example.",
+        "kind": "cards",
+        "items": [
+          [
+            "Current",
+            "Requests copied from email to a sheet"
+          ],
+          [
+            "Friction",
+            "Assignment sometimes delayed"
+          ],
+          [
+            "Goal",
+            "A more reliable next step"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "A useful process can involve growth,",
+        "title": "A relevant goal does not require exaggerated pain.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Use the prospect’s priorities; do not manufacture a problem."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Interest and timing are separate questions.",
+        "kind": "compare",
+        "items": [
+          [
+            "INTEREST",
+            "Is evaluation relevant?"
+          ],
+          [
+            "TIMING",
+            "When would it be useful?"
+          ]
+        ]
+      },
+      {
+        "phrase": "You might ask whether improving that",
+        "title": "Explore the prospect’s actual priority.",
+        "kind": "quote",
+        "items": [
+          [
+            "QUESTION",
+            "Is improving that handoff something the team wants to explore now or later?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Do not use false scarcity to",
+        "title": "Do not create urgency with an invented deadline.",
+        "kind": "cards",
+        "items": [
+          [
+            "Actual context",
+            "Use the business’s stated timing."
+          ],
+          [
+            "Honest record",
+            "Separate future interest from commitment."
+          ],
+          [
+            "Appropriate action",
+            "Agree only to a wanted next step."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Include process knowledge and the appropriate decision path.",
+        "kind": "cards",
+        "items": [
+          [
+            "Knowledge",
+            "Who can explain current operations?"
+          ],
+          [
+            "Evaluation",
+            "Who should consider a change?"
+          ],
+          [
+            "Authority",
+            "Who needs to approve?"
+          ]
+        ]
+      },
+      {
+        "phrase": "A contact who is not the",
+        "title": "A planned invitation is not confirmed attendance.",
+        "kind": "compare",
+        "items": [
+          [
+            "REPORTED PLAN",
+            "The manager will ask the owner."
+          ],
+          [
+            "CONFIRMED FACT",
+            "The owner has accepted the meeting."
+          ]
+        ]
+      },
+      {
+        "phrase": "When the contact cannot explain the",
+        "title": "Ask a practical participation question.",
+        "kind": "quote",
+        "items": [
+          [
+            "QUESTION",
+            "Who else would help review how this process works today?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Pricing is not an SDR qualification shortcut.",
+        "kind": "quote",
+        "items": [
+          [
+            "POLICY",
+            "Custom to the build. Qualified human AI Specialist only, during the Growth Assessment."
+          ]
+        ]
+      },
+      {
+        "phrase": "If a prospect asks how much",
+        "title": "Explain the evaluation clearly.",
+        "kind": "flow",
+        "items": [
+          [
+            "Review",
+            "Business and current operations"
+          ],
+          [
+            "Identify",
+            "Suitable opportunities"
+          ],
+          [
+            "Discuss",
+            "Approach and custom pricing"
+          ]
+        ]
+      },
+      {
+        "phrase": "You can identify that the prospect",
+        "title": "Pass commercial questions without inventing answers.",
+        "kind": "cards",
+        "items": [
+          [
+            "Record",
+            "The prospect’s actual question"
+          ],
+          [
+            "Avoid",
+            "Estimates, affordability promises and discounts"
+          ],
+          [
+            "Connect",
+            "A relevant assessment"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Incomplete and unsuitable require different actions.",
+        "kind": "compare",
+        "items": [
+          [
+            "INCOMPLETE",
+            "A relevant question can still be resolved."
+          ],
+          [
+            "UNSUITABLE",
+            "Evidence or expectations do not support the next step."
+          ]
+        ]
+      },
+      {
+        "phrase": "Consider two fictional contacts. One describes",
+        "title": "Choose the action that fits the evidence.",
+        "kind": "cards",
+        "items": [
+          [
+            "Missing participant",
+            "Agree an appropriate introduction"
+          ],
+          [
+            "Unsupported guarantee",
+            "Clarify the boundary"
+          ],
+          [
+            "No current interest",
+            "Respect the stated preference"
+          ]
+        ]
+      },
+      {
+        "phrase": "Use precise notes. Authority path not",
+        "title": "Use a note that explains the decision.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "Relevant workflow identified; the appropriate participant is not yet confirmed."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Do not confuse these agreements.",
+        "kind": "compare",
+        "items": [
+          [
+            "INFORMATION",
+            "Send me something relevant."
+          ],
+          [
+            "ASSESSMENT",
+            "I agree to a specific video evaluation."
+          ]
+        ]
+      },
+      {
+        "phrase": "Before booking, briefly connect the meeting",
+        "title": "Explain the purpose before booking.",
+        "kind": "cards",
+        "items": [
+          [
+            "Who",
+            "Qualified human AI Specialist"
+          ],
+          [
+            "Length",
+            "15–20 minutes"
+          ],
+          [
+            "Purpose",
+            "Review operations and evaluate an appropriate approach"
+          ]
+        ]
+      },
+      {
+        "phrase": "If the person is not ready,",
+        "title": "Choose the appropriate next step.",
+        "kind": "flow",
+        "items": [
+          [
+            "Clarify",
+            "Resolve a relevant question"
+          ],
+          [
+            "Include",
+            "Find the right participant"
+          ],
+          [
+            "Follow up",
+            "Only if wanted"
+          ],
+          [
+            "Close",
+            "Respect a lack of fit or interest"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Evaluate Maple Service Group.",
+        "kind": "cards",
+        "items": [
+          [
+            "Process",
+            "Inquiry assignment delays"
+          ],
+          [
+            "Interest",
+            "A more reliable handoff"
+          ],
+          [
+            "Missing",
+            "Owner participation not yet arranged"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Pause and state your decision and",
+        "title": "Choose a decision and next question.",
+        "kind": "choices",
+        "items": [
+          [
+            "A",
+            "Confirmed owner-attended assessment"
+          ],
+          [
+            "B",
+            "Incomplete but potentially relevant"
+          ],
+          [
+            "C",
+            "Unsuitable solely because of the title"
+          ],
+          [
+            "D",
+            "Guaranteed implementation"
+          ]
+        ]
+      },
+      {
+        "phrase": "The strongest direction is incomplete but",
+        "title": "Resolve the participation path honestly.",
+        "kind": "quote",
+        "items": [
+          [
+            "QUESTION",
+            "What would be the best way to involve the owner in reviewing this handoff?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A professional close can be the right outcome.",
+        "kind": "cards",
+        "items": [
+          [
+            "No fit",
+            "The request is unsuitable"
+          ],
+          [
+            "No interest",
+            "No wanted evaluation"
+          ],
+          [
+            "Clear boundary",
+            "The conversation should end"
+          ]
+        ]
+      },
+      {
+        "phrase": "You might say that it sounds",
+        "title": "Do not force a next step.",
+        "kind": "quote",
+        "items": [
+          [
+            "EXAMPLE",
+            "It sounds like the current process is working well. There is no reason to force a meeting. Thank you for the context."
+          ]
+        ]
+      },
+      {
+        "phrase": "Record the reason accurately and without",
+        "title": "Record the reason without judging the person.",
+        "kind": "compare",
+        "items": [
+          [
+            "USEFUL",
+            "No current interest in changing the process"
+          ],
+          [
+            "UNHELPFUL",
+            "Difficult owner who does not understand AI"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Make the decision understandable from the record.",
+        "kind": "cards",
+        "items": [
+          [
+            "Relevance",
+            "Workflow and stated goal"
+          ],
+          [
+            "Readiness",
+            "Interest, participants and timing"
+          ],
+          [
+            "Limits",
+            "Confirmed facts and unresolved questions"
+          ]
+        ]
+      },
+      {
+        "phrase": "For Maple Service Group, the note",
+        "title": "Record the next action that was actually agreed.",
+        "kind": "quote",
+        "items": [
+          [
+            "FICTIONAL NOTE",
+            "Office manager will clarify owner participation; no assessment confirmed yet."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "If you later receive new information,",
+        "title": "Update the decision when evidence changes.",
+        "kind": "flow",
+        "items": [
+          [
+            "New information",
+            "A corrected fact or agreement"
+          ],
+          [
+            "Reassess",
+            "Does the next step still fit?"
+          ],
+          [
+            "Record",
+            "Preserve the reason for the change"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Check the reason before proposing the meeting.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Relevant business and process"
+          ],
+          [
+            "02",
+            "Stated problem or desired improvement"
+          ],
+          [
+            "03",
+            "Interest and timing context"
+          ],
+          [
+            "04",
+            "Appropriate participation path"
+          ],
+          [
+            "05",
+            "Accurate expectations and agreement"
+          ]
+        ]
+      },
+      {
+        "phrase": "For your practical submission, classify three",
+        "title": "Practice all three decisions.",
+        "kind": "cards",
+        "items": [
+          [
+            "Ready",
+            "Invite to a useful assessment"
+          ],
+          [
+            "Incomplete",
+            "Resolve a specific gap"
+          ],
+          [
+            "Unsuitable",
+            "Close respectfully"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the quiz and revise the",
+        "title": "Choose a next step the evidence supports.",
+        "kind": "quote",
+        "items": [
+          [
+            "NEXT ACTION",
+            "Complete the quiz, classify the scenarios and revise your reasoning."
+          ]
+        ]
+      }
+    ]
+  }
+]

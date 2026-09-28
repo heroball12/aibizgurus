@@ -26,7 +26,7 @@
       {% if user.is_employee_or_admin %}
         {% if user.is_owner %}<a href="{% url 'owner_dashboard' %}">Owner</a>{% endif %}
         <a href="{% url 'ops_dashboard' %}">Ops</a><a href="{% url 'crm_home' %}">Sales Intelligence</a><a href="{% url 'lead_finder' %}">Lead Finder</a>
-        <a href="{% url 'staff_messages' %}">Chat</a><a href="{% url 'staff_time_clock' %}">Time Clock</a>
+        <a href="{% url 'training_home' %}">Training</a><a href="{% url 'staff_messages' %}">Chat</a><a href="{% url 'staff_time_clock' %}">Time Clock</a>
       {% else %}
         <a href="{% url 'portal_home' %}">Dashboard</a>
       {% endif %}

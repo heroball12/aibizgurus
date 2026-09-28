@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}Guru Sales Academy | AI Business Gurus{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/training.css' %}"><script src="{% static 'js/training.js' %}?v=20260927-2" defer></script>{% endblock %}
+{% block body_class %}staff-mode academy-app{% endblock %}
+{% block navigation %}<header class="academy-bar"><a href="{% url 'training_home' %}" class="academy-brand"><span>✦</span> AI BUSINESS GURUS <small>ACADEMY</small></a><nav aria-label="Academy"><a href="{% url 'training_history' %}">My record</a><a href="{% url 'crm_home' %}">Sales workspace ↗</a><a href="{% url 'staff_messages' %}">Teamspace</a>{% if user.is_owner or user.role == 'admin' %}<a href="{% url 'training_management' %}">Manage training</a>{% endif %}<a href="{% url 'training_home' %}">My learning</a></nav></header>{% endblock %}
+{% block content %}<div class="academy-wrap">{% block academy %}{% endblock %}</div>{% endblock %}
+{% block footer %}{% endblock %}

@@ -1,0 +1,252 @@
+{
+  "title": "Lead Finder + CRM Fundamentals",
+  "short_title": "LEAD FINDER + CRM",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Use Lead Finder, built-in lead sheets and Excel/CSV workflows to maintain accurate records and clear next actions.",
+  "skills": [
+    "crm-discipline",
+    "research",
+    "accuracy",
+    "ethics",
+    "handoff"
+  ],
+  "scenes": [
+    {
+      "title": "A workspace that makes the next action clear",
+      "narration": "A CRM is useful when it makes the next honest action obvious. It is not a scoreboard for how many names you can collect. In this lesson, we will follow one fictional business from a Lead Finder search into a reviewed prospect record, then into a usable CRM entry. We will also use the built-in spreadsheet editor without losing the meaning of the data.\nThink of the process in three parts. Find a possible business, verify enough information to decide whether it belongs in your working pipeline, and record what actually happens when you engage. A search result is a candidate. Saving it creates a record. Neither action proves interest, qualification or a confirmed Growth Assessment.\nYour practical task is to create a clean fictional record that another employee could understand. You will need a clear identity, an appropriate source, an accurate status and a next action grounded in facts. When a field is unknown, preserve that uncertainty. A polished screen cannot compensate for an invented phone number, a misleading note or a meeting that was never agreed.",
+      "pauses": [],
+      "start": 0,
+      "end": 75,
+      "time": "00:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Make the next honest action obvious."
+    },
+    {
+      "title": "Start with a focused Lead Finder search",
+      "narration": "Open Lead Finder from the sales workspace. Begin with the industry and location from your campaign brief. The quantity is the number you are asking the tool to seek, not a promise that the area contains that many usable businesses. A specific city and state usually give the search a clearer starting point than an ambiguous place name.\nThe current finder uses public business listings from OpenStreetMap and looks for entries with phone information. Coverage varies. A small result set does not prove that the market is empty, and a large result set does not prove that every listing is current. The information is a research starting point that still needs human review.\nSmall searches can run directly. Larger searches may need the site's background worker to be configured, and the interface will tell you when that option is unavailable. Follow the actual message instead of repeatedly clicking the search button. If your campaign cannot be served by the available search, report that limitation to your manager and use an approved alternative source.",
+      "pauses": [],
+      "start": 75,
+      "end": 150,
+      "time": "01:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Search the assigned market."
+    },
+    {
+      "title": "Review before adding to the pipeline",
+      "narration": "Search results appear for review before they become active pipeline records. Use the website and listing links to verify the business identity and whether it fits your campaign. Confirm that the phone and location belong together. The result card should help you make a decision, not encourage you to save every item automatically.\nThe available actions include adding a suitable prospect to the pipeline, leaving it for later or removing it from the results. Those choices organize research. They do not place a call, send an email or establish permission for every kind of outreach. Choose an action based on the evidence and the current campaign instructions.\nImagine a fictional search returns three repair businesses. One is a clear local match, another appears permanently closed and the third has conflicting contact information. Review the clear match for existing CRM history, set the uncertain record aside for verification and avoid treating the closed listing as a ready lead. A smaller usable queue is more valuable than a larger queue full of preventable errors.",
+      "pauses": [],
+      "start": 150,
+      "end": 225,
+      "time": "02:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Review the result before saving it."
+    },
+    {
+      "title": "Preserve the relationship already in the system",
+      "narration": "Before creating a new lead, review existing records and ownership. The finder helps screen matching phone records and some duplicates, but automated matching is not a complete relationship check. A business may already have a different contact, an active opportunity or a callback agreement. The history matters even when a new listing looks attractive.\nDo not create a duplicate to bypass another employee's ownership or a contact restriction. If the same business appears under a slightly different name, compare the context rather than assuming the system has discovered a new opportunity. A do-not-contact instruction is not erased by a fresh source or a different phone format.\nWhen ownership is unclear, ask a manager through the approved process. Keep notes factual: which records may match, what evidence supports the match and what remains uncertain. Do not delete history to make the disagreement disappear. The CRM is shared operational memory, and the person who next opens the record should be able to understand the relationship without reconstructing it from scratch.",
+      "pauses": [],
+      "start": 225,
+      "end": 300,
+      "time": "03:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Check history before creating more records."
+    },
+    {
+      "title": "Build a record around facts and a next step",
+      "narration": "A useful lead record starts with the correct business and contact information. Add the source, relevant location and known contact role. Use notes to separate observed facts from hypotheses. If you have not spoken with anyone, do not label the business as interested merely because its services fit the campaign or its website looks busy.\nAfter a conversation, record the outcome while it is fresh. A requested callback, an unanswered attempt, a relevant operational problem and a booked assessment are different outcomes. Choose the status that matches the actual event. A note saying promising lead does not tell the next employee what happened or what they should do.\nGive the next action enough detail to be useful. For example, a fictional office manager requested a callback on Tuesday afternoon to discuss quotation follow-up. Record the agreed timing and purpose, using the available follow-up fields. Do not silently convert that request into a confirmed assessment. The system should preserve the difference between permission to reconnect and agreement to attend a specific meeting.",
+      "pauses": [],
+      "start": 300,
+      "end": 375,
+      "time": "05:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Record what you know and how you know it."
+    },
+    {
+      "title": "Use the built-in lead sheet",
+      "narration": "The lead sheet is a spreadsheet editor inside the CRM. You do not need to create a Google document or connect a personal Google account to use it. Start a new sheet to get the prepared column names, then enter the business or contact name and the relevant details. The editor is designed to keep those fields understandable and consistent.\nUse the column groups to move between contact, outreach and other details. Tab moves between cells, Enter moves down, and a rectangular block copied from a spreadsheet can fill several rows and columns. Add rows when you need them. Search and pagination help you work through the sheet without losing the current context.\nEditing a cell prepares a change. Save to CRM applies the sheet's changes to the records used elsewhere in the app. Before saving, review the field meaning and the row you are changing. A spreadsheet makes editing convenient, but it should not turn a guess into a fact. Use the appropriate date format and the choices presented by the editor rather than improvising incompatible values.",
+      "pauses": [],
+      "start": 375,
+      "end": 450,
+      "time": "06:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A spreadsheet editor inside the CRM."
+    },
+    {
+      "title": "Understand what spreadsheet actions actually do",
+      "narration": "Removing a row from a lead sheet removes it from that sheet. It does not delete the underlying CRM record. That distinction matters when you are organizing a view versus changing the business's actual relationship with the team. If a record needs a separate correction or management action, use the appropriate CRM process.\nSome fields may be visible only to managers, and your access remains limited to the records you are allowed to work. A spreadsheet is not a way to bypass permissions. If the system reports that someone else changed a record or the sheet while you were editing, reopen the latest version and reconcile the differences before saving again.\nA conflict message protects the other person's work. Do not repeatedly submit an old copy until it happens to succeed. Identify which values are current, preserve the facts from both updates and ask for help if the intended result is unclear. Shared editing works best when the team treats a conflict as a request to reconcile information, not as an obstacle to overpower.",
+      "pauses": [],
+      "start": 450,
+      "end": 525,
+      "time": "07:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Removing a row from a sheet keeps the CRM record."
+    },
+    {
+      "title": "Import a file without importing confusion",
+      "narration": "You can still work with Excel and CSV files. In the sheet editor, open a supported file, review the imported rows and then save the intended changes to the CRM. The separate upload workflow may apply an import through its own confirmation and result screen, so pay attention to which workflow you are using.\nPrepared columns reduce mapping mistakes, but they do not guarantee good data. Check that phone numbers remain phone numbers, dates use the expected format and a notes column has not shifted into an email field. Review a few representative rows and every reported error before assuming the whole import is usable.\nUse sample information for practice. Do not upload a real customer list merely to test whether the button works. For actual work, follow the approved source, ownership and contact rules. If the system reports duplicate or invalid rows, resolve the problem deliberately. Importing the same file repeatedly can create confusion even when the application catches many duplicates. The result report tells you what was actually accepted.",
+      "pauses": [],
+      "start": 525,
+      "end": 600,
+      "time": "08:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Open, review and save deliberately."
+    },
+    {
+      "title": "Export with a clear purpose",
+      "narration": "Export options let you take lead data into Excel or CSV for approved work. Choose the relevant records and format rather than exporting everything by habit. The resulting file is a copy that needs appropriate handling. A download does not automatically stay synchronized with future changes made by another employee in the CRM.\nBefore sharing or editing an export, know why you need it and who is allowed to receive it. Keep internal notes and contact information within the approved business workflow. Do not put a lead file in an unrelated public folder or assume that possession of the file authorizes outreach outside the assigned campaign.\nWhen you bring edited information back, review the import and any conflicts rather than assuming the older export is now the source of truth. The CRM may have newer conversations, ownership decisions or contact restrictions. An export is useful for structured work, but the current relationship record still matters. Preserve its history and reconcile changes with the people responsible for the lead.",
+      "pauses": [],
+      "start": 600,
+      "end": 675,
+      "time": "10:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Export the information needed for the task."
+    },
+    {
+      "title": "Practice a clean fictional record",
+      "narration": "Your practice record is fictional: Harbor Repair Workshop. You found its business website and public office number. An office coordinator said the team returns quote inquiries on weekday afternoons and asked you to reconnect next Wednesday. You do not know the final decision maker, the software used or whether an assessment would be useful.\nWrite a concise record with the known identity, the reported process, the callback agreement and the remaining unknowns. Then identify one question for the next conversation. Pause and build the record. Use only the facts supplied here, and do not enter the exercise into the live production pipeline unless your manager has provided a dedicated practice environment.\nA strong record says who reported the process and records the callback as a callback. It does not label the lead qualified, invent a software platform or mark an assessment booked. A useful next question could explore what happens to inquiries that arrive between those afternoon reviews. If your note jumps straight to our solution, revise it so the real process remains the center of the next conversation.",
+      "pauses": [
+        [
+          "Pause and build the record.",
+          25,
+          "Record the facts, callback agreement, unknowns and one next question."
+        ]
+      ],
+      "start": 675,
+      "end": 750,
+      "time": "11:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Practice with Harbor Repair Workshop."
+    },
+    {
+      "title": "Keep booking and commercial authority separate",
+      "narration": "The CRM may contain fields used by different roles across the sales process. Seeing an assessment or pricing field does not give an SDR authority to make a commercial promise. Pricing is custom to the recommended build. Only a qualified human AI Specialist discusses pricing, and only during the Growth Assessment.\nUse the lead's assessment booking process when a prospect agrees to an appropriate meeting. Confirm the details through that workflow instead of treating a spreadsheet note as proof of a reservation. The complimentary Growth Assessment is a fifteen to twenty minute video call with the human AI Specialist, who reviews operations, identifies suitable opportunities and discusses a proposed implementation and custom pricing.\nYour job is to make the handoff accurate and useful. Record the process discussed, the person's stated goal, the relevant participants and the questions that remain open. If the prospect asks for a price while you are editing the record, explain the boundary calmly and connect the assessment to evaluating their actual needs. A visible field never expands your authority beyond the company policy.",
+      "pauses": [],
+      "start": 750,
+      "end": 825,
+      "time": "12:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A field is not permission to make a promise."
+    },
+    {
+      "title": "Your repeatable CRM routine",
+      "narration": "Use a simple routine after this lesson. Search within the campaign, verify a result, check the existing relationship and save a suitable record. After each conversation, record the actual outcome and the next agreed step. Use the lead sheet when structured editing helps, and review imports and conflicts before applying changes.\nFor your practical submission, explain how you would handle a duplicate, a conflicting edit and a callback that is not yet an assessment. Ask Guru to challenge your record: can another rep tell what is known, what is uncertain and who should act next? Revise the weakest part rather than simply adding more text.\nComplete the scenario quiz and keep the field guide available while you practice in the approved environment. Speed matters when it comes from a clear routine. It is not useful when it creates records that someone else must repair. A disciplined CRM habit gives the team a reliable starting point for the next conversation and gives the specialist a handoff that reflects the business the prospect actually described.",
+      "pauses": [],
+      "start": 825,
+      "end": 900,
+      "time": "13:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Keep the routine simple and accurate."
+    }
+  ],
+  "job_aid": "CRM FIELD GUIDE\nFINDER: industry + clear location + requested quantity. Public listing coverage varies.\nREVIEW: business identity, source, campaign fit, existing history, owner and contact restrictions.\nRESULTS: Add to pipeline, Later or Remove from results; none establishes interest.\nSHEET: built-in CRM editor, prepared columns, Tab/Enter, multi-cell paste, review then Save to CRM. Removing a sheet row keeps the CRM record.\nCONFLICT: reopen current data, compare, reconcile; do not force an old copy.\nIMPORT: check mapping, dates, phone values, duplicates and the actual result report.\nEXPORT: Excel/CSV is a snapshot; handle within the approved workflow.\nOUTCOME: a callback is not an assessment. Confirm meetings through the booking workflow.\nAUTHORITY: visible pricing fields do not authorize SDR quotes. Only qualified human AI Specialists discuss custom pricing during Growth Assessments.\nNOTE: identity + reported process + source + actual agreement + unknowns + next action.",
+  "questions": [
+    {
+      "skill": "crm-discipline",
+      "prompt": "The finder returns fewer businesses than requested. What does that establish?",
+      "choices": [
+        "The market has no other businesses.",
+        "Public-listing coverage or available matches may be limited.",
+        "Every returned business is qualified.",
+        "You should invent missing records."
+      ],
+      "correct_index": 1,
+      "explanation": "Requested quantity is a limit, not a guarantee. Coverage varies, so review the results and use an approved alternative if needed."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "A matching business has a do-not-contact instruction. What should you do?",
+      "choices": [
+        "Use a different phone format.",
+        "Create a new record.",
+        "Respect the restriction and resolve any identity uncertainty.",
+        "Remove the history."
+      ],
+      "correct_index": 2,
+      "explanation": "A new source or phone format does not erase contact restrictions. Preserve the relationship history."
+    },
+    {
+      "skill": "crm-discipline",
+      "prompt": "You remove a row from a lead sheet. What happens to the underlying CRM record?",
+      "choices": [
+        "It remains in the CRM.",
+        "It is permanently deleted.",
+        "It becomes qualified.",
+        "It is automatically reassigned."
+      ],
+      "correct_index": 0,
+      "explanation": "Removing a sheet row organizes that sheet; it does not delete the underlying CRM record."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "A save reports a concurrent edit conflict. What is the right next step?",
+      "choices": [
+        "Keep resubmitting the old copy.",
+        "Delete the other update.",
+        "Assume your copy is newer.",
+        "Load current information and reconcile the changes."
+      ],
+      "correct_index": 3,
+      "explanation": "Conflicts protect newer work. Compare the current values and apply an intentional, accurate update."
+    },
+    {
+      "skill": "crm-discipline",
+      "prompt": "An office coordinator requests a callback next Wednesday. Which outcome is accurate?",
+      "choices": [
+        "Assessment booked.",
+        "Callback requested; qualification may still be incomplete.",
+        "Confirmed buyer.",
+        "Custom price approved."
+      ],
+      "correct_index": 1,
+      "explanation": "A callback agreement is not a confirmed assessment, buying authority or commercial approval."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "A spreadsheet displays an assessment pricing field. What may an SDR do?",
+      "choices": [
+        "Quote a starting price.",
+        "Offer a discount.",
+        "Preserve factual handoff context and defer pricing to the qualified human specialist during the assessment.",
+        "Invent a package."
+      ],
+      "correct_index": 2,
+      "explanation": "Interface access does not grant pricing authority. Pricing is custom and discussed only by a qualified human AI Specialist during a Growth Assessment."
+    },
+    {
+      "skill": "crm-discipline",
+      "prompt": "What should happen after opening a file in the sheet editor?",
+      "choices": [
+        "Review mapping, values and reported errors before saving intended CRM changes.",
+        "Assume every row is valid.",
+        "Assume all meetings are confirmed.",
+        "Contact every entry immediately."
+      ],
+      "correct_index": 0,
+      "explanation": "Opening a file prepares rows for review. Validation and the appropriate save workflow determine what is actually applied."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "An exported sheet conflicts with newer CRM contact restrictions. What should guide the update?",
+      "choices": [
+        "The export is always authoritative.",
+        "The older file erases the restriction.",
+        "Whichever version has more rows.",
+        "Current relationship history and a deliberate reconciliation."
+      ],
+      "correct_index": 3,
+      "explanation": "Exports are snapshots. Newer conversations and restrictions must be preserved and understood before changes are applied."
+    }
+  ],
+  "scenario": {
+    "title": "Build the Harbor Repair record",
+    "persona": "FICTIONAL Harbor Repair Workshop. Office coordinator Morgan reports quote inquiries are reviewed on weekday afternoons and requests a callback next Wednesday. Authority, software and a need for change are unknown. Challenge unsupported qualification, invented systems and an assessment marked booked without agreement. Ask the learner to handle a possible duplicate and a concurrent sheet edit.",
+    "opening": "Guru: Explain the CRM note and next action you would save for Harbor Repair Workshop. Use the supplied facts only.",
+    "rubric": {
+      "crm-discipline": "Records the actual outcome, next action and source; respects duplicate and conflict handling.",
+      "accuracy": "Separates reported facts from unknowns.",
+      "ethics": "Respects contact restrictions and pricing authority.",
+      "handoff": "Leaves a clear record another employee can use."
+    }
+  }
+}

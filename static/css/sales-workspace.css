@@ -16,3 +16,6 @@
 @media(prefers-reduced-motion:reduce){.sales-app *{scroll-behavior:auto!important;transition:none!important}}
 
 .sales-contact-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}.sales-contact-fields small{display:block;font-size:11px;margin-top:8px}.sales-contact-fields input[type=checkbox]{display:block}.sales-app #salesNextStep,.sales-app #assessmentBrief{scroll-margin-top:20px}@media(max-width:600px){.sales-contact-fields{grid-template-columns:1fr}}
+
+/* Shared lead-sheet shortcuts also appear on Finder, Pipeline and Today. */
+.sheet-shortcuts{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:flex-end;margin:0 0 22px;font-size:12px;color:#c9b5e5}.sheet-shortcuts a:hover{color:#f2cf7a}

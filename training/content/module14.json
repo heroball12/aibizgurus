@@ -1,0 +1,253 @@
+{
+  "title": "Booking the Complimentary Growth Assessment",
+  "short_title": "BOOK THE GROWTH ASSESSMENT",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Invite clearly, verify the real calendar booking, record accurate CRM details and prepare the human specialist.",
+  "skills": [
+    "assessment-close",
+    "crm-discipline",
+    "handoff",
+    "accuracy",
+    "ethics"
+  ],
+  "scenes": [
+    {
+      "title": "The close is a useful next step",
+      "narration": "A strong assessment close connects what the prospect described with a clear reason to speak with the human AI Specialist. It does not require a dramatic closing line. If the business has a relevant process to evaluate, the appropriate people can participate and the person understands the purpose, asking for the next step should feel like a natural continuation.\nThe goal is a qualified Growth Assessment, not an agreement obtained through confusion or pressure. Before inviting, know the workflow, the improvement the prospect cares about and the questions still needing evaluation. You should be able to explain why the meeting would help without inventing a price, a guaranteed result or a finished implementation plan.\nIn this lesson, we will practice the invitation and the actual booking workflow. We will also distinguish a calendar reservation from a CRM record. Those are separate steps in the current system. Accurate booking means the prospect, the specialist and the CRM all reflect the same real agreement.",
+      "pauses": [],
+      "start": 0,
+      "end": 75,
+      "time": "00:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Connect the close to the discovered need."
+    },
+    {
+      "title": "Explain the Growth Assessment clearly",
+      "narration": "The Growth Assessment is a complimentary fifteen to twenty minute video call with a qualified human AI Specialist. The specialist reviews the customer's business and current operations, identifies suitable places where AI could help and discusses an implementation approach with custom pricing based on the recommended build. Keep that explanation clear and consistent.\nThe Guru character on the website supports navigation, demonstration and coaching. The specialist conducting the Growth Assessment is a person. Do not let the shared Guru branding create confusion about who will attend the business review. A prospect should understand the format, purpose and role of the person they are agreeing to meet.\nCustom pricing belongs in that specialist conversation. An SDR does not strengthen the invitation by adding a starting price, an estimate, a discount or an affordability promise. You also should not imply that a complete implementation will be delivered during a short assessment. The purpose is to review the operation and evaluate an appropriate direction, with further work determined by the actual scope.",
+      "pauses": [],
+      "start": 75,
+      "end": 150,
+      "time": "01:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Describe the actual assessment."
+    },
+    {
+      "title": "Use the prospect’s own reason in the invitation",
+      "narration": "A generic invitation asks whether someone wants to learn about AI. A relevant invitation connects the meeting to the process they just described. For a fictional service business, the reason might be unclear ownership after quotation requests arrive. Use that context so the prospect understands why this particular next step is worth considering.\nYou might say: based on the quotation handoff you described, would a complimentary fifteen to twenty minute video Growth Assessment be useful? Our human AI Specialist can review the current process and tools, identify where AI may help and discuss an appropriate implementation approach with custom pricing. Then stop and allow the person to answer.\nKeep the invitation proportionate. Do not repeat every discovery detail or introduce several unrelated services at the moment of the ask. The prospect needs a clear connection, an accurate description and a chance to choose. If they ask a question, answer it within your role. If they agree, move into the scheduling process rather than restarting the pitch.",
+      "pauses": [],
+      "start": 150,
+      "end": 225,
+      "time": "02:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Make the invitation specific to the conversation."
+    },
+    {
+      "title": "Recognize readiness without overselling",
+      "narration": "A prospect may signal readiness by asking who they should speak with, how to schedule or whether the approach could work with their current tools. Those questions do not guarantee a purchase, but they can indicate that the next evaluation is relevant. Acknowledge the signal and explain the assessment clearly.\nDo not continue a ten-minute feature tour after the person is ready to choose a time. More selling can create confusion about the agreed purpose or introduce claims you have not verified. The useful move is to confirm the reason for the meeting and help the person reach the actual calendar process.\nIf the person is interested but a necessary participant is missing, clarify the participation path before claiming the meeting is fully arranged. An office manager offering to ask the owner is useful progress, but it is not confirmation that the owner will attend. Preserve the distinction in your words and in the record.",
+      "pauses": [],
+      "start": 225,
+      "end": 300,
+      "time": "03:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Notice a practical readiness signal."
+    },
+    {
+      "title": "Open the actual booking calendar",
+      "narration": "In the sales workspace, the lead page includes an invitation section with an Open booking calendar link. The Growth Assessments page also provides access to the calendar. Use that calendar to check the actual availability. Opening the page or clicking a time is not enough by itself to establish that the booking has been completed.\nFollow the calendar's current steps and review the meeting details with the prospect. Confirm the full date, the time, the timezone and the correct attendee information. Do not assume the prospect is in your timezone or that an ambiguous phrase such as next Tuesday means the same date to both people.\nComplete the booking only for the meeting the customer actually agreed to. Check the resulting confirmation rather than relying on memory or a screen that still shows a selection in progress. If the calendar is unavailable or the process fails, explain that the reservation is not confirmed yet and follow the appropriate scheduling process. Do not mark a failed booking as successful in the CRM.",
+      "pauses": [],
+      "start": 300,
+      "end": 375,
+      "time": "05:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Use the calendar to confirm availability."
+    },
+    {
+      "title": "Record the confirmed meeting on the lead",
+      "narration": "After the calendar booking is confirmed, return to the lead's Growth Assessment brief. Open the Booking and video call section. Enter the confirmed assessment time and the actual video meeting link when available. The form displays the timezone it uses; make sure the recorded time matches the confirmed booking in that timezone.\nThe confirmation checkbox states that the time has been agreed and booked with the customer. Select it only when that is true. The CRM form records the meeting; it does not send calendar invitations or create a reservation by itself. Saving a time in this form is not a substitute for completing the calendar process.\nSave the assessment brief and verify the result on the lead. The current workflow uses the confirmed booking to update the assessment status and clear the ordinary follow-up timing. Check that the details are accurate before moving on. Do not mark the assessment completed before the call actually happens, and do not use a spreadsheet status change to bypass the booking confirmation step.",
+      "pauses": [],
+      "start": 375,
+      "end": 450,
+      "time": "06:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Record the confirmed details in the lead brief."
+    },
+    {
+      "title": "Prepare the assessment brief",
+      "narration": "The specialist needs enough context to begin with the customer's actual business. Complete the fields for how the business operates today, current tools and systems, the main bottleneck and the desired outcome. Use reported facts and label unknowns. Do not fill every field with a guess merely because an empty box feels unfinished.\nFor our fictional example, Northstar Service Studio handles inquiries through an office team and follows up on quotations manually. The reported goal is clearer ownership of the next action. The current CRM connection has not been evaluated. Those details give the specialist a useful starting point without promising a particular design or claiming compatibility.\nThe form also contains strategy and custom pricing fields used later in the process. Their visibility does not grant SDR pricing authority. Keep your handoff focused on the business context and questions to review. Only the qualified human AI Specialist discusses custom pricing during the Growth Assessment and develops the appropriate commercial context for the recommended build.",
+      "pauses": [],
+      "start": 450,
+      "end": 525,
+      "time": "07:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Give the specialist the business context."
+    },
+    {
+      "title": "Confirm the purpose and practical details",
+      "narration": "Before ending, recap the meeting in plain language. Confirm the actual date, time and timezone, who is expected to attend and how the person will join the video call. Restate the relevant purpose so the appointment is more than a calendar entry with an unfamiliar company name.\nYou can suggest that the prospect be ready to describe the current workflow and the tools involved. Do not demand a large preparation project, private credentials or a data export just to attend a short assessment. If the specialist requires something specific, follow the approved instructions rather than inventing a preparation checklist of your own.\nCheck any immediate uncertainty while the person is available. If they cannot find the confirmation or the meeting route is unclear, resolve that through the actual scheduling workflow. Do not assume that a verbal yes means every practical detail is settled. A clear final recap reduces avoidable confusion and helps the specialist begin a focused conversation.",
+      "pauses": [],
+      "start": 525,
+      "end": 600,
+      "time": "08:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Recap the real meeting details."
+    },
+    {
+      "title": "Practice the close and the record",
+      "narration": "Your fictional prospect says quotation follow-up is inconsistent, wants clearer responsibility and agrees that a specialist review would help. The right participants are available. Give the Growth Assessment invitation, then explain what you would do after the customer chooses an available time in the calendar.\nPause and practice the invitation and booking sequence. Include the complimentary fifteen to twenty minute video format and the human specialist's role. Then distinguish completing the calendar reservation from recording the confirmed details in the CRM. Do not actually send an invitation for this training exercise.\nA strong answer connects the stated workflow to the assessment, checks the calendar confirmation, then records the time, timezone and meeting route in the lead brief. If you said the CRM checkbox sends the invitation, correct that. If you supplied a price to persuade the prospect, remove it. Retry until the explanation is both natural to hear and accurate to the actual system.",
+      "pauses": [
+        [
+          "Pause and practice the invitation and booking sequence.",
+          25,
+          "Invite clearly, then explain calendar confirmation and CRM recording."
+        ]
+      ],
+      "start": 600,
+      "end": 675,
+      "time": "10:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "The prospect has a relevant reason to meet."
+    },
+    {
+      "title": "Handle scheduling uncertainty honestly",
+      "narration": "Sometimes the prospect cannot choose a time yet, needs another participant or asks to receive the booking link. Those are workable next steps, but they are not confirmed assessments. Record the actual agreement and any wanted follow-up. Do not enter a convenient placeholder time just to move the lead into the booked stage.\nIf a slot changes or a meeting is canceled, reconcile the calendar and CRM through the approved process. Preserve the history and make the current status clear. A second time typed into a note should not leave the specialist wondering which meeting is real. The record should show the latest confirmed arrangement and any remaining uncertainty.\nIf the customer asks for a time the calendar does not offer, do not promise that the specialist will make an exception. Follow the scheduling escalation process or seek internal help. You can be helpful without claiming authority over someone else's availability. The customer should receive a clear account of what is confirmed and what still needs a response.",
+      "pauses": [],
+      "start": 675,
+      "end": 750,
+      "time": "11:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "These are next steps, not confirmed bookings."
+    },
+    {
+      "title": "Make the handoff useful to the human specialist",
+      "narration": "Once the assessment is confirmed, the handoff should help the specialist understand why the customer is attending. Include the workflow, the stated friction, the desired outcome, current tools as known and the people involved. Add the prospect's actual questions about reliability, integration or custom pricing without pretending those questions were already resolved.\nBe explicit about important limits. If compatibility is unverified, say so. If the owner will attend only after a pending internal confirmation, keep that visible. If the prospect raised an expectation we cannot promise, record the boundary that was explained. A strong handoff prevents the next call from beginning with an inaccurate story about what the SDR sold.\nUse the approved internal route to make the context available to the person conducting the assessment. Saving a note is useful, but the team also needs clear ownership of the next step. Follow the current management workflow and avoid assuming that every typed field automatically sends a notification or transfers responsibility to the specialist.",
+      "pauses": [],
+      "start": 750,
+      "end": 825,
+      "time": "12:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Explain why the customer is attending."
+    },
+    {
+      "title": "Your booking standard",
+      "narration": "Use this sequence every time: establish a relevant purpose, invite accurately, complete the actual calendar booking, record the confirmed details in the CRM and prepare a useful specialist brief. Verify the practical information with the customer. If a step is pending, say so and keep the record at the correct stage.\nFor your practical submission, rehearse the invitation with Guru and demonstrate the record in an approved practice environment using fictional details. Explain the difference between a requested link, an agreed time, a completed calendar booking and a saved CRM brief. Ask your manager to review the accuracy of the workflow before you use it independently.\nComplete the quiz and revise any part of the process you described incorrectly. The standard is a meeting the customer understands and the specialist can prepare for. A useful Growth Assessment begins before the video call, with an honest invitation, accurate scheduling and a handoff that reflects the business the prospect actually described.",
+      "pauses": [],
+      "start": 825,
+      "end": 900,
+      "time": "13:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Use the complete booking sequence."
+    }
+  ],
+  "job_aid": "BOOKING FIELD GUIDE\nASSESSMENT: complimentary 15–20 minute video call with a qualified human AI Specialist. Review current operations, identify suitable AI opportunities, discuss implementation approach and custom pricing.\nINVITE: connect the stated process to the useful review; ask and pause.\nCALENDAR: open actual booking calendar, check availability, confirm full date/time/timezone and attendee information, complete required steps, verify confirmation.\nCRM: lead → Growth Assessment brief → Booking & video call. Record confirmed time in the displayed timezone and actual meeting URL. Confirmed checkbox only after real agreement and booking. This form does not send invitations.\nBRIEF: current workflow, tools as known, bottleneck, desired outcome, participants, concerns and unknowns.\nPENDING: a link request or proposed time is not booked. No placeholders to inflate the pipeline.\nCHANGES: reconcile calendar and CRM; preserve current confirmed details and history.\nAUTHORITY: only qualified human AI Specialists discuss custom pricing during the assessment.\nPRACTICE: fictional data only; no real invitations for training.",
+  "questions": [
+    {
+      "skill": "assessment-close",
+      "prompt": "What is the Growth Assessment?",
+      "choices": [
+        "A guaranteed implementation in one call.",
+        "A complimentary 15–20 minute video call with a qualified human AI Specialist to review operations and evaluate approach and custom pricing.",
+        "A call where an SDR quotes a package.",
+        "A mandatory product tour."
+      ],
+      "correct_index": 1,
+      "explanation": "The assessment reviews the business and suitable opportunities with a human specialist. It does not promise a completed implementation or SDR pricing."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "Does saving the CRM assessment form send calendar invitations?",
+      "choices": [
+        "Always.",
+        "Only if a price is entered.",
+        "No; complete the actual calendar booking first and then record confirmed details.",
+        "It automatically chooses any available specialist."
+      ],
+      "correct_index": 2,
+      "explanation": "The current CRM form records the booking. It does not create the calendar reservation or send invitations."
+    },
+    {
+      "skill": "crm-discipline",
+      "prompt": "When should the confirmed checkbox be selected?",
+      "choices": [
+        "Only after the time is actually agreed and booked with the customer.",
+        "When a link is requested.",
+        "When a placeholder time is convenient.",
+        "When the prospect asks for information."
+      ],
+      "correct_index": 0,
+      "explanation": "The checkbox represents a real completed booking agreement. Do not use it to advance an incomplete opportunity."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "The prospect asks for the booking link but has not selected a time. What is accurate?",
+      "choices": [
+        "Assessment confirmed.",
+        "Owner attendance confirmed.",
+        "Implementation accepted.",
+        "Link requested; scheduling remains pending."
+      ],
+      "correct_index": 3,
+      "explanation": "A link request is an appropriate next step but not a confirmed reservation."
+    },
+    {
+      "skill": "assessment-close",
+      "prompt": "After the prospect agrees to schedule, what should the rep do?",
+      "choices": [
+        "Continue a ten-minute product lecture.",
+        "Move into the actual scheduling process and confirm the relevant details.",
+        "Offer an unauthorized discount.",
+        "Guarantee compatibility."
+      ],
+      "correct_index": 1,
+      "explanation": "Recognize readiness and help complete the next step. Extra selling can introduce confusion and unsupported expectations."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "Which details should be confirmed explicitly?",
+      "choices": [
+        "Only the weekday.",
+        "Only the rep’s local time.",
+        "Full date, time, timezone, appropriate attendees and actual video meeting route.",
+        "Whatever was guessed from a note."
+      ],
+      "correct_index": 2,
+      "explanation": "Unambiguous details reduce scheduling errors. The CRM time must match the confirmed booking in its displayed timezone."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "A visible custom pricing field means what for an SDR?",
+      "choices": [
+        "It does not grant pricing authority; only the qualified human specialist discusses pricing during the assessment.",
+        "They may quote a starting price.",
+        "They may offer discounts.",
+        "They may invent a range."
+      ],
+      "correct_index": 0,
+      "explanation": "Interface visibility does not change company policy. SDRs preserve business context and unresolved commercial questions."
+    },
+    {
+      "skill": "handoff",
+      "prompt": "Which handoff best prepares the specialist?",
+      "choices": [
+        "Integration promised; no need to verify.",
+        "Hot lead; will buy.",
+        "Only the customer’s first name.",
+        "Current process, stated friction, goal, known tools, participants, concerns and unverified questions."
+      ],
+      "correct_index": 3,
+      "explanation": "Useful context and clear limits support the specialist’s evaluation. Unsupported certainty or minimal notes do not."
+    }
+  ],
+  "scenario": {
+    "title": "Northstar’s assessment invitation and booking",
+    "persona": "FICTIONAL owner of Northstar Service Studio. Quotations are followed up manually and responsibility is unclear. You want a specialist to review the process and current tools. Ask whether the meeting is with a person, how long it takes and how pricing works. If the learner explains accurately, agree to review actual calendar availability. This role-play does not create a real booking. Ask the learner to explain how calendar confirmation differs from saving the CRM form and what details belong in the handoff.",
+    "opening": "Owner: That review sounds useful. Who would I meet with, and how do we set it up?",
+    "rubric": {
+      "assessment-close": "Connects the stated workflow to a complimentary 15–20 minute video assessment with a human specialist.",
+      "crm-discipline": "Explains calendar booking before confirmed CRM recording; no false invitation claim.",
+      "accuracy": "Keeps pending steps, timezone and attendee information accurate.",
+      "handoff": "Records the process, goal, tools, questions and participants.",
+      "ethics": "No SDR pricing, guarantee or fictitious real booking."
+    }
+  }
+}

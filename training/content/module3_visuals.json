@@ -1,0 +1,892 @@
+[
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Let the recommendation follow discovery.",
+        "kind": "focus",
+        "items": [
+          [
+            "DISCOVERY",
+            "Understand the work."
+          ],
+          [
+            "SOLUTION",
+            "Explore a relevant possibility."
+          ]
+        ]
+      },
+      {
+        "phrase": "Use four boxes: trigger, work, breakdown",
+        "title": "Map four parts of the workflow.",
+        "kind": "flow",
+        "items": [
+          [
+            "Trigger",
+            "What starts the work?"
+          ],
+          [
+            "Work",
+            "What happens next?"
+          ],
+          [
+            "Breakdown",
+            "Where does it fail?"
+          ],
+          [
+            "Outcome",
+            "What would improve?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Only then add a possible solution.",
+        "title": "A possible fit still needs evaluation.",
+        "kind": "cards",
+        "items": [
+          [
+            "Process",
+            "Real steps"
+          ],
+          [
+            "Constraints",
+            "Access and requirements"
+          ],
+          [
+            "Ownership",
+            "Who remains responsible?"
+          ]
+        ]
+      },
+      {
+        "phrase": "For each service in this lesson,",
+        "title": "Learn the catalog through questions.",
+        "kind": "flow",
+        "items": [
+          [
+            "Problem",
+            "What might this address?"
+          ],
+          [
+            "Discovery",
+            "How would we test the fit?"
+          ],
+          [
+            "Boundary",
+            "What must we verify?"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Support the phone workflow that needs help.",
+        "kind": "cards",
+        "items": [
+          [
+            "Routine questions",
+            "Approved information"
+          ],
+          [
+            "Intake",
+            "Useful details"
+          ],
+          [
+            "Overflow",
+            "Appropriate handoff"
+          ]
+        ]
+      },
+      {
+        "phrase": "Ask what happens when calls arrive",
+        "title": "Ask what happens at the difficult moment.",
+        "kind": "quote",
+        "items": [
+          [
+            "DISCOVERY",
+            "What happens when a call arrives and the team cannot answer it?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Consider a fictional plumbing office with",
+        "title": "Daytime coverage can coexist with another gap.",
+        "kind": "compare",
+        "items": [
+          [
+            "WORKING",
+            "Receptionist handles daytime calls."
+          ],
+          [
+            "EXPLORE",
+            "After-hours requests wait until morning."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "The specialist must verify the phone",
+        "title": "Phone promises require verified operations.",
+        "kind": "cards",
+        "items": [
+          [
+            "Setup",
+            "Actual channel connection"
+          ],
+          [
+            "Tasks",
+            "Allowed scope"
+          ],
+          [
+            "Escalation",
+            "Human route and expectations"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Start with the visitor’s task.",
+        "kind": "flow",
+        "items": [
+          [
+            "Question",
+            "What are they trying to learn?"
+          ],
+          [
+            "Information",
+            "Where is the answer?"
+          ],
+          [
+            "Next step",
+            "What should happen?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Ask which questions visitors repeatedly bring",
+        "title": "The website’s goal is a discovery question.",
+        "kind": "quote",
+        "items": [
+          [
+            "ASK",
+            "What should a successful interaction help the visitor accomplish?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Imagine a fictional catering business whose",
+        "title": "Helpful intake is different from a commitment.",
+        "kind": "compare",
+        "items": [
+          [
+            "POSSIBLE INTAKE",
+            "Event size and relevant preferences"
+          ],
+          [
+            "VERIFY",
+            "Availability, accommodations and final quote"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Our own public demos use fictional",
+        "title": "A demo illustrates a possibility.",
+        "kind": "focus",
+        "items": [
+          [
+            "DEMO",
+            "Fictional business experience"
+          ],
+          [
+            "CUSTOMER BUILD",
+            "Requires their information and requirements"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "e",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Qualification needs a business definition.",
+        "kind": "cards",
+        "items": [
+          [
+            "Fit",
+            "Appropriate opportunity"
+          ],
+          [
+            "Routing",
+            "Right next conversation"
+          ],
+          [
+            "Confirmation",
+            "Actual booking result"
+          ]
+        ]
+      },
+      {
+        "phrase": "Ask what the receiving team needs",
+        "title": "Ask what the receiving team needs.",
+        "kind": "flow",
+        "items": [
+          [
+            "Questions",
+            "Useful information"
+          ],
+          [
+            "Rules",
+            "Approved criteria"
+          ],
+          [
+            "Exceptions",
+            "Human decision path"
+          ]
+        ]
+      },
+      {
+        "phrase": "For a fictional installation company, useful",
+        "title": "Do not promise qualification without criteria.",
+        "kind": "compare",
+        "items": [
+          [
+            "USEFUL INTAKE",
+            "Service, area and consultation interest"
+          ],
+          [
+            "VERIFY",
+            "Eligibility, suitability and calendar"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "In our sales process, the goal",
+        "title": "A request is not a booking.",
+        "kind": "quote",
+        "items": [
+          [
+            "STANDARD",
+            "Use agreed rules and an actual confirmed calendar result."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "f",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Define the audience and reason first.",
+        "kind": "cards",
+        "items": [
+          [
+            "Audience",
+            "Which existing relationship?"
+          ],
+          [
+            "Relevance",
+            "Why contact them?"
+          ],
+          [
+            "Permission",
+            "Approved process and channel"
+          ]
+        ]
+      },
+      {
+        "phrase": "Ask which group the owner has",
+        "title": "Different groups need different approaches.",
+        "kind": "compare",
+        "items": [
+          [
+            "UNFINISHED INQUIRY",
+            "Clarify an unresolved next step."
+          ],
+          [
+            "PRIOR CUSTOMER",
+            "Understand a relevant current reason."
+          ]
+        ]
+      },
+      {
+        "phrase": "Imagine a fictional service business with",
+        "title": "Old records can include clear restrictions.",
+        "kind": "flow",
+        "items": [
+          [
+            "Review",
+            "Understand the record"
+          ],
+          [
+            "Exclude",
+            "Honor refusals and restrictions"
+          ],
+          [
+            "Follow up",
+            "Only an appropriate next step"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "The specialist evaluates the data, workflow",
+        "title": "Prepare questions, not a recovery guarantee.",
+        "kind": "quote",
+        "items": [
+          [
+            "HANDOFF",
+            "Audience, purpose, existing process and channel requirements to verify."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "g",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Find the step where follow-up breaks down.",
+        "kind": "flow",
+        "items": [
+          [
+            "Conversation",
+            "Useful information"
+          ],
+          [
+            "Ownership",
+            "Responsible person"
+          ],
+          [
+            "Reminder",
+            "Agreed next action"
+          ],
+          [
+            "Result",
+            "Verified outcome"
+          ]
+        ]
+      },
+      {
+        "phrase": "A fictional contractor says every quote",
+        "title": "A useful question reveals the workflow.",
+        "kind": "quote",
+        "items": [
+          [
+            "FICTIONAL CONTRACTOR",
+            "After the first email, who owns the next step and how do they know it is due?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Your turn. Name one possible improvement",
+        "title": "Recommend a possibility with a verification need.",
+        "kind": "cards",
+        "items": [
+          [
+            "Improve",
+            "One specific step"
+          ],
+          [
+            "Verify",
+            "System and rules"
+          ],
+          [
+            "Own",
+            "Responsible person"
+          ]
+        ]
+      },
+      {
+        "phrase": "The important distinction is between a",
+        "title": "A saved record is not a sent message.",
+        "kind": "compare",
+        "items": [
+          [
+            "CRM RECORD",
+            "Documents work and next steps."
+          ],
+          [
+            "EXTERNAL ACTION",
+            "Requires an authorized action and confirmed result."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "h",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Internal assistance starts with a useful task.",
+        "kind": "cards",
+        "items": [
+          [
+            "Find",
+            "Approved procedures"
+          ],
+          [
+            "Summarize",
+            "Appropriate material"
+          ],
+          [
+            "Draft",
+            "For the required review"
+          ]
+        ]
+      },
+      {
+        "phrase": "Ask where employees currently find answers",
+        "title": "Knowledge access has owners and boundaries.",
+        "kind": "flow",
+        "items": [
+          [
+            "Source",
+            "Where is the answer?"
+          ],
+          [
+            "Owner",
+            "Who maintains it?"
+          ],
+          [
+            "Role",
+            "Who may access it?"
+          ],
+          [
+            "Review",
+            "What needs checking?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Consider a fictional distribution team with",
+        "title": "Resolve conflicting procedures first.",
+        "kind": "compare",
+        "items": [
+          [
+            "PROBLEM",
+            "Several versions of the same instruction."
+          ],
+          [
+            "FIRST QUESTION",
+            "Which version is authoritative?"
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "The specialist should investigate permissions, source",
+        "title": "Discover the requirement without collecting secrets.",
+        "kind": "quote",
+        "items": [
+          [
+            "SDR NOTE",
+            "Repeated internal task, source ownership and permissions to verify."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "i",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Custom software follows a real workflow.",
+        "kind": "cards",
+        "items": [
+          [
+            "Repeated entry",
+            "Where is work duplicated?"
+          ],
+          [
+            "Missing capability",
+            "What cannot the team do?"
+          ],
+          [
+            "Manual process",
+            "Which step needs evaluation?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Ask the prospect to describe one",
+        "title": "Use one complete example.",
+        "kind": "flow",
+        "items": [
+          [
+            "Start",
+            "Trigger"
+          ],
+          [
+            "Systems",
+            "Where work happens"
+          ],
+          [
+            "Information",
+            "What moves"
+          ],
+          [
+            "Decision",
+            "Who decides?"
+          ]
+        ]
+      },
+      {
+        "phrase": "In a fictional service company, a",
+        "title": "Similar fields do not guarantee compatible meaning.",
+        "kind": "compare",
+        "items": [
+          [
+            "VISIBLE",
+            "Two systems contain job details."
+          ],
+          [
+            "VERIFY",
+            "Access, field meaning and supported actions."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Record what is known and what",
+        "title": "Technical scope belongs with the specialist.",
+        "kind": "quote",
+        "items": [
+          [
+            "BOUNDARY",
+            "No integration or pricing promise before the qualified assessment."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "a",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Find the customer-journey problem.",
+        "kind": "flow",
+        "items": [
+          [
+            "Discover",
+            "How customers find the business"
+          ],
+          [
+            "Understand",
+            "What they need to learn"
+          ],
+          [
+            "Act",
+            "The appropriate next step"
+          ],
+          [
+            "Follow up",
+            "What happens afterward"
+          ]
+        ]
+      },
+      {
+        "phrase": "Ask where customers currently come from,",
+        "title": "“The website is not working” needs clarification.",
+        "kind": "cards",
+        "items": [
+          [
+            "Error",
+            "Something fails"
+          ],
+          [
+            "Clarity",
+            "Information is hard to find"
+          ],
+          [
+            "Outcome",
+            "Wrong or missing next steps"
+          ]
+        ]
+      },
+      {
+        "phrase": "A fictional retailer reports that visitors",
+        "title": "Choose the direction that fits the evidence.",
+        "kind": "compare",
+        "items": [
+          [
+            "REPEATED QUESTIONS",
+            "Explore clearer information or assistance."
+          ],
+          [
+            "DISCOVERY GAP",
+            "Investigate appropriate customer acquisition."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Do not guarantee rankings, leads, conversion",
+        "title": "A possibility is not a forecast.",
+        "kind": "quote",
+        "items": [
+          [
+            "BOUNDARY",
+            "No guaranteed rankings, leads, conversions or revenue."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "b",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "A familiar product can distract from the actual problem.",
+        "kind": "dialogue",
+        "items": [
+          [
+            "FICTIONAL OWNER",
+            "Customers wait too long for job updates."
+          ],
+          [
+            "WEAK REP",
+            "Let me tell you about the AI receptionist."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "The useful rep asks: how do",
+        "title": "Follow the update process.",
+        "kind": "quote",
+        "items": [
+          [
+            "USEFUL QUESTION",
+            "How do customers get an update today, and where does the delay happen?"
+          ]
+        ]
+      },
+      {
+        "phrase": "Several options might eventually fit: clearer",
+        "title": "Evaluate alternatives after discovery.",
+        "kind": "cards",
+        "items": [
+          [
+            "Ownership",
+            "A clearer responsibility"
+          ],
+          [
+            "Workflow",
+            "An approved update process"
+          ],
+          [
+            "Technology",
+            "An appropriate tool or assistant"
+          ]
+        ]
+      },
+      {
+        "phrase": "Notice the improvement in the conversation.",
+        "title": "Show that you understood the problem.",
+        "kind": "flow",
+        "items": [
+          [
+            "Reflect",
+            "Summarize accurately"
+          ],
+          [
+            "Check",
+            "Confirm your understanding"
+          ],
+          [
+            "Invite",
+            "A relevant specialist conversation"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "c",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Map only the facts you were given.",
+        "kind": "cards",
+        "items": [
+          [
+            "KNOWN",
+            "Calls handled well; updates span systems."
+          ],
+          [
+            "UNKNOWN",
+            "Status owner and request volume."
+          ],
+          [
+            "DESIRED",
+            "Fewer repetitive update questions."
+          ]
+        ],
+        "fictional": true
+      },
+      {
+        "phrase": "Write the trigger, the current work,",
+        "title": "Build the map before the recommendation.",
+        "kind": "flow",
+        "items": [
+          [
+            "Trigger",
+            "Customer asks"
+          ],
+          [
+            "Work",
+            "Team checks status"
+          ],
+          [
+            "Breakdown",
+            "Ownership unclear"
+          ],
+          [
+            "Outcome",
+            "Consistent answer"
+          ]
+        ]
+      },
+      {
+        "phrase": "A strong map starts with a",
+        "title": "A useful hypothesis comes with questions.",
+        "kind": "compare",
+        "items": [
+          [
+            "POSSIBILITY",
+            "Approved update workflow or assistant"
+          ],
+          [
+            "VERIFY",
+            "Status source and permitted information"
+          ]
+        ]
+      },
+      {
+        "phrase": "If your answer promised fewer calls",
+        "title": "Revise unsupported claims.",
+        "kind": "cards",
+        "items": [
+          [
+            "Remove",
+            "Invented percentages"
+          ],
+          [
+            "Add",
+            "Ownership question"
+          ],
+          [
+            "Focus",
+            "One relevant direction"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "d",
+    "boards": [
+      {
+        "phrase": "",
+        "title": "Remember the work behind each service.",
+        "kind": "recap",
+        "items": [
+          [
+            "01",
+            "Start with the customer’s process."
+          ],
+          [
+            "02",
+            "Locate the breakdown."
+          ],
+          [
+            "03",
+            "Understand the desired outcome."
+          ],
+          [
+            "04",
+            "Choose a possible direction."
+          ],
+          [
+            "05",
+            "Record what needs verification."
+          ]
+        ]
+      },
+      {
+        "phrase": "Use the same discipline across the",
+        "title": "Keep the operating requirements visible.",
+        "kind": "cards",
+        "items": [
+          [
+            "People",
+            "Human ownership"
+          ],
+          [
+            "Information",
+            "Authoritative source"
+          ],
+          [
+            "Responsibility",
+            "Verified next action"
+          ]
+        ]
+      },
+      {
+        "phrase": "Complete the knowledge check, then submit",
+        "title": "Submit a useful map and improve it.",
+        "kind": "flow",
+        "items": [
+          [
+            "Facts",
+            "What was reported"
+          ],
+          [
+            "Hypothesis",
+            "Possible fit"
+          ],
+          [
+            "Unknowns",
+            "What to investigate"
+          ],
+          [
+            "Next step",
+            "What was agreed"
+          ]
+        ]
+      },
+      {
+        "phrase": "When there is a credible fit",
+        "title": "Make the Growth Assessment more useful.",
+        "kind": "quote",
+        "items": [
+          [
+            "YOUR MISSION",
+            "An understood problem, an honest possible fit and an informed handoff."
+          ]
+        ]
+      }
+    ]
+  }
+]

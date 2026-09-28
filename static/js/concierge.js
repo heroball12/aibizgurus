@@ -122,7 +122,7 @@ function openFollowup(args={}) {
 }
 function tool(event) {
   if (!event || !event.args || typeof event.args!=='object' || Array.isArray(event.args)) return;
-  if(config.industry || config.salesGuide)return;
+  if(config.industry || config.salesGuide || config.proctor)return;
   if(event.tool==='remember_visitor'){saveContext(event.args).catch(()=>status('Your name or request could not be remembered. Please ask Guru to try again.',true));return;}
   if ($('guideText').value.trim() || deliveryPending) return;
   if (event.tool==='introduce_demo_employee' && Object.hasOwn(config.demoDirectory || {},event.args.industry)) {
@@ -219,7 +219,7 @@ async function cancelProvider(record) {
     try {await wait(700);await post(record.stopUrl);return true;} catch (_) { return false; }
   }
 }
-async function endCall(message=config.salesGuide?'Coaching ended. Review your next step and save it on the lead.':'Call ended. You can keep exploring or book your Growth Assessment.') {
+async function endCall(message=config.proctor?'Coaching ended. Return to the Academy for your quiz, practice or next lesson.':config.salesGuide?'Coaching ended. Review your next step and save it on the lead.':'Call ended. You can keep exploring or book your Growth Assessment.') {
   ++generation;busy=false;clearInterval(timer);clearTimeout(replyTimer);clearTimeout(typingTimer);stopConnectionProgress();speechLevel(0);
   deliveryPending=false;$('guideTextSend').disabled=false;$('guideMic').disabled=false;
   const oldConnection=connection,oldCall=call;connection=null;call=null;
@@ -303,7 +303,7 @@ async function startConversation({handoff=!!config.handoff?.autoStart}={}){
       } catch(error) {if(!transfer)throw error;mode='text';}
     }
     if(run!==generation)return;
-    pendingStart=post(config.startUrl,{consent:!transfer && $('guideConsentCheck').checked,page,industry:config.industry || '',...(config.salesGuide?{salesGuide:true,salesLead:config.salesLead}:{}),...(transfer?{handoff:transfer.id}:{})});
+    pendingStart=post(config.startUrl,{consent:!transfer && $('guideConsentCheck').checked,page,industry:config.industry || '',...(config.salesGuide?{salesGuide:true,salesLead:config.salesLead}:{}),...(config.proctor?{proctor:config.proctor}:{}),...(transfer?{handoff:transfer.id}:{})});
     try{record=await pendingStart;}finally{pendingStart=null;}
     if(transfer)config.handoff.autoStart=false;
     if(run!==generation){await cancelProvider(record);return;}call=record;

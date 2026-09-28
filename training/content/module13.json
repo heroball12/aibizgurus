@@ -1,0 +1,253 @@
+{
+  "title": "Follow-Up That Doesn’t Suck",
+  "short_title": "FOLLOW UP WITH PURPOSE",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Write concise, relevant follow-ups; review AI drafts; coordinate the team and close the loop accurately.",
+  "skills": [
+    "follow-up",
+    "accuracy",
+    "ethics",
+    "crm-discipline",
+    "listening"
+  ],
+  "scenes": [
+    {
+      "title": "A follow-up should continue a real conversation",
+      "narration": "Good follow-up gives the prospect a useful reason to recognize and continue the conversation. It is not simply another message saying checking in. The context should be clear: what was discussed, what information was requested and what next step would help. When that context is missing, repeated contact can feel like work the recipient never agreed to do.\nThe best follow-up begins before the first conversation ends. Confirm the relevant topic, the appropriate channel and any actual timing agreement. Do not assume an email address means unlimited permission to send every kind of message. Use the approved campaign process and respect the person's stated preferences and contact restrictions.\nIn this lesson, we will write concise follow-ups, handle silence without inventing a story and keep the CRM aligned with the actual interaction. The goal remains a useful Growth Assessment when the fit and interest support it. Follow-up should make that decision easier, not disguise an unqualified opportunity as progress because more messages were sent.",
+      "pauses": [],
+      "start": 0,
+      "end": 75,
+      "time": "00:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Continue the conversation the prospect actually had."
+    },
+    {
+      "title": "Record the agreement accurately",
+      "narration": "A requested callback, permission to send information and a confirmed assessment are different agreements. Before leaving the conversation, confirm which one exists. If the person asks for a short overview, send that overview. If they suggest a later conversation, clarify the timing as appropriate. Do not silently upgrade a modest request into a booked meeting.\nFor a fictional example, Jordan at Willow Field Services asks for a concise explanation of quotation reminders and says Thursday afternoon is a better time to reconnect. A useful record includes that topic, the appropriate business channel and the agreed callback context. It should not claim that Jordan accepted a custom build or invited an implementation proposal.\nKeep the source of the agreement visible when it matters. A coordinator suggesting a time for the owner is different from the owner requesting a callback. If the timing is tentative, say so. The next employee should be able to understand what they can honestly reference without needing to guess which part of the note was an actual commitment.",
+      "pauses": [],
+      "start": 75,
+      "end": 150,
+      "time": "01:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Keep different agreements distinct."
+    },
+    {
+      "title": "Write a concise message with a purpose",
+      "narration": "A useful follow-up can be built from three parts: a brief reminder of the relevant conversation, something that addresses the stated interest and one clear next step. You do not need a long company introduction if the recipient already knows why you are writing. Keep the message easy to understand on an ordinary business day.\nFor Willow, the opening might say you are following up on the quotation reminder process Jordan described. The body can point to a relevant approved example or summarize the question a specialist would review. The next step might confirm the requested callback or invite a Growth Assessment if that is appropriate to the established interest.\nAvoid including several competing requests. Please read this catalog, watch five videos, fill out a questionnaire and book a call creates unnecessary friction. Choose the action that fits the current conversation. A clear message gives the recipient a manageable decision, and its wording should remain accurate even if they decide not to continue.",
+      "pauses": [],
+      "start": 150,
+      "end": 225,
+      "time": "02:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Use three purposeful parts."
+    },
+    {
+      "title": "Send the relevant example, not the entire catalog",
+      "narration": "A resource should help answer the prospect's actual question. If they asked how an assistant could collect initial details, choose a suitable approved example and explain what to notice. If they asked about quotation follow-up, do not default to a generic showcase of unrelated services. Relevance makes the information easier to use and easier to share internally.\nLabel examples accurately. A fictional demonstration is a fictional demonstration, and a proposed workflow is a possibility to evaluate. Do not attach an invented customer result or claim that the sample is already connected to the prospect's CRM. The resource should create clarity rather than new expectations that the specialist must later undo.\nWhen no approved resource directly answers the request, be honest. You can summarize the question for the specialist and propose the appropriate evaluation. Do not fabricate a case study to make the message feel complete. A concise, accurate explanation with a clear next step is more useful than an impressive-looking attachment that cannot support its claims.",
+      "pauses": [],
+      "start": 225,
+      "end": 300,
+      "time": "03:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Choose a resource that answers the actual question."
+    },
+    {
+      "title": "Use AI to draft, then review the substance",
+      "narration": "AI can help organize a follow-up draft, shorten a message or suggest clearer wording. It does not know the true conversation unless the appropriate context is supplied, and it can add claims that sound plausible but were never established. The employee remains responsible for reviewing the message before it is used in the approved outreach workflow.\nGive a drafting tool only the information appropriate for that tool and task. Ask for a concise message based on supplied facts, with unknowns preserved. Then check every assertion against the actual record. Watch for invented familiarity, a meeting described as confirmed, a technical capability stated as guaranteed or a price inserted because the draft assumes every sales message needs one.\nA useful review asks whether the recipient would recognize the conversation, whether the claims are supported and whether the next step was invited or is clearly presented as an option. Correct the substance before polishing the tone. A beautifully written message can still be wrong, and automation should not turn that error into a repeated sequence sent across the pipeline.",
+      "pauses": [],
+      "start": 300,
+      "end": 375,
+      "time": "05:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "AI can help draft; the employee reviews the message."
+    },
+    {
+      "title": "Handle silence without inventing its meaning",
+      "narration": "No response can mean many things: the message was missed, the timing changed, the topic is not a priority or the person does not want to continue. You do not know which from silence alone. Avoid writing notes that claim definite interest or definite rejection without evidence. Use the approved follow-up process and the context of the original agreement.\nA later message, when appropriate, should add clarity or a useful reminder rather than guilt. You might reconnect the question to the specific process they named and ask whether a review is still useful. Do not imply that the prospect owes you a reply because you spent time preparing material, and do not invent a closing deadline to create urgency.\nThere is no universal Academy rule requiring a fixed number of touches for every prospect. Campaign guidance, channel rules and the person's preferences matter. Follow the current approved cadence and stop when required. If the next step is unclear, ask your manager instead of creating an endless personal sequence based on the hope that more contact must eventually produce interest.",
+      "pauses": [],
+      "start": 375,
+      "end": 450,
+      "time": "06:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Silence does not explain itself."
+    },
+    {
+      "title": "Change the next step when the facts change",
+      "narration": "A follow-up may reveal that the business solved the issue, changed priorities or brought another person into the decision. Use the new information. Do not keep sending messages that assume the original problem remains unchanged. An accurate sequence can stop, narrow its purpose or move to a different appropriate conversation.\nSuppose Jordan explains that quotation follow-up is now handled consistently, but new inquiry assignment remains unclear. Acknowledge the improvement and explore the new process if they want to discuss it. Do not insist that the original reminder example is still the answer. The value of follow-up is partly that it updates your understanding.\nRecord the change in the CRM, including what the prospect actually said and the next agreement. If there is no longer a relevant need, close or pause the opportunity according to the approved workflow. Preserving an outdated hot-lead label can mislead the team and waste the specialist's time. The record should describe the current conversation, not preserve the rep's earlier optimism.",
+      "pauses": [],
+      "start": 450,
+      "end": 525,
+      "time": "07:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "New evidence should change the follow-up."
+    },
+    {
+      "title": "Coordinate across the team",
+      "narration": "Follow-up can become confusing when multiple employees contact the same business without checking the record. Before acting, review ownership, recent activity, upcoming meetings and restrictions. A message that was appropriate yesterday may be redundant or unwelcome after another person has already resolved the question or booked the assessment.\nIf ownership or responsibility is unclear, use the approved management process rather than competing to contact the prospect first. Record your actual action promptly so the next teammate does not repeat it. Do not claim a message was sent when it is only a draft, or describe an attempted call as a completed conversation.\nThe handoff should also preserve any pending promise, such as a requested resource or a callback. Assign a clear responsible person through the available workflow and confirm that the commitment is understood. Team coordination is part of the customer experience: the prospect should not have to explain the same request repeatedly because internal records failed to keep pace with the work.",
+      "pauses": [],
+      "start": 525,
+      "end": 600,
+      "time": "08:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Check the relationship before the next contact."
+    },
+    {
+      "title": "Practice a useful follow-up",
+      "narration": "Your fictional prospect, Jordan at Willow Field Services, asked for a short overview of quotation reminder support. They want staff to retain control of unusual customer questions and agreed to reconnect Thursday afternoon. Write a concise follow-up with the relevant context, an accurate explanation of the example and one next step.\nPause and draft your message. Use only the supplied facts. Do not add a price, a guarantee, an integration claim or a statement that the Growth Assessment is already booked. If you mention an example, identify it as fictional or illustrative unless you have approved evidence for a different claim.\nA strong draft references quotation follow-up, explains that staff handling of exceptions remains part of the evaluation and confirms the agreed reconnection. If the message reads like a generic company brochure, remove the unrelated services. If it says the solution is already built for Willow, replace that with a possibility to review. Then check that the next action matches the actual agreement.",
+      "pauses": [
+        [
+          "Pause and draft your message.",
+          25,
+          "Write context, one useful explanation and the agreed next step."
+        ]
+      ],
+      "start": 600,
+      "end": 675,
+      "time": "10:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Use Willow’s supplied facts."
+    },
+    {
+      "title": "Follow up around a confirmed assessment",
+      "narration": "Once an assessment is confirmed, follow-up should help the prospect attend the meeting they agreed to. Use the actual date, time, timezone, video details and participants from the booking workflow. A reminder should reinforce the purpose and make it easy to find the meeting information, not introduce a new sales pitch or an unauthorized commercial promise.\nIf a prospect needs to reschedule, follow the approved scheduling process and update the CRM after the change is confirmed. Do not leave two active-looking meeting times in the record. If the person misses the meeting, use a respectful message that asks whether reconnecting is appropriate. Do not assume a no-show proves bad intent or gives permission for aggressive repeated contact.\nKeep the specialist informed of meaningful changes through the internal workflow. The prospect's time and the specialist's preparation both depend on accurate coordination. Record the outcome as confirmed, rescheduled, canceled or awaiting a response according to what actually happened, and preserve the relevant history rather than rewriting it to make the calendar look cleaner.",
+      "pauses": [],
+      "start": 675,
+      "end": 750,
+      "time": "11:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A meeting reminder supports attendance."
+    },
+    {
+      "title": "Close the loop when there is no next step",
+      "narration": "A useful follow-up process has an end. If the prospect declines, the opportunity no longer fits or the approved sequence reaches its stopping point, close the loop according to the campaign workflow. Do not keep an undefined task open forever merely because closing it feels less optimistic than leaving it in the pipeline.\nWhen an appropriate final message is part of the approved process, keep it brief and respectful. It should clarify that you are closing the current follow-up, without guilt, threats or a fake deadline. A clear contact restriction should be honored directly rather than answered with one more sales message that tries to reverse it.\nRecord why the next action ended and what, if anything, the person invited for the future. No response, no current interest and a do-not-contact instruction are different outcomes. Clear closure helps the team prioritize legitimate work and prevents old assumptions from becoming the reason another rep restarts an unwanted conversation.",
+      "pauses": [],
+      "start": 750,
+      "end": 825,
+      "time": "12:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A follow-up process needs an appropriate endpoint."
+    },
+    {
+      "title": "Your follow-up quality check",
+      "narration": "Before each follow-up, read the last real interaction and ask what would be useful now. Confirm the owner, the channel, the topic and any contact restriction. Draft a concise message with one next step, review every claim and record the action only after it occurs. That routine prevents many avoidable errors.\nFor your practical submission, write an information follow-up, a callback confirmation and a respectful closure for fictional prospects. Ask Guru to identify unsupported claims, unclear next actions and statements that misrepresent the agreement. Revise the weakest message and explain why the second version is more accurate and easier to act on.\nComplete the quiz and retain the field guide. Follow-up is a form of listening over time: it remembers what the prospect said, notices what changed and respects what they want next. When that process supports a relevant Growth Assessment, the meeting begins with continuity and accurate expectations instead of a trail of generic messages.",
+      "pauses": [],
+      "start": 825,
+      "end": 900,
+      "time": "13:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Check the context before every follow-up."
+    }
+  ],
+  "job_aid": "FOLLOW-UP FIELD GUIDE\nBEFORE: read the latest interaction, ownership, meetings and contact restrictions.\nAGREE: relevant topic, appropriate channel and actual timing.\nMESSAGE: context → useful approved content → one clear next step.\nEVIDENCE: label fictional examples; no invented case studies, integrations, results or prices.\nAI DRAFTS: supply appropriate facts, preserve unknowns, review every claim before use.\nSILENCE: no definite motive; use approved campaign guidance, not an invented universal touch count.\nCHANGES: update the topic and qualification when the business changes.\nTEAM: draft is not sent; attempt is not conversation; information request is not assessment booked.\nMEETINGS: use actual time, timezone, video route and participants; reconcile reschedules and cancellations.\nCLOSE: respect stopping points and contact restrictions; record the actual reason without blame.",
+  "questions": [
+    {
+      "skill": "follow-up",
+      "prompt": "What makes a follow-up useful?",
+      "choices": [
+        "Repeating checking in without context.",
+        "Relevant context, useful content and one clear next step.",
+        "A long catalog every time.",
+        "A fictional deadline."
+      ],
+      "correct_index": 1,
+      "explanation": "The message should continue the actual conversation and make the next decision manageable."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "A prospect asks for information and a Thursday callback. What is confirmed?",
+      "choices": [
+        "A paid implementation.",
+        "An accepted proposal.",
+        "The information request and callback agreement, not an assessment booking.",
+        "A custom price."
+      ],
+      "correct_index": 2,
+      "explanation": "Keep the agreement at its actual level. Do not turn a modest next step into a confirmed assessment or commercial commitment."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "An AI draft adds a guaranteed result and price range. What should the rep do?",
+      "choices": [
+        "Remove unsupported and unauthorized claims before using the message.",
+        "Send it because AI wrote it.",
+        "Assume the numbers are approved.",
+        "Add a bigger guarantee."
+      ],
+      "correct_index": 0,
+      "explanation": "The employee is responsible for reviewing substance. AI drafting does not expand pricing authority or establish evidence."
+    },
+    {
+      "skill": "follow-up",
+      "prompt": "The prospect has not replied. What does silence prove?",
+      "choices": [
+        "They will buy.",
+        "They are rejecting the company permanently.",
+        "They owe you a response.",
+        "No specific motive by itself; use the actual context and approved follow-up guidance."
+      ],
+      "correct_index": 3,
+      "explanation": "Silence has multiple possible explanations. Do not invent interest, intent or a universal cadence."
+    },
+    {
+      "skill": "crm-discipline",
+      "prompt": "Another rep already booked an assessment before your planned follow-up. What should you do?",
+      "choices": [
+        "Send the old message anyway.",
+        "Review ownership and current activity, then coordinate the appropriate next action.",
+        "Create another lead.",
+        "Ignore the meeting."
+      ],
+      "correct_index": 1,
+      "explanation": "Shared context changes what is useful. Avoid duplicate or contradictory contact and preserve the current relationship record."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "You have written but not sent a message. How should it be recorded?",
+      "choices": [
+        "Sent.",
+        "Completed conversation.",
+        "Draft or pending action.",
+        "Confirmed customer agreement."
+      ],
+      "correct_index": 2,
+      "explanation": "Record the actual stage. Preparing a message is not the same as sending it or receiving a response."
+    },
+    {
+      "skill": "follow-up",
+      "prompt": "The business says the original issue is solved but names a different concern. What next?",
+      "choices": [
+        "Acknowledge the change and explore the new process if they want to discuss it.",
+        "Keep sending the original pitch unchanged.",
+        "Insist the old problem remains.",
+        "Mark every service relevant."
+      ],
+      "correct_index": 0,
+      "explanation": "Follow-up should update understanding. New evidence changes the topic and may change qualification."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "A prospect clearly requests no further contact. What should happen?",
+      "choices": [
+        "One more sales message to reverse the decision.",
+        "Contact from another rep.",
+        "An indefinite automated sequence.",
+        "Honor and record the restriction through the approved process."
+      ],
+      "correct_index": 3,
+      "explanation": "A clear stop request overrides the desire to keep following up. Do not bypass it through another route or colleague."
+    }
+  ],
+  "scenario": {
+    "title": "Willow’s requested follow-up",
+    "persona": "FICTIONAL Jordan at Willow Field Services. You requested a short overview of quotation reminder support, want staff handling of unusual questions and agreed to reconnect Thursday afternoon. No Growth Assessment or implementation is booked. Ask the learner to draft the message and explain the CRM record. In a later branch say quotation reminders are now handled but inquiry assignment remains unclear; expect the learner to adapt. A final branch requests no further contact.",
+    "opening": "Jordan: Send me a short overview about quote reminders, with people still handling unusual questions. Thursday afternoon is better to reconnect.",
+    "rubric": {
+      "follow-up": "Uses relevant context, useful content and one next step that matches the agreement.",
+      "accuracy": "No invented meeting, implementation, result or resource.",
+      "ethics": "Reviews AI drafts and respects contact preferences and pricing boundaries.",
+      "crm-discipline": "Records actual actions and coordinates current ownership/history.",
+      "listening": "Adapts when the business context changes."
+    }
+  }
+}

@@ -47,6 +47,10 @@ def error(message, status=400):
 @ensure_csrf_cookie
 def concierge_home(request):
     from core.demo_profiles import resolve_profile, profiles
+    from training import proctor
+    training_session = proctor.owned_session(request, request.GET["proctor"]) if request.GET.get("proctor") else None
+    if training_session and (request.GET.get("sales") or request.GET.get("industry") or request.GET.get("handoff")):
+        raise Http404("Choose one conversation mode.")
     sales_guide = request.GET.get("sales") == "1"
     sales_lead = sales_concierge.selected_lead(request, request.GET.get("lead")) if sales_guide else None
     if sales_guide and ("industry" in request.GET or "handoff" in request.GET):
@@ -56,7 +60,7 @@ def concierge_home(request):
         raise Http404("Demo category not found")
     available = demo_profile["slug"] in demo_video.available_profiles() if demo_profile else concierge.is_available()
     directory = concierge.pages()
-    embedded = sales_guide or request.GET.get("embed") == "1"
+    embedded = bool(training_session) or sales_guide or request.GET.get("embed") == "1"
     initial = request.GET.get("page", "home")
     if initial not in directory or not directory[initial]["embedded"]:
         initial = "home"
@@ -68,6 +72,7 @@ def concierge_home(request):
             "available": available, "pages": directory, "initialPage": initial,
             "startUrl": reverse("concierge_start"), "followupUrl": reverse("concierge_followup"),
             "maxSeconds": settings.VIDEO_CONCIERGE_MAX_SECONDS,
+            "proctor": str(training_session.pk) if training_session else None,
             "embedded": embedded, "salesGuide": sales_guide, "salesLead": sales_lead.pk if sales_lead else None,
             "employeeName": demo_profile["name"] if demo_profile else "Guru",
             "industry": demo_profile["slug"] if demo_profile else "",
@@ -76,7 +81,7 @@ def concierge_home(request):
             "typingAudioUrl": static("audio/typing-status.mp3"),
             "handoff": {"id": transfer["id"], "mode": transfer["mode"], "autoStart": auto_start} if transfer else None,
         },
-        "embedded": embedded, "sales_guide": sales_guide,
+        "embedded": embedded, "sales_guide": sales_guide or bool(training_session), "training_proctor": bool(training_session),
         "available": available, "directory": directory,
         "demo_profile": demo_profile,
         "handoff": transfer,
@@ -100,6 +105,10 @@ def start_call(request):
     if not data:
         return error("Please agree to the AI Business Gurus Terms of Service before starting.")
     from core.demo_profiles import resolve_profile
+    from training import proctor
+    training_session = proctor.owned_session(request, data["proctor"]) if data.get("proctor") else None
+    if training_session and (data.get("salesGuide") or data.get("industry") or data.get("handoff")):
+        return error("Choose one conversation mode.")
     sales_guide = data.get("salesGuide") is True
     if "salesGuide" in data and not isinstance(data["salesGuide"], bool):
         return error("Choose a valid conversation mode.")
@@ -122,7 +131,7 @@ def start_call(request):
         if demo_profile["slug"] not in demo_video.available_profiles():
             return error("This video employee is not connected yet. Please use the text demo.", 503)
     if not demo_profile and not concierge.is_available():
-        return error("Live video is not available yet. You can still browse services, schedule a consultation or request help below.", 503)
+        return error("Live Guru coaching is unavailable. Continue with your lesson or saved practice in the Academy." if training_session else "Live video is not available yet. You can still browse services, schedule a consultation or request help below.", 503)
     owner = owner_digest(request)
     now = timezone.now()
     try:
@@ -132,9 +141,9 @@ def start_call(request):
                 existing = ConciergeCall.objects.get(owner_digest=owner, active=True)
                 return JsonResponse({"error":"A video call is already open in this browser. Use End call to close it before starting another.", "existingCall":{"id":str(existing.pk),"stopUrl":reverse("concierge_stop",args=[existing.pk])}}, status=409)
             if not consume_budget("concierge-start", request_identity(request), limit=settings.VIDEO_CONCIERGE_HOURLY_LIMIT, window=3600):
-                return error("You’ve reached the video call limit for now. You can still book or send a request.", 429)
+                return error("The live coaching limit has been reached. Continue with your lesson or saved practice." if training_session else "You’ve reached the video call limit for now. You can still book or send a request.", 429)
             if not consume_budget("concierge-daily", "platform", limit=settings.VIDEO_CONCIERGE_DAILY_LIMIT, window=86400):
-                return error("Live video is at capacity today. Please use the consultation calendar or send a request.", 429)
+                return error("Live coaching is at capacity today. Continue with your lesson or saved practice." if training_session else "Live video is at capacity today. Please use the consultation calendar or send a request.", 429)
             # Atomically consume the source call's transfer permission. Only the
             # same visitor's explicitly consented, closed Guru call can grant it.
             if transfer and not ConciergeCall.objects.filter(pk=transfer["source_call"], owner_digest=owner, active=False, status="ended").update(status="transferred"):
@@ -143,7 +152,9 @@ def start_call(request):
     except IntegrityError:
         return error("A video call is already being started. Please wait.", 409)
     try:
-        if sales_guide:
+        if training_session:
+            result = proctor.create_session(training_session)
+        elif sales_guide:
             result = sales_concierge.create_session(sales_lead)
         elif demo_profile:
             result = demo_video.create_session(demo_profile, transfer["context"]) if transfer else demo_video.create_session(demo_profile)
@@ -155,12 +166,12 @@ def start_call(request):
         call.save(update_fields=["status", "active"])
         if transfer:
             ConciergeCall.objects.filter(pk=transfer["source_call"], owner_digest=owner, status="transferred").update(status="ended")
-        return error("The live video connection could not start. Please try again or request a follow-up.", 502)
+        return error("Guru could not connect. Try again or continue with your Academy practice." if training_session else "The live video connection could not start. Please try again or request a follow-up.", 502)
     call.provider_id, call.status = provider_id, "pending"
     call.save(update_fields=["provider_id", "status"])
-    if not demo_profile and not sales_guide:
+    if not demo_profile and not sales_guide and not training_session:
         request.session["concierge_guru_call"] = str(call.id)
-    return JsonResponse({"id": str(call.id), "status": "pending", "contextUrl": reverse("concierge_context", args=[call.id]) if not demo_profile and not sales_guide else None, "textUrl":reverse("concierge_text",args=[call.id]), "pollUrl": reverse("concierge_poll", args=[call.id]), "stopUrl": reverse("concierge_stop", args=[call.id])}, status=201)
+    return JsonResponse({"id": str(call.id), "status": "pending", "contextUrl": reverse("concierge_context", args=[call.id]) if not demo_profile and not sales_guide and not training_session else None, "textUrl":reverse("concierge_text",args=[call.id]), "pollUrl": reverse("concierge_poll", args=[call.id]), "stopUrl": reverse("concierge_stop", args=[call.id])}, status=201)
 
 
 def owned_call(request, call_id):

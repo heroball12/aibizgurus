@@ -1,0 +1,253 @@
+{
+  "title": "Objection Handling II — Price, Trust & AI Concerns",
+  "short_title": "PRICE, TRUST + AI CONCERNS",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Address pricing, reliability, human-service and data concerns with clear boundaries and an informed specialist handoff.",
+  "skills": [
+    "objections",
+    "ethics",
+    "accuracy",
+    "handoff",
+    "assessment-close"
+  ],
+  "scenes": [
+    {
+      "title": "Trust grows when the answer stays accurate",
+      "narration": "Questions about price, trust and AI are often reasonable attempts to understand risk. A business owner may have experienced a disappointing tool, an unclear proposal or a system that made mistakes. Responding as though the concern is foolish will not help. Acknowledge it and find out what the person needs to understand before an evaluation would be useful.\nYour answer should stay within the evidence and your role. You can explain a relevant possibility, the purpose of the Growth Assessment and why the human specialist needs to review the actual business. You cannot make a guarantee, quote a custom price or claim that a particular safeguard exists in a future build before it has been evaluated.\nThis lesson practices that balance. You should sound direct and helpful, not evasive or defensive. A strong response names the concern, gives the accurate information available and identifies the next question or next step. Trust comes from that consistency across the conversation, especially when the honest answer includes a limit.",
+      "pauses": [],
+      "start": 0,
+      "end": 75,
+      "time": "00:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Treat the concern as a reasonable question."
+    },
+    {
+      "title": "A price question is not automatically an objection",
+      "narration": "How much does it cost may express buying interest, early comparison, concern about affordability or a desire to understand the process. Do not automatically respond as though the prospect has rejected the value. First recognize that the question is reasonable. Then explain the company's actual pricing process without supplying a number you are not authorized to give.\nOur pricing is custom to the build identified as best for the business. Only qualified human AI Specialists discuss pricing, and only during a Growth Assessment. That means an SDR does not quote a starting price, a typical range, a package, an estimate or a discount. Guru follows the same boundary when supporting the sales process.\nA useful response is: pricing is tailored to the recommended build. The human AI Specialist reviews your operation during the complimentary Growth Assessment and discusses the appropriate approach and custom pricing there. Then connect that explanation to the workflow already discussed. The process should sound like a relevant evaluation, not a mystery that the prospect must endure to obtain basic clarity.",
+      "pauses": [],
+      "start": 75,
+      "end": 150,
+      "time": "01:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Price curiosity can be a signal of interest."
+    },
+    {
+      "title": "Handle pressure for a ballpark number",
+      "narration": "A prospect may say they will not attend a call without a rough number. Do not invent one to preserve the opportunity. Restate the boundary calmly and explain that the recommendation depends on the business process and scope. The assessment is complimentary and lasts fifteen to twenty minutes, so the next step itself does not require accepting a paid implementation.\nYou can ask whether reviewing the actual workflow with the qualified specialist would be useful, given that pricing is discussed there. Avoid promising the result will be cheap, within a particular budget or discounted for booking quickly. Those are still commercial claims, even when no exact number appears in the sentence.\nIf the person maintains that they need an SDR quote before any conversation, acknowledge the mismatch and close appropriately or seek internal guidance through the approved process. Do not quietly bypass policy in a follow-up email. Consistency matters across voice, text and CRM notes. The right outcome may be no meeting under the current conditions rather than a meeting based on an unauthorized expectation.",
+      "pauses": [],
+      "start": 150,
+      "end": 225,
+      "time": "02:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Do not invent a number under pressure."
+    },
+    {
+      "title": "Distinguish value concerns from a request for a number",
+      "narration": "That sounds expensive may refer to a competitor's proposal, an earlier experience or an assumption about custom work. An SDR should not enter a negotiation. You can clarify the concern at the level of the business decision: what about the evaluation or proposed change feels uncertain? Let the qualified specialist handle pricing and commercial comparisons during the assessment.\nIf the concern is whether the work would be worthwhile, return to the process and the desired outcome without inventing a return on investment. The prospect may want to reduce repeated administration or improve response consistency. Those are useful goals to review, but they do not establish a guaranteed financial result or justify a price the SDR has not scoped.\nRecord the actual concern for the specialist. For example, the owner wants to understand how implementation effort would relate to the follow-up problem they described. Do not write price objection resolved if you merely redirected the question. A good handoff preserves what still needs discussion so the specialist can address it directly in the proper setting.",
+      "pauses": [],
+      "start": 225,
+      "end": 300,
+      "time": "03:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "An SDR clarifies the concern without negotiating."
+    },
+    {
+      "title": "Our customers want humans",
+      "narration": "A concern about human service should be taken seriously. Some interactions require judgment, empathy, authority or a relationship that the business wants a person to maintain. Do not dismiss that preference by saying customers will not notice or that people are obsolete. Ask which interactions matter most to preserve and where staff would welcome support.\nA suitable opportunity might involve routine questions, overflow, after-hours intake or repetitive internal work while people continue handling complex situations. That is a possibility to evaluate, not a universal recommendation. The right question is how the business wants the experience to work, including when a customer should be able to reach a person.\nFor a fictional service business, the owner may want staff to make every project commitment but welcome help collecting initial details. Reflect that distinction. A useful assessment would examine the collection step, the handoff and the limits of the assistant's authority. Do not turn the conversation into a debate about whether humans or AI are inherently better at every kind of work.",
+      "pauses": [],
+      "start": 300,
+      "end": 375,
+      "time": "05:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Respect the role of human service."
+    },
+    {
+      "title": "AI makes mistakes",
+      "narration": "AI can make mistakes, and a responsible response begins by acknowledging that fact. Do not claim our system is incapable of giving an incorrect answer. The useful discussion is about the task, the information available, the cost of an error and how the process should handle uncertainty or exceptions.\nAsk where an incorrect response would create the greatest problem. A mistaken answer about a routine service detail is different from an unauthorized commitment or a sensitive decision. The specialist needs that context to evaluate knowledge sources, permitted actions, testing, monitoring and human involvement. Mention these as areas for review, not as completed safeguards in a build that does not yet exist.\nA relevant demonstration can show how an example handles uncertainty, but one successful answer is not proof of universal accuracy. If the prospect wants a guarantee of perfect behavior, state that you cannot make it. A useful assessment should explore a realistic, bounded use case and the conditions under which the business would consider it acceptable.",
+      "pauses": [],
+      "start": 375,
+      "end": 450,
+      "time": "06:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Acknowledge the possibility of error."
+    },
+    {
+      "title": "I do not trust AI",
+      "narration": "A broad statement about trust often contains a more specific experience or concern. If the person is willing, ask what has made them cautious. They may describe wrong answers, poor customer service, unclear data handling or a previous vendor who overpromised. The response should follow the actual concern instead of defending technology in general.\nIf the problem was overpromising, demonstrate a different standard by being precise about what remains unverified. If it was a robotic customer experience, explore which interactions should remain with people and whether a narrow support task is worth considering. If they simply do not want AI involved, respect that preference rather than treating the conversation as an ideological debate to win.\nAvoid saying trust me as a substitute for evidence. Use accurate examples, clear limits and a relevant next step. The specialist can review the actual requirements and explain what would need to be established before implementation. The prospect should be able to make an informed decision, including deciding that the proposed use is not appropriate for their business.",
+      "pauses": [],
+      "start": 450,
+      "end": 525,
+      "time": "07:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Explore the specific concern when welcome."
+    },
+    {
+      "title": "Handle data and security questions responsibly",
+      "narration": "A prospect may ask where information is stored, who can access it or how a system handles sensitive records. These are legitimate implementation questions. An SDR should record the requirement and involve the appropriate specialist rather than guessing about a future architecture, making a blanket security claim or collecting credentials to appear helpful.\nKeep early discovery at the level of the process and information categories needed. You generally do not need passwords, private customer records or a production database to explain a possible workflow. Use fictional examples in demonstrations and follow the company's approved process for any later access review. Do not invite the prospect to paste secrets into a chat or ordinary note.\nIf a question concerns an industry obligation or a particular contractual standard, preserve the exact requirement for qualified review. Do not claim universal compliance or legal certainty. The assessment can identify what needs further evaluation, but a short sales conversation does not replace the responsible technical, contractual or professional work required for the real implementation.",
+      "pauses": [],
+      "start": 525,
+      "end": 600,
+      "time": "08:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Record the requirement instead of guessing."
+    },
+    {
+      "title": "Practice the combined price and trust concern",
+      "narration": "Your fictional prospect is the owner of Lakeview Services. They say: I do not want another expensive tool that gives customers wrong answers. Just tell me the price and promise it will work. Respond to both concerns without inventing a number, dismissing the risk or offering a guarantee.\nPause and give your response aloud. Acknowledge the experience behind the concern, explain the pricing process and ask one relevant question about where an incorrect response would matter. Keep the answer concise enough that the owner can respond. You are not trying to settle every implementation detail in this one turn.\nA strong response says the concern is reasonable, that perfect answers cannot be guaranteed and that the human specialist discusses custom pricing during the complimentary assessment. Then it asks which customer interaction creates the greatest concern. If your answer promised low cost or flawless performance, remove that claim and retry. If it only recited policy, add a useful question that reconnects the discussion to the business.",
+      "pauses": [
+        [
+          "Pause and give your response aloud.",
+          25,
+          "Address pricing and reliability, then ask one useful risk question."
+        ]
+      ],
+      "start": 600,
+      "end": 675,
+      "time": "10:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Lakeview raises two concerns together."
+    },
+    {
+      "title": "Use evidence and examples honestly",
+      "narration": "Examples can help explain a possibility, but the strength of the claim must match the evidence. A fictional scenario is a teaching example, not a customer case study. A demo interaction is an observed sample, not proof of a guaranteed result. Use only approved, accurate materials when discussing actual customer outcomes or capabilities.\nIf you do not know whether a claim is current or approved for use, verify it before repeating it. Do not invent a recognizable customer name, a revenue improvement or a technical certification to answer skepticism. The pressure to sound credible is exactly when accurate sourcing matters most. A clear statement of what you can show is stronger than a dramatic claim you cannot support.\nWhen the prospect asks for evidence you do not have, record the request and explain that it needs follow-up through the appropriate person. Do not promise a particular document exists unless you know it does. The next step should be specific enough to be useful while preserving uncertainty about anything that still needs confirmation.",
+      "pauses": [],
+      "start": 675,
+      "end": 750,
+      "time": "11:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Match the claim to the evidence."
+    },
+    {
+      "title": "Prepare a handoff that preserves the concern",
+      "narration": "Trust-related questions belong in the handoff, especially when they affect whether the prospect would consider a build. Record the concern in plain language and include the relevant business context. Do not soften it into generic interest or claim it has been resolved merely because the prospect agreed to speak with the specialist.\nFor Lakeview, a useful note might say the owner worries about incorrect customer commitments after a poor experience with another tool. They want to understand the limits, human handling and custom pricing during the assessment. No accuracy guarantee, integration promise or price was given. That prepares the specialist to address the real decision rather than repeat a generic introduction.\nAlso record what remains unknown. The current systems, information sources or access requirements may need review. Keep sensitive details out of ordinary notes unless the approved workflow specifically requires them. A good handoff makes the next conversation more informed while preserving the boundaries that made the first conversation trustworthy.",
+      "pauses": [],
+      "start": 750,
+      "end": 825,
+      "time": "12:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Preserve the concern instead of smoothing it away."
+    },
+    {
+      "title": "Your trust and pricing response standard",
+      "narration": "Use the same standard across every channel: acknowledge the concern, answer accurately, name the boundary and connect the next useful question. Pricing remains custom and belongs to the qualified human AI Specialist during the Growth Assessment. Reliability, human involvement and data requirements deserve specific evaluation rather than universal claims.\nFor your practical submission, respond to three concerns: a demand for a ballpark price, a preference for human customer service and a fear of incorrect answers. Then combine two concerns in one role-play. Ask Guru to identify any sentence that promises more than the evidence or your authority supports, and replace it with a clear explanation and relevant question.\nComplete the quiz and compare the revised response with your first attempt. You should be able to sound confident without pretending uncertainty does not exist. A trustworthy SDR helps the prospect understand what can be explored, what must be verified and who is qualified to make the next decision. That is a strong foundation for a useful assessment.",
+      "pauses": [],
+      "start": 825,
+      "end": 900,
+      "time": "13:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Use one consistent response standard."
+    }
+  ],
+  "job_aid": "OBJECTIONS II FIELD GUIDE\nPRICE QUESTION: not automatically rejection; it may be buying interest or a request for context.\nPOLICY: custom pricing based on the best recommended build. Only qualified human AI Specialists discuss pricing, only during Growth Assessments. No SDR/Guru starting prices, ranges, packages, estimates or discounts.\nBALLPARK PRESSURE: explain the complimentary 15–20 minute assessment; no affordability promise or workaround email quote.\nHUMANS: ask what interactions should stay with people and where bounded support may help.\nERRORS: acknowledge possibility; explore consequences, sources, permitted actions, testing and human handling. No perfection guarantee.\nTRUST: understand the specific experience; use accurate evidence and clear limits.\nDATA: discuss workflow and information categories; no passwords or private customer records for a quick demo. Qualified review for specific obligations.\nHANDOFF: concern + business context + unresolved requirements + actual agreement. Do not mark concerns resolved merely because a meeting was accepted.",
+  "questions": [
+    {
+      "skill": "ethics",
+      "prompt": "A prospect asks for a rough price before booking. What may an SDR provide?",
+      "choices": [
+        "A typical range.",
+        "A clear explanation that custom pricing is discussed only by a qualified human AI Specialist during the Growth Assessment.",
+        "A starting price.",
+        "A discount for booking."
+      ],
+      "correct_index": 1,
+      "explanation": "The pricing boundary includes ballparks, ranges, estimates and discounts. Explain the complimentary assessment and connect it to the actual business process."
+    },
+    {
+      "skill": "objections",
+      "prompt": "Our customers want humans. What is a useful response?",
+      "choices": [
+        "Customers will never notice AI.",
+        "Humans are obsolete.",
+        "Ask which interactions should remain with people and where staff would welcome support.",
+        "Promise total replacement."
+      ],
+      "correct_index": 2,
+      "explanation": "Respect the desired customer experience and evaluate bounded support, human involvement and exceptions."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "A prospect asks you to guarantee perfect answers. What should you do?",
+      "choices": [
+        "Acknowledge AI can make mistakes and explore the task, consequences and appropriate evaluation.",
+        "Guarantee perfection.",
+        "Claim one demo proves universal accuracy.",
+        "Ignore the concern."
+      ],
+      "correct_index": 0,
+      "explanation": "No perfect-accuracy guarantee is appropriate. The specialist should evaluate sources, permitted actions, testing and human support for the specific use."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "Which statement is also an unauthorized commercial promise?",
+      "choices": [
+        "The assessment is complimentary.",
+        "The specialist reviews the workflow.",
+        "Pricing is custom.",
+        "It will definitely fit your budget."
+      ],
+      "correct_index": 3,
+      "explanation": "An affordability guarantee remains a pricing-related promise even without a number. SDRs should not make it."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "A fictional example is evidence of what?",
+      "choices": [
+        "An actual customer result.",
+        "A possible process illustrated for learning.",
+        "A verified revenue increase.",
+        "A completed integration."
+      ],
+      "correct_index": 1,
+      "explanation": "Fictional examples illustrate possibilities. Actual results and capabilities require accurate approved evidence."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "The prospect offers a password so you can prove a demo works. What is appropriate?",
+      "choices": [
+        "Paste it into CRM notes.",
+        "Accept it in ordinary chat.",
+        "Keep the demo on sample data and route any later access review through the approved process.",
+        "Send it to another prospect."
+      ],
+      "correct_index": 2,
+      "explanation": "Early demonstration does not require secrets. Follow the approved process for necessary access and avoid unnecessary sensitive information."
+    },
+    {
+      "skill": "handoff",
+      "prompt": "Which note best preserves a trust concern?",
+      "choices": [
+        "Owner worries about incorrect commitments; review limits and human handling; no guarantee or price given.",
+        "All concerns resolved because a meeting was accepted.",
+        "Perfect fit, no risks.",
+        "Guaranteed accuracy requested and approved."
+      ],
+      "correct_index": 0,
+      "explanation": "Preserve the actual concern and the limits of what was promised. Agreement to meet does not resolve implementation questions."
+    },
+    {
+      "skill": "objections",
+      "prompt": "A prospect requires an SDR quote as a condition of any conversation. What should the rep do?",
+      "choices": [
+        "Quietly email a number.",
+        "Invent a package.",
+        "Promise low cost without a number.",
+        "Maintain the boundary, explain the appropriate evaluation and close or seek internal guidance if the condition remains incompatible."
+      ],
+      "correct_index": 3,
+      "explanation": "Do not bypass the policy to preserve a meeting. An honest mismatch is preferable to an unauthorized expectation."
+    }
+  ],
+  "scenario": {
+    "title": "Lakeview’s price and reliability concern",
+    "persona": "FICTIONAL owner of Lakeview Services. A previous tool made confusing customer commitments. You worry about incorrect answers and implementation cost. Ask for a rough price and a promise of reliability. Respond to a direct explanation that pricing is custom and discussed only by a qualified human AI Specialist during the complimentary Growth Assessment. Expect acknowledgment that AI can make mistakes and a relevant question about the customer interaction you most want protected. Do not accept vague trust-me language or unsupported safeguards as established facts.",
+    "opening": "Owner: I do not want another expensive tool giving customers wrong answers. Tell me the price and promise it will work.",
+    "rubric": {
+      "objections": "Addresses both concerns directly and clarifies the relevant business risk.",
+      "ethics": "No SDR quote, affordability guarantee, discount or perfect-performance promise.",
+      "accuracy": "Separates possibilities and evaluation requirements from verified capabilities.",
+      "handoff": "Preserves concerns, open questions and the boundaries maintained.",
+      "assessment-close": "Explains a relevant specialist assessment without pressure."
+    }
+  }
+}

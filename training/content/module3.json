@@ -1,0 +1,258 @@
+{
+  "title": "AIBG Solutions — Problem → Solution Mapping",
+  "short_title": "PROBLEM → SOLUTION",
+  "policy_version": "2026-09-27",
+  "duration_seconds": 900,
+  "summary": "Map discovered workflow problems to possible AIBG services while preserving verification, human ownership and the specialist boundary.",
+  "skills": [
+    "product-knowledge",
+    "discovery",
+    "accuracy",
+    "ethics",
+    "handoff"
+  ],
+  "scenes": [
+    {
+      "title": "Map the process before the product",
+      "narration": "Today we are building a map between business problems and possible AIBG solutions. \nUse four boxes: trigger, work, breakdown and outcome. A customer inquiry triggers work. Someone answers, records details and follows up. A breakdown might occur because requests arrive after hours, information is inconsistent or the next person never receives the details. The outcome is the improvement the business actually wants.\nOnly then add a possible solution. Phone assistance, a website assistant, workflow automation or custom software may be relevant to different steps. Several tools may overlap, but overlap does not prove fit. The specialist needs to evaluate the process, constraints and responsibility before recommending a build.\nFor each service in this lesson, listen for three things: the problem it may address, the discovery question that would test that connection, and the promise you must not make.",
+      "pauses": [],
+      "start": 0,
+      "end": 75,
+      "time": "00:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Let the recommendation follow discovery."
+    },
+    {
+      "title": "Phone assistance and reception",
+      "narration": "Phone agents and receptionists may help with repetitive incoming questions, collecting initial details, routing requests or handling appropriately designed overflow and after-hours workflows. Start by understanding what the existing team handles well. Do not assume an employee needs replacing because the company receives a lot of calls.\nAsk what happens when calls arrive at a difficult time. Does someone answer, does the caller leave a message, or does the team use another service? Then ask what information is needed and what happens next. Missed calls and poorly handled follow-up are different problems and may require different changes.\nConsider a fictional plumbing office with a receptionist who handles daytime calls well. The owner describes after-hours inquiries that wait until morning. A useful next question asks how those requests are prioritized and returned today. A weak response immediately promises that AI can handle every emergency without involving the team.\nThe specialist must verify the phone setup, permitted tasks, escalation path, availability expectations and the business's definition of an urgent issue. Do not claim a number is connected, a workflow is active or a caller received help unless that action has actually been confirmed.",
+      "pauses": [],
+      "start": 75,
+      "end": 150,
+      "time": "01:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Support the phone workflow that needs help."
+    },
+    {
+      "title": "Website assistants and customer questions",
+      "narration": "A website assistant can help visitors explore information, understand options and provide appropriate details for a follow-up. The business problem may be confusing pages, repeated questions or visitors who cannot find the next step. \nAsk which questions visitors repeatedly bring to the team and where the current answers live. Ask what a successful website interaction should accomplish. The answer might be finding a policy, requesting information or reaching the right person. Do not assume the goal is always a sale inside the chat.\nImagine a fictional catering business whose visitors ask about event size and dietary options. An assistant could help explain approved information and collect relevant event details. That is different from confirming availability, guaranteeing an accommodation or issuing a final quote. Those decisions depend on the company's actual process and authorized people.\nOur own public demos use fictional businesses. Showing an engaging conversation can illustrate a possibility, but it does not prove a customer's content, systems or operational requirements are already configured.",
+      "pauses": [],
+      "start": 150,
+      "end": 225,
+      "time": "02:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Start with the visitor’s task."
+    },
+    {
+      "title": "Qualification and appointment workflows",
+      "narration": "An appointment-setting or qualification assistant may collect information, apply agreed routing rules and help move an interested person toward the appropriate next conversation. A filled form is not automatically a good opportunity, and a suggested time is not automatically a confirmed appointment.\nAsk what the receiving team needs before they accept a meeting. Which questions are genuinely useful, which cases belong elsewhere and which answers require a person to decide? An assistant should not invent its own business rules simply because a visitor provides an unusual answer. Unknown or ambiguous cases need a designed path.\nFor a fictional installation company, useful intake might identify the requested service, general service area and whether the customer wants a consultation. Final eligibility, calendar availability and technical suitability may still need review. A bad pitch promises fully qualified customers without learning what the business considers a fit.\nIn our sales process, the goal is a qualified Complimentary Growth Assessment with a human AI Specialist. Explain the purpose, use the actual calendar and keep confirmed details accurate. The same discipline applies when describing a customer's possible appointment workflow: establish the rule, verify the connection and distinguish a request from a completed booking.",
+      "pauses": [],
+      "start": 225,
+      "end": 300,
+      "time": "03:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Qualification needs a business definition."
+    },
+    {
+      "title": "Reactivation starts with an appropriate audience",
+      "narration": "Reactivation means exploring an appropriate way to reconnect with people who already have a relationship or prior interaction with the business. It is not permission to contact every name in an old database. Relevance, contact restrictions, authorized channels and the current quality of the records matter before a campaign is discussed.\nAsk which group the owner has in mind and why a follow-up would be useful to that group. Previous inquiries, unfinished quotations and prior customers are different audiences. Ask how the business currently maintains contact preferences and who approves outreach. \nImagine a fictional service business with quotations that never received a clear final response. A possible project might help organize authorized follow-up and record outcomes. It must also recognize people who declined, requested no further contact or already resolved the need. Those records should not be treated as simply waiting for a more persistent pitch.\nThe specialist evaluates the data, workflow and channel requirements. Your handoff should identify the audience, reason for contact, existing process and unanswered questions. Never promise a guaranteed number of recovered customers.",
+      "pauses": [],
+      "start": 300,
+      "end": 375,
+      "time": "05:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Define the audience and reason first."
+    },
+    {
+      "title": "Follow-up and CRM automation",
+      "narration": "Workflow automation may help when useful information repeatedly gets lost between a conversation and the next action. Start by locating the step that breaks down. Automating an unclear process can make the same confusion happen faster.\nA fictional contractor says every quote receives an email, but further follow-up depends on who remembers. The weak pitch is: we will automate your sales. The useful question is: after the first email, who owns the next step and how do they know it is due? That reveals a process that can be evaluated.\nYour turn. Name one possible improvement without promising an integration. Include one question the specialist would need answered. Pause and explain your recommendation. A strong direction might be a consistent assigned follow-up step, with verification of the CRM, current records and the team's rules for stopping or escalating contact.\nThe important distinction is between a task record, an actual message and a completed customer response. In our CRM, saving information does not send outreach by itself. Do not teach the customer to assume that a changed status means a message was delivered. Verify the action, its result and the human owner before calling the workflow complete.",
+      "pauses": [
+        [
+          "Pause and explain your recommendation.",
+          15,
+          "Name one useful improvement and one verification question."
+        ]
+      ],
+      "start": 375,
+      "end": 450,
+      "time": "06:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Find the step where follow-up breaks down."
+    },
+    {
+      "title": "Internal knowledge and team support",
+      "narration": "Some useful AI work happens inside the business rather than in front of customers. An internal assistant may help staff locate approved instructions, summarize appropriate material or draft a response for review. The problem might be scattered information, repeated internal questions or time spent searching for the current version of a procedure.\nAsk where employees currently find answers and who owns the source material. Different people may need different access. An assistant that helps with a general operating procedure should not automatically expose personnel records or confidential financial material. Access must follow the actual role and purpose, not the convenience of one large shared folder.\nConsider a fictional distribution team with several versions of a returns procedure. A useful first step may be identifying the authoritative version and its owner. Adding an assistant before resolving the source conflict could make an incorrect answer easier to find. \nThe specialist should investigate permissions, source updates, review expectations and how employees handle uncertain answers. As an SDR, record the repeated task and its impact on the team. Do not request private internal documents during an introductory conversation. A fictional example can demonstrate the idea while the real information requirements are reviewed properly.",
+      "pauses": [],
+      "start": 450,
+      "end": 525,
+      "time": "07:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Internal assistance starts with a useful task."
+    },
+    {
+      "title": "Custom software and connections",
+      "narration": "AIBG also explores custom software, business applications and connections between existing systems. The relevant problem may be duplicate entry, an awkward manual process or a workflow that the current tools do not support well. Custom does not mean unlimited capability, instant delivery or permission to promise a particular technical design.\nAsk the prospect to describe one example from beginning to end. What starts the work, which systems are touched, what information moves and where does a person make a decision? Capture the process in plain language. A clear example is more useful to the specialist than a collection of software names without context.\nIn a fictional service company, a coordinator copies approved job details into two systems. A possible connection may reduce repeated entry, but only if access, field meaning and the supported actions are suitable. Different records with similar names may not represent the same business event. Matching labels is not enough to guarantee a safe connection.\nRecord what is known and what needs technical discovery. The specialist evaluates feasibility, implementation strategy and the custom build. Only that qualified AI Specialist discusses pricing during the Growth Assessment. An SDR should never use a software logo, a prior project or a quick demo as proof that this customer's integration is already supported.",
+      "pauses": [],
+      "start": 525,
+      "end": 600,
+      "time": "08:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Custom software follows a real workflow."
+    },
+    {
+      "title": "Websites, marketing and the customer journey",
+      "narration": "Websites, e-commerce, marketing, search visibility and lead generation can be relevant when a business struggles to attract or guide appropriate customers. Begin with the customer journey. More inquiries may help one company; another may already have enough inquiries and need a better response or follow-up process. Do not confuse volume with the desired outcome.\nAsk where customers currently come from, what the team wants to improve and what evidence supports that concern. If the owner says the website is not working, clarify what not working means. It could mean an error, unclear information, poor fit, missing inquiries or simply a design they dislike. \nA fictional retailer reports that visitors repeatedly ask the same delivery questions. A clearer page or a relevant website assistant may be worth exploring before proposing a larger advertising effort. In another case, the business may need a specialist to investigate how appropriate customers discover the site. Discovery determines the direction.\nDo not guarantee rankings, leads, conversion rates or revenue. Record the current channels and the outcome the owner values. Keep reported estimates separate from measured results. The assessment can explore an implementation strategy and the custom build; a short prospecting conversation should not become an unsupported marketing forecast.",
+      "pauses": [],
+      "start": 600,
+      "end": 675,
+      "time": "10:00",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Find the customer-journey problem."
+    },
+    {
+      "title": "Compare a pitch with a useful recommendation",
+      "narration": "Let's compare two approaches with a fictional business owner. They say: we already answer the phones, but customers wait too long for updates after a job is accepted. The weak rep responds with a long explanation of the AI receptionist. \nThe useful rep asks: how do customers get an update today, and where does the delay usually happen? If the owner describes a coordinator manually checking job status, the next question can explore who maintains that status and what customers are allowed to see. Now a possible solution follows an actual working step.\nSeveral options might eventually fit: clearer ownership, an internal tool, an approved update workflow or a customer-facing assistant. Do not choose among them before the information and access questions are answered. A well informed assessment can evaluate alternatives. \nNotice the improvement in the conversation. The prospect does not need to agree that AI is exciting. They need to recognize that you understood the delay they described. Reflect the problem back, check that you have it right and explain why a specialist conversation could be useful. If no credible need emerges, do not manufacture one.",
+      "pauses": [],
+      "start": 675,
+      "end": 750,
+      "time": "11:15",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "A familiar product can distract from the actual problem."
+    },
+    {
+      "title": "Practice the problem-to-solution map",
+      "narration": "Your practice case is a fictional service business. Morgan says: calls are handled well, but accepted jobs move through several systems and customers keep asking for progress updates. The current status owner is unclear. Morgan wants fewer repetitive questions, but nobody has measured the volume. Build a useful map from those facts.\nWrite the trigger, the current work, the possible breakdown and the desired outcome. Then add one possible solution category and two questions that must be answered before recommending it. Keep the category broad enough to remain honest. You are identifying a direction for discovery, not writing a proposal. Pause and make your map.\nA strong map starts with a customer requesting an update, follows the team checking job status, identifies uncertain ownership and aims for a more consistent answer. A possible update workflow or assistant might help. Questions should investigate the source of current status and who may share which details with the customer.\nIf your answer promised fewer calls by a specific percentage, remove the invented result. If it ignored ownership, add that question. If it named five products, choose the most relevant direction. Save your revised map and explain why it follows Morgan's answer.",
+      "pauses": [
+        [
+          "Pause and make your map.",
+          20,
+          "Map the process, choose a possible direction and write two verification questions."
+        ]
+      ],
+      "start": 750,
+      "end": 825,
+      "time": "12:30",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Map only the facts you were given."
+    },
+    {
+      "title": "Carry the map into the assessment",
+      "narration": "The service catalog is a set of possible answers to business problems. Phone assistance, website conversations, appointment workflows, reactivation, internal knowledge, automation, custom software and marketing serve different parts of the working day. \nUse the same discipline across the catalog. Describe the current process, locate the breakdown, understand the desired outcome and identify what must be verified. Keep people, information and responsibility in the picture. A customer should never have to discover after the sale that the promised connection or human handoff was only an assumption.\nComplete the knowledge check, then submit your problem-to-solution map. Your practical handoff should contain reported facts, one clearly labeled hypothesis, important unknowns and an appropriate next step. Ask Guru to challenge a premature product choice. Revise the map if a new answer changes the direction of the conversation.\nWhen there is a credible fit and genuine interest, invite a Complimentary Growth Assessment with an AI Specialist. The specialist identifies the recommended build and discusses custom pricing during that assessment. Your job is to help the next conversation start with an understood business problem, rather than a promise that someone else has to untangle.",
+      "pauses": [],
+      "start": 825,
+      "end": 900,
+      "time": "13:45",
+      "visual": "Purposeful instructor gesture followed by progressive teaching boards, scenario examples and practice.",
+      "overlay": "Remember the work behind each service."
+    }
+  ],
+  "job_aid": "PROBLEM → SOLUTION FIELD GUIDE\nMAP: trigger / current work / breakdown / desired outcome.\nPHONE: questions, intake, overflow; verify escalation and actual channel setup.\nWEBSITE: approved information and useful next steps; a demo is not deployment.\nAPPOINTMENTS: agreed qualification rules plus verified calendar confirmation.\nREACTIVATION: appropriate audience, relevant reason and authorized channels; honor contact restrictions.\nAUTOMATION: locate the broken handoff; a saved record is not a sent message.\nINTERNAL KNOWLEDGE: authoritative source, owner, access and review.\nCUSTOM SOFTWARE: follow one real example through systems, information and decisions.\nMARKETING: clarify the desired outcome; no rankings, lead or revenue guarantees.\nHANDOFF: facts / hypothesis / unknowns / next step.\nPRICING: only an AI Specialist, only during the Growth Assessment, custom to the recommended build.",
+  "questions": [
+    {
+      "skill": "product-knowledge",
+      "prompt": "Calls are answered well, but quote follow-up is inconsistent. What is the best direction?",
+      "choices": [
+        "Pitch a replacement receptionist.",
+        "Explore ownership and the steps after a quote is sent.",
+        "Promise automatic sales.",
+        "Recommend every service."
+      ],
+      "correct_index": 1,
+      "explanation": "Follow the named breakdown. Phone replacement, blanket promises and a full catalog pitch do not explain the follow-up process or verify a useful fit."
+    },
+    {
+      "skill": "discovery",
+      "prompt": "A prospect says the website is not working. Which next question is strongest?",
+      "choices": [
+        "Would you like more AI?",
+        "Which package do you want?",
+        "Can I promise better rankings?",
+        "What specifically is failing or not producing the outcome you want?"
+      ],
+      "correct_index": 3,
+      "explanation": "Clarifying the outcome distinguishes errors, confusing information and acquisition issues. Choosing a package or promising rankings skips the necessary discovery."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "A public fictional demo collects a preferred time. What does that demonstrate?",
+      "choices": [
+        "An example of intake, not a verified customer calendar integration.",
+        "A guaranteed booking for the prospect.",
+        "That all calendars are supported.",
+        "That production setup is complete."
+      ],
+      "correct_index": 0,
+      "explanation": "A fictional conversation illustrates a possibility. Actual customer configuration, authorized calendar actions and confirmation still require verification."
+    },
+    {
+      "skill": "ethics",
+      "prompt": "A reactivation audience includes people who requested no further contact. What should the proposed workflow do?",
+      "choices": [
+        "Try a different phone number.",
+        "Contact them because the data is old.",
+        "Honor restrictions and exclude inappropriate contact.",
+        "Increase urgency until they respond."
+      ],
+      "correct_index": 2,
+      "explanation": "Contact restrictions remain relevant to audience design. Old records, alternate channels and pressure do not justify ignoring a clear refusal."
+    },
+    {
+      "skill": "product-knowledge",
+      "prompt": "Employees find several conflicting versions of a procedure. What should discovery investigate first?",
+      "choices": [
+        "How to make every version searchable.",
+        "The authoritative version, source owner and access requirements.",
+        "Whether the assistant can sound more confident.",
+        "A guarantee that no review is needed."
+      ],
+      "correct_index": 1,
+      "explanation": "Knowledge assistance depends on appropriate maintained sources. Making conflicting material easier to access or increasing confidence does not resolve which instruction is correct."
+    },
+    {
+      "skill": "accuracy",
+      "prompt": "Two systems use a field named job status. What may the SDR conclude?",
+      "choices": [
+        "They are compatible.",
+        "They should be connected immediately.",
+        "A prior demo proves the integration.",
+        "Field meaning, permissions and supported actions still need specialist review."
+      ],
+      "correct_index": 3,
+      "explanation": "Matching labels are not enough. The same name can represent different events, and access or allowed actions may differ. A specialist must verify the real workflow."
+    },
+    {
+      "skill": "handoff",
+      "prompt": "Which handoff is most useful?",
+      "choices": [
+        "Reported process, desired outcome, labeled possible fit and verification questions.",
+        "Customer definitely needs our biggest package.",
+        "Guaranteed reduction in calls.",
+        "Interested in AI; no other details."
+      ],
+      "correct_index": 0,
+      "explanation": "The first handoff preserves the evidence needed for an assessment. Package assumptions, invented results and vague interest force the next person to reconstruct the conversation."
+    },
+    {
+      "skill": "company-knowledge",
+      "prompt": "When does the SDR discuss a custom price for the mapped solution?",
+      "choices": [
+        "After a successful demo.",
+        "Whenever the prospect asks for a range.",
+        "The SDR does not quote; only a qualified AI Specialist discusses pricing during the Growth Assessment.",
+        "After finding an old starting price."
+      ],
+      "correct_index": 2,
+      "explanation": "Pricing depends on the build identified as best for the business. The owner’s rule limits pricing discussions to qualified AI Specialists during the Growth Assessment, regardless of demos or legacy figures."
+    }
+  ],
+  "scenario": {
+    "title": "Map the delayed customer update",
+    "persona": "FICTIONAL business: Cedar Service Group. Morgan owns the company. Calls are answered well. Accepted jobs move through several systems and customers ask repeatedly for updates. The status owner and request volume are unknown. Morgan wants consistent updates, not a new receptionist. Reveal system names only as unknown. Challenge guarantees or premature integration claims. If listened to, consider a Growth Assessment; if repeatedly ignored, decline.",
+    "opening": "Guru: I will play Morgan, a fictional service-business owner. Discover the update problem and propose an appropriate next step.",
+    "rubric": {
+      "listening": "Follows customer updates instead of forcing a phone-answering pitch.",
+      "discovery": "Investigates source of status, ownership and permitted customer information.",
+      "product-knowledge": "Names a plausible direction without declaring an unverified design.",
+      "handoff": "Separates facts, hypothesis, unknowns and an agreed next step."
+    }
+  }
+}
