@@ -2,7 +2,12 @@ from django.urls import path
 from . import views
 from . import workspace_views
 from . import sheet_views
+from . import research_views
 urlpatterns = [
+    path("lead-finder/staging/<int:pk>/verify/", research_views.verify, name="prospect_verify"),
+    path("leads/<int:pk>/verify/", research_views.verify, {"pipeline": True}, name="lead_verify"),
+    path("lead-finder/staging/<int:pk>/research/", research_views.research, name="prospect_research"),
+    path("leads/<int:pk>/research/", research_views.research, {"pipeline": True}, name="lead_research"),
     path("sheets/", sheet_views.hub, name="lead_sheets"),
     path("sheets/new/", sheet_views.editor, name="lead_sheet_new"),
     path("sheets/save/", sheet_views.save, name="lead_sheet_save"),

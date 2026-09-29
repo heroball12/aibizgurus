@@ -1,0 +1,4 @@
+<h3>{{ verification.label|default:"Operating status unverified" }}</h3>{% if verification.checked_at %}<p class="research-timestamp">Checked {{ verification.checked_at|slice:':19' }} UTC{% if verification.confirmed_by %} · {{ verification.confirmed_by }}{% endif %}</p>{% endif %}
+{% for evidence in verification.evidence %}<p>{{ evidence.detail }}{% if evidence.source %} <a href="{{ evidence.source }}" target="_blank" rel="noopener noreferrer">Source ↗</a>{% endif %}</p>{% endfor %}
+{% for warning in verification.warnings %}<p class="sales-notice">{{ warning }}</p>{% endfor %}
+<p class="research-limit">Public listings and websites can be outdated. “Unverified” does not mean open or closed. An accessible website or listed opening hours alone cannot confirm continued operation. Contact the business directly when the evidence is unclear.</p>

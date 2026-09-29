@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
 from datetime import timedelta
 import hashlib
@@ -40,6 +40,7 @@ class DirectoryLead:
     source_url: str = ""
     address: str = ""
     email: str = ""
+    business_verification: dict = field(default_factory=dict)
 
 
 def public_url(value):
@@ -299,7 +300,7 @@ class OpenStreetMapProvider(LeadProvider):
         query = f"[out:json][timeout:{query_timeout}];({union});out tags {min(2000, max(limit * 8, 100))};"
         fallback = getattr(settings, "LEAD_FINDER_OVERPASS_FALLBACK_URL", "")
         cache_key = (
-            "lead-listings:v5:"
+            "lead-listings:v6:"
             + hashlib.sha256(
                 json.dumps(
                     [endpoint, fallback, industry.lower(), city.lower(), state, limit]
@@ -337,6 +338,7 @@ class OpenStreetMapProvider(LeadProvider):
         )
         leads = []
         missing_contact = 0
+        closed_count = 0
         for element in elements:
             if not isinstance(element, dict) or element.get("type") == "count":
                 continue
@@ -360,11 +362,12 @@ class OpenStreetMapProvider(LeadProvider):
             email = listing_email(
                 str(tags.get("email") or tags.get("contact:email") or "")
             )
-            if (
-                not name
-                or tags.get("disused") == "yes"
-                or tags.get("abandoned") == "yes"
-            ):
+            from .business_status import listing_closure, listing_verdict
+
+            if listing_closure(tags):
+                closed_count += 1
+                continue
+            if not name:
                 continue
             if not (phone or website or email):
                 missing_contact += 1
@@ -386,6 +389,10 @@ class OpenStreetMapProvider(LeadProvider):
                     website=website,
                     email=email,
                     source_url=source_url,
+                    business_verification={
+                        **listing_verdict(tags, source_url),
+                        "listing_url": source_url,
+                    },
                     address=" ".join(
                         str(tags.get(k) or "")
                         for k in ["addr:housenumber", "addr:street"]
@@ -406,6 +413,7 @@ class OpenStreetMapProvider(LeadProvider):
                 1 for e in elements if isinstance(e, dict) and e.get("type") != "count"
             ),
             "missing_contact": missing_contact,
+            "closed_excluded": closed_count,
             "warning": warning,
             "location": f"{city}, {state}",
             "area_width_miles": 20,
@@ -596,6 +604,7 @@ def generate_leads_for_batch(
                         email=listing_email(result.email),
                         website=public_url(result.website),
                         source_url=public_url(result.source_url),
+                        business_verification=result.business_verification,
                         address=result.address[:255],
                         confidence_score=result.confidence_score,
                         dedupe_key=key,
@@ -768,6 +777,12 @@ def convert_staging_to_crm_lead(
         )
         RequestBudget.objects.select_for_update().get(pk="lead-staging-write-lock")
         staging = LeadStaging.objects.select_for_update().get(pk=staging.pk)
+        from .business_status import contact_blocked
+
+        if contact_blocked(staging):
+            raise ValueError(
+                "This business has closure or listing-change evidence. Verify it directly and record the outcome before adding it to the pipeline."
+            )
         if (
             not (employee.is_superuser or employee.role in {"admin", "owner"})
             and staging.created_by_id != employee.pk
@@ -801,6 +816,8 @@ def convert_staging_to_crm_lead(
             city=staging.city,
             state=staging.state,
             website=staging.website,
+            website_review=staging.website_review,
+            business_verification=staging.business_verification,
             address=staging.address,
             source="Lead Finder",
             source_file=f"Lead Finder Batch #{staging.batch_id}",
