@@ -190,6 +190,17 @@ class LeadGenerationBatch(models.Model):
     def is_open(self):
         return self.status in {"queued", "generating", "searching", "deduplicating", "saving"}
 
+    @property
+    def is_stalled(self):
+        from django.utils import timezone
+        started = self.started_at or self.created_at
+        deadline = 660 if self.quantity_requested > 20 else 180
+        return bool(self.is_open and started and (timezone.now() - started).total_seconds() > deadline)
+
+    @property
+    def is_sample(self):
+        return "fallback_directory" in (self.provider_summary or {})
+
     def __str__(self):
         return f"Batch #{self.pk or 'new'} · {self.industry}"
 
@@ -202,7 +213,8 @@ class LeadStaging(models.Model):
 
     batch = models.ForeignKey(LeadGenerationBatch, on_delete=models.CASCADE, related_name="staged_leads")
     business_name = models.CharField(max_length=200)
-    phone_number = models.CharField(max_length=80)
+    phone_number = models.CharField(max_length=80, blank=True)
+    email = models.EmailField(blank=True)
     website = models.URLField(blank=True)
     source_url = models.URLField(blank=True)
     address = models.CharField(max_length=255, blank=True)

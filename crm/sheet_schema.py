@@ -27,6 +27,7 @@ def columns(user, kind='leads'):
             groups[1][1].append(('assigned_to', 'Assigned to'))
         groups.append(('Assessment', list(zip(BRIEF_FIELDS, ['Current workflow', 'Current tools', 'Main bottleneck', 'Business goal', 'AI strategy', 'Pricing notes']))))
     else:
+        groups[0][1].insert(3, ('email', 'Public email'))
         groups[2][1].append(('source_url', 'Source URL'))
     result = []
     for group, fields in groups:

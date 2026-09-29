@@ -689,6 +689,8 @@ class PlatformFlowTests(TestCase):
         })
         batch = LeadGenerationBatch.objects.get()
         self.assertRedirects(response, reverse("lead_generation_batch_detail", args=[batch.pk]))
+        self.assertEqual(batch.status, "queued")
+        self.client.post(reverse("lead_generation_batch_run", args=[batch.pk]))
         batch.refresh_from_db()
         self.assertEqual(batch.status, "completed")
         self.assertEqual(batch.quantity_requested, 5)
@@ -701,7 +703,7 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(status.json()["staged_count"], 5)
         self.assertEqual(len(status.json()["staged_leads"]), 5)
         self.assertIn("business_name", status.json()["staged_leads"][0])
-        self.assertNotIn("email", status.json()["staged_leads"][0])
+        self.assertIn("email", status.json()["staged_leads"][0])
         self.assertIn("website", status.json()["staged_leads"][0])
         self.assertIn("source_url", status.json()["staged_leads"][0])
 
@@ -766,6 +768,8 @@ class PlatformFlowTests(TestCase):
             "location": "Las Vegas, NV",
             "quantity": "5",
         })
+        alice_batch = LeadGenerationBatch.objects.get(employee=alice, industry="Roofing")
+        self.client.post(reverse("lead_generation_batch_run", args=[alice_batch.pk]))
         self.assertEqual(LeadStaging.objects.filter(created_by=alice, industry="Roofing").count(), 5)
         self.client.force_login(bob)
         self.client.post(reverse("lead_finder"), {
@@ -774,6 +778,8 @@ class PlatformFlowTests(TestCase):
             "quantity": "5",
         })
         bob_batch = LeadGenerationBatch.objects.filter(employee=bob, industry="Roofing").get()
+        self.client.post(reverse("lead_generation_batch_run", args=[bob_batch.pk]))
+        bob_batch.refresh_from_db()
         self.assertEqual(bob_batch.quantity_generated, 5)
         self.assertGreaterEqual(bob_batch.duplicates_removed, 5)
         self.assertEqual(LeadStaging.objects.filter(created_by=bob, industry="Roofing").count(), 5)

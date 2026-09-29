@@ -163,10 +163,10 @@ class SalesWorkspaceTests(TestCase):
 
     @override_settings(CELERY_BROKER_URL='')
     def test_large_searches_require_configured_worker(self):
-        form=LeadFinderForm({'industry':'HVAC','quantity':'25'})
+        form=LeadFinderForm({'industry':'HVAC','location':'San Diego, CA','quantity':'25'})
         self.assertFalse(form.is_valid())
         with override_settings(CELERY_BROKER_URL='redis://localhost:6379/0'):
-            self.assertTrue(LeadFinderForm({'industry':'HVAC','quantity':'25'}).is_valid())
+            self.assertTrue(LeadFinderForm({'industry':'HVAC','location':'San Diego, CA','quantity':'25'}).is_valid())
 
     @override_settings(LEAD_FINDER_ENABLE_PUBLIC_HTTP=True)
     @patch('crm.lead_finder.request.urlopen')

@@ -234,15 +234,14 @@ class OperationalTests(TestCase):
     @patch("crm.lead_finder.request.urlopen")
     def test_real_listing_query_scopes_city_to_state(self, urlopen):
         import json
-        from urllib.parse import parse_qs
+        from urllib.parse import parse_qs, urlsplit
         response = MagicMock(); response.read.return_value=json.dumps({"elements":[{"tags":{"name":"Verified Sample Listing","phone":"6195550100","addr:city":"San Diego"}}]}).encode()
         urlopen.return_value.__enter__.return_value=response
         rows=OpenStreetMapProvider().search(industry="HVAC",location="San Diego, CA",limit=5)
         self.assertEqual(rows[0].business_name,"Verified Sample Listing")
-        query=parse_qs(urlopen.call_args.args[0].data.decode())["data"][0]
-        self.assertIn('"ISO3166-2"="US-CA"',query)
-        self.assertIn('rel(area.region)',query)
-        self.assertIn('map_to_area',query)
+        query=parse_qs(urlsplit(urlopen.call_args.args[0].full_url).query)["data"][0]
+        self.assertIn('(32.68546,',query)
+        self.assertNotIn('area[',query)
         self.assertNotIn('area["name"="San Diego, CA"]',query)
 
     def test_already_running_generation_is_not_run_twice(self):

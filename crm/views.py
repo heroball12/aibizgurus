@@ -1,5 +1,6 @@
 import csv
 import logging
+from urllib.parse import urlencode
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
@@ -9,12 +10,14 @@ from django.core.paginator import Paginator
 from django.db.models import Case, Count, IntegerField, Q, Sum, Value, When
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.dateparse import parse_date
 from django.utils import timezone
 
 from audit.utils import log_activity
+from core.rate_limits import consume_budget
 from .forms import LeadCSVUploadForm, LeadFinderForm, LeadForm, LeadIntelligenceForm, LeadNoteForm
 from .importers import import_lead_file, parse_csv_file
 from .intelligence import csv_safe, draft_follow_up_email
@@ -71,7 +74,9 @@ def lead_batches_for_user(user):
 
 
 def lead_staging_for_user(user):
-    qs = LeadStaging.objects.select_related("batch", "created_by")
+    qs = LeadStaging.objects.select_related("batch", "created_by").exclude(
+        batch__provider_summary__has_key="fallback_directory"
+    )
     if is_sales_manager(user):
         return qs
     return qs.filter(created_by=user)
@@ -345,6 +350,8 @@ def apply_staging_filters(staging, filters):
         staging = staging.filter(
             Q(business_name__icontains=query)
             | Q(phone_number__icontains=query)
+            | Q(email__icontains=query)
+            | Q(website__icontains=query)
             | Q(industry__icontains=query)
             | Q(city__icontains=query)
         )
@@ -476,6 +483,11 @@ def lead_finder(request):
     if request.method == "POST":
         form = LeadFinderForm(request.POST)
         if form.is_valid():
+            if not settings.LEAD_FINDER_ENABLE_PUBLIC_HTTP:
+                form.add_error(None, "Public search is disabled in this environment. Your saved results and imports are still available.")
+            elif not consume_budget("lead-finder-search", request.user.pk, limit=5, window=60):
+                form.add_error(None, "Please wait a minute before starting another search. Your current searches are in Search history.")
+        if form.is_valid():
             quantity = form.cleaned_data["quantity"]
             batch = create_generation_batch(
                 employee=request.user,
@@ -483,11 +495,12 @@ def lead_finder(request):
                 location=form.cleaned_data["location"],
                 quantity=quantity,
             )
-            if quantity <= 20:
-                generate_leads_for_batch(batch.pk)
-                batch.refresh_from_db()
-                (messages.error if batch.status == "failed" else messages.success)(request, batch.status_message)
-            else:
+            if quantity <= 20 and batch.status == "queued":
+                # The results page starts a CSRF-protected request so the user
+                # sees progress immediately without requiring Redis or a worker.
+                batch.status_message = "Ready to search. Keep the results page open while the directory responds."
+                batch.save(update_fields=["status_message"])
+            elif quantity > 20 and batch.status == "queued":
                 queued = enqueue_generation_batch(batch)
                 if queued:
                     messages.success(request, f"Queued batch #{batch.pk}. You can leave this page while it runs.")
@@ -498,12 +511,16 @@ def lead_finder(request):
                     )
             return redirect("lead_generation_batch_detail", pk=batch.pk)
     else:
-        form = LeadFinderForm()
+        initial = {key: request.GET.get(key, "") for key in ["industry", "location", "quantity", "custom_industry"] if request.GET.get(key)}
+        if initial.get("industry") and initial["industry"] not in dict(LeadFinderForm.base_fields["industry"].choices):
+            initial["custom_industry"] = initial["industry"]
+            initial["industry"] = "other"
+        form = LeadFinderForm(initial=initial)
 
     filters = lead_finder_filter_values(request)
     staged_leads = apply_staging_filters(lead_staging_for_user(request.user), filters).order_by("status", "-created_at")
     page_obj = paginate(request, staged_leads, 20)
-    open_batches = lead_batches_for_user(request.user).filter(status__in=OPEN_BATCH_STATUSES).order_by("-created_at")[:8]
+    open_batches = lead_batches_for_user(request.user).filter(status__in=OPEN_BATCH_STATUSES, created_at__gte=timezone.now()-timedelta(minutes=3)).order_by("-created_at")[:8]
     recent_batches = lead_batches_for_user(request.user).order_by("-created_at")[:8]
     return render(request, "crm/lead_finder.html", {
         "form": form,
@@ -546,13 +563,32 @@ def lead_generation_batch_detail(request, pk):
     page_obj = paginate(request, staged, 20)
     return render(request, "crm/lead_generation_batch_detail.html", {
         "batch": batch,
-        "batch_is_open": batch.status in OPEN_BATCH_STATUSES,
+        "batch_is_open": batch.is_open and not batch.is_stalled,
+        "run_here": batch.status == "queued" and batch.quantity_requested <= 20 and not batch.is_stalled,
+        "retry_query": urlencode({"industry": batch.industry, "location": batch.location, "quantity": min(batch.quantity_requested, 20)}),
         "page_obj": page_obj,
         "query_string": query_without_page(request),
         "staged_leads": page_obj,
         "staged_count": staged.count(),
         **lead_finder_control_context(request.user),
     })
+
+
+@employee_required
+@require_POST
+def lead_generation_batch_run(request, pk):
+    batch = get_batch_or_404(request.user, pk)
+    if batch.is_stalled:
+        return JsonResponse({"error": "This search was interrupted. Start a new search from its results page."}, status=409)
+    if batch.quantity_requested > 20:
+        return JsonResponse({"error": "This search uses the background worker."}, status=400)
+    if batch.status == "queued":
+        if not consume_budget("lead-finder-run", request.user.pk, limit=5, window=60):
+            return JsonResponse({"error": "Please wait a minute before starting another search."}, status=429)
+        generate_leads_for_batch(batch.pk)
+    if request.headers.get("Accept") == "application/json":
+        return lead_generation_batch_status(request, pk)
+    return redirect("lead_generation_batch_detail", pk=pk)
 
 
 @employee_required
@@ -565,6 +601,7 @@ def lead_generation_batch_status(request, pk):
             "id": lead.pk,
             "business_name": lead.business_name,
             "phone_number": lead.phone_number,
+            "email": lead.email,
             "industry": lead.industry,
             "city": lead.city,
             "state": lead.state,
@@ -572,7 +609,7 @@ def lead_generation_batch_status(request, pk):
             "notes": lead.notes,
             "confidence_score": str(lead.confidence_score),
             "created": timezone.localtime(lead.created_at).strftime("%b %-d, %-I:%M %p"),
-            "call_url": f"tel:{lead.phone_number}",
+            "call_url": f"tel:{lead.phone_number}" if lead.phone_number else "",
             "mark_called_url": reverse("lead_staging_action", args=[lead.pk, "mark-called"]),
             "save_url": reverse("lead_staging_action", args=[lead.pk, "save"]),
             "website": lead.website,
@@ -584,13 +621,13 @@ def lead_generation_batch_status(request, pk):
         "batch": {
             "id": batch.pk,
             "status": batch.status,
-            "status_label": batch.get_status_display(),
-            "status_message": batch.status_message,
+            "status_label": "Interrupted" if batch.is_stalled else batch.get_status_display(),
+            "status_message": "This search stopped reporting progress. Retry the search; any results already found are saved." if batch.is_stalled else batch.status_message,
             "progress_percent": batch.progress_percent,
             "quantity_requested": batch.quantity_requested,
             "quantity_generated": batch.quantity_generated,
             "duplicates_removed": batch.duplicates_removed,
-            "is_open": batch.status in OPEN_BATCH_STATUSES,
+            "is_open": batch.is_open and not batch.is_stalled,
             "started": timezone.localtime(batch.started_at).strftime("%b %-d, %-I:%M %p") if batch.started_at else "—",
             "completed": timezone.localtime(batch.completed_at).strftime("%b %-d, %-I:%M %p") if batch.completed_at else "—",
             "duration_seconds": str(batch.duration_seconds),

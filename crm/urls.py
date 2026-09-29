@@ -17,6 +17,7 @@ urlpatterns = [
     path("lead-finder/", views.lead_finder, name="lead_finder"),
     path("lead-finder/history/", views.lead_generation_history, name="lead_generation_history"),
     path("lead-finder/batches/<int:pk>/status/", views.lead_generation_batch_status, name="lead_generation_batch_status"),
+    path("lead-finder/batches/<int:pk>/run/", views.lead_generation_batch_run, name="lead_generation_batch_run"),
     path("lead-finder/batches/<int:pk>/", views.lead_generation_batch_detail, name="lead_generation_batch_detail"),
     path("lead-finder/batches/<int:pk>/assign/", views.lead_generation_batch_assign, name="lead_generation_batch_assign"),
     path("lead-finder/staging/<int:pk>/<str:action>/", views.lead_staging_action, name="lead_staging_action"),

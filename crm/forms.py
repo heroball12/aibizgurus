@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.validators import URLValidator
 from django.contrib.auth import get_user_model
 from .models import Lead, LeadNote
+from .directory_locations import resolve_city
 
 
 User = get_user_model()
@@ -50,7 +51,8 @@ class LeadFinderForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": "Enter industry", "data-custom-industry": "true"}),
     )
     location = forms.CharField(
-        required=False,
+        required=True,
+        label="US city & state",
         max_length=180,
         widget=forms.TextInput(attrs={"placeholder": "City, state — e.g. San Diego, CA"}),
     )
@@ -70,6 +72,12 @@ class LeadFinderForm(forms.Form):
                 self.add_error("custom_industry", "Enter the custom industry.")
             cleaned["industry"] = custom
         cleaned["location"] = (cleaned.get("location") or "").strip()
+        if cleaned["location"]:
+            try:
+                city, state, _, _ = resolve_city(cleaned["location"])
+                cleaned["location"] = f"{city}, {state}"
+            except ValueError as exc:
+                self.add_error("location", str(exc))
         cleaned["quantity"] = int(cleaned.get("quantity") or 0)
         return cleaned
 
