@@ -80,7 +80,7 @@ class PlatformAIService:
                     messages=messages,
                     temperature=float(temperature),
                     timeout=self.timeout,
-                    max_completion_tokens=600,
+                    max_completion_tokens=getattr(self, "max_completion_tokens", 600),
                 )
                 content = response.choices[0].message.content or fallback
                 self._record_usage(model=model, response=response, status="success", metadata={**(metadata or {}), "attempt": attempt + 1})
@@ -110,6 +110,31 @@ class PlatformAIService:
             return json.loads(content), meta
         except json.JSONDecodeError:
             return fallback or {}, {"status": "fallback", "reason": "invalid_json"}
+
+    def tool_completion(self, *, messages, tools, metadata=None):
+        """One bounded tool-enabled turn; callers validate and execute their own allowlist.
+
+        No sample answer on failure. This shares platform credentials and usage records
+        with existing assistants, but cannot capture leads or reach their data.
+        """
+        from core.rate_limits import consume_budget
+        model = getattr(settings, "DEMO_CHAT_MODEL", None) or getattr(settings, "OPENAI_CHAT_MODEL", settings.OPENAI_MODEL)
+        if not self.api_key:
+            raise RuntimeError("ai_not_configured")
+        if self.daily_limit_reached() or not consume_budget("experience-ai", "platform", limit=getattr(settings, "DEMO_AI_DAILY_LIMIT", 600), window=86400):
+            raise RuntimeError("daily_limit")
+        try:
+            response = OpenAI(api_key=self.api_key, max_retries=0).chat.completions.create(
+                model=model, messages=messages, tools=tools, tool_choice="auto",
+                parallel_tool_calls=True, max_completion_tokens=850,
+                timeout=min(self.timeout, 18),
+            )
+            self._record_usage(model=model, response=response, metadata=metadata)
+            return response.choices[0].message
+        except Exception as exc:
+            self._record_usage(model=model, status="error", error_code=type(exc).__name__, metadata=metadata)
+            logger.warning("Tool-enabled AI request failed role=%s error=%s", self.assistant_role, type(exc).__name__)
+            raise RuntimeError("ai_unavailable") from None
 
 def get_client_openai_key(ai_instance):
     integration = Integration.objects.filter(

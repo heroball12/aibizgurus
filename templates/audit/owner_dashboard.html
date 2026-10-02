@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load static %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/employee-performance.css' %}">{% endblock %}
 {% block title %}Owner Control Room | AI Business Gurus{% endblock %}
 {% block content %}
 <section class="staff-hero">
@@ -12,6 +14,8 @@
     <a class="btn ghost" href="/admin/">Django Admin</a>
   </div>
 </section>
+{% if metric_window %}{% include 'audit/_employee_scoreboard.html' %}{% endif %}
+
 
 {% if not audit_ready %}
 <section class="activation-banner"><div><strong>Audit table is not ready.</strong><p>Run migrations to enable activity history. Other owner tools remain available.</p></div></section>

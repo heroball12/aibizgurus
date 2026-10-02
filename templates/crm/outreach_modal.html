@@ -1,0 +1,23 @@
+{% load static %}
+<section class="sales-surface outreach-launch">
+  <div><span class="sales-eyebrow">A PERSONAL FOLLOW-UP</span><h2>The right words. Your final say.</h2><p>Guru drafts from your saved notes. Review, edit, then send.</p></div>
+  <div class="outreach-actions"><button class="btn neon" type="button" data-outreach="email" {% if contact_blocked %}disabled{% endif %}>✉ Send email</button><button class="btn ghost" type="button" data-outreach="sms" {% if contact_blocked %}disabled{% endif %}>↗ Send text</button><a href="{% url 'outreach_connections' %}">Email &amp; texting settings</a></div>
+</section>
+<dialog id="outreachDialog" class="outreach-dialog" aria-labelledby="outreachTitle" data-draft-url="{% url 'outreach_draft' lead.pk %}" data-message-base="{% url 'outreach_connections' %}">
+  <header><div><span class="sales-eyebrow">GURU · OUTREACH ASSISTANT</span><h2 id="outreachTitle">Review your email</h2></div><button type="button" data-outreach-close aria-label="Close message">×</button></header>
+  <p class="outreach-status" id="outreachStatus" role="status" aria-live="polite"></p>
+  <p id="outreachHelp" hidden><a href="{% url 'outreach_connections' %}">Email &amp; texting settings</a> · <a href="{% url 'lead_edit' lead.pk %}">Edit contact details</a></p>
+  <form id="outreachForm" class="form dark-form">{% csrf_token %}
+    <fieldset id="outreachFields" disabled>
+      <div class="outreach-addresses"><div><small>FROM</small><strong id="outreachFrom"></strong></div><div><small>TO</small><strong id="outreachTo"></strong></div></div>
+      <label id="outreachSubjectLabel" for="outreachSubject">Subject<input id="outreachSubject" maxlength="180" autocomplete="off" required></label>
+      <label for="outreachBody">Message<textarea id="outreachBody" rows="10" maxlength="6000" required></textarea></label>
+      <p class="sales-muted" id="outreachCount"></p>
+      <label class="outreach-consent" id="outreachConsentLabel" hidden><input type="checkbox" id="outreachConsent"> This prospect agreed to receive texts from AI Business Gurus at this number.</label>
+      <p class="sales-muted">Check the details and tone. Only an AI Specialist discusses custom pricing, during the Growth Assessment.</p>
+    </fieldset>
+    <footer><button type="button" class="btn ghost" id="outreachRegenerate">Generate again</button><button type="button" class="btn ghost" id="outreachCheck" hidden>Check sending status</button><button type="submit" class="btn neon" id="outreachSend" disabled>Confirm &amp; send email</button></footer>
+  </form>
+  <p class="outreach-privacy">Drafting uses this lead’s saved notes and recent activity through the site’s AI service. Email uses your connected Gmail; texts use the company number.</p>
+</dialog>
+<section class="sales-surface outreach-history"><details><summary>Outreach history</summary><p class="sales-muted">“Submitted” means the provider accepted the message. It does not guarantee delivery.</p>{% for message in lead.outreach_messages.all|slice:":12" %}{% if message.status != 'draft' %}<article><strong>{{ message.get_channel_display }} to {{ message.recipient }}</strong><small>{{ message.created_at|date:"M j · g:i A" }} · {{ message.get_status_display }}{% if message.delivery_status %} · {{ message.delivery_status }}{% endif %}</small>{% if message.subject %}<p>{{ message.subject }}</p>{% endif %}<p class="outreach-body">{{ message.body }}</p>{% if message.error_message %}<p>{{ message.error_message }}</p>{% endif %}{% if message.employee_id == user.pk and message.status == 'sending' or message.employee_id == user.pk and message.status == 'unknown' %}<button type="button" class="sales-text-button" data-outreach-resume="{{ message.pk }}">Check sending status</button>{% endif %}</article>{% endif %}{% empty %}<p class="sales-muted">Reviewed messages will appear here after you send.</p>{% endfor %}</details></section>

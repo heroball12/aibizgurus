@@ -1,0 +1,19 @@
+{% extends "crm/base.html" %}{% load static %}
+{% block title %}Email copilot · Approved messaging{% endblock %}
+{% block sales_head %}<link rel="stylesheet" href="{% static 'css/sales-email.css' %}?v=1">{% endblock %}
+{% block workspace %}
+<header class="sales-page-head"><div><span class="sales-eyebrow">GURU · EMAIL COPILOT</span><h1>Good messaging starts here.</h1><p>Approve the facts, voice and capabilities your team can use.</p></div><a class="btn ghost" href="{% url 'sales_pipeline' %}">Back to sales</a></header>
+<div class="email-metrics">{% for key,value in stats.items %}<div class="email-panel"><strong>{{ value }}</strong><span>{{ key|title }}</span></div>{% endfor %}</div>
+<p class="sales-muted">Quality indicators, not employee productivity scores. Sent counts are self-reported; this tool does not verify delivery, replies or assessment attribution.</p>
+<form method="post" class="form dark-form email-management">{% csrf_token %}
+<section class="email-panel"><h2>Company messaging &amp; defaults</h2><p>Pricing restrictions, claim validation and human review always apply.</p>{{ form.as_p }}</section>
+<details class="email-panel" {% if profiles.errors %}open{% endif %}><summary>Approved sender profiles &amp; signatures</summary><p>Only approved business contact details are included. Add professional credibility here once; Guru can use it when relevant. Without a profile, the account’s name and AI Business Gurus form the signature.</p>{{ profiles.management_form }}{{ profiles.non_form_errors }}{% for f in profiles %}<div class="email-config-row">{{ f.as_p }}</div>{% endfor %}</details>
+<details class="email-panel" {% if services.errors %}open{% endif %}><summary>Services · descriptions, order &amp; availability</summary>{{ services.management_form }}{{ services.non_form_errors }}{% for f in services %}<div class="email-config-row">{{ f.as_p }}</div>{% endfor %}</details>
+<details class="email-panel" {% if types.errors %}open{% endif %}><summary>Conversation types</summary>{{ types.management_form }}{{ types.non_form_errors }}{% for f in types %}<div class="email-config-row">{{ f.as_p }}</div>{% endfor %}</details>
+<button class="btn neon">Save approved messaging</button>
+</form>
+<section class="email-panel email-history"><h2>Recent drafts · quality review</h2><div class="table-wrap"><table><thead><tr><th>Employee / lead</th><th>Subject</th><th>Type / services</th><th>Status / feedback</th></tr></thead><tbody>{% for draft in drafts %}<tr><td>{{ draft.employee.get_full_name|default:draft.employee.username }}<br><a href="{% url 'sales_email' draft.lead_id %}">{{ draft.lead.business_name|default:draft.lead.name }}</a></td><td><details><summary>{{ draft.subject }}</summary><pre class="email-review-copy">{{ draft.body }}
+
+{{ draft.signature }}</pre></details></td><td>{{ draft.generation_options.email_type }}<br>{{ draft.generation_options.services|join:", " }}</td><td>{{ draft.get_status_display }}<br>{{ draft.feedback|default:"No feedback" }} {{ draft.feedback_reason }}</td></tr>{% empty %}<tr><td colspan="4">Drafts will appear here as your team uses the copilot.</td></tr>{% endfor %}</tbody></table></div>
+<details><summary>Workflow events</summary>{% for count in event_counts %}<p>{{ count.message }} · {{ count.total }}</p>{% endfor %}</details></section>
+{% endblock %}

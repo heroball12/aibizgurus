@@ -9,6 +9,7 @@
 
   <form id="bulk-lead-form" method="post" action="{% url 'lead_bulk_action' %}">
     {% csrf_token %}
+    {% if employee_scope %}<input type="hidden" name="employee_scope" value="{{ employee_scope }}">{% endif %}
     <input type="hidden" name="next" value="{{ request.get_full_path }}">
     <input type="hidden" name="filter_q" value="{{ lead_filters.q }}">
     <input type="hidden" name="filter_assigned_to" value="{{ lead_filters.assigned_to }}">
@@ -21,6 +22,7 @@
   {% for lead in page_obj %}
     <form id="lead-row-{{ lead.pk }}" method="post" action="{% url 'lead_bulk_action' %}">
       {% csrf_token %}
+    {% if employee_scope %}<input type="hidden" name="employee_scope" value="{{ employee_scope }}">{% endif %}
       <input type="hidden" name="next" value="{{ request.get_full_path }}">
       <input type="hidden" name="lead_id" value="{{ lead.pk }}">
     </form>
@@ -51,7 +53,7 @@
     <input type="date" name="follow_up_date" form="bulk-lead-form" aria-label="Bulk follow-up date">
     <button class="btn ghost" type="submit" name="action" value="update_selected" form="bulk-lead-form">Update selected</button>
     {% if can_manage_leads %}
-      <button class="btn danger" type="submit" name="action" value="delete_selected" form="bulk-lead-form" onclick="return confirm('Permanently delete the selected leads? This scrubs them and their related CRM history from the system.');">Delete selected</button>
+      <button class="btn danger" type="submit" name="action" value="delete_selected" form="bulk-lead-form" onclick="return confirm('Permanently delete the selected leads? Employee audit history will be retained.');">Delete selected</button>
       <button class="btn danger" type="submit" name="action" value="delete_filtered" form="bulk-lead-form" onclick="return confirm('Permanently delete ALL leads matching the current filters, including leads on other pages? This cannot be undone.');">Delete all matching filters</button>
     {% endif %}
   </div>
@@ -73,7 +75,7 @@
         <tr>
           <td><input class="lead-select" type="checkbox" name="lead_ids" value="{{ lead.pk }}" form="bulk-lead-form" aria-label="Select {{ lead }}"></td>
           <td>
-            <strong>{{ lead.business_name|default:"—" }}</strong>
+            <strong>{{ lead.business_name|default:"—" }}</strong>{% if lead.archived %}<small>Archived</small>{% endif %}
             <small>{{ lead.phone|default:"" }}{% if lead.email %} · {{ lead.email }}{% endif %}</small>
           </td>
           <td>{{ lead.name|default:lead.point_of_contact|default:"—" }}</td>
@@ -95,6 +97,7 @@
             {% if can_manage_leads %}
               <select name="assigned_to" form="lead-row-{{ lead.pk }}">
                 <option value="unassigned">Unassigned</option>
+                {% if lead.assigned_to and not lead.assigned_to.is_active %}<option value="{{ lead.assigned_to_id }}" selected>{{ lead.assigned_to.get_full_name|default:lead.assigned_to.username }} (inactive)</option>{% endif %}
                 {% for staff_user in assignable_users %}
                   <option value="{{ staff_user.pk }}" {% if lead.assigned_to_id == staff_user.pk %}selected{% endif %}>{{ staff_user.get_full_name|default:staff_user.username }}</option>
                 {% endfor %}
@@ -111,8 +114,9 @@
           <td class="lead-row-actions">
             <button class="btn small ghost" type="submit" name="action" value="update" form="lead-row-{{ lead.pk }}">Save</button>
             <a class="btn small ghost" href="{% url 'lead_detail' lead.pk %}">Open</a>
+            <a class="btn small ghost" href="{% url 'lead_edit' lead.pk %}">Edit</a>
             {% if can_manage_leads %}
-              <button class="btn small danger" type="submit" name="action" value="delete" form="lead-row-{{ lead.pk }}" onclick="return confirm('Permanently delete this lead and scrub its CRM history?');">Delete</button>
+              <button class="btn small danger" type="submit" name="action" value="delete" form="lead-row-{{ lead.pk }}" onclick="return confirm('Permanently delete this lead? Employee audit history will be retained.');">Delete</button>
             {% endif %}
           </td>
         </tr>

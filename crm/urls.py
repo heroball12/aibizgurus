@@ -2,12 +2,26 @@ from django.urls import path
 from . import views
 from . import workspace_views
 from . import sheet_views
+from .email_generator import views as email_views
 from . import research_views
 urlpatterns = [
+    path("leads/<int:pk>/email/", email_views.page, name="sales_email"),
+    path("leads/<int:pk>/email/generate/", email_views.create, name="sales_email_generate"),
+    path("leads/<int:pk>/email/<uuid:message_id>/", email_views.action, name="sales_email_action"),
+    path("email/manage/", email_views.manage, name="sales_email_manage"),
     path("lead-finder/staging/<int:pk>/verify/", research_views.verify, name="prospect_verify"),
     path("leads/<int:pk>/verify/", research_views.verify, {"pipeline": True}, name="lead_verify"),
     path("lead-finder/staging/<int:pk>/research/", research_views.research, name="prospect_research"),
     path("leads/<int:pk>/research/", research_views.research, {"pipeline": True}, name="lead_research"),
+    path("outreach/", email_views.deferred, name="outreach_connections"),
+    path("outreach/google/connect/", email_views.deferred, name="outreach_google_connect"),
+    path("outreach/google/callback/", email_views.deferred, name="outreach_google_callback"),
+    path("outreach/google/disconnect/", email_views.deferred, name="outreach_google_disconnect"),
+    path("leads/<int:pk>/outreach/draft/", email_views.deferred, name="outreach_draft"),
+    path("outreach/<uuid:pk>/send/", email_views.deferred, name="outreach_send"),
+    path("outreach/<uuid:pk>/status/", email_views.deferred, name="outreach_status"),
+    path("outreach/sms/inbound/", email_views.deferred, name="outreach_sms_inbound"),
+    path("outreach/sms/<uuid:pk>/status/", email_views.deferred, name="outreach_sms_status"),
     path("sheets/", sheet_views.hub, name="lead_sheets"),
     path("sheets/new/", sheet_views.editor, name="lead_sheet_new"),
     path("sheets/save/", sheet_views.save, name="lead_sheet_save"),

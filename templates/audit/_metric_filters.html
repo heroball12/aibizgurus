@@ -1,0 +1,10 @@
+<form method="get" class="employee-filters">
+  {% if kind %}<input type="hidden" name="kind" value="{{ kind }}">{% endif %}
+  <label>Period<select name="period"><option value="today" {% if metric_window.period == 'today' %}selected{% endif %}>Today</option><option value="7d" {% if metric_window.period == '7d' %}selected{% endif %}>Last 7 days</option><option value="30d" {% if metric_window.period == '30d' %}selected{% endif %}>Last 30 days</option><option value="all" {% if metric_window.period == 'all' %}selected{% endif %}>All recorded activity</option><option value="custom" {% if metric_window.period == 'custom' %}selected{% endif %}>Custom dates</option></select></label>
+  <label>From<input type="date" name="start" value="{{ metric_window.start }}"></label>
+  <label>Through<input type="date" name="end" value="{{ metric_window.end }}"></label>
+  {% if not staff_user %}<label>Employee<input type="search" name="employee_q" value="{{ employee_q }}" placeholder="Name or email"></label><label>Sort by<select name="metric_sort">{% for col in metric_columns %}<option value="{{ col.key }}" {% if metric_sort == col.key %}selected{% endif %}>{{ col.label }}</option>{% endfor %}</select></label>{% endif %}
+  <button class="btn neon" type="submit">Apply</button>
+</form>
+{% if metric_window.error %}<p role="alert">{{ metric_window.error }}</p>{% endif %}
+<p class="employee-help">{{ metric_window.start|default:"First record" }} – {{ metric_window.end }} · {{ metric_window.timezone }}. Choose “Custom dates” to use the date fields.</p>

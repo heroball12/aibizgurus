@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}Velocity Motors · AI Experience Center{% endblock %}
+{% block body_class %}experience-page{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/experience.css' %}"><meta name="theme-color" content="#0c0c12"><link rel="manifest" href="{% url 'experience_manifest' %}"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="apple-touch-icon" href="{% static 'img/ai-business-gurus-logo.png' %}">{% block experience_head %}{% endblock %}{% endblock %}
+{% block navigation %}<header class="ex-nav"><a href="{% url 'demo' %}" class="ex-brand"><img src="{% static 'img/ai-business-gurus-logo-nav.png' %}" alt="AI Business Gurus"><span>EXPERIENCE CENTER</span></a><div class="ex-nav-links"><a href="{% url 'demo' %}">All industries <span aria-hidden="true">↗</span></a>{% if is_manager %}<a href="{% url 'experience_manage' %}">Manage demos</a>{% endif %}</div><span class="ex-attribution">POWERED BY AI BUSINESS GURUS</span></header>{% endblock %}
+{% block footer %}<footer class="ex-footer"><span>A fictional business. A real conversation.</span><span>POWERED BY <strong>AI BUSINESS GURUS</strong></span></footer>{% endblock %}

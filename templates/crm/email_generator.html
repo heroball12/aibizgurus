@@ -1,0 +1,39 @@
+{% extends "crm/base.html" %}{% load static %}
+{% block title %}Email copilot · {{ lead.business_name }}{% endblock %}
+{% block sales_head %}<link rel="stylesheet" href="{% static 'css/sales-email.css' %}?v=1"><script src="{% static 'js/sales-email.js' %}?v=1" defer></script>{% endblock %}
+{% block workspace %}
+<div id="emailCopilot" data-generate-url="{% url 'sales_email_generate' lead.pk %}" data-action-url="{% url 'sales_email_action' lead.pk '00000000-0000-0000-0000-000000000000' %}" data-user="{{ user.pk }}" data-lead="{{ lead.pk }}" data-default-length="{{ config.default_length }}">
+<header class="sales-page-head"><div><a class="sales-back" href="{% url 'lead_detail' lead.pk %}">← {{ lead.business_name|default:lead.name }}</a><span class="sales-eyebrow email-kicker">GURU · SALES COPILOT</span><h1>The right words.<br><span class="email-accent">Built from your conversation.</span></h1><p>Your CRM notes. Your judgment. One thoughtful next step.</p></div>{% if manager %}<a class="btn ghost" href="{% url 'sales_email_manage' %}">Manage messaging ↗</a>{% endif %}</header>
+{% if not config.enabled %}<p class="sales-notice">Email generation is currently disabled by your manager.</p>{% endif %}
+<div class="email-layout">
+<section class="email-panel email-options"><span class="sales-eyebrow">01 / SHAPE THE MESSAGE</span><h2>{{ lead.business_name|default:lead.name }}</h2><p class="sales-muted">{{ lead.point_of_contact|default:"Contact name not recorded" }}{% if lead.contact_role %} · {{ lead.contact_role }}{% endif %}<br>{{ lead.industry }}</p>
+<form id="emailOptions" class="form dark-form">{% csrf_token %}
+<p><label for="id_email_type">Conversation</label>{{ form.email_type }}</p>
+<fieldset><legend>Focus</legend>{{ form.focus }}<div id="emailServices" hidden>{{ form.services }}</div></fieldset>
+{% if suggestions %}<details class="email-suggestions"><summary>Suggested focus from this lead</summary><p>Suggestions only. Select any relevant services above.</p>{% for suggestion in suggestions %}<p><strong>{{ suggestion.slug|title }}</strong> · {{ suggestion.reason }}</p>{% endfor %}</details>{% endif %}
+<div class="email-two"><p>{{ form.length.label_tag }}{{ form.length }}</p><p>{{ form.tone.label_tag }}{{ form.tone }}</p></div>
+<label class="email-check">{{ form.include_demo }} Include Demo Center</label><label class="email-check">{{ form.include_assessment }} Include scheduling link</label>
+<p><label for="id_instructions">Your direction <small>Optional</small></label>{{ form.instructions }}</p>
+<div id="emailFields" role="alert"></div>
+<button type="submit" class="btn neon email-generate" {% if not config.enabled %}disabled{% endif %}>✦ Generate email</button>
+<p class="email-footnote">Uses recent CRM notes and approved messaging. No email is sent from this workspace.</p>
+</form></section>
+<section class="email-panel email-workbench"><div class="email-preview-head"><span class="sales-eyebrow">02 / REVIEW &amp; MAKE IT YOURS</span><span id="emailStatus" role="status" aria-live="polite">Ready when you are</span></div>
+<div id="emailError" role="alert" hidden></div><details id="emailRecovery" hidden open><summary>Recovered unsaved text</summary><textarea id="emailRecoveredText" class="email-input email-body" readonly aria-label="Recovered unsaved text"></textarea></details>
+<div id="emailEmpty" class="email-empty"><span aria-hidden="true">✦</span><h2>Start with what you learned.</h2><p>Choose the conversation and focus. Guru will turn the lead’s context into three subject options and an editable email.</p><div><span>Problem first</span><span>Support the team</span><span>Earn the assessment</span></div></div>
+<div id="emailResult" hidden>
+<div class="email-envelope"><p><span>From</span><strong id="emailFrom">{{ sender.name }} {{ sender.email }}</strong></p><p><span>To</span><strong id="emailTo">{{ lead.point_of_contact|default:"Contact" }} {{ lead.email|default:"No email address on file" }}</strong></p></div>
+<p class="email-footnote">AI-generated draft — review names, facts, links and signature before sending.</p>
+<label class="email-label" for="emailSubject">Subject</label><div id="emailSubjects" class="email-subjects"></div><input id="emailSubject" maxlength="180" class="email-input" aria-label="Edit subject">
+<label class="email-label" for="emailBody">Email</label><textarea id="emailBody" class="email-input email-body" spellcheck="true"></textarea>
+<label class="email-label" for="emailSignature">Signature</label><textarea id="emailSignature" class="email-input email-signature" maxlength="1200" spellcheck="true"></textarea>
+<div class="email-refinements" aria-label="Refine this draft"><button type="button" data-refine="regenerate">Regenerate</button><button type="button" data-refine="shorter">Make shorter</button><button type="button" data-refine="direct">More direct</button><button type="button" data-refine="friendly">More friendly</button><button type="button" data-refine="consultative">More consultative</button></div>
+<div class="email-actions"><button type="button" class="btn neon" data-action="copy_all">Copy all</button><button type="button" class="btn ghost" data-action="copy_email">Copy email</button><button type="button" class="btn ghost" data-action="copy_subject">Copy subject</button><button type="button" class="btn ghost" data-action="save">Save to CRM</button></div>
+<div class="email-secondary"><button type="button" data-action="sent">I sent it · mark as sent</button><button type="button" id="emailStartOver">Start over</button><button type="button" data-action="discard">Discard draft</button></div>
+<details class="email-feedback"><summary>How was this draft?</summary><label for="emailFeedbackReason">Optional reason</label><select id="emailFeedbackReason"><option value="">Choose a reason</option><option>Too long</option><option>Too generic</option><option>Wrong focus</option><option>Incorrect information</option><option>Bad tone</option><option>Other</option></select><button type="button" data-feedback="good">👍 Good</button><button type="button" data-feedback="needs_work">👎 Needs work</button></details>
+</div>
+</section></div>
+<section class="email-panel email-history"><div><span class="sales-eyebrow">CONVERSATION MEMORY</span><h2>Drafts &amp; email history</h2><p>Generating or copying does not mark an email sent. “Marked sent” records the employee’s confirmation.</p></div><div id="emailHistory"></div></section>
+</div>
+{{ history|json_script:"email-history-data" }}{{ type_lengths|json_script:"email-type-lengths" }}
+{% endblock %}

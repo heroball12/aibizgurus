@@ -6,9 +6,10 @@
 {% block content %}
 <div id="demoApp" class="demo-shell" data-chat-url="{% url 'demo_chat' %}">
   <header class="demo-intro">
-    <div><span class="demo-eyebrow"><i></i> THE AI EMPLOYEE EXPERIENCE</span><h1>Your industry.<br><em>Your next AI hire.</em></h1><p>Choose a business. Meet its AI employee. Be the customer and see where the conversation goes.</p></div>
+    <div><span class="demo-eyebrow"><i></i> AI EXPERIENCE CENTER</span><h1>Experience your<br><em>next AI employee.</em></h1><p>Don't just hear about AI. Talk to it. Choose your industry and see where the conversation goes.</p></div>
     <a class="demo-guru-link" href="{% url 'concierge' %}?page=demo"><img src="{% static 'img/guru-helmet.jpg' %}" alt=""><span><small>WANT AN INTRODUCTION?</small><strong>Let Guru show you around <span aria-hidden="true">↗</span></strong></span></a>
   </header>
+  {% if automotive_experience %}<a class="demo-flagship" href="{% url 'experience_home' %}"><img src="{% static 'img/experience/showroom.jpg' %}" alt="Generated Velocity Motors showroom"><div><span class="demo-eyebrow">AUTOMOTIVE / THE FLAGSHIP EXPERIENCE</span><h2>Meet your next BDC teammate.</h2><p>Search vehicles. Plan a visit. Watch the customer appear in the dealership CRM.</p><strong>Enter Velocity Motors <span aria-hidden="true">↗</span></strong></div><span class="demo-flagship-badge">SPEAK OR TYPE</span></a>{% endif %}
   <div class="demo-workspace">
     <aside class="demo-picker" aria-labelledby="industryTitle">
       <div class="demo-picker-title"><span class="demo-eyebrow">01 / CHOOSE YOUR WORLD</span><h2 id="industryTitle">Choose your category<span>{{ industry_count }}</span></h2></div>

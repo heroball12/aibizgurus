@@ -241,11 +241,17 @@ def demo(request):
             item["greeting"] = concierge_context.greeting(item, transfer["context"])
     public_items = [{k: v for k, v in item.items() if k not in {"facts", "escalation"}} for item in items]
     history = {LEGACY_SLUGS.get(key, key): value for key, value in request.session.get("demo_history", {}).items()}
+    from .models import DemoExperience
+    from .experience.access import salesperson
+    flagship = DemoExperience.objects.filter(slug="automotive", current_revision__isnull=False)
+    if not salesperson(request.user):
+        flagship = flagship.filter(published=True, public_access=True)
     response = render(request, "core/demo.html", {
         "demo_industries": public_items,
         "featured_industries": [p for slug in FEATURED for p in public_items if p["slug"] == slug],
         "demo_categories": sorted({p["category"] for p in items}),
         "industry_count": len(items), "demo_history": history,
+        "automotive_experience": flagship.exists(),
         "demo_config": {"aiAvailable": bool(settings.PLATFORM_OPENAI_API_KEY), "handoff": {"id": transfer["id"], "industry": transfer["industry"]} if transfer else None},
     })
     response["Cache-Control"] = "private, no-store"
@@ -282,7 +288,7 @@ def growth_assessment(request):
             form.add_error(None, "Too many requests. Please try again later or use the calendar above.")
         if not form.errors and form.is_valid():
             obj = form.save()
-            Lead.objects.create(
+            lead = Lead.objects.create(
                 lead_type="internal_sales",
                 name=obj.name,
                 business_name=obj.business_name,
@@ -293,11 +299,13 @@ def growth_assessment(request):
                 status="new",
                 notes=obj.message,
             )
+            from .experience.access import attribute_assessment
+            attribute_assessment(request, obj, lead)
             messages.success(request, "Assessment request received. We will review your growth opportunities and follow up shortly.")
             return redirect("growth_assessment")
     else:
         form = ConsultationRequestForm()
-    return render(request, "core/growth_assessment.html", {"form": form})
+    return render(request, "core/growth_assessment.html", {"form": form, "demo_ref": request.POST.get("demo_ref", "") or request.GET.get("demo_ref", "")})
 
 @transaction.atomic
 def consultation_request(request):
@@ -339,4 +347,7 @@ def ops_dashboard(request):
         "lead_count": internal_leads.count(),
         "new_leads": internal_leads.filter(status="new").select_related("assigned_to").order_by("-created_at")[:15],
     }
+    if request.user.is_owner() or request.user.role == "admin":
+        from audit.performance import performance_context
+        context.update(performance_context(request))
     return render(request, "core/ops_dashboard.html", context)

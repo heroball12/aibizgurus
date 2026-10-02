@@ -84,6 +84,7 @@ class Lead(models.Model):
     lead_temperature = models.CharField(max_length=20, choices=TEMPERATURE_CHOICES, default="cold")
     notes = models.TextField(blank=True)
     cleaned_notes = models.TextField(blank=True)
+    notes_sensitive = models.BooleanField(default=False, help_text="Exclude the main notes from AI email context.")
     value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     lead_generation_batch = models.ForeignKey(
@@ -127,6 +128,68 @@ class Lead(models.Model):
     def __str__(self):
         return self.name or self.business_name or f"Lead {self.pk}"
 
+class StaffMailbox(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sales_mailbox")
+    email = models.EmailField(unique=True)
+    google_subject = models.CharField(max_length=255, unique=True)
+    refresh_token = models.TextField(editable=False)  # Encrypted using FIELD_ENCRYPTION_KEY.
+    scopes = models.TextField(blank=True)
+    active = models.BooleanField(default=True)
+    connected_at = models.DateTimeField(auto_now=True)
+
+
+class OutreachMessage(models.Model):
+    """Reviewed message history. The current product generates copy-only email drafts."""
+    STATUS_CHOICES = [("draft", "Draft"), ("sending", "Sending"), ("sent", "Submitted"),
+                      ("failed", "Not sent"), ("unknown", "Check delivery"), ("marked_sent", "Manually marked sent"), ("discarded", "Discarded")]
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name="outreach_messages")
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    channel = models.CharField(max_length=10, choices=[("email", "Email"), ("sms", "Text")])
+    recipient = models.CharField(max_length=254)
+    sender = models.CharField(max_length=254)
+    subject = models.CharField(max_length=180, blank=True)
+    body = models.TextField()
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default="draft")
+    provider_id = models.CharField(max_length=120, blank=True, db_index=True)
+    delivery_status = models.CharField(max_length=30, blank=True)
+    error_message = models.CharField(max_length=255, blank=True)
+    sms_consent_confirmed = models.BooleanField(default=False)
+    activity = models.OneToOneField("LeadActivity", null=True, blank=True, on_delete=models.SET_NULL)
+    created_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+
+    generator_version = models.CharField(max_length=30, blank=True, db_index=True)
+    subjects = models.JSONField(default=list, blank=True)
+    signature = models.TextField(blank=True)
+    original_output = models.JSONField(default=dict, blank=True)
+    generation_options = models.JSONField(default=dict, blank=True)
+    generator_model = models.CharField(max_length=100, blank=True)
+    validation_result = models.CharField(max_length=30, blank=True)
+    parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL)
+    saved_at = models.DateTimeField(null=True, blank=True)
+    revision = models.PositiveIntegerField(default=0)
+    feedback = models.CharField(max_length=12, blank=True)
+    feedback_reason = models.CharField(max_length=40, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+class SalesSMSContact(models.Model):
+    phone = models.CharField(max_length=16, primary_key=True)
+    opted_out = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class SalesSMSReply(models.Model):
+    provider_id = models.CharField(max_length=120, unique=True)
+    phone = models.CharField(max_length=16)
+    body = models.TextField()
+    received_at = models.DateTimeField(auto_now_add=True)
+
+
 class LeadSheet(models.Model):
     """A private, ordered view of CRM records; values remain on the source records."""
 
@@ -151,6 +214,7 @@ class LeadNote(models.Model):
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name="lead_notes")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     note = models.TextField()
+    is_sensitive = models.BooleanField(default=False, help_text="Exclude from AI email context.")
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -294,6 +358,7 @@ class LeadActivity(models.Model):
     ]
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name="activities")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    is_sensitive = models.BooleanField(default=False, help_text="Exclude from AI email context.")
     raw_note = models.TextField(blank=True)
     cleaned_note = models.TextField(blank=True)
     inferred_status = models.CharField(max_length=30, choices=Lead.STATUS_CHOICES, default="new")
@@ -347,3 +412,5 @@ class ClassificationCorrection(models.Model):
 
     def __str__(self):
         return f"Correction for {self.lead}"
+
+from .email_models import SalesEmailConfig, SalesEmailType, SalesEmailService, SalesProfile  # noqa: E402,F401

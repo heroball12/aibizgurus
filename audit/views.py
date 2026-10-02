@@ -5,6 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
+from django.http import HttpResponse
+from django.views.decorators.cache import never_cache
+import csv
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from core.permissions import owner_required
@@ -12,7 +15,8 @@ from clients.models import ClientAccount, AIInstance
 from crm.models import Lead, LeadActivity, LeadImport
 from crm.views import apply_lead_filters, lead_filter_context, lead_filter_values, order_leads
 from .forms import StaffUserForm
-from .models import ActivityLog, TimeClockEntry
+from .models import ActivityLog, TimeClockEntry, EmployeeLeadEvent
+from .performance import performance_context, date_window, during, COLUMNS
 from .utils import activity_table_exists, log_activity
 
 User = get_user_model()
@@ -33,6 +37,7 @@ def staff_admin_required(view_func):
     return wrapper
 
 @owner_required
+@never_cache
 def owner_dashboard(request):
     audit_ready = activity_table_exists()
     logs = (
@@ -52,6 +57,7 @@ def owner_dashboard(request):
         "logs": logs,
         "audit_ready": audit_ready,
     }
+    context.update(performance_context(request))
     return render(request, "audit/owner_dashboard.html", context)
 
 @owner_required
@@ -92,18 +98,21 @@ def owner_clients(request):
 
 
 @staff_admin_required
+@never_cache
 def staff_users(request):
     staff = User.objects.filter(role__in=["employee", "admin"]).only(
         "username", "email", "first_name", "last_name", "role", "is_active", "is_staff"
     ).order_by("role", "first_name", "username")
-    return render(request, "audit/staff_users.html", {"staff_users": staff})
+    return render(request, "audit/staff_users.html", {"staff_users": staff, **performance_context(request, staff)})
 
 
 @staff_admin_required
+@never_cache
 def staff_performance(request, pk):
     staff_user = get_object_or_404(User, pk=pk, role__in=["employee", "admin"])
-    leads = Lead.objects.filter(lead_type="internal_sales", archived=False, assigned_to=staff_user)
+    leads = Lead.objects.filter(lead_type="internal_sales", assigned_to=staff_user)
     filters = lead_filter_values(request)
+    filters["assigned_to"] = str(staff_user.pk)
     filtered_leads = order_leads(apply_lead_filters(leads, filters), filters["sort"])
     today = timezone.localdate()
     closed_statuses = ["closed_won", "closed_lost", "not_interested", "do_not_contact", "permanently_closed"]
@@ -148,7 +157,7 @@ def staff_performance(request, pk):
         for row in leads.values("lead_temperature").annotate(count=Count("id")).order_by("-count", "lead_temperature")
     ]
     recent_activities = (
-        LeadActivity.objects.filter(Q(user=staff_user) | Q(lead__assigned_to=staff_user), lead__lead_type="internal_sales")
+        LeadActivity.objects.filter(Q(user=staff_user), lead__lead_type="internal_sales")
         .select_related("lead")
         .order_by("-created_at")[:20]
     )
@@ -162,7 +171,14 @@ def staff_performance(request, pk):
     )
     query_params = request.GET.copy()
     query_params.pop("page", None)
+    metric_context = performance_context(request, [staff_user], filter_employees=False)
+    metric = metric_context["employee_rows"][0] if metric_context["employee_rows"] else {}
+    filter_context = lead_filter_context(request, leads)
+    filter_context["lead_filters"]["assigned_to"] = str(staff_user.pk)
     return render(request, "audit/staff_performance.html", {
+        **metric_context, "employee_metric": metric,
+        "employee_scope": staff_user.pk,
+        "sales_events": during(EmployeeLeadEvent.objects.filter(actor=staff_user).select_related("lead"), metric_context["metric_window"])[:20],
         "staff_user": staff_user,
         "performance": performance,
         "status_breakdown": status_breakdown,
@@ -175,7 +191,7 @@ def staff_performance(request, pk):
         "page_obj": paginate(request, filtered_leads.select_related("assigned_to"), 50),
         "filtered_count": filtered_leads.count(),
         "query_string": query_params.urlencode(),
-        **lead_filter_context(request, leads),
+        **filter_context,
     })
 
 
@@ -241,3 +257,39 @@ def staff_user_deactivate(request, pk):
         )
         messages.success(request, f"{staff_user.username} was deactivated.")
     return redirect("staff_users")
+
+
+@staff_admin_required
+@never_cache
+def employee_metrics_export(request):
+    from crm.intelligence import csv_safe
+    context = performance_context(request)
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = 'attachment; filename="employee-performance.csv"'
+    writer = csv.writer(response)
+    writer.writerow(["Employee", "Email", "Start", "End", "Timezone"] + [label for _, label in COLUMNS])
+    for row in context["employee_rows"]:
+        user = row["employee"]
+        writer.writerow([csv_safe(user.get_full_name() or user.username), csv_safe(user.email), context["metric_window"]["start"], context["metric_window"]["end"], context["metric_window"]["timezone"]] + [row[key] for key, _ in COLUMNS])
+    return response
+
+
+@staff_admin_required
+@never_cache
+def staff_activity(request, pk):
+    staff_user = get_object_or_404(User, pk=pk, role__in=["employee", "admin"])
+    window = date_window(request.GET)
+    kind = request.GET.get("kind", "sales")
+    query = request.GET.get("q", "").strip()[:200]
+    if kind == "site":
+        entries = during(ActivityLog.objects.filter(actor=staff_user), window)
+        if query:
+            entries = entries.filter(Q(message__icontains=query) | Q(path__icontains=query) | Q(object_repr__icontains=query))
+    else:
+        kind = "sales"
+        entries = during(EmployeeLeadEvent.objects.filter(actor=staff_user).select_related("lead"), window)
+        if query:
+            entries = entries.filter(Q(lead_name__icontains=query) | Q(status__icontains=query) | Q(source__icontains=query))
+    params = request.GET.copy()
+    params.pop("page", None)
+    return render(request, "audit/staff_activity.html", {"staff_user": staff_user, "metric_window": window, "kind": kind, "q": query, "page_obj": paginate(request, entries, 50), "query_string": params.urlencode()})

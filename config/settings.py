@@ -173,6 +173,14 @@ EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", default=True)
 EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", default=False)
 
 FIELD_ENCRYPTION_KEY = os.getenv("FIELD_ENCRYPTION_KEY", "dev-only-change-this-use-fernet-key-in-prod")
+
+# Staff outreach: each employee authorizes their own Google Workspace mailbox.
+SALES_GOOGLE_CLIENT_ID = os.getenv("SALES_GOOGLE_CLIENT_ID", "")
+SALES_GOOGLE_CLIENT_SECRET = os.getenv("SALES_GOOGLE_CLIENT_SECRET", "")
+SALES_GOOGLE_REDIRECT_URI = os.getenv("SALES_GOOGLE_REDIRECT_URI", PUBLIC_BASE_URL + "/crm/outreach/google/callback/")
+SALES_GOOGLE_DOMAINS = env_list("SALES_GOOGLE_DOMAINS", default="aibiz.guru")
+SALES_SMS_FROM_NUMBER = os.getenv("SALES_SMS_FROM_NUMBER", "")
+SALES_SMS_MESSAGING_SERVICE_SID = os.getenv("SALES_SMS_MESSAGING_SERVICE_SID", "")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 STRIPE_PRICE_STARTER = os.getenv("STRIPE_PRICE_STARTER", "")
@@ -227,3 +235,8 @@ TRAINING_S3_ENDPOINT = os.getenv("TRAINING_S3_ENDPOINT", "")
 # Private files on a Render persistent disk, as an alternative to S3.
 # This directory must not be exposed by a public static/media route.
 TRAINING_MEDIA_ROOT = os.getenv("TRAINING_MEDIA_ROOT", "")
+
+# Tool-enabled Experience Center uses existing platform credentials; bounded across workers.
+DEMO_CHAT_MODEL = os.getenv("DEMO_CHAT_MODEL", OPENAI_CHAT_MODEL)
+DEMO_AI_DAILY_LIMIT = int(os.getenv("DEMO_AI_DAILY_LIMIT", "600"))
+DEMO_VOICE_DAILY_LIMIT = int(os.getenv("DEMO_VOICE_DAILY_LIMIT", "600"))

@@ -1,0 +1,33 @@
+<dialog id="financeDialog" class="ex-dialog ex-finance" aria-labelledby="financeTitle">
+  <button class="ex-close" data-close aria-label="Close financing application">×</button>
+  <span class="ex-eyebrow">VELOCITY MOTORS / FICTIONAL APPLICATION</span>
+  <h2 id="financeTitle">Your next drive.<br>Your next step.</h2>
+  <p>This is a demonstration of the financing handoff. Use sample contact details. Financial information comes from fictional profiles—there is no credit check or lender submission.</p>
+  <div id="financeError" class="ex-notice" role="alert" hidden></div>
+  <form id="financeForm" autocomplete="off">
+    <fieldset><legend><span>01</span> Your contact details</legend><div class="ex-finance-grid">
+      <div><label for="{{ finance_form.name.id_for_label }}">{{ finance_form.name.label }}</label>{{ finance_form.name }}</div>
+      <div><label for="{{ finance_form.phone.id_for_label }}">{{ finance_form.phone.label }}</label>{{ finance_form.phone }}</div>
+      <div class="ex-finance-wide"><label for="{{ finance_form.email.id_for_label }}">{{ finance_form.email.label }}</label>{{ finance_form.email }}</div>
+    </div><small>No calls or emails will be sent from this demo.</small></fieldset>
+    <fieldset><legend><span>02</span> Your vehicle & preferences</legend><div class="ex-finance-grid">
+      <div class="ex-finance-wide"><label for="{{ finance_form.stock.id_for_label }}">{{ finance_form.stock.label }}</label>{{ finance_form.stock }}</div>
+      <div class="ex-finance-wide"><label for="{{ finance_form.financing_preference.id_for_label }}">{{ finance_form.financing_preference.label }}</label>{{ finance_form.financing_preference }}</div>
+      <div><label for="{{ finance_form.down_payment.id_for_label }}">{{ finance_form.down_payment.label }}</label>{{ finance_form.down_payment }}</div>
+      <div><label for="{{ finance_form.term_months.id_for_label }}">{{ finance_form.term_months.label }}</label>{{ finance_form.term_months }}</div>
+    </div><small>Terms are illustrative requests, not offers. No rates, payments or approvals are calculated.</small></fieldset>
+    <fieldset><legend><span>03</span> Review a sample financial profile</legend>
+      <label for="{{ finance_form.sample_profile.id_for_label }}">{{ finance_form.sample_profile.label }}</label>{{ finance_form.sample_profile }}
+      <div id="financeSample" class="ex-finance-sample" aria-live="polite"></div>
+      <small>These are invented numbers for the presentation. Do not enter SSNs, birth dates, bank details, real income or upload documents.</small>
+    </fieldset>
+    <label class="ex-finance-check" for="{{ finance_form.demo_acknowledged.id_for_label }}">{{ finance_form.demo_acknowledged }}<span>{{ finance_form.demo_acknowledged.label }}</span></label>
+    <div class="ex-dialog-actions"><button type="submit" class="ex-button ex-gold" id="submitFinance">Submit demo application ↗</button><button type="button" class="ex-button ex-quiet" data-close>Back to Axel</button></div>
+  </form>
+  <section id="financeSuccess" class="ex-finance-success" hidden aria-live="polite" tabindex="-1">
+    <span class="ex-orbit" aria-hidden="true">✓</span><h3>Ready for the finance team.</h3>
+    <p id="financeReference"></p><p>Your fictional customer record now includes this application, contact details and selected vehicle. Alex Morgan, the demo finance manager, is assigned to the application.</p>
+    <p><strong>No credit decision has been made.</strong> Nothing was sent to a lender.</p>
+    <div class="ex-dialog-actions"><a id="financeCRM" class="ex-button ex-gold" href="#">See it in the dealership CRM ↗</a><button class="ex-button ex-quiet" data-close>Back to Axel</button></div>
+  </section>
+</dialog>

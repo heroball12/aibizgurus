@@ -1,0 +1,22 @@
+{% extends "crm/base.html" %}{% load static %}
+{% block title %}Email & texting | Sales{% endblock %}
+{% block sales_head %}<link rel="stylesheet" href="{% static 'css/outreach.css' %}?v=20260929-1">{% endblock %}
+{% block workspace %}
+<header class="sales-page-head"><div><span class="sales-eyebrow">YOUR CONNECTIONS</span><h1>Make it personal.</h1><p>Your business email. One company text number. Every message reviewed by you.</p></div></header>
+<div class="outreach-connections">
+  <section class="sales-surface"><span class="sales-eyebrow">01 / GOOGLE WORKSPACE</span><h2>Your email, connected.</h2>
+    {% if mailbox %}<p class="outreach-connected">● {{ mailbox.email }}</p><p>Reviewed emails send from this mailbox and appear in Gmail Sent. Replies arrive in Gmail.</p>{% else %}<p>Link your business Gmail so prospects hear directly from you. This connection requests sending permission, plus your account identity. It does not request access to read your inbox.</p>{% endif %}
+    {% if google_ready %}<form method="post" action="{% url 'outreach_google_connect' %}">{% csrf_token %}<button class="btn neon">{% if mailbox %}Reconnect Google Workspace{% else %}Connect Google Workspace{% endif %} ↗</button></form>{% else %}<p class="sales-notice">Google sending needs a one-time setup by the site owner.</p>{% endif %}
+    {% if mailbox %}<form method="post" action="{% url 'outreach_google_disconnect' %}">{% csrf_token %}<button class="sales-text-button">Disconnect this mailbox</button></form>{% endif %}
+    <small>Company domains: {{ allowed_domains }}</small>
+  </section>
+  <section class="sales-surface"><span class="sales-eyebrow">02 / COMPANY TEXTING</span><h2>One recognizable number.</h2>
+    {% if sms_ready %}<p class="outreach-connected">● {{ sms_number }}</p><p>Available for reviewed texts to prospects who have agreed to receive them. Replies return to the lead’s conversation history once the incoming-message webhook is configured.</p>{% else %}<p>Reviewed texts will send automatically from your company’s Twilio number after setup.</p><p class="sales-notice">Company texting is not configured yet.</p>{% endif %}<p>Opt-outs block further texts. Sending status appears on the lead, including delivery updates received from Twilio.</p>
+  </section>
+</div>
+{% if can_configure %}<details class="sales-advanced"><summary>Owner setup · Google Workspace &amp; Twilio</summary>
+<h3>Google Workspace</h3><ol><li>In a Google Cloud project owned by your Workspace organization, enable the Gmail API. Configure an <strong>Internal</strong> OAuth audience and the app name/branding.</li><li>Create a Web application OAuth client with this exact authorized redirect URI: <code>{{ google_redirect }}</code>.</li><li>In Render Environment, set <code>SALES_GOOGLE_CLIENT_ID</code>, <code>SALES_GOOGLE_CLIENT_SECRET</code>, <code>SALES_GOOGLE_REDIRECT_URI</code> and <code>SALES_GOOGLE_DOMAINS</code>. Use a strong, persistent <code>FIELD_ENCRYPTION_KEY</code>; preserve the existing key if you already use encrypted integrations.</li><li>Allow the app through Workspace API controls if your organization restricts third-party apps. Each employee then connects their mailbox here.</li></ol>
+<h3>Company SMS</h3><ol><li>Use a Twilio number enabled for SMS. Set <code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code>, <code>SALES_SMS_FROM_NUMBER</code> (with country code), and <code>PUBLIC_BASE_URL=https://aibiz.guru</code> in Render. If using a Messaging Service, also set <code>SALES_SMS_MESSAGING_SERVICE_SID</code> and include that number in its sender pool.</li><li>Set the number or Messaging Service’s incoming-message webhook to <code>{{ sms_inbound_url }}</code>, using HTTP POST. Use a sales number whose inbound routing can be dedicated to this feature.</li><li>Complete the sender registration required by Twilio for your destination countries. Test sending, replies, delivery updates and STOP with a consenting internal recipient before prospect outreach.</li></ol>
+<p>Drafts reuse the site’s existing Render AI configuration. Credentials stay in Render; employees never paste secrets here.</p>
+</details>{% endif %}
+{% endblock %}

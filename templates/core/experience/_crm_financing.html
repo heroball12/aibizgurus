@@ -1,0 +1,29 @@
+<section id="financing" class="ex-crm-record">
+  <div class="ex-section-heading"><h2>Financing application</h2><span class="ex-pill">DEMO ONLY</span></div>
+  {% with application=handoff.financing_application %}
+  {% if application %}
+    <article class="ex-handoff-card">
+      <span class="ex-eyebrow">{{ application.id }}</span>
+      {% if application.status == 'submitted' %}
+      <h3>Submitted · awaiting demo finance review</h3>
+      <div class="ex-handoff-grid"><dl>
+        <dt>Applicant</dt><dd>{{ application.contact.name }}</dd>
+        <dt>Phone</dt><dd>{{ application.contact.phone }}</dd>
+        <dt>Email</dt><dd>{{ application.contact.email }}</dd>
+        <dt>Selected vehicle</dt><dd>{% if application.vehicle %}{{ application.vehicle.year }} {{ application.vehicle.make }} {{ application.vehicle.model }} · {{ application.stock }}{% else %}Still choosing a vehicle{% endif %}</dd>
+        <dt>Assigned to</dt><dd>{{ application.assigned_to }}</dd>
+        <dt>Credit decision</dt><dd>{{ application.decision }}</dd>
+      </dl><dl>
+        <dt>Fictional profile</dt><dd>{{ application.financial_sample.label }}</dd>
+        <dt>Sample employer / company</dt><dd>{{ application.financial_sample.employer }}</dd>
+        <dt>Sample annual income / revenue</dt><dd>${{ application.financial_sample.annual_income|floatformat:"0g" }}</dd>
+        <dt>Sample monthly housing / premises</dt><dd>${{ application.financial_sample.monthly_housing|floatformat:"0g" }}</dd>
+        <dt>Sample down payment</dt><dd>${{ application.down_payment|floatformat:"0g" }}</dd>
+        <dt>Requested term</dt><dd>{% if application.term_months == 'undecided' %}Discuss with finance team{% else %}{{ application.term_months }} months{% endif %}</dd>
+      </dl></div>
+      {% else %}<h3>Draft · waiting for the customer</h3><p>Axel opened the fictional application. The customer still needs to review and submit it.</p>{% endif %}
+      <small class="ex-disclaimer">This is a simulated workflow. All financial figures are supplied sample data. No lender, credit bureau, real underwriting or approval is involved.</small>
+    </article>
+  {% else %}<p>No financing application opened. Axel can offer one during vehicle-shopping discovery.</p>{% endif %}
+  {% endwith %}
+</section>

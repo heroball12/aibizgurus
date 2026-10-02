@@ -131,7 +131,7 @@ class LeadForm(RestrictedLeadForm):
         fields = [
             "name", "business_name", "industry", "phone", "email", "website",
             "address", "city", "state", "zip_code", "point_of_contact", "contact_role",
-            "source", "status", "lead_temperature", "notes", "cleaned_notes", "value",
+            "source", "status", "lead_temperature", "notes", "notes_sensitive", "cleaned_notes", "value",
             "assigned_to", "follow_up_date", "needs_review", "archived",
         ]
         widgets = {
@@ -145,6 +145,8 @@ class LeadForm(RestrictedLeadForm):
         self.user = user
         self.is_sales_manager = is_sales_manager
         self.fields["assigned_to"].queryset = sales_staff_queryset()
+        if is_sales_manager and self.instance.pk and self.instance.assigned_to_id:
+            self.fields["assigned_to"].queryset = (sales_staff_queryset() | User.objects.filter(pk=self.instance.assigned_to_id)).distinct()
         if user and not is_sales_manager:
             self.fields["assigned_to"].queryset = User.objects.filter(pk=user.pk)
             self.fields["assigned_to"].initial = user
@@ -154,7 +156,7 @@ class LeadForm(RestrictedLeadForm):
 class LeadNoteForm(forms.ModelForm):
     class Meta:
         model = LeadNote
-        fields = ["note"]
+        fields = ["note", "is_sensitive"]
         widgets = {"note": forms.Textarea(attrs={"rows": 3})}
 
 
@@ -209,7 +211,7 @@ class LeadIntelligenceForm(RestrictedLeadForm):
     class Meta:
         model = Lead
         fields = [
-            "status", "lead_temperature", "cleaned_notes", "assigned_to",
+            "status", "lead_temperature", "cleaned_notes", "notes_sensitive", "assigned_to",
             "follow_up_date", "needs_review", "point_of_contact", "contact_role",
         ]
         widgets = {

@@ -69,7 +69,8 @@ def lead_progress(request, pk):
     form = AssessmentForm(request.POST, prefix="assessment") if action == "assessment" else SalesUpdateForm(request.POST, prefix="outcome")
     if form.is_valid():
         with transaction.atomic():
-            lead = internal_leads_for_user(request.user).select_for_update().get(pk=pk)
+            scope = Lead.objects.filter(lead_type="internal_sales") if is_sales_manager(request.user) else internal_leads_for_user(request.user)
+            lead = scope.select_for_update().get(pk=pk)
             before = lead.status
             if action == "assessment":
                 data = form.cleaned_data

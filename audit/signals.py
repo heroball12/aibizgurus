@@ -66,3 +66,17 @@ def audit_model_delete(sender, instance, **kwargs):
         object_repr=str(instance),
         message=f"Deleted {model_label(instance)}",
     )
+
+
+# Sign-ins are separate from navigation requests, so the dashboard can count them.
+from django.contrib.auth.signals import user_logged_in, user_logged_out
+
+
+@receiver(user_logged_in)
+def audit_login(sender, request, user, **kwargs):
+    log_activity(user=user, request=request, action="login", message="Signed in.")
+
+
+@receiver(user_logged_out)
+def audit_logout(sender, request, user, **kwargs):
+    log_activity(user=user, request=request, action="logout", message="Signed out.")

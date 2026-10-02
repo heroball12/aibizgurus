@@ -12,3 +12,5 @@ class ConsultationRequestAdmin(admin.ModelAdmin):
     list_display = ("name", "business_name", "industry", "status", "created_at")
     list_filter = ("status", "created_at")
     search_fields = ("name", "email", "business_name", "industry")
+
+from .experience import admin as experience_admin  # noqa: E402,F401

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views, demo_views
 urlpatterns = [
     path("healthz/", views.healthz, name="healthz"),
@@ -10,6 +10,7 @@ urlpatterns = [
     path("ai-employees/", views.ai_employees, name="ai_employees"),
     path("industries/", views.industries, name="industries"),
     path("demo/chat/", demo_views.demo_chat, name="demo_chat"),
+    path("demo/automotive/", include("core.experience.urls")),
     path("demo/cannabis/knowledge/", demo_views.cannabis_library, name="cannabis_knowledge"),
     path("demo/", views.demo, name="demo"),
     path("pricing/", views.pricing, name="pricing"),

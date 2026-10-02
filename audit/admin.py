@@ -87,3 +87,23 @@ class TimeClockEntryAdmin(admin.ModelAdmin):
     list_filter = ("clock_in", "clock_out")
     search_fields = ("employee__username", "employee__email", "employee__first_name", "employee__last_name", "note")
     autocomplete_fields = ("employee",)
+
+
+from .models import EmployeeLeadEvent
+
+
+@admin.register(EmployeeLeadEvent)
+class EmployeeLeadEventAdmin(admin.ModelAdmin):
+    list_display = ("created_at", "actor_name", "lead_name", "kind", "counts_as_call", "assessment_booked")
+    list_filter = ("kind", "counts_as_call", "assessment_booked", "created_at")
+    search_fields = ("actor_name", "lead_name")
+    readonly_fields = [field.name for field in EmployeeLeadEvent._meta.fields]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

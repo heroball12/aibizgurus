@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load static %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/employee-performance.css' %}">{% endblock %}
 {% block title %}Ops Command Center | AI Business Gurus{% endblock %}
 {% block content %}
 <section class="staff-hero">
@@ -15,6 +17,8 @@
     {% if user.role == "admin" or user.is_owner %}<a class="btn ghost" href="{% url 'staff_users' %}">Manage Staff</a>{% endif %}
   </div>
 </section>
+{% if metric_window %}{% include 'audit/_employee_scoreboard.html' %}{% endif %}
+
 
 <section class="ops-metrics">
   <div class="ops-metric"><span>Clients</span><strong>{{ client_count }}</strong></div>

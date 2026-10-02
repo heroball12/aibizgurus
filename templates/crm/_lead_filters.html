@@ -1,10 +1,11 @@
 <section class="sales-panel lead-control-panel">
   <form method="get" class="lead-filter-form">
+    {% if metric_window %}<input type="hidden" name="period" value="{{ metric_window.period }}"><input type="hidden" name="start" value="{{ metric_window.start }}"><input type="hidden" name="end" value="{{ metric_window.end }}">{% endif %}
     <div>
       <label for="lead-filter-q">Search</label>
       <input id="lead-filter-q" type="search" name="q" value="{{ lead_filters.q }}" placeholder="Business, contact, phone, email, notes…">
     </div>
-    <div>
+    <div {% if employee_scope %}hidden{% endif %}>
       <label for="lead-filter-assigned">Assigned to</label>
       <select id="lead-filter-assigned" name="assigned_to">
         <option value="">All assigned</option>

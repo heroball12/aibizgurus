@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Case, Count, IntegerField, Q, Sum, Value, When
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
@@ -60,7 +61,8 @@ def internal_leads_for_user(user):
 
 
 def get_internal_lead_or_404(user, pk):
-    return get_object_or_404(internal_leads_for_user(user), pk=pk)
+    leads = Lead.objects.filter(lead_type="internal_sales") if is_sales_manager(user) else internal_leads_for_user(user)
+    return get_object_or_404(leads, pk=pk)
 
 
 OPEN_BATCH_STATUSES = ["queued", "generating", "searching", "deduplicating", "saving"]
@@ -264,7 +266,16 @@ def update_leads_from_action(user, request, leads):
         if leads.filter(status="do_not_contact").exists():
             messages.warning(request, "Do-not-contact records were left unchanged. A manager must review them.")
         leads = leads.exclude(status="do_not_contact")
-    count = leads.update(**updates)
+    count = 0
+    with transaction.atomic():
+        for lead in leads.select_for_update().order_by("pk"):
+            changed = {key: value for key, value in updates.items() if str(getattr(lead, key) or "") != str(value or "")}
+            if not changed:
+                continue
+            for key, value in changed.items():
+                setattr(lead, key, value)
+            lead.save(update_fields=list(changed))
+            count += 1
     log_activity(
         user=user,
         request=request,
@@ -717,6 +728,7 @@ def lead_staging_action(request, pk, action):
     return redirect(next_url)
 
 @employee_required
+@transaction.atomic
 def lead_create(request):
     if request.method == "POST":
         form = LeadForm(request.POST, user=request.user, is_sales_manager=is_sales_manager(request.user))
@@ -751,6 +763,7 @@ def lead_create(request):
                     user=request.user,
                     raw_note=lead.notes,
                     cleaned_note=lead.cleaned_notes,
+                    is_sensitive=lead.notes_sensitive,
                     inferred_status=lead.status,
                     lead_temperature=lead.lead_temperature,
                     confidence_score=lead.classification_confidence,
@@ -761,7 +774,11 @@ def lead_create(request):
             messages.success(request, "Lead created.")
             return redirect("crm_home")
     else:
-        form = LeadForm(user=request.user, is_sales_manager=is_sales_manager(request.user))
+        initial = {}
+        assignee = request.GET.get("assigned_to", "")
+        if is_sales_manager(request.user) and assignee.isdigit() and User.objects.filter(pk=assignee, role__in=["employee", "admin"], is_active=True).exists():
+            initial["assigned_to"] = assignee
+        form = LeadForm(initial=initial, user=request.user, is_sales_manager=is_sales_manager(request.user))
     return render(request, "crm/lead_form.html", {"form": form})
 
 
@@ -816,6 +833,7 @@ def lead_upload(request):
     })
 
 @employee_required
+@transaction.atomic
 def lead_detail(request, pk):
     from .workspace_views import detail_context
     lead = get_internal_lead_or_404(request.user, pk)
@@ -866,6 +884,7 @@ def lead_detail(request, pk):
                     user=request.user,
                     raw_note=note.note,
                     cleaned_note=note.note,
+                    is_sensitive=note.is_sensitive,
                     inferred_status=lead.status,
                     lead_temperature=lead.lead_temperature,
                     activity_type="manual_note",
@@ -996,7 +1015,12 @@ def lead_bulk_action(request):
     single_id = request.POST.get("lead_id", "").strip()
     if single_id:
         selected_ids = [single_id]
-    leads = internal_leads_for_user(request.user).filter(pk__in=selected_ids, lead_type="internal_sales")
+    base = internal_leads_for_user(request.user)
+    employee_scope = request.POST.get("employee_scope", "")
+    if employee_scope and is_sales_manager(request.user):
+        staff = get_object_or_404(User, pk=employee_scope if employee_scope.isdigit() else 0, role__in=["employee", "admin"])
+        base = Lead.objects.filter(lead_type="internal_sales", assigned_to=staff)
+    leads = base.filter(pk__in=selected_ids, lead_type="internal_sales")
 
     if action in {"delete", "delete_selected"}:
         if not selected_ids:
@@ -1014,7 +1038,7 @@ def lead_bulk_action(request):
             messages.error(request, "Only owner/admin users can permanently delete leads.")
             return redirect(next_url)
         filters = lead_filter_values_from_post(request)
-        filtered = apply_lead_filters(internal_leads_for_user(request.user), filters)
+        filtered = apply_lead_filters(base, filters)
         count = hard_delete_leads(request.user, request, filtered, "all matching active filters")
         messages.success(request, f"Permanently deleted {count} matching lead{'' if count == 1 else 's'}.")
         return redirect(next_url)
@@ -1073,6 +1097,7 @@ def export_leads(request):
     return response
 
 @employee_required
+@transaction.atomic
 def lead_edit(request, pk):
     lead = get_internal_lead_or_404(request.user, pk)
     if request.method == "POST":

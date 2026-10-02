@@ -228,3 +228,52 @@ class TimeClockEntry(models.Model):
 
     def __str__(self):
         return f"{self.employee} · {self.clock_in:%Y-%m-%d %H:%M}"
+
+
+class EmployeeLeadEvent(models.Model):
+    """Immutable sales facts, retained when a lead is reassigned or deleted."""
+
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    actor_name = models.CharField(max_length=150)
+    lead = models.ForeignKey("crm.Lead", on_delete=models.SET_NULL, null=True, blank=True)
+    lead_key = models.PositiveBigIntegerField()
+    lead_name = models.CharField(max_length=200)
+    request_key = models.UUIDField(default=uuid.uuid4, editable=False)
+    kind = models.CharField(max_length=16, choices=[("created", "Created"), ("updated", "Updated"), ("deleted", "Deleted")])
+    source = models.CharField(max_length=100, blank=True)
+    changes = models.JSONField(default=dict)
+    previous_status = models.CharField(max_length=30, blank=True)
+    status = models.CharField(max_length=30, blank=True)
+    counts_as_call = models.BooleanField(default=False)
+    assessment_booked = models.BooleanField(default=False)
+    assessment_completed = models.BooleanField(default=False)
+    proposal = models.BooleanField(default=False)
+    won = models.BooleanField(default=False)
+    lost = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at", "-pk"]
+        indexes = [models.Index(fields=["actor", "created_at"], name="employee_event_actor_time")]
+        constraints = [models.UniqueConstraint(fields=["request_key", "lead_key"], name="employee_event_request_lead")]
+
+
+    @property
+    def source_label(self):
+        return {
+            "lead_edit": "Lead editor", "lead_detail": "Lead notes & details",
+            "lead_progress": "Sales outcome", "lead_bulk_action": "Lead table",
+            "lead_sheet_save": "Spreadsheet", "lead_create": "New lead",
+            "lead_staging_action": "Lead Finder", "lead_research": "Website research",
+            "lead_verify": "Business verification", "lead_delete": "Lead deletion",
+            "lead_upload": "File import",
+        }.get(self.source, "CRM action")
+
+    @property
+    def status_label(self):
+        from crm.models import Lead
+        return dict(Lead.STATUS_CHOICES).get(self.status, self.status)
+
+    @property
+    def change_rows(self):
+        return [{"label": key.replace("_id", "").replace("_", " ").capitalize(), **value} for key, value in self.changes.items()]

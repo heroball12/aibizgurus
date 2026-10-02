@@ -43,3 +43,8 @@ class ConsultationRequest(models.Model):
 
     def __str__(self):
         return f"{self.industry} - {self.name}"
+
+# Keep the existing core app / demo routes; richer demos share this namespace.
+from .demo_models import (DemoExperience, DemoRevision, DemoRepAccess, DemoSession,
+                          DemoEvent, DemoShareLink, DemoConversion, DemoFeedback)  # noqa: E402,F401
+from .demo_models import DemoCRMLead, DemoCRMActivity  # noqa: E402,F401
