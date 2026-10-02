@@ -8,7 +8,7 @@ from core.rate_limits import consume_budget
 from crm.models import OutreachMessage, LeadActivity, SalesEmailConfig
 from crm.sales import INACTIVE
 from .context import assemble, sender_for, links_for
-from .policy import POLICY, EmailError, validate_text
+from .policy import POLICY, EmailError, validate_text, include_selected_links
 
 VERSION='sales-email-1'
 
@@ -103,13 +103,17 @@ def generate(lead,user,data):
         try:
             if not isinstance(result,dict) or set(result)!={'subjects','body','services_referenced'} or not isinstance(result['subjects'],list) or len(result['subjects'])!=3 or len(set(str(s).casefold() for s in result['subjects']))!=3 or not isinstance(result['services_referenced'],list) or any(x not in options['services'] for x in result['services_referenced']):
                 raise EmailError('Invalid structured draft.',code='structure')
+            result = {**result, 'body':include_selected_links(result['body'], links)}
             validate_text(result['subjects'],result['body'],sender['signature'],links=links,forbidden=config.forbidden_claims,email_type=email_type.slug,require_links=True,length=options['length'])
             break
         except EmailError as exc:
             event(user,lead,'EMAIL_VALIDATION_FAILED',code=exc.code,attempt=attempt+1,model=model)
             if attempt:
                 raise EmailError('Email generation needs review. Please regenerate.',422,'validation')
-            messages.append({'role':'system','content':'The previous attempt failed validation: '+exc.code+'. Create a fresh compliant draft; correct this issue. Return the required JSON only.'})
+            # Give the model the actual draft and actionable rule, not just a
+            # code such as "link" with no example of what needs correction.
+            messages.append({'role':'assistant','content':json.dumps(result)})
+            messages.append({'role':'system','content':'Revise the preceding draft to fix this validation issue: '+exc.code+'. '+str(exc)+' Preserve grounded facts and obey all original rules. The server adds any missing selected links; leave room for those invitations within the word limit. Return the required JSON only.'})
     # Ownership might change while the provider is responding.
     from crm.views import internal_leads_for_user
     with transaction.atomic():

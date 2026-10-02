@@ -21,6 +21,24 @@ INTEGRATION = re.compile(r'\b(?:integrates? (?:with|into)|compatible with|works 
 CAVEAT = re.compile(r'\b(?:verify|verified|evaluate|confirm|unverified|not|cannot|depends|subject to|assess|check|explore|potential)\b',re.I)
 URL = re.compile(r'https?://[^\s<>]+',re.I)
 
+def include_selected_links(body, links):
+    """Complete selected CTAs from server-approved URLs; never remove bad links.
+
+    A short AI draft can legitimately omit a link despite the prompt. Selected
+    links are product behavior, so their presence must not depend on sampling.
+    Content and every existing URL still have to pass validate_text afterward.
+    """
+    if not isinstance(body, str) or not body.strip():
+        return body
+    present = {url.rstrip('.,!?)') for url in URL.findall(body)}
+    additions = []
+    for key, invitation in [('demo', 'Explore our Demo Center'), ('assessment', 'Schedule a Growth Assessment')]:
+        url = links.get(key)
+        if url and url not in present:
+            additions.append(f'{invitation}: {url}')
+            present.add(url)
+    return '\n\n'.join([body.rstrip(), *additions]) if additions else body
+
 def validate_text(subjects, body, signature, *, links, forbidden='', email_type=None, require_links=False, length=None):
     if not isinstance(subjects,list) or not subjects or any(not isinstance(s,str) or not s.strip() or len(s)>180 or '\n' in s or '\r' in s for s in subjects):
         raise EmailError('Choose a valid single-line subject.', code='structure')

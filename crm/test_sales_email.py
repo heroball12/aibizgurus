@@ -7,7 +7,7 @@ from crm.models import Lead, LeadNote, LeadActivity, OutreachMessage, SalesEmail
 from crm.email_generator.defaults import seed
 from crm.email_generator.context import assemble, links_for, sender_for, suggestions
 from crm.email_generator.forms import GenerationForm
-from crm.email_generator.policy import EmailError, validate_text
+from crm.email_generator.policy import EmailError, validate_text, include_selected_links
 from crm.email_generator.service import VERSION
 from core.models import DemoExperience, DemoRevision
 from audit.models import ActivityLog
@@ -133,6 +133,50 @@ class SalesEmailTests(TestCase):
         for link in ['www.aibiz.guru/demo/','https://www.evil.example/','https://www.aibiz.guru/demo/unapproved','javascript:alert(1)']:
             with self.subTest(link=link),self.assertRaises(EmailError):
                 validate_text(['An introduction'],'Try '+link,'AI Business Gurus',links={'demo':approved})
+    @override_settings(PUBLIC_BASE_URL='https://www.aibiz.guru')
+    def test_missing_selected_demo_link_is_completed_without_an_ai_retry(self):
+        output={
+            'subjects':['Appointment requests at your restaurant','A next step for your restaurant','Support for your team'],
+            'body':'Hello,\n\nAI Business Gurus helps teams explore ways to manage appointment requests and follow-up. Would a complimentary 15–20 minute Growth Assessment with an AI Specialist be useful? https://calendly.com/theaibizguru/15-minute-intro-to-ai',
+            'services_referenced':['appointments'],
+        }
+        data=self.data|{'email_type':'cold','services':['appointments'],'length':'short','tone':'consultative'}
+        response,provider=self.generate(output,data)
+        self.assertEqual(response.status_code,200,response.content)
+        self.assertEqual(provider.call_count,1)
+        body=response.json()['draft']['body']
+        self.assertIn('Explore our Demo Center: https://www.aibiz.guru/demo/automotive/',body)
+        self.assertEqual(body.count('https://calendly.com/'),1)
+        draft=response.json()['draft']
+        self.assertEqual(self.action(draft,'copy_all').status_code,200)
+        self.assertEqual(OutreachMessage.objects.get().body,body)
+    def test_link_completion_honors_toggles_and_does_not_duplicate_links(self):
+        links={'demo':'https://www.aibiz.guru/demo/','assessment':'https://example.com/book'}
+        body='Would a Growth Assessment help?'
+        completed=include_selected_links(body,links)
+        for url in links.values():
+            self.assertEqual(completed.count(url),1)
+        self.assertEqual(include_selected_links(completed,links),completed)
+        self.assertEqual(include_selected_links(body,{'demo':'','assessment':''}),body)
+        only_demo=include_selected_links(body,links|{'assessment':''})
+        self.assertNotIn(links['assessment'],only_demo)
+    def test_adding_selected_links_never_approves_bad_content(self):
+        links={'demo':'https://www.aibiz.guru/demo/','assessment':'https://example.com/book'}
+        for bad in ['Try https://unapproved.example/', 'Our price is $500.', 'Guaranteed ROI.', '<script>alert(1)</script>']:
+            with self.subTest(bad=bad),self.assertRaises(EmailError):
+                validate_text(['An introduction'],include_selected_links(bad,links),'AI Business Gurus',links=links,require_links=True)
+        with self.assertRaises(EmailError) as caught:
+            validate_text(['An introduction'],include_selected_links('Growth Assessment '+('word '*157),links),'AI Business Gurus',links=links,require_links=True,length='short')
+        self.assertEqual(caught.exception.code,'length')
+    def test_validation_retry_has_the_actual_draft_and_rule(self):
+        bad=self.output|{'body':self.output['body']+'\nTry https://unapproved.example/'}
+        with patch('crm.email_generator.service.PlatformAIService.structured_json',side_effect=[(bad,{'status':'success'}),(self.output,{'status':'success'})]) as provider:
+            response=self.post('sales_email_generate',self.data)
+        self.assertEqual(response.status_code,200,response.content)
+        messages=provider.call_args.kwargs['messages']
+        self.assertEqual(messages[-2]['role'],'assistant')
+        self.assertIn('https://unapproved.example/',messages[-2]['content'])
+        self.assertIn('Use only the current approved Demo Center and assessment links.',messages[-1]['content'])
     def test_scope_all_endpoints_and_draft_owner(self):
         d=self.generate()[0].json()['draft']
         self.client.force_login(self.other)
@@ -142,6 +186,20 @@ class SalesEmailTests(TestCase):
         self.client.force_login(self.owner)
         self.assertEqual(self.client.get(reverse('sales_email',args=[self.lead.pk])).status_code,200)
         self.assertEqual(self.action(d,'sent').status_code,403)
+    def test_draft_actions_edit_save_and_copy_without_changing_other_authors(self):
+        draft=self.generate()[0].json()['draft']
+        updated=self.action(draft,'edit',subject='Updated subject for review')
+        self.assertEqual(updated.status_code,200,updated.content)
+        draft=updated.json()['draft']
+        self.assertEqual(draft['subject'],'Updated subject for review')
+        for action in ['save','copy_all','copied']:
+            response=self.action(draft,action,**({'copy_part':'copy_all'} if action=='copied' else {}))
+            self.assertEqual(response.status_code,200,response.content)
+            draft=response.json()['draft']
+        self.assertFalse(LeadActivity.objects.filter(lead=self.lead,activity_type='email').exists())
+        OutreachMessage.objects.filter(pk=draft['id']).update(employee=None)
+        self.assertEqual(self.action(draft,'edit',subject='Not allowed').status_code,403)
+        self.assertEqual(OutreachMessage.objects.get(pk=draft['id']).subject,'Updated subject for review')
     def test_csrf_and_non_employee(self):
         strict=Client(enforce_csrf_checks=True);strict.force_login(self.rep)
         self.assertEqual(self.post('sales_email_generate',self.data,client=strict).status_code,403)

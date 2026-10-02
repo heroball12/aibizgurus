@@ -6,7 +6,13 @@ The provider receives a strict JSON schema requiring three subjects, a body and 
 
 Approved HTTPS links may include `www` (as the production Demo Center URL does). Bare `www` links and any full URL outside the exact approved allowlist remain blocked. This applies to generation, saving and copying.
 
+The application now appends a concise invitation for any selected approved link the model omits, without duplicating links already present or adding deselected links. The completed body still passes every content, URL and word-limit check. Unapproved links are never silently removed or accepted. A corrective retry includes the actual failed draft and the specific validation instruction instead of only a reason code.
+
+Draft actions lock the draft row with `select_for_update(of=('self',))` after locking its lead. The nullable employee relation is read without being included in the row lock, avoiding PostgreSQL's rejection of `FOR UPDATE` on the nullable side of an outer join. Local SQLite tests alone cannot validate this database behavior.
+
 October 2 remediation checks: 360 Django tests passed across assistant AI, CRM, core and training; browser JavaScript syntax and patch whitespace checks passed. A Render-shell dry run used the existing production key and affected lead, applying the proposed request/link corrections only inside the diagnostic process. General-introduction and selected-service drafts both passed full validation, in 6.3 and 5.9 seconds respectively. The database transaction was rolled back; no test draft or email activity was retained and no email was sent. These checks do not deploy the changes to web workers.
+
+October 2 follow-up: reproduced the missing Demo Center link in a short appointment-setting email, then verified that completing the selected links passed in 3.8 seconds. With both Receptionist and Appointment setting selected, short and standard emails passed on their first model call in 4.0 and 2.7 seconds; a short general introduction also passed in 2.7 seconds. Reproduced the draft-action query failing on Render PostgreSQL with `NotSupportedError`, then verified the corrected edit, save, copy-all and copy-record endpoints each returned 200. All checks rolled back their database transactions. The updated suite passed 365 tests across the same apps, plus JavaScript syntax and whitespace checks.
 
 Original generation and copy/save/mark-sent actions are validated. Autosave can preserve an invalid in-progress human edit, but it cannot be copied through the controls, explicitly saved or marked sent until corrected. Checkers are deliberately conservative and may flag harmless negated language. They are not a semantic guarantee: the employee still reviews truth, names, tone and suitability.
 

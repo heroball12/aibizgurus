@@ -75,7 +75,14 @@
   }
   async function request(url,data) {
     const response = await fetch(url,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRFToken':csrf},body:JSON.stringify(data),signal:AbortSignal.timeout(45000)});
-    let payload; try { payload = await response.json(); } catch (_) { throw new Error('The workspace could not respond. Your edits are preserved in this tab; reload and sign in if needed.'); }
+    let payload;
+    try { payload = await response.json(); }
+    catch (_) {
+      const sessionExpired = response.status === 401 || (response.redirected && new URL(response.url).pathname.startsWith('/accounts/login/'));
+      throw new Error(sessionExpired
+        ? 'Your session has expired. Your edits are preserved in this tab; reload and sign in again.'
+        : 'The server couldn’t complete that action. Your edits are preserved in this tab. Please try again.');
+    }
     if (!response.ok) {
       if (payload.fields) $('emailFields').textContent = Object.entries(payload.fields).map(([k,v]) => `${k.replaceAll('_',' ')}: ${v.join(' ')}`).join('\n');
       const error = new Error(payload.error || 'We couldn’t complete that action. Try again.');
@@ -99,7 +106,7 @@
   async function flush() { clearTimeout(timer); await queue; if (dirty && ownEditable()) await act('edit'); }
   function edited() {
     dirty = true; persist(); status('Saving your edits…'); clearTimeout(timer);
-    timer = setTimeout(async () => { try { await act('edit'); status(dirty ? 'Edits pending…' : 'Edits preserved'); } catch(e) { report(e.message); status('Edits preserved in this tab'); } },800);
+    timer = setTimeout(async () => { try { await act('edit'); report(''); status(dirty ? 'Edits pending…' : 'Edits preserved'); } catch(e) { report(e.message); status('Edits preserved in this tab'); } },800);
   }
   ['emailSubject','emailBody','emailSignature'].forEach(id => $(id).addEventListener('input',edited));
   form.addEventListener('change', e => {

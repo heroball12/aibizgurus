@@ -65,7 +65,9 @@ def action(request,pk,message_id):
         with transaction.atomic():
             # Lead row and draft row locks serialize assignment/access and edits.
             get_object_or_404(internal_leads_for_user(request.user).select_for_update(),pk=pk)
-            m=get_object_or_404(OutreachMessage.objects.select_for_update().select_related('lead','employee'),pk=message_id,lead_id=pk,generator_version=VERSION)
+            # employee is nullable: PostgreSQL cannot lock the nullable side of
+            # its outer join. The lead is locked above; lock only this draft.
+            m=get_object_or_404(OutreachMessage.objects.select_for_update(of=('self',)).select_related('lead','employee'),pk=message_id,lead_id=pk,generator_version=VERSION)
             return JsonResponse({'draft':serialize(update_draft(m,request.user,data))})
     except EmailError as exc:
         return failure(exc)

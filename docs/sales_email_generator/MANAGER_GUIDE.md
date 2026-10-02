@@ -12,6 +12,8 @@ On deployment, run migrations; defaults are seeded automatically. Retain the exi
 
 Email drafting uses `SALES_EMAIL_MODEL` (default `gpt-5-mini`) with the existing platform key. This is separate from `OPENAI_CHAT_MODEL`, so fixing email does not silently change other assistants. GPT-5 Mini requests omit the unsupported temperature parameter and use minimal reasoning for short drafts. The chosen model must be enabled for that key's OpenAI project.
 
+Selected Demo Center and scheduling links are completed by the app if the AI leaves them out. They use the approved URLs, appear only once and still undergo validation before the draft can be copied. A missing selected link alone no longer forces the employee to regenerate.
+
 If generation fails, the workspace distinguishes model/permission configuration, rejected keys, credit/spending limits, daily site allowance, temporary rate limits, connection failures and timeouts. Configuration failures say **Administrator action needed** rather than inviting repeated retries. In Django administration, filter **Assistant AI → Usage records** to `sales_email`; the error code and `metadata.provider_error` contain safe status/code details. Prompts, keys and raw provider error messages are not logged.
 
 The October 2 production failure was a confirmed HTTP 403 `model_not_found`: the old request used `gpt-4o-mini`, while the existing Render key only listed `gpt-5-mini`. A generic request to the permitted model succeeded from Render. Deploy the model compatibility fix together with the email model selection; changing only the old model setting would still leave an unsupported temperature parameter in the request.
