@@ -28,7 +28,7 @@ def payload(request):
         raise EmailError('Send a valid draft request.')
 
 def failure(exc):
-    return JsonResponse({'error':str(exc)},status=exc.status)
+    return JsonResponse({'error':str(exc),'code':exc.code},status=exc.status)
 
 @employee_required
 @never_cache

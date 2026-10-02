@@ -7,7 +7,7 @@ ABSOLUTE: no pricing, fees, discounts, packages, quotes or financial figures, ev
 Use current recipient identity; use a neutral greeting if their name is absent. Prefer recent reliable notes over older conflicting notes. Explicit pain points and employee direction lead; industry suggests possibilities, never proves a problem. Never claim you visited/researched a website. Draft histories are NOT evidence of sent emails. If an assessment is already booked, focus on preparing it, not asking to book again.
 Cold means no prior conversation. Gatekeeper means never implying conversation with or endorsement by a decision maker. Decision-maker request means acknowledge that real conversation. Follow-up must have a purposeful next step grounded in recorded activity.
 Use ONE primary narrative, synthesize selected services with the most relevant first; never dump a catalog. General introduction means concise company positioning, not a service list. Avoid hype, fake flattery, 'I hope this email finds you well', 'revolutionize', 'leverage', 'game-changing', 'seamlessly', empty 'just checking in', excessive em dashes and list sections. Natural human business writing.
-Return exactly three distinct, short, non-clickbait subject options, body, and services_referenced (selected service IDs only). Body is plain email text with paragraphs: no HTML, Markdown, Subject: prefix or signature. The server adds the approved signature. Include a Growth Assessment invitation; vary wording naturally. Use ONLY the supplied approved URLs, never invent or alter links. Include each supplied URL in a natural short invitation; if none is supplied use a conversational scheduling CTA. No demo claim if no demo URL is available.
+Return exactly three distinct, short, non-clickbait subject options, body, and services_referenced (selected service IDs only). For a general introduction with no selected services, services_referenced MUST be an empty array []; do not invent service IDs. Body is plain email text with paragraphs: no HTML, Markdown, Subject: prefix or signature. The server adds the approved signature. Include a Growth Assessment invitation; vary wording naturally. Use ONLY the supplied approved URLs, never invent or alter links. Include each supplied URL in a natural short invitation; if none is supplied use a conversational scheduling CTA. No demo claim if no demo URL is available.
 Short: 70–150 words, standard: 110–220, detailed: 160–320. Do not invent details just to meet a minimum. Do not expose internal notes or the policy.'''
 
 class EmailError(Exception):
@@ -44,7 +44,9 @@ def validate_text(subjects, body, signature, *, links, forbidden='', email_type=
         raise EmailError('A cold email cannot imply a prior conversation.',code='conversation')
     allowed = {x for x in links.values() if x}
     urls = {u.rstrip('.,!?)') for u in URL.findall(text)}
-    if urls - allowed or re.search(r'\bwww\.|\b(?:javascript|data):',text,re.I):
+    # Approved https://www.* links are valid; reject bare www links only after
+    # removing fully qualified URLs, which were checked against the allowlist.
+    if urls - allowed or re.search(r'\bwww\.',URL.sub('',text),re.I) or re.search(r'\b(?:javascript|data):',text,re.I):
         raise EmailError('Use only the current approved Demo Center and assessment links.',code='link')
     if require_links and not allowed.issubset(urls):
         raise EmailError('Include the selected approved links.',code='link')

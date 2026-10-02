@@ -12,6 +12,47 @@ from .policy import POLICY, EmailError, validate_text
 
 VERSION='sales-email-1'
 
+def draft_schema(service_ids):
+    references = {'type':'array', 'items':{'type':'string'}}
+    if service_ids:
+        references['items']['enum'] = service_ids
+    else:
+        references['maxItems'] = 0
+    return {
+        'type':'object', 'additionalProperties':False,
+        'properties':{
+            'subjects':{'type':'array','items':{'type':'string'},'minItems':3,'maxItems':3},
+            'body':{'type':'string'},
+            'services_referenced':references,
+        },
+        'required':['subjects','body','services_referenced'],
+    }
+
+def provider_failure(meta):
+    category = meta.get('category') or {
+        'missing_api_key': 'configuration', 'daily_limit': 'daily_limit',
+        'PermissionDeniedError': 'permission', 'AuthenticationError': 'authentication',
+        'NotFoundError': 'model_access', 'APITimeoutError': 'timeout',
+        'APIConnectionError': 'connection', 'RateLimitError': 'rate_limit',
+        'BadRequestError': 'request',
+    }.get(meta.get('reason'), 'unavailable')
+    messages = {
+        'configuration': 'Email AI is not configured on the server. Ask your administrator to configure the existing OpenAI connection.',
+        'authentication': 'OpenAI rejected the server’s API key. Your administrator needs to check the key in Render.',
+        'permission': 'OpenAI denied access to email generation. Your administrator needs to check the server API key’s permissions and model access.',
+        'model_access': 'The configured email AI model is unavailable to this API key. Your administrator needs to check model access in OpenAI.',
+        'quota': 'The OpenAI account has reached its credit or spending limit. Your administrator needs to review API billing and limits.',
+        'daily_limit': 'The site’s daily AI allowance has been reached. Try again after it resets or ask your administrator to review the limit.',
+        'rate_limit': 'OpenAI is temporarily limiting requests. Wait a moment, then try again.',
+        'timeout': 'OpenAI took too long to respond. Please try again.',
+        'connection': 'The server could not connect to OpenAI. Please try again in a moment.',
+        'request': 'OpenAI could not accept the email AI configuration. Your administrator needs to review the recorded AI error.',
+    }
+    if category not in messages:
+        category = 'unavailable'
+    message = messages.get(category, 'The AI service is temporarily unavailable. Please try again shortly.')
+    return EmailError(message + ' Your selections are preserved in this tab.', 503, 'ai_' + category)
+
 def event(user, lead, kind, message=None, **metadata):
     log_activity(user=user,action='assistant',model_label='crm.OutreachMessage',object_id=message.pk if message else '',message=kind,metadata={'lead_id':lead.pk, 'feature':'sales_email',**metadata})
 
@@ -50,12 +91,15 @@ def generate(lead,user,data):
     messages=[{'role':'system','content':POLICY+'\nApproved company description: '+config.company_description+'\nAssessment: '+config.assessment_description+'\nEmail type guidance: '+email_type.guidance+'\nAdditional forbidden phrases: '+config.forbidden_claims}, {'role':'user','content':json.dumps(context)}]
     service=PlatformAIService(user=user,assistant_role='sales_email')
     service.timeout=18; service.max_retries=0; service.max_completion_tokens=1300
-    model=settings.OPENAI_CHAT_MODEL
+    model=settings.SALES_EMAIL_MODEL
+    schema = draft_schema(options['services'])
+    hint = json.dumps({'subjects':['one','two','three'],'body':'plain email text without signature','services_referenced':options['services']})
     for attempt in range(2):
-        result,meta=service.structured_json(messages=messages,schema_hint='{"subjects":["one","two","three"],"body":"plain email text without signature","services_referenced":["selected_service_id"]}',model=model,temperature=.35,fallback={},metadata={'lead_id':lead.pk,'attempt':attempt+1})
+        result,meta=service.structured_json(messages=messages,schema_hint=hint,json_schema=schema,model=model,temperature=.35,fallback={},metadata={'lead_id':lead.pk,'attempt':attempt+1})
         if meta.get('status') not in ('success',) and meta.get('reason')!='invalid_json':
-            event(user,lead,'EMAIL_GENERATION_FAILED',code='provider')
-            raise EmailError('We couldn’t generate the email. Your selections have been saved. Try again.',503,'provider')
+            error = provider_failure(meta)
+            event(user,lead,'EMAIL_GENERATION_FAILED',code=error.code)
+            raise error
         try:
             if not isinstance(result,dict) or set(result)!={'subjects','body','services_referenced'} or not isinstance(result['subjects'],list) or len(result['subjects'])!=3 or len(set(str(s).casefold() for s in result['subjects']))!=3 or not isinstance(result['services_referenced'],list) or any(x not in options['services'] for x in result['services_referenced']):
                 raise EmailError('Invalid structured draft.',code='structure')

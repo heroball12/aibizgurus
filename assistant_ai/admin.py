@@ -35,7 +35,7 @@ class AssistantConfigurationAdmin(admin.ModelAdmin):
 
 @admin.register(UsageRecord)
 class UsageRecordAdmin(admin.ModelAdmin):
-    list_display = ("assistant_role", "model", "status", "total_tokens", "user", "client", "created_at")
+    list_display = ("assistant_role", "model", "status", "error_code", "total_tokens", "user", "client", "created_at")
     search_fields = ("assistant_role", "model", "error_code", "user__username", "client__business_name")
     list_filter = ("assistant_role", "status", "model", "created_at")
     readonly_fields = ("created_at",)

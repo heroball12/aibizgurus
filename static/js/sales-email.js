@@ -78,7 +78,9 @@
     let payload; try { payload = await response.json(); } catch (_) { throw new Error('The workspace could not respond. Your edits are preserved in this tab; reload and sign in if needed.'); }
     if (!response.ok) {
       if (payload.fields) $('emailFields').textContent = Object.entries(payload.fields).map(([k,v]) => `${k.replaceAll('_',' ')}: ${v.join(' ')}`).join('\n');
-      throw new Error(payload.error || 'We couldn’t complete that action. Try again.');
+      const error = new Error(payload.error || 'We couldn’t complete that action. Try again.');
+      error.code = payload.code;
+      throw error;
     }
     return payload;
   }
@@ -118,7 +120,11 @@
       if (draft && draft.employee_id === Number(root.dataset.user)) data.parent = draft.id;
       const result = await request(root.dataset.generateUrl,data);
       status('Finalizing draft…'); updateHistory(result.draft); show(result.draft); $('emailResult').scrollIntoView({behavior:'smooth',block:'start'});
-    } catch(e) { report(e.name === 'TimeoutError' ? 'Generation took longer than expected. Your options are preserved. Check history after reloading before trying again.' : e.message); status('Ready to retry'); }
+    } catch(e) {
+      report(e.name === 'TimeoutError' ? 'Generation took longer than expected. Your options are preserved. Check history after reloading before trying again.' : e.message);
+      const needsAdmin = ['ai_configuration','ai_authentication','ai_permission','ai_model_access','ai_quota','ai_request'].includes(e.code);
+      status(needsAdmin ? 'Administrator action needed' : e.code === 'ai_daily_limit' ? 'Daily allowance reached' : 'Ready to retry');
+    }
     finally { generating = false; controls(); }
   }
   form.addEventListener('submit',e => { e.preventDefault(); generate(); });

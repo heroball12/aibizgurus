@@ -120,6 +120,19 @@ class SalesEmailTests(TestCase):
         self.assertEqual(links_for(self.lead,sender_for(self.rep),self.data)['assessment'],profile.scheduling_url)
         links=links_for(self.lead,sender_for(self.rep),self.data|{'include_demo':False,'include_assessment':False})
         self.assertEqual(links,{'demo':'','assessment':''})
+    @override_settings(PUBLIC_BASE_URL='https://www.aibiz.guru')
+    def test_approved_www_demo_link_can_generate_save_and_copy(self):
+        output=self.output|{'body':self.output['body'].replace('https://aibiz.guru/demo/automotive/','https://www.aibiz.guru/demo/automotive/')}
+        response,_=self.generate(output)
+        self.assertEqual(response.status_code,200,response.content)
+        draft=response.json()['draft']
+        draft=self.action(draft,'save').json()['draft']
+        self.assertEqual(self.action(draft,'copy_all').status_code,200)
+    def test_www_fix_still_rejects_unapproved_and_bare_links(self):
+        approved='https://www.aibiz.guru/demo/'
+        for link in ['www.aibiz.guru/demo/','https://www.evil.example/','https://www.aibiz.guru/demo/unapproved','javascript:alert(1)']:
+            with self.subTest(link=link),self.assertRaises(EmailError):
+                validate_text(['An introduction'],'Try '+link,'AI Business Gurus',links={'demo':approved})
     def test_scope_all_endpoints_and_draft_owner(self):
         d=self.generate()[0].json()['draft']
         self.client.force_login(self.other)
@@ -158,6 +171,41 @@ class SalesEmailTests(TestCase):
         with patch('crm.email_generator.service.PlatformAIService.structured_json',return_value=({}, {'status':'error'})):
             response=self.post('sales_email_generate',self.data)
         self.assertEqual(response.status_code,503);self.assertEqual(OutreachMessage.objects.count(),0)
+    @override_settings(SALES_EMAIL_MODEL='gpt-5-mini', OPENAI_CHAT_MODEL='gpt-4o-mini')
+    def test_email_uses_its_configured_model_and_existing_platform_key(self):
+        response,provider=self.generate()
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(provider.call_args.kwargs['model'],'gpt-5-mini')
+        self.assertEqual(OutreachMessage.objects.get().generator_model,'gpt-5-mini')
+    def test_structured_output_constrains_selected_and_general_service_references(self):
+        _,provider=self.generate()
+        schema=provider.call_args.kwargs['json_schema']
+        self.assertEqual(schema['properties']['services_referenced']['items']['enum'],self.data['services'])
+        self.assertFalse(schema['additionalProperties'])
+        output=self.output|{'services_referenced':[]}
+        response,provider=self.generate(output=output,data=self.data|{'focus':'general','services':[]})
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(provider.call_args.kwargs['json_schema']['properties']['services_referenced']['maxItems'],0)
+        self.assertEqual(json.loads(provider.call_args.kwargs['schema_hint'])['services_referenced'],[])
+    def test_provider_failures_explain_the_required_action(self):
+        cases = [
+            ({'reason':'PermissionDeniedError','category':'model_access'}, 'ai_model_access', 'model access'),
+            ({'reason':'PermissionDeniedError'}, 'ai_permission', 'permissions'),
+            ({'reason':'missing_api_key'}, 'ai_configuration', 'not configured'),
+            ({'reason':'AuthenticationError'}, 'ai_authentication', 'API key'),
+            ({'category':'quota'}, 'ai_quota', 'credit or spending limit'),
+            ({'reason':'daily_limit'}, 'ai_daily_limit', 'daily AI allowance'),
+            ({'reason':'APITimeoutError'}, 'ai_timeout', 'too long'),
+            ({'reason':'RateLimitError'}, 'ai_rate_limit', 'temporarily limiting'),
+        ]
+        for meta, code, explanation in cases:
+            with self.subTest(code=code), patch('crm.email_generator.service.PlatformAIService.structured_json',return_value=({}, {'status':'error', **meta})) as provider:
+                response=self.post('sales_email_generate',self.data)
+            self.assertEqual(response.status_code,503)
+            self.assertEqual(response.json()['code'],code)
+            self.assertIn(explanation,response.json()['error'])
+            self.assertEqual(provider.call_count,1)
+        self.assertFalse(OutreachMessage.objects.exists())
     def test_service_suggestions_and_profile_fallback(self):
         self.assertIn('reactivation',[x['slug'] for x in suggestions(self.lead)])
         self.assertIn('14 years',sender_for(self.rep)['approved_bio'])

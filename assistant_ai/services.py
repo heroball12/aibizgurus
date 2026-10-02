@@ -1,12 +1,23 @@
 import logging
 import json
+import re
 from django.conf import settings
 from django.utils import timezone
 from openai import OpenAI
 from clients.models import Integration
 from .models import UsageRecord
+from .provider_errors import provider_error_details
 
 logger = logging.getLogger(__name__)
+
+
+def chat_sampling_options(model, temperature):
+    # Original GPT-5 reasoning models reject custom temperature. Minimal effort
+    # fits the bounded chat/drafting requests without consuming the output budget
+    # on the default medium reasoning. Other model families retain their settings.
+    if re.fullmatch(r"gpt-5(?:-mini|-nano)?(?:-\d{4}-\d{2}-\d{2})?", model):
+        return {"reasoning_effort": "minimal"}
+    return {"temperature": float(temperature)}
 
 
 class PlatformAIService:
@@ -59,7 +70,7 @@ class PlatformAIService:
             records = records.filter(user=self.user)
         return records.count() >= limit
 
-    def chat(self, *, messages, model=None, temperature=0.35, fallback="", metadata=None):
+    def chat(self, *, messages, model=None, temperature=0.35, fallback="", metadata=None, response_format=None):
         model = model or getattr(settings, "OPENAI_CHAT_MODEL", settings.OPENAI_MODEL)
         if not self.api_key:
             self._record_usage(model=model, status="fallback", error_code="missing_api_key", metadata=metadata)
@@ -72,27 +83,32 @@ class PlatformAIService:
             return fallback, {"status": "blocked", "reason": "daily_limit"}
 
         last_error = None
+        error_details = {}
         for attempt in range(max(1, self.max_retries + 1)):
             try:
                 client = OpenAI(api_key=self.api_key, max_retries=0)
                 response = client.chat.completions.create(
                     model=model,
                     messages=messages,
-                    temperature=float(temperature),
+                    **chat_sampling_options(model, temperature),
                     timeout=self.timeout,
                     max_completion_tokens=getattr(self, "max_completion_tokens", 600),
+                    **({"response_format": response_format} if response_format else {}),
                 )
                 content = response.choices[0].message.content or fallback
                 self._record_usage(model=model, response=response, status="success", metadata={**(metadata or {}), "attempt": attempt + 1})
                 return content, {"status": "success"}
             except Exception as exc:
                 last_error = exc
-                logger.warning("OpenAI chat request failed for role=%s attempt=%s", self.assistant_role, attempt + 1)
+                error_details = provider_error_details(exc)
+                logger.warning("OpenAI chat request failed role=%s attempt=%s details=%s", self.assistant_role, attempt + 1, error_details)
+                if error_details["category"] in {"authentication", "permission", "model_access", "quota", "request"}:
+                    break  # Retrying the same configuration cannot fix these.
 
-        self._record_usage(model=model, status="error", error_code=type(last_error).__name__ if last_error else "unknown", metadata=metadata)
-        return fallback, {"status": "error", "reason": type(last_error).__name__ if last_error else "unknown"}
+        self._record_usage(model=model, status="error", error_code=type(last_error).__name__ if last_error else "unknown", metadata={**(metadata or {}), "provider_error": error_details})
+        return fallback, {"status": "error", "reason": type(last_error).__name__ if last_error else "unknown", **error_details}
 
-    def structured_json(self, *, messages, schema_hint=None, model=None, temperature=0, fallback=None, metadata=None):
+    def structured_json(self, *, messages, schema_hint=None, model=None, temperature=0, fallback=None, metadata=None, json_schema=None):
         prompt_messages = list(messages)
         if schema_hint:
             prompt_messages.append({
@@ -105,6 +121,7 @@ class PlatformAIService:
             temperature=temperature,
             fallback=json.dumps(fallback or {}),
             metadata=metadata,
+            **({"response_format": {"type": "json_schema", "json_schema": {"name": "structured_reply", "strict": True, "schema": json_schema}}} if json_schema else {}),
         )
         try:
             return json.loads(content), meta

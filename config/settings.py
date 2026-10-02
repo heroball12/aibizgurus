@@ -142,6 +142,8 @@ PLATFORM_OPENAI_API_KEY = os.getenv("PLATFORM_OPENAI_API_KEY", OPENAI_API_KEY)
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 OPENAI_CHAT_MODEL = os.getenv("OPENAI_CHAT_MODEL", OPENAI_MODEL)
 OPENAI_CLASSIFICATION_MODEL = os.getenv("OPENAI_CLASSIFICATION_MODEL", "gpt-4o-mini")
+# Sales drafting has its own model; the deployed platform key permits GPT-5 Mini.
+SALES_EMAIL_MODEL = os.getenv("SALES_EMAIL_MODEL", "gpt-5-mini").strip() or "gpt-5-mini"
 OPENAI_REQUEST_TIMEOUT = float(os.getenv("OPENAI_REQUEST_TIMEOUT", "20"))
 OPENAI_MAX_RETRIES = int(os.getenv("OPENAI_MAX_RETRIES", "1"))
 OPENAI_DAILY_USAGE_LIMIT = int(os.getenv("OPENAI_DAILY_USAGE_LIMIT", "500"))
