@@ -8,7 +8,7 @@ ASSESSMENT_DESCRIPTION = (
     "how it operates today, identify useful AI opportunities, then propose an implementation "
     "strategy and custom pricing based on the scope."
 )
-BOOKING_URL = "https://calendly.com/theaibizguru/15-minute-intro-to-ai"
+BOOKING_URL = "https://calendly.com/james-aibiz/30min"
 STAGES = [
     ("new", "New", ["new", "not_contacted"]),
     ("outreach", "Reaching out", ["attempted", "no_answer", "voicemail_left", "gatekeeper_reached", "decision_maker_unavailable", "contacted", "demo_sent"]),

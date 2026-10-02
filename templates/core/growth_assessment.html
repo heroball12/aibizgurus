@@ -27,18 +27,18 @@
     <p>Choose a time that works for you. Calendly will confirm the meeting and send the calendar invite.</p>
     <div
       class="calendly-inline-widget"
-      data-url="https://calendly.com/theaibizguru/15-minute-intro-to-ai?hide_gdpr_banner=1&primary_color=7c3aed"
+      data-url="{{ booking_url }}?hide_gdpr_banner=1&primary_color=7c3aed"
       aria-label="Calendly scheduler for your Growth Assessment"
     ></div>
     <noscript>
       <p class="calendly-fallback">
         JavaScript is required to load the scheduler.
-        <a href="https://calendly.com/theaibizguru/15-minute-intro-to-ai">Open Calendly to book your call.</a>
+        <a href="{{ booking_url }}">Open Calendly to book your call.</a>
       </p>
     </noscript>
     <p class="calendly-fallback">
       Having trouble seeing the calendar?
-      <a href="https://calendly.com/theaibizguru/15-minute-intro-to-ai" target="_blank" rel="noopener">Open Calendly in a new tab.</a>
+      <a href="{{ booking_url }}" target="_blank" rel="noopener">Open Calendly in a new tab.</a>
     </p>
   </section>
 </section>

@@ -11,6 +11,7 @@ from .forms import ConsultationRequestForm
 from .landing_film import landing_film_assets
 from .catalog import PRICING_PLANS
 from crm.models import Lead
+from crm.sales import BOOKING_URL
 from clients.models import ClientAccount, AIInstance
 
 SOLUTIONS = [
@@ -305,7 +306,7 @@ def growth_assessment(request):
             return redirect("growth_assessment")
     else:
         form = ConsultationRequestForm()
-    return render(request, "core/growth_assessment.html", {"form": form, "demo_ref": request.POST.get("demo_ref", "") or request.GET.get("demo_ref", "")})
+    return render(request, "core/growth_assessment.html", {"form": form, "booking_url": BOOKING_URL, "demo_ref": request.POST.get("demo_ref", "") or request.GET.get("demo_ref", "")})
 
 @transaction.atomic
 def consultation_request(request):

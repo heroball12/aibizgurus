@@ -29,7 +29,7 @@ class SalesEmailTests(TestCase):
         self.experience.current_revision=revision;self.experience.save()
         self.client.force_login(self.rep)
         self.data={'email_type':'decision_maker','focus':'services','services':['reactivation','automotive','crm'],'include_demo':True,'include_assessment':True,'tone':'natural','length':'standard','instructions':''}
-        self.output={'subjects':['Following up on older BDC leads','A next step for Summit Valley Motors','Supporting your BDC follow-up'],'body':'Hi Michael,\n\nGreat speaking with you today. Based on what you shared, the opportunity is following up with older unsold leads while supporting your six-person BDC. AI could help maintain those conversations and hand interested prospects back to your team. We would first evaluate the CRM workflow and verify compatibility.\n\nYou can try our automotive demo here: https://aibiz.guru/demo/automotive/\n\nWould a complimentary 15–20 minute Growth Assessment with an AI Specialist be useful to review that workflow? https://calendly.com/theaibizguru/15-minute-intro-to-ai','services_referenced':['reactivation','automotive','crm']}
+        self.output={'subjects':['Following up on older BDC leads','A next step for Summit Valley Motors','Supporting your BDC follow-up'],'body':'Hi Michael,\n\nGreat speaking with you today. Based on what you shared, the opportunity is following up with older unsold leads while supporting your six-person BDC. AI could help maintain those conversations and hand interested prospects back to your team. We would first evaluate the CRM workflow and verify compatibility.\n\nYou can try our automotive demo here: https://aibiz.guru/demo/automotive/\n\nWould a complimentary 15–20 minute Growth Assessment with an AI Specialist be useful to review that workflow? https://calendly.com/james-aibiz/30min','services_referenced':['reactivation','automotive','crm']}
     def post(self,name,data,args=None,client=None):
         return (client or self.client).post(reverse(name,args=args or [self.lead.pk]),json.dumps(data),content_type='application/json')
     def generate(self,output=None,data=None):
@@ -137,7 +137,7 @@ class SalesEmailTests(TestCase):
     def test_missing_selected_demo_link_is_completed_without_an_ai_retry(self):
         output={
             'subjects':['Appointment requests at your restaurant','A next step for your restaurant','Support for your team'],
-            'body':'Hello,\n\nAI Business Gurus helps teams explore ways to manage appointment requests and follow-up. Would a complimentary 15–20 minute Growth Assessment with an AI Specialist be useful? https://calendly.com/theaibizguru/15-minute-intro-to-ai',
+            'body':'Hello,\n\nAI Business Gurus helps teams explore ways to manage appointment requests and follow-up. Would a complimentary 15–20 minute Growth Assessment with an AI Specialist be useful? https://calendly.com/james-aibiz/30min',
             'services_referenced':['appointments'],
         }
         data=self.data|{'email_type':'cold','services':['appointments'],'length':'short','tone':'consultative'}

@@ -133,7 +133,7 @@ class PlatformFlowTests(TestCase):
             self.assertEqual(response.status_code, 200, name)
 
         assessment = self.client.get(reverse("growth_assessment"))
-        self.assertContains(assessment, "https://calendly.com/theaibizguru/15-minute-intro-to-ai")
+        self.assertContains(assessment, "https://calendly.com/james-aibiz/30min")
         self.assertContains(assessment, "calendly-inline-widget")
 
         response = self.client.get(reverse("solution_detail", args=["ai-chatbots"]))
