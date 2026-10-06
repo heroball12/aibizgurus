@@ -239,6 +239,9 @@ class LeadGenerationBatch(models.Model):
     progress_percent = models.PositiveSmallIntegerField(default=0)
     status_message = models.CharField(max_length=255, blank=True)
     provider_summary = models.JSONField(default=dict, blank=True)
+    search_state = models.JSONField(default=dict, blank=True)
+    run_token = models.UUIDField(null=True, blank=True)
+    lease_expires_at = models.DateTimeField(null=True, blank=True)
     started_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     duration_seconds = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -259,9 +262,22 @@ class LeadGenerationBatch(models.Model):
     @property
     def is_stalled(self):
         from django.utils import timezone
+        if self.lease_expires_at:
+            return self.is_open and self.lease_expires_at <= timezone.now()
         started = self.started_at or self.created_at
         deadline = 660 if self.quantity_requested > 20 else 180
         return bool(self.is_open and started and (timezone.now() - started).total_seconds() > deadline)
+
+    @property
+    def can_advance(self):
+        from django.utils import timezone
+        if not self.is_open or self.is_sample:
+            return False
+        if self.run_token and self.lease_expires_at and self.lease_expires_at > timezone.now():
+            return False
+        # Legacy in-flight searches have no lease. Give them their original
+        # grace period before taking over after a deployment.
+        return bool(self.search_state or self.status == "queued" or self.is_stalled)
 
     @property
     def is_sample(self):

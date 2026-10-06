@@ -34,6 +34,7 @@ urlpatterns = [
     path("assessments/", workspace_views.assessments, name="sales_assessments"),
     path("leads/<int:pk>/progress/", workspace_views.lead_progress, name="lead_progress"),
     path("lead-finder/", views.lead_finder, name="lead_finder"),
+    path("lead-finder/cities/", views.lead_finder_cities, name="lead_finder_cities"),
     path("lead-finder/history/", views.lead_generation_history, name="lead_generation_history"),
     path("lead-finder/batches/<int:pk>/status/", views.lead_generation_batch_status, name="lead_generation_batch_status"),
     path("lead-finder/batches/<int:pk>/run/", views.lead_generation_batch_run, name="lead_generation_batch_run"),

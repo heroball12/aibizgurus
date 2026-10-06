@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from decimal import Decimal
 from datetime import timedelta
 import hashlib
@@ -11,6 +11,7 @@ import math
 import re
 from urllib import parse, request, error
 import socket
+import uuid
 
 from django.conf import settings
 from django.core.cache import cache
@@ -130,6 +131,18 @@ class OpenStreetMapProvider(LeadProvider):
 
     name = "openstreetmap"
 
+    def __init__(self, endpoint=None):
+        # A browser step uses just one endpoint. CLI callers can still use
+        # search() directly with the configured failover pair.
+        self.endpoint = endpoint
+
+    @staticmethod
+    def endpoints():
+        return list(dict.fromkeys(filter(None, [
+            settings.LEAD_FINDER_OVERPASS_URL,
+            getattr(settings, "LEAD_FINDER_OVERPASS_FALLBACK_URL", ""),
+        ])))
+
     INDUSTRY_FILTERS = {
         "cannabis": ['["shop"="cannabis"]'],
         "mortgage": ['["office"="financial"]["financial"="mortgage"]'],
@@ -166,12 +179,16 @@ class OpenStreetMapProvider(LeadProvider):
         "hair salon": "salon",
         "dentists": "dentist",
         "roofers": "roofing",
+        "insurance agent": "insurance",
+        "insurance agents": "insurance",
+        "insurance agency": "insurance",
     }
 
     def filters_for(self, industry):
         key = self.ALIASES.get(industry.strip().lower(), industry.strip().lower())
         filters = list(self.INDUSTRY_FILTERS.get(key, []))
         extras = {
+            "insurance": ['["shop"="insurance"]'],
             "restaurant": ['["amenity"="fast_food"]'],
             "cannabis": ['["shop"="chemist"]["name"~"cannabis|dispensary",i]'],
             "plumbing": ['["craft"="plumber"]'],
@@ -248,6 +265,7 @@ class OpenStreetMapProvider(LeadProvider):
                 "provider_timeout",
             ) from exc
         except (ValueError, UnicodeDecodeError) as exc:
+            cache.set(cooldown_key, "unavailable", 60)
             raise DirectoryError(
                 "The directory returned an unreadable response. Retry shortly.",
                 "invalid_response",
@@ -256,6 +274,7 @@ class OpenStreetMapProvider(LeadProvider):
             isinstance(e, dict) and e.get("type") != "count"
             for e in payload["elements"]
         ):
+            cache.set(cooldown_key, "unavailable", 60)
             raise DirectoryError(
                 "The directory timed out before returning listings.", "provider_timeout"
             )
@@ -278,10 +297,11 @@ class OpenStreetMapProvider(LeadProvider):
             raise DirectoryError(
                 "Choose an industry or enter a business keyword.", "industry"
             )
-        # An Overpass slot can queue for 15 seconds before the query starts.
-        # The HTTP deadline must leave room for that queue as well as execution.
-        timeout = max(25, min(35, float(settings.LEAD_FINDER_PROVIDER_TIMEOUT)))
-        query_timeout = max(10, int(timeout) - 15)
+        # Small explicit memory reservations are admitted more readily by
+        # shared Overpass instances. Don't occupy a web worker through a long
+        # public queue: the next persisted step can try the backup instead.
+        timeout = max(5, min(12, float(settings.LEAD_FINDER_PROVIDER_TIMEOUT)))
+        query_timeout = min(8, int(timeout) - 2)
         endpoint = settings.LEAD_FINDER_OVERPASS_URL
         filters = self.filters_for(industry)
         # Local Census coordinates avoid slow remote area/relation lookups.
@@ -297,13 +317,13 @@ class OpenStreetMapProvider(LeadProvider):
             f"{latitude-lat_delta:.5f},{west:.5f},{latitude+lat_delta:.5f},{east:.5f}"
         )
         union = "".join(f'nwr{f}["name"]({bounds});' for f in filters)
-        query = f"[out:json][timeout:{query_timeout}];({union});out tags {min(2000, max(limit * 8, 100))};"
+        query = f"[out:json][timeout:{query_timeout}][maxsize:33554432];({union});out tags 2000;"
         fallback = getattr(settings, "LEAD_FINDER_OVERPASS_FALLBACK_URL", "")
         cache_key = (
-            "lead-listings:v6:"
+            "lead-listings:v7:"
             + hashlib.sha256(
                 json.dumps(
-                    [endpoint, fallback, industry.lower(), city.lower(), state, limit]
+                    [endpoint, fallback, filters, city.lower(), state]
                 ).encode()
             ).hexdigest()
         )
@@ -311,7 +331,7 @@ class OpenStreetMapProvider(LeadProvider):
         if cached is not None:
             self.summary = {**cached[1], "cached": True}
             return cached[0]
-        endpoints = list(dict.fromkeys([endpoint, fallback]))
+        endpoints = [self.endpoint] if self.endpoint else self.endpoints()
         payload = None
         used_endpoint = endpoint
         failures = []
@@ -326,6 +346,8 @@ class OpenStreetMapProvider(LeadProvider):
                     "provider_unavailable",
                     "provider_timeout",
                     "cooldown",
+                    "rate_limited",
+                    "invalid_response",
                 }:
                     raise
         if payload is None:
@@ -418,18 +440,22 @@ class OpenStreetMapProvider(LeadProvider):
             "location": f"{city}, {state}",
             "area_width_miles": 20,
             "cached": False,
+            "result_limit_reached": len(elements) >= 2000,
         }
         if warning and not leads:
             raise DirectoryError(
                 "The directory timed out before returning usable listings. Retry or choose a smaller city.",
                 "provider_timeout",
             )
-        cache.set(cache_key, (leads[:limit], self.summary), 300)
-        return leads[:limit]
+        # Keep all candidates until CRM deduplication; slicing here hid fresh
+        # businesses whenever the first page was already saved by the team.
+        if not warning:
+            cache.set(cache_key, (leads, self.summary), 300 if leads else 60)
+        return leads
 
 
 def get_lead_providers() -> list[LeadProvider]:
-    return [OpenStreetMapProvider()]
+    return [OpenStreetMapProvider(endpoint) for endpoint in OpenStreetMapProvider.endpoints()]
 
 
 @transaction.atomic
@@ -504,231 +530,181 @@ def duplicate_exists(
     return Lead.objects.filter(lead_type="internal_sales").filter(matches).exists()
 
 
-def generate_leads_for_batch(
-    batch_id: int, providers: list[LeadProvider] | None = None
-) -> LeadGenerationBatch:
-    with transaction.atomic():
-        batch = (
-            LeadGenerationBatch.objects.select_for_update(of=("self",))
-            .select_related("employee")
-            .get(pk=batch_id)
-        )
-        if batch.status in {"completed", "generating", "searching", "saving"}:
-            return batch
-        started = timezone.now()
-        batch.started_at = started
-        batch.status = "generating"
-        batch.progress_percent = 5
-        batch.status_message = "Starting real business listing search."
-        batch.save(
-            update_fields=["started_at", "status", "progress_percent", "status_message"]
-        )
+LEASE_SECONDS = 45
+SAVE_CHUNK_SIZE = 100
+RETRYABLE_DIRECTORY_ERRORS = {
+    "provider_unavailable", "provider_timeout", "cooldown", "rate_limited", "invalid_response",
+}
 
-    provider_counts = {}
-    seen_batch_keys = set(
-        LeadStaging.objects.filter(batch=batch)
-        .exclude(dedupe_key="")
-        .values_list("dedupe_key", flat=True)
+
+def _finish_batch(batch, *, error=None):
+    now = timezone.now()
+    batch.status = "failed" if error else "completed"
+    batch.progress_percent = 100
+    batch.completed_at = now
+    batch.duration_seconds = Decimal(str(round((now - (batch.started_at or now)).total_seconds(), 2)))
+    batch.quantity_generated = batch.staged_leads.count()
+    summary = dict(batch.provider_summary or {})
+    summary["contacts"] = {
+        "phone": batch.staged_leads.exclude(phone_number="").count(),
+        "website": batch.staged_leads.exclude(website="").count(),
+        "email": batch.staged_leads.exclude(email="").count(),
+    }
+    if error:
+        summary["error_code"] = getattr(error, "code", "search_failed")
+        batch.status_message = str(error)[:255] if isinstance(error, DirectoryError) else "Search could not finish. Any saved results are available below. Please retry shortly."
+    elif batch.quantity_generated:
+        batch.status_message = f"Found {batch.quantity_generated} new businesses. Check the available phone, email and website on each result."
+    elif batch.duplicates_removed:
+        batch.status_message = f"Found listings, but all {batch.duplicates_removed} matches are already in the CRM or saved results. Review your pipeline or choose another city."
+    else:
+        batch.status_message = "City confirmed. This public directory has no usable contact listings for this category in the search area. Try a related category or a nearby city."
+    batch.provider_summary = summary
+    # Candidate data is only a short-lived checkpoint, not another lead store.
+    batch.search_state = {}
+    batch.run_token = None
+    batch.lease_expires_at = None
+    batch.save()
+    log_activity(
+        user=batch.employee, action="other" if error else "create",
+        model_label="crm.LeadGenerationBatch", object_id=batch.pk, object_repr=str(batch),
+        message=f"Lead search {'failed' if error else 'completed'} for {batch.industry}: {batch.quantity_generated} new businesses.",
+        metadata={"location": batch.location, "quantity_generated": batch.quantity_generated,
+                  "duplicates_removed": batch.duplicates_removed, "providers": summary},
     )
-    duplicate_count = batch.duplicates_removed or 0
-    created_count = batch.staged_leads.count()
-    providers = get_lead_providers() if providers is None else providers
-
-    try:
-        set_batch_status(batch, "searching", 18, "Searching public business listings.")
-        for provider in providers:
-            remaining = max(batch.quantity_requested - created_count, 0)
-            if remaining <= 0:
-                break
-            provider_results = provider.search(
-                industry=batch.industry,
-                location=batch.location,
-                limit=max(remaining * 2, remaining),
-            )
-            provider_counts[provider.name] = len(provider_results)
-            provider_counts["directory"] = getattr(provider, "summary", {})
-            for result in provider_results:
-                if not result.business_name or not (
-                    result.phone_number or result.website or result.email
-                ):
-                    continue
-                key = lead_dedupe_key(
-                    business_name=result.business_name,
-                    phone_number=result.phone_number,
-                    city=result.city,
-                    state=result.state,
-                )
-                if key in seen_batch_keys:
-                    duplicate_count += 1
-                    continue
-                seen_batch_keys.add(key)
-                with transaction.atomic():
-                    RequestBudget.objects.get_or_create(
-                        key="lead-staging-write-lock",
-                        defaults={"expires_at": timezone.now() + timedelta(days=36500)},
-                    )
-                    RequestBudget.objects.select_for_update().get(
-                        pk="lead-staging-write-lock"
-                    )
-                    if duplicate_exists(result, key):
-                        duplicate_count += 1
-                        if duplicate_count == 1 or duplicate_count % 10 == 0:
-                            batch.duplicates_removed = duplicate_count
-                            batch.status_message = f"Skipped {duplicate_count} duplicate lead{'' if duplicate_count == 1 else 's'}."
-                            batch.save(
-                                update_fields=["duplicates_removed", "status_message"]
-                            )
-                        continue
-
-                    if created_count == 0 or created_count % 5 == 0:
-                        set_batch_status(
-                            batch,
-                            "saving",
-                            min(
-                                95,
-                                22
-                                + round(
-                                    (created_count / max(batch.quantity_requested, 1))
-                                    * 70
-                                ),
-                            ),
-                            f"Saving fresh leads as they come in from {provider.name}.",
-                        )
-                    LeadStaging.objects.create(
-                        batch=batch,
-                        business_name=result.business_name[:200],
-                        phone_number=result.phone_number[:80],
-                        industry=result.industry[:150],
-                        city=result.city[:120],
-                        state=result.state[:80],
-                        email=listing_email(result.email),
-                        website=public_url(result.website),
-                        source_url=public_url(result.source_url),
-                        business_verification=result.business_verification,
-                        address=result.address[:255],
-                        confidence_score=result.confidence_score,
-                        dedupe_key=key,
-                        created_by=batch.employee,
-                    )
-                created_count += 1
-                if (
-                    created_count == 1
-                    or created_count % 5 == 0
-                    or created_count >= batch.quantity_requested
-                ):
-                    batch.quantity_generated = created_count
-                    batch.duplicates_removed = duplicate_count
-                    batch.progress_percent = min(
-                        95,
-                        25
-                        + round(
-                            (created_count / max(batch.quantity_requested, 1)) * 70
-                        ),
-                    )
-                    batch.status = "saving"
-                    batch.status_message = f"Generated {created_count}/{batch.quantity_requested} fresh lead{'' if created_count == 1 else 's'}."
-                    batch.save(
-                        update_fields=[
-                            "quantity_generated",
-                            "duplicates_removed",
-                            "progress_percent",
-                            "status",
-                            "status_message",
-                        ]
-                    )
-                if created_count >= batch.quantity_requested:
-                    break
-
-        completed = timezone.now()
-        batch.refresh_from_db()
-        batch.status = "completed"
-        batch.progress_percent = 100
-        batch.quantity_generated = created_count
-        batch.duplicates_removed = duplicate_count
-        batch.completed_at = completed
-        batch.duration_seconds = Decimal(
-            str(round((completed - started).total_seconds(), 2))
-        )
-        if created_count:
-            batch.status_message = f"Found {created_count} new businesses. Check the available phone, email and website on each result."
-        elif duplicate_count:
-            batch.status_message = f"Found listings, but all {duplicate_count} matches are already in the CRM or saved results. Try another city or review your pipeline."
-        else:
-            batch.status_message = "No businesses with public contact details matched this city and industry. Try another category, a business keyword, or a nearby city."
-        provider_counts["contacts"] = {
-            "phone": batch.staged_leads.exclude(phone_number="").count(),
-            "website": batch.staged_leads.exclude(website="").count(),
-            "email": batch.staged_leads.exclude(email="").count(),
-        }
-        batch.provider_summary = provider_counts
-        batch.save(
-            update_fields=[
-                "status",
-                "progress_percent",
-                "quantity_generated",
-                "duplicates_removed",
-                "completed_at",
-                "duration_seconds",
-                "status_message",
-                "provider_summary",
-            ]
-        )
-        log_activity(
-            user=batch.employee,
-            action="create",
-            model_label="crm.LeadGenerationBatch",
-            object_id=batch.pk,
-            object_repr=str(batch),
-            message=f"{batch.employee.get_full_name() or batch.employee.username if batch.employee else 'System'} generated {created_count} {batch.industry} leads.",
-            metadata={
-                "industry": batch.industry,
-                "location": batch.location,
-                "quantity_requested": batch.quantity_requested,
-                "quantity_generated": created_count,
-                "duplicates_removed": duplicate_count,
-                "duration_seconds": str(batch.duration_seconds),
-                "providers": provider_counts,
-            },
-        )
-    except Exception as exc:
-        logger.exception("Lead generation batch %s failed", batch.pk)
-        completed = timezone.now()
-        batch.status = "failed"
-        batch.completed_at = completed
-        batch.duration_seconds = Decimal(
-            str(round((completed - started).total_seconds(), 2))
-        )
-        provider_counts["error_code"] = getattr(exc, "code", "search_failed")
-        batch.quantity_generated = created_count
-        batch.duplicates_removed = duplicate_count
-        batch.status_message = (
-            str(exc)[:255]
-            if isinstance(exc, RuntimeError)
-            else "Search failed. Please try again or contact your administrator."
-        )
-        batch.provider_summary = provider_counts
-        batch.save(
-            update_fields=[
-                "status",
-                "completed_at",
-                "duration_seconds",
-                "status_message",
-                "provider_summary",
-                "quantity_generated",
-                "duplicates_removed",
-            ]
-        )
-        log_activity(
-            user=batch.employee,
-            action="other",
-            model_label="crm.LeadGenerationBatch",
-            object_id=batch.pk,
-            object_repr=str(batch),
-            message=f"Lead generation failed for {batch.industry}.",
-            metadata={"error": exc.__class__.__name__, "providers": provider_counts},
-        )
     return batch
 
+
+def _save_candidate_chunk(batch):
+    """Called with the batch locked. Each chunk commits together, or not at all."""
+    state = dict(batch.search_state)
+    candidates = state.get("candidates", [])
+    offset = int(state.get("offset", 0))
+    stop = min(offset + SAVE_CHUNK_SIZE, len(candidates))
+    RequestBudget.objects.get_or_create(
+        key="lead-staging-write-lock",
+        defaults={"expires_at": timezone.now() + timedelta(days=36500)},
+    )
+    RequestBudget.objects.select_for_update().get(pk="lead-staging-write-lock")
+    count = batch.staged_leads.count()
+    for raw in candidates[offset:stop]:
+        if count >= batch.quantity_requested:
+            break
+        result = DirectoryLead(**raw)
+        if not result.business_name or not (result.phone_number or result.website or result.email):
+            continue
+        key = lead_dedupe_key(business_name=result.business_name, phone_number=result.phone_number,
+                              city=result.city, state=result.state)
+        if duplicate_exists(result, key):
+            batch.duplicates_removed += 1
+            continue
+        LeadStaging.objects.create(
+            batch=batch, business_name=result.business_name[:200], phone_number=result.phone_number[:80],
+            industry=result.industry[:150], city=result.city[:120], state=result.state[:80],
+            email=listing_email(result.email), website=public_url(result.website),
+            source_url=public_url(result.source_url), business_verification=result.business_verification,
+            address=result.address[:255], confidence_score=result.confidence_score,
+            dedupe_key=key, created_by=batch.employee,
+        )
+        count += 1
+    batch.quantity_generated = count
+    if count >= batch.quantity_requested or stop >= len(candidates):
+        return _finish_batch(batch)
+    state["offset"] = stop
+    batch.search_state = state
+    batch.progress_percent = 55 + round(40 * stop / max(len(candidates), 1))
+    batch.status_message = f"Checked {stop} of {len(candidates)} contacts; {count} new businesses saved."
+    batch.run_token = None
+    batch.lease_expires_at = None
+    batch.save()
+    return batch
+
+
+def advance_lead_generation_batch(batch_id, providers=None):
+    """One bounded network attempt OR one DB chunk per request.
+
+    The lease is persisted in Postgres (not process-local cache). A second tab
+    cannot start the same step. A killed worker can be replaced after expiry;
+    late responses must match the current token before they can save anything.
+    """
+    providers = get_lead_providers() if providers is None else providers
+    with transaction.atomic():
+        batch = LeadGenerationBatch.objects.select_for_update(of=("self",)).get(pk=batch_id)
+        if not batch.can_advance:
+            return batch
+        state = dict(batch.search_state or {})
+        if state.get("phase") == "saving":
+            return _save_candidate_chunk(batch)
+        index = int(state.get("provider_index", 0))
+        attempts = int(state.get("attempts", 0))
+        if attempts >= len(providers) + 2 or index >= len(providers):
+            return _finish_batch(batch, error=DirectoryError(
+                "The public directory is unavailable after several attempts. Saved results are safe. Please retry in a minute.",
+                "provider_timeout",
+            ))
+        token = uuid.uuid4()
+        batch.run_token = token
+        batch.lease_expires_at = timezone.now() + timedelta(seconds=LEASE_SECONDS)
+        batch.started_at = batch.started_at or timezone.now()
+        batch.search_state = {"phase": "searching", "provider_index": index, "attempts": attempts + 1}
+        batch.status = "searching"
+        batch.progress_percent = 15 if index == 0 else 35
+        batch.status_message = "Searching public business listings." if index == 0 else "Trying the backup directory after a slow or unavailable response."
+        batch.save()
+    provider = providers[index]
+    try:
+        results = provider.search(industry=batch.industry, location=batch.location, limit=2000)
+        candidates = []
+        for result in results[:2000]:
+            record = asdict(result)
+            record["confidence_score"] = str(result.confidence_score)
+            candidates.append(record)
+    except Exception as exc:
+        logger.warning("Lead search %s attempt %s failed: %s", batch_id, index + 1, type(exc).__name__)
+        with transaction.atomic():
+            batch = LeadGenerationBatch.objects.select_for_update(of=("self",)).get(pk=batch_id)
+            if batch.run_token != token:
+                return batch
+            if isinstance(exc, DirectoryError) and exc.code in RETRYABLE_DIRECTORY_ERRORS and index + 1 < len(providers):
+                summary = dict(batch.provider_summary or {})
+                summary.setdefault("attempts", []).append({"provider": provider.name, "error_code": exc.code})
+                batch.provider_summary = summary
+                batch.search_state = {**batch.search_state, "provider_index": index + 1}
+                batch.run_token = None
+                batch.lease_expires_at = None
+                batch.status_message = "The first directory is busy. Continuing with the backup; no need to restart."
+                batch.progress_percent = 30
+                batch.save()
+                return batch
+            return _finish_batch(batch, error=exc)
+    with transaction.atomic():
+        batch = LeadGenerationBatch.objects.select_for_update(of=("self",)).get(pk=batch_id)
+        if batch.run_token != token:
+            return batch
+        summary = dict(batch.provider_summary or {})
+        summary.update({provider.name: len(candidates), "directory": getattr(provider, "summary", {})})
+        batch.provider_summary = summary
+        batch.run_token = None
+        batch.lease_expires_at = None
+        if not candidates:
+            return _finish_batch(batch)
+        batch.search_state = {"phase": "saving", "candidates": candidates, "offset": 0}
+        batch.status = "saving"
+        batch.progress_percent = 55
+        batch.status_message = f"Found {len(candidates)} contacts. Checking for existing leads and saving new businesses."
+        batch.save()
+        return batch
+
+
+def generate_leads_for_batch(batch_id, providers=None):
+    """Worker/CLI wrapper; browser requests call advance once instead."""
+    providers = get_lead_providers() if providers is None else providers
+    # Bounded by two endpoints, two recovery attempts, and 20 save chunks.
+    for _ in range(25):
+        batch = advance_lead_generation_batch(batch_id, providers=providers)
+        if not batch.can_advance:
+            return batch
+    return batch
 
 def enqueue_generation_batch(batch: LeadGenerationBatch) -> bool:
     try:
@@ -737,19 +713,28 @@ def enqueue_generation_batch(batch: LeadGenerationBatch) -> bool:
         from .tasks import process_lead_generation_batch
 
         async_result = process_lead_generation_batch.delay(batch.pk)
-        summary = dict(batch.provider_summary or {})
-        summary["celery_task_id"] = getattr(async_result, "id", "")
-        batch.provider_summary = summary
-        batch.status_message = "Queued for background generation."
-        batch.save(update_fields=["provider_summary", "status_message"])
+        # A fast worker can already have finished. Merge only queue metadata
+        # under the row lock instead of overwriting its new result summary.
+        with transaction.atomic():
+            batch = LeadGenerationBatch.objects.select_for_update(of=("self",)).get(pk=batch.pk)
+            summary = dict(batch.provider_summary or {})
+            summary["celery_task_id"] = getattr(async_result, "id", "")
+            batch.provider_summary = summary
+            if batch.status == "queued":
+                batch.status_message = "Queued for background generation."
+            batch.save(update_fields=["provider_summary", "status_message"])
         return True
     except Exception as exc:
-        batch.status = "failed"
-        batch.status_message = "The background queue is unavailable. Try a search of 20 or fewer, or ask your administrator to restore the worker."
-        summary = dict(batch.provider_summary or {})
-        summary["queue_warning"] = exc.__class__.__name__
-        batch.provider_summary = summary
-        batch.save(update_fields=["status", "status_message", "provider_summary"])
+        with transaction.atomic():
+            batch = LeadGenerationBatch.objects.select_for_update(of=("self",)).get(pk=batch.pk)
+            if batch.status != "queued":
+                return batch.status != "failed"
+            batch.status = "failed"
+            batch.status_message = "The background queue is unavailable. Try a search of 20 or fewer, or ask your administrator to restore the worker."
+            summary = dict(batch.provider_summary or {})
+            summary["queue_warning"] = exc.__class__.__name__
+            batch.provider_summary = summary
+            batch.save(update_fields=["status", "status_message", "provider_summary"])
         return False
 
 

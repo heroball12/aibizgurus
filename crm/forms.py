@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.validators import URLValidator
 from django.contrib.auth import get_user_model
 from .models import Lead, LeadNote
-from .directory_locations import resolve_city
+from .directory_locations import US_STATES, city_choices, resolve_city
 
 
 User = get_user_model()
@@ -51,15 +51,37 @@ class LeadFinderForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": "Enter industry", "data-custom-industry": "true"}),
     )
     location = forms.CharField(
-        required=True,
+        required=False,
         label="US city & state",
         max_length=180,
-        widget=forms.TextInput(attrs={"placeholder": "City, state — e.g. San Diego, CA"}),
+        widget=forms.HiddenInput(),
+    )
+    state = forms.ChoiceField(
+        required=False, label="State",
+        choices=[("", "Choose a state…")] + sorted(US_STATES.items(), key=lambda item: item[1]),
+        widget=forms.Select(attrs={"data-finder-state": "true"}),
+    )
+    city = forms.ChoiceField(
+        required=False, label="City",
+        choices=[("", "Choose a state first…")],
+        widget=forms.Select(attrs={"data-finder-city": "true"}),
     )
     quantity = forms.ChoiceField(choices=[(str(value), str(value)) for value in LEAD_FINDER_QUANTITIES], initial="10")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Existing history/retry links and clients can still submit location.
+        # Explicit dropdown values always win and are validated as a pair.
+        if not self.is_bound and self.initial.get("location") and not self.initial.get("state"):
+            try:
+                city, state, _, _ = resolve_city(self.initial["location"])
+                self.initial.update(city=city, state=state)
+            except ValueError:
+                pass
+        state = self.data.get("state", "") if self.is_bound else self.initial.get("state", "")
+        self.fields["city"].choices = [("", "Choose a city…" if state else "Choose a state first…"), *city_choices(state)]
+        if not state:
+            self.fields["city"].widget.attrs["disabled"] = True
         if not settings.CELERY_BROKER_URL:
             self.fields["quantity"].choices = [(str(n), str(n)) for n in LEAD_FINDER_QUANTITIES if n <= 20]
 
@@ -72,12 +94,21 @@ class LeadFinderForm(forms.Form):
                 self.add_error("custom_industry", "Enter the custom industry.")
             cleaned["industry"] = custom
         cleaned["location"] = (cleaned.get("location") or "").strip()
+        use_dropdowns = "state" in self.data or "city" in self.data
+        if use_dropdowns:
+            if not cleaned.get("state") and "state" not in self.errors:
+                self.add_error("state", "Choose a state.")
+            if not cleaned.get("city") and "city" not in self.errors:
+                self.add_error("city", "Choose a city in this state.")
+            cleaned["location"] = f"{cleaned['city']}, {cleaned['state']}" if cleaned.get("city") and cleaned.get("state") else ""
         if cleaned["location"]:
             try:
                 city, state, _, _ = resolve_city(cleaned["location"])
                 cleaned["location"] = f"{city}, {state}"
             except ValueError as exc:
                 self.add_error("location", str(exc))
+        elif not use_dropdowns:
+            self.add_error("location", "Choose a state and city.")
         cleaned["quantity"] = int(cleaned.get("quantity") or 0)
         return cleaned
 

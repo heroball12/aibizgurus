@@ -11,7 +11,7 @@ from django.db import transaction
 from django.db.models import Case, Count, IntegerField, Q, Sum, Value, When
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.dateparse import parse_date
@@ -22,11 +22,12 @@ from core.rate_limits import consume_budget
 from .forms import LeadCSVUploadForm, LeadFinderForm, LeadForm, LeadIntelligenceForm, LeadNoteForm
 from .importers import import_lead_file, parse_csv_file
 from .intelligence import csv_safe, draft_follow_up_email
+from .directory_locations import US_STATES, city_choices
 from .lead_finder import (
     convert_staging_to_crm_lead,
     create_generation_batch,
     enqueue_generation_batch,
-    generate_leads_for_batch,
+    advance_lead_generation_batch,
 )
 from .models import ClassificationCorrection, Lead, LeadActivity, LeadGenerationBatch, LeadImport, LeadStaging
 
@@ -522,7 +523,7 @@ def lead_finder(request):
                     )
             return redirect("lead_generation_batch_detail", pk=batch.pk)
     else:
-        initial = {key: request.GET.get(key, "") for key in ["industry", "location", "quantity", "custom_industry"] if request.GET.get(key)}
+        initial = {key: request.GET.get(key, "") for key in ["industry", "location", "state", "city", "quantity", "custom_industry"] if request.GET.get(key)}
         if initial.get("industry") and initial["industry"] not in dict(LeadFinderForm.base_fields["industry"].choices):
             initial["custom_industry"] = initial["industry"]
             initial["industry"] = "other"
@@ -550,6 +551,17 @@ def lead_finder(request):
 
 
 @employee_required
+@require_GET
+def lead_finder_cities(request):
+    state = request.GET.get("state", "").upper().strip()
+    if state not in US_STATES:
+        return JsonResponse({"error": "Choose a valid state."}, status=400)
+    return JsonResponse({"state": state, "cities": [
+        {"value": value, "label": label} for value, label in city_choices(state)
+    ]})
+
+
+@employee_required
 def lead_generation_history(request):
     batches = apply_batch_filters(lead_batches_for_user(request.user), request).order_by("-created_at")
     return render(request, "crm/lead_generation_history.html", {
@@ -574,8 +586,8 @@ def lead_generation_batch_detail(request, pk):
     page_obj = paginate(request, staged, 20)
     return render(request, "crm/lead_generation_batch_detail.html", {
         "batch": batch,
-        "batch_is_open": batch.is_open and not batch.is_stalled,
-        "run_here": batch.status == "queued" and batch.quantity_requested <= 20 and not batch.is_stalled,
+        "batch_is_open": batch.is_open and not batch.is_sample,
+        "run_here": batch.is_open and batch.quantity_requested <= 20 and not batch.is_sample,
         "retry_query": urlencode({"industry": batch.industry, "location": batch.location, "quantity": min(batch.quantity_requested, 20)}),
         "page_obj": page_obj,
         "query_string": query_without_page(request),
@@ -589,14 +601,12 @@ def lead_generation_batch_detail(request, pk):
 @require_POST
 def lead_generation_batch_run(request, pk):
     batch = get_batch_or_404(request.user, pk)
-    if batch.is_stalled:
-        return JsonResponse({"error": "This search was interrupted. Start a new search from its results page."}, status=409)
     if batch.quantity_requested > 20:
         return JsonResponse({"error": "This search uses the background worker."}, status=400)
-    if batch.status == "queued":
-        if not consume_budget("lead-finder-run", request.user.pk, limit=5, window=60):
+    if batch.can_advance:
+        if batch.status == "queued" and not consume_budget("lead-finder-run", request.user.pk, limit=5, window=60):
             return JsonResponse({"error": "Please wait a minute before starting another search."}, status=429)
-        generate_leads_for_batch(batch.pk)
+        advance_lead_generation_batch(batch.pk)
     if request.headers.get("Accept") == "application/json":
         return lead_generation_batch_status(request, pk)
     return redirect("lead_generation_batch_detail", pk=pk)
@@ -632,13 +642,14 @@ def lead_generation_batch_status(request, pk):
         "batch": {
             "id": batch.pk,
             "status": batch.status,
-            "status_label": "Interrupted" if batch.is_stalled else batch.get_status_display(),
-            "status_message": "This search stopped reporting progress. Retry the search; any results already found are saved." if batch.is_stalled else batch.status_message,
+            "status_label": "Resuming search" if batch.is_stalled else batch.get_status_display(),
+            "status_message": "The previous connection stopped. Resuming this search with saved progress." if batch.is_stalled else batch.status_message,
             "progress_percent": batch.progress_percent,
             "quantity_requested": batch.quantity_requested,
             "quantity_generated": batch.quantity_generated,
             "duplicates_removed": batch.duplicates_removed,
-            "is_open": batch.is_open and not batch.is_stalled,
+            "is_open": batch.is_open and not batch.is_sample,
+            "can_advance": batch.can_advance,
             "started": timezone.localtime(batch.started_at).strftime("%b %-d, %-I:%M %p") if batch.started_at else "—",
             "completed": timezone.localtime(batch.completed_at).strftime("%b %-d, %-I:%M %p") if batch.completed_at else "—",
             "duration_seconds": str(batch.duration_seconds),

@@ -16,8 +16,9 @@ from .lead_finder import generate_leads_for_batch
 @shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={"max_retries": 2})
 def process_lead_generation_batch(self, batch_id):
     batch = generate_leads_for_batch(batch_id)
-    if batch.status == "failed":
-        raise RuntimeError(batch.status_message)
+    if batch.is_open:
+        # A previous worker may still own a lease. Recheck after it expires.
+        raise self.retry(countdown=50)
     return {
         "batch_id": batch.pk,
         "status": batch.status,
