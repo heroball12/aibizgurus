@@ -32,6 +32,8 @@ def columns(user, kind='leads'):
     result = []
     for group, fields in groups:
         for key, label in fields:
+            if key in {"strategy", "pricing"} and not user.can_manage_pricing():
+                continue
             actual = 'phone_number' if kind == 'prospects' and key == 'phone' else key
             field = None if key in BRIEF_FIELDS else model._meta.get_field(actual)
             choices = list(field.choices or []) if field else []

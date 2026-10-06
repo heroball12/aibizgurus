@@ -3,8 +3,11 @@ from . import views
 from . import workspace_views
 from . import sheet_views
 from .email_generator import views as email_views
-from . import research_views
+from . import research_views, selling_views, calendar_views
 urlpatterns = [
+    path("assessments/connection/", calendar_views.manage, name="calendly_manage"),
+    path("assessments/calendly/webhook/", calendar_views.webhook, name="calendly_webhook"),
+    path("sell/", selling_views.guided_sell, name="guided_sell"),
     path("leads/<int:pk>/email/", email_views.page, name="sales_email"),
     path("leads/<int:pk>/email/generate/", email_views.create, name="sales_email_generate"),
     path("leads/<int:pk>/email/<uuid:message_id>/", email_views.action, name="sales_email_action"),

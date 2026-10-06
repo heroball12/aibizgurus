@@ -114,7 +114,7 @@ class LeadFinderForm(forms.Form):
 
 
 class SalesUpdateForm(forms.Form):
-    outcome = forms.ChoiceField(choices=[("", "Choose an outcome"), ("attempted", "Tried to reach them"), ("warm_lead", "Had a conversation"), ("callback_requested", "Follow up later"), ("not_interested", "Not interested"), ("do_not_contact", "Do not contact"), ("closed_won", "Won")])
+    outcome = forms.ChoiceField(choices=[("", "Choose an outcome"), ("attempted", "Tried to reach them"), ("no_answer", "No answer"), ("voicemail_left", "Left a voicemail"), ("email_requested", "Requested an email"), ("demo_sent", "Shared the demo"), ("warm_lead", "Had a conversation"), ("callback_requested", "Follow up later"), ("not_interested", "Not interested"), ("do_not_contact", "Do not contact"), ("closed_won", "Won")])
     note = forms.CharField(max_length=4000, required=False, widget=forms.Textarea(attrs={"rows":3,"placeholder":"What did you learn?"}))
     follow_up_date = forms.DateField(required=False, widget=forms.DateInput(attrs={"type":"date"}))
 
@@ -136,6 +136,12 @@ class AssessmentForm(forms.Form):
     completed = forms.BooleanField(label="Assessment completed", required=False)
     strategy = forms.CharField(label="Proposed implementation strategy", max_length=4000, required=False, widget=forms.Textarea(attrs={"rows":3}))
     pricing = forms.CharField(label="Custom pricing / scope notes", max_length=2000, required=False, widget=forms.Textarea(attrs={"rows":2}))
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not user or not user.can_manage_pricing():
+            for name in ("strategy", "pricing"):
+                self.fields.pop(name, None)
 
     def clean(self):
         values = super().clean()

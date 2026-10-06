@@ -430,3 +430,48 @@ class ClassificationCorrection(models.Model):
         return f"Correction for {self.lead}"
 
 from .email_models import SalesEmailConfig, SalesEmailType, SalesEmailService, SalesProfile  # noqa: E402,F401
+
+
+class SalesFollowUpPlan(models.Model):
+    lead = models.OneToOneField(Lead, on_delete=models.CASCADE, related_name='follow_up_plan')
+    plan = models.CharField(max_length=30)
+    step = models.PositiveSmallIntegerField(default=0)
+    active = models.BooleanField(default=True)
+    next_due = models.DateField(null=True, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class SalesWorkSubmission(models.Model):
+    nonce = models.UUIDField(unique=True)
+    lead = models.ForeignKey(Lead, on_delete=models.SET_NULL, null=True)
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CalendlyConnection(models.Model):
+    # Credentials live only in environment variables, never in this record.
+    subscription_uri = models.URLField(blank=True)
+    signing_fingerprint = models.CharField(max_length=64, blank=True)
+    user_uri = models.URLField(blank=True)
+    organization_uri = models.URLField(blank=True)
+    event_type_uri = models.URLField(blank=True)
+    connected_at = models.DateTimeField(null=True, blank=True)
+    last_received_at = models.DateTimeField(null=True, blank=True)
+
+
+class AssessmentBooking(models.Model):
+    invitee_uri = models.URLField(unique=True, max_length=500)
+    event_uri = models.URLField(max_length=500)
+    old_invitee_uri = models.URLField(blank=True, max_length=500)
+    lead = models.ForeignKey(Lead, on_delete=models.SET_NULL, null=True, blank=True, related_name='calendar_bookings')
+    credited_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    email = models.EmailField(blank=True)
+    name = models.CharField(max_length=200, blank=True)
+    starts_at = models.DateTimeField()
+    status = models.CharField(max_length=20)
+    provider_updated_at = models.DateTimeField()
+    received_at = models.DateTimeField(auto_now=True)
+    meeting_url = models.URLField(blank=True, max_length=1000)
+    review_reason = models.CharField(max_length=250, blank=True)
+    applied_at = models.DateTimeField(null=True, blank=True)

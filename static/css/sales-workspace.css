@@ -32,3 +32,7 @@
 [data-run-help]{font-size:12px;color:var(--sales-muted)}
 @media(max-width:1100px){.sales-finder-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.sales-finder-fields>div:first-child,.sales-finder-fields>div:nth-child(2){grid-column:auto}}
 @media(max-width:480px){.sales-finder-fields{grid-template-columns:minmax(0,1fr)}.sales-finder-fields>.btn{width:100%}}
+
+.selling-grid{align-items:start}.selling-grid h3{margin-top:1.6rem}.selling-opener{font-size:1.12rem;line-height:1.7;border-left:3px solid #b28ae8;padding-left:1rem}.selling-next{padding:1rem;border:1px solid #715485;border-radius:12px;background:#22172f}.selling-grid details{margin:1.4rem 0}.selling-grid .form select,.selling-grid .form textarea,.selling-grid .form input:not([type=hidden]){width:100%;box-sizing:border-box}
+
+.selling-panel{padding:clamp(20px,2.5vw,34px);margin-bottom:24px}.sales-two-column.selling-grid{grid-template-columns:minmax(0,1.25fr) minmax(320px,1fr)}.selling-panel h2{margin-top:12px}.selling-panel p{line-height:1.65}.selling-panel .sales-hero-actions{flex-wrap:wrap;gap:10px}.selling-panel code{overflow-wrap:anywhere}.selling-panel ol{padding-left:24px;line-height:1.8}.selling-panel summary{cursor:pointer}.selling-panel .sales-muted{font-size:.85rem}.selling-panel form>p{margin-top:16px}.selling-panel label{display:block;margin-bottom:8px}.selling-panel .errorlist{color:#ffb8c7;padding-left:20px}@media(max-width:1050px){.sales-two-column.selling-grid{grid-template-columns:minmax(0,1fr)}}

@@ -242,3 +242,7 @@ TRAINING_MEDIA_ROOT = os.getenv("TRAINING_MEDIA_ROOT", "")
 DEMO_CHAT_MODEL = os.getenv("DEMO_CHAT_MODEL", OPENAI_CHAT_MODEL)
 DEMO_AI_DAILY_LIMIT = int(os.getenv("DEMO_AI_DAILY_LIMIT", "600"))
 DEMO_VOICE_DAILY_LIMIT = int(os.getenv("DEMO_VOICE_DAILY_LIMIT", "600"))
+
+# Calendly credentials remain server-side. Use James’s account and a private random signing secret.
+CALENDLY_API_TOKEN = os.getenv("CALENDLY_API_TOKEN", "").strip()
+CALENDLY_WEBHOOK_SIGNING_KEY = os.getenv("CALENDLY_WEBHOOK_SIGNING_KEY", "").strip()

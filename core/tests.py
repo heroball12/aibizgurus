@@ -691,6 +691,8 @@ class PlatformFlowTests(TestCase):
         self.assertRedirects(response, reverse("lead_generation_batch_detail", args=[batch.pk]))
         self.assertEqual(batch.status, "queued")
         self.client.post(reverse("lead_generation_batch_run", args=[batch.pk]))
+        # The browser advances the saved search checkpoint in a separate request.
+        self.client.post(reverse("lead_generation_batch_run", args=[batch.pk]))
         batch.refresh_from_db()
         self.assertEqual(batch.status, "completed")
         self.assertEqual(batch.quantity_requested, 5)
@@ -770,6 +772,8 @@ class PlatformFlowTests(TestCase):
         })
         alice_batch = LeadGenerationBatch.objects.get(employee=alice, industry="Roofing")
         self.client.post(reverse("lead_generation_batch_run", args=[alice_batch.pk]))
+        # The browser advances the saved search checkpoint in a separate request.
+        self.client.post(reverse("lead_generation_batch_run", args=[alice_batch.pk]))
         self.assertEqual(LeadStaging.objects.filter(created_by=alice, industry="Roofing").count(), 5)
         self.client.force_login(bob)
         self.client.post(reverse("lead_finder"), {
@@ -778,6 +782,8 @@ class PlatformFlowTests(TestCase):
             "quantity": "5",
         })
         bob_batch = LeadGenerationBatch.objects.filter(employee=bob, industry="Roofing").get()
+        self.client.post(reverse("lead_generation_batch_run", args=[bob_batch.pk]))
+        # The browser advances the saved search checkpoint in a separate request.
         self.client.post(reverse("lead_generation_batch_run", args=[bob_batch.pk]))
         bob_batch.refresh_from_db()
         self.assertEqual(bob_batch.quantity_generated, 5)

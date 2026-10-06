@@ -5,3 +5,4 @@ class CrmConfig(AppConfig):
 
     def ready(self):
         import crm.signals  # noqa
+        import crm.followups  # noqa

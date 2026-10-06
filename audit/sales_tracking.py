@@ -13,7 +13,7 @@ from .threadlocal import get_current_request
 
 # Imports, background jobs, website research and outreach never become calls.
 MANUAL_SOURCES = {
-    "lead_edit", "lead_detail", "lead_progress", "lead_bulk_action", "lead_sheet_save",
+    "guided_sell", "lead_edit", "lead_detail", "lead_progress", "lead_bulk_action", "lead_sheet_save",
     "crm_lead_change", "crm_leadnote_add", "crm_leadnote_change",
 }
 IGNORED_FIELDS = {"id", "created_at", "website_review", "business_verification", "duplicate_key"}
@@ -106,5 +106,5 @@ def explicit_call_saved(sender, instance, created, raw=False, **kwargs):
     ctx = context()
     if not raw and created and ctx and instance.activity_type == "call" and not instance.original_import_id and instance.user_id == ctx[1].pk:
         record(instance.lead, "updated", snapshot(instance.lead), call=True)
-    elif not raw and created and ctx and ctx[2] == "lead_progress" and ctx[0].POST.get("outcome-note", "").strip():
+    elif not raw and created and ctx and ctx[2] in {"lead_progress", "guided_sell"} and (ctx[0].POST.get("outcome-note", "") or ctx[0].POST.get("note", "")).strip():
         record(instance.lead, "updated", snapshot(instance.lead), note=True)

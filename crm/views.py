@@ -918,7 +918,7 @@ def lead_detail(request, pk):
             LeadIntelligenceForm(instance=lead, user=request.user, is_sales_manager=is_sales_manager(request.user)),
         )
     return render(request, "crm/lead_detail.html", {
-        **detail_context(lead),
+        **detail_context(lead, request.user),
         "lead": lead,
         "note_form": note_form,
         "intelligence_form": intelligence_form,
@@ -1072,7 +1072,9 @@ def lead_bulk_action(request):
 @employee_required
 def scorecards(request):
     leads = internal_leads_for_user(request.user)
-    return render(request, "crm/scorecards.html", {"scorecards": build_scorecards(leads)})
+    from audit.performance import performance_context
+    staff = None if is_sales_manager(request.user) else User.objects.filter(pk=request.user.pk)
+    return render(request, "crm/scorecards.html", {"scorecards": build_scorecards(leads), "is_manager": is_sales_manager(request.user), **performance_context(request, staff)})
 
 
 @employee_required

@@ -198,7 +198,7 @@ def staff_performance(request, pk):
 @staff_admin_required
 def staff_user_create(request):
     if request.method == "POST":
-        form = StaffUserForm(request.POST)
+        form = StaffUserForm(request.POST, actor=request.user)
         if form.is_valid():
             user = form.save()
             log_activity(
@@ -213,7 +213,7 @@ def staff_user_create(request):
             messages.success(request, f"Staff account created for {user.get_full_name() or user.username}.")
             return redirect("staff_users")
     else:
-        form = StaffUserForm(initial={"role": "employee", "is_active": True})
+        form = StaffUserForm(initial={"role": "employee", "is_active": True}, actor=request.user)
     return render(request, "audit/staff_user_form.html", {"form": form, "staff_user": None})
 
 
@@ -221,7 +221,7 @@ def staff_user_create(request):
 def staff_user_edit(request, pk):
     staff_user = get_object_or_404(User, pk=pk, role__in=["employee", "admin"])
     if request.method == "POST":
-        form = StaffUserForm(request.POST, instance=staff_user)
+        form = StaffUserForm(request.POST, instance=staff_user, actor=request.user)
         if form.is_valid():
             user = form.save()
             log_activity(
@@ -236,7 +236,7 @@ def staff_user_edit(request, pk):
             messages.success(request, "Staff account updated.")
             return redirect("staff_users")
     else:
-        form = StaffUserForm(instance=staff_user)
+        form = StaffUserForm(instance=staff_user, actor=request.user)
     return render(request, "audit/staff_user_form.html", {"form": form, "staff_user": staff_user})
 
 

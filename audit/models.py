@@ -250,6 +250,8 @@ class EmployeeLeadEvent(models.Model):
     proposal = models.BooleanField(default=False)
     won = models.BooleanField(default=False)
     lost = models.BooleanField(default=False)
+    historical = models.BooleanField(default=False)
+    evidence = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -261,7 +263,8 @@ class EmployeeLeadEvent(models.Model):
     @property
     def source_label(self):
         return {
-            "lead_edit": "Lead editor", "lead_detail": "Lead notes & details",
+            "historical_audit": "Historical CRM update", "historical_activity": "Historical activity", "historical_note": "Historical note",
+            "calendly": "Calendly booking", "guided_sell": "Guided selling", "lead_edit": "Lead editor", "lead_detail": "Lead notes & details",
             "lead_progress": "Sales outcome", "lead_bulk_action": "Lead table",
             "lead_sheet_save": "Spreadsheet", "lead_create": "New lead",
             "lead_staging_action": "Lead Finder", "lead_research": "Website research",

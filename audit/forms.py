@@ -23,10 +23,12 @@ class StaffUserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "role", "is_active", "password"]
+        fields = ["first_name", "last_name", "role", "is_active", "is_ai_specialist", "password"]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, actor=None, **kwargs):
         super().__init__(*args, **kwargs)
+        if not actor or not actor.is_owner():
+            self.fields.pop("is_ai_specialist", None)
         self._original_password = self.instance.password
         self.fields["first_name"].required = True
         self.fields["password"].required = not bool(self.instance.pk)

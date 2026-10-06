@@ -16,13 +16,14 @@ from .sales import STAGES, INACTIVE, ASSESSMENT_DESCRIPTION, BOOKING_URL, annota
 from .views import employee_required, internal_leads_for_user, get_internal_lead_or_404, is_sales_manager, paginate, query_without_page
 
 
-def detail_context(lead):
+def detail_context(lead, user=None):
+    from .calendly import booking_url
     brief = lead.assessment_brief or {}
     return {
         "lead": lead, "safe_website": public_url(lead.website), "sales_stage": stage_for(lead)[1], "contact_blocked": lead.status in INACTIVE,
-        "playbook": playbook(lead), "guru_url": guide_url(lead), "booking_url": BOOKING_URL,
+        "playbook": playbook(lead), "guru_url": guide_url(lead), "booking_url": booking_url(lead, user),
         "sales_form": SalesUpdateForm(initial={"follow_up_date":lead.follow_up_date}, prefix="outcome"),
-        "assessment_form": AssessmentForm(prefix="assessment", initial={**brief,"appointment_at":lead.appointment_at,"confirmed":bool(lead.appointment_at),"completed":lead.status in STAGES[4][2]}),
+        "assessment_form": AssessmentForm(user=user, prefix="assessment", initial={**brief,"appointment_at":lead.appointment_at,"confirmed":bool(lead.appointment_at),"completed":lead.status in STAGES[4][2]}),
     }
 
 
@@ -66,7 +67,7 @@ def lead_progress(request, pk):
     action = request.POST.get("action")
     if action not in {"assessment", "progress"}:
         return HttpResponseBadRequest("Choose a valid sales action.")
-    form = AssessmentForm(request.POST, prefix="assessment") if action == "assessment" else SalesUpdateForm(request.POST, prefix="outcome")
+    form = AssessmentForm(request.POST, user=request.user, prefix="assessment") if action == "assessment" else SalesUpdateForm(request.POST, prefix="outcome")
     if form.is_valid():
         with transaction.atomic():
             scope = Lead.objects.filter(lead_type="internal_sales") if is_sales_manager(request.user) else internal_leads_for_user(request.user)
@@ -77,7 +78,7 @@ def lead_progress(request, pk):
                 if lead.status == "do_not_contact":
                     form.add_error(None,"This lead is marked do not contact. A manager must review that restriction before an assessment can be recorded.")
                 else:
-                    lead.assessment_brief = {k:v for k,v in data.items() if k not in {"appointment_at","confirmed","completed"}}
+                    lead.assessment_brief = {**(lead.assessment_brief or {}), **{k:v for k,v in data.items() if k not in {"appointment_at","confirmed","completed"}}}
                     lead.appointment_at = data["appointment_at"]
                     if data["confirmed"]:
                         lead.status = (before if before in {"proposal_requested", "proposal_sent"} else "appointment_completed") if data["completed"] else "appointment_scheduled"
@@ -105,6 +106,6 @@ def lead_progress(request, pk):
                 log_activity(user=request.user,request=request,action="update",model_label="crm.Lead",object_id=lead.pk,object_repr=str(lead),message=note[:255])
                 messages.success(request,"Assessment saved." if action=="assessment" else "Outcome saved. Your next step is ready.")
                 return redirect("lead_detail",pk=pk)
-    context = detail_context(lead)
+    context = detail_context(lead, request.user)
     context.update({"assessment_form" if action=="assessment" else "sales_form":form,"note_form":LeadNoteForm(),"intelligence_form":LeadIntelligenceForm(instance=lead,user=request.user,is_sales_manager=is_sales_manager(request.user)),"activities":lead.activities.select_related("user")[:25],"can_delete_lead":is_sales_manager(request.user)})
     return render(request,"crm/lead_detail.html",context,status=400)

@@ -13,7 +13,7 @@ from .models import ActivityLog, EmployeeLeadEvent, TimeClockEntry
 
 CLOSED = {"closed_won", "closed_lost", "not_interested", "do_not_contact", "permanently_closed", "client_onboarded"}
 COLUMNS = [
-    ("calls", "Calls / updates"), ("worked", "Leads worked"), ("booked", "Assessments booked"),
+    ("calls", "Calls / updates"), ("historical", "Recovered updates"), ("worked", "Leads worked"), ("booked", "Assessments booked"),
     ("completed", "Assessments completed"), ("booking_rate", "Booking rate %"),
     ("hours", "Clocked hours"), ("calls_per_hour", "Calls / hour"),
     ("assigned", "Assigned now"), ("due", "Follow-ups due"), ("overdue", "Overdue"),
@@ -70,6 +70,7 @@ def performance_context(request, staff=None, *, filter_employees=True):
     events = during(EmployeeLeadEvent.objects.filter(actor_id__in=ids), window)
     for values in events.values("actor_id").annotate(
         calls=Count("id", filter=Q(counts_as_call=True)),
+        historical=Count("id", filter=Q(counts_as_call=True, historical=True)),
         worked=Count("lead_key", filter=Q(counts_as_call=True) | Q(assessment_booked=True), distinct=True),
         booked=Count("lead_key", filter=Q(assessment_booked=True), distinct=True),
         completed=Count("lead_key", filter=Q(assessment_completed=True), distinct=True),

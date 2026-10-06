@@ -21,6 +21,9 @@ class LeadStagingInline(admin.TabularInline):
 
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
+    def get_exclude(self, request, obj=None):
+        return () if request.user.can_manage_pricing() else ("assessment_brief",)
+
     list_display = ("name", "business_name", "lead_type", "status", "lead_temperature", "assigned_to", "lead_generation_batch", "needs_review", "value", "created_at")
     search_fields = ("name", "business_name", "email", "phone", "notes", "cleaned_notes", "source_file")
     list_filter = ("lead_type", "status", "lead_temperature", "needs_review", "classification_source", "industry", "lead_generation_batch")

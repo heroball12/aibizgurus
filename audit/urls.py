@@ -1,7 +1,8 @@
 from django.urls import path
-from . import views
+from . import views, history_views
 
 urlpatterns = [
+    path("staff/history/", history_views.historical_activity, name="historical_activity"),
     path("", views.owner_dashboard, name="owner_dashboard"),
     path("activity/", views.owner_activity_logs, name="owner_activity_logs"),
     path("users/", views.owner_users, name="owner_users"),
