@@ -32,6 +32,9 @@
     const targets = {top: document.body, content: document.querySelector('main'), calendar: document.querySelector('.calendly-panel'), 'assessment-request': document.getElementById('assessment-request')};
     const target = targets[event.data.section];
     if (!target) return;
+    if (target.matches('details')) target.open = true;
+    const disclosure = target.closest('details');
+    if (disclosure) disclosure.open = true;
     target.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start'});
     target.setAttribute('data-guide-highlight', '');
     setTimeout(() => target.removeAttribute('data-guide-highlight'), 3500);

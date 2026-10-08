@@ -4,11 +4,23 @@ from django.urls import reverse
 from django.utils import timezone
 
 ASSESSMENT_DESCRIPTION = (
-    "A 15–20 minute video Growth Assessment with an AI Specialist. Review the business and "
+    "A Growth Assessment with an AI Specialist, virtually or in person at our Temecula office (30 minutes in person). Review the business and "
     "how it operates today, identify useful AI opportunities, then propose an implementation "
     "strategy and custom pricing based on the scope."
 )
 BOOKING_URL = "https://calendly.com/james-aibiz/30min"
+
+
+def assessment_url(lead=None, user=None):
+    """One public chooser, preserving rep attribution into either booking path."""
+    from django.core import signing
+    from urllib.parse import urlencode
+    url = reverse("growth_assessment")
+    if lead:
+        actor = user if user and user.is_employee_or_admin() else lead.assigned_to
+        token = signing.dumps({"lead": lead.pk, "rep": actor.pk if actor else None}, salt="assessment-attribution", compress=True)
+        url += "?" + urlencode({"ref": token})
+    return url
 STAGES = [
     ("new", "New", ["new", "not_contacted"]),
     ("outreach", "Reaching out", ["attempted", "no_answer", "voicemail_left", "gatekeeper_reached", "decision_maker_unavailable", "contacted", "demo_sent"]),
@@ -50,7 +62,7 @@ def playbook(lead=None):
     return {
         "question": question, "angle": angle,
         "opener": f"Hi, I’m with AI Business Gurus. I’m learning how {business} handles day-to-day operations. {question}",
-        "invitation": "Would a 15–20 minute video Growth Assessment with an AI Specialist be useful? We’ll review how your business operates, identify where AI could help, and outline an implementation strategy with custom pricing.",
+        "invitation": "Would a Growth Assessment, virtually or in person in Temecula, with an AI Specialist be useful? We’ll review how your business operates, identify where AI could help, and outline an implementation strategy with custom pricing.",
         "objection": "That makes sense. This is a short business review, so we can first understand what you already have and whether there is a useful gap to address. If the timing isn’t right, we can leave it there.",
         "description": ASSESSMENT_DESCRIPTION,
     }

@@ -1,0 +1,3 @@
+{% load static %}<figure class="guru-product-film">
+{% if guru_product_video %}<video controls loop muted playsinline preload="none" poster="{% static 'img/guru-helmet.jpg' %}" aria-label="Guru product film: a mouthless robot welcomes you with a subtle hand gesture and violet light"><source src="{% static guru_product_video %}" type="video/mp4"></video>{% else %}<img src="{% static 'img/guru-helmet.jpg' %}" alt="Guru, our mouthless AI employee, seated in a purple and gold office" loading="lazy">{% endif %}
+<figcaption><span>GURU / YOUR AI GUIDE</span><a href="{% url 'concierge' %}">Talk to Guru ↗</a></figcaption></figure>

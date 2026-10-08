@@ -15,7 +15,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         demo, _ = DemoExperience.objects.get_or_create(slug="automotive", defaults={"name": "Velocity Motors", "profile_slug": "automotive"})
         revision, _ = DemoRevision.objects.get_or_create(experience=demo, version=VERSION, defaults={"content": seed_content()})
-        if not demo.current_revision_id or options["restore_seed"] or demo.current_revision.version == "velocity-2026.1.1":
+        if not demo.current_revision_id or options["restore_seed"] or demo.current_revision.version in ("velocity-2026.1.1", "velocity-2026.1.2"):
             demo.current_revision = revision
         if options["publish"]:
             demo.published = True

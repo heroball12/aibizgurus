@@ -145,7 +145,7 @@ class AIInstanceManager(models.Manager):
         return self.create(
             client=client,
             industry_template=template,
-            name=f"{client.business_name} AI Receptionist",
+            name=f"{client.business_name} Website Chatbot",
             industry=client.industry,
             greeting=greeting,
             system_prompt=prompt,

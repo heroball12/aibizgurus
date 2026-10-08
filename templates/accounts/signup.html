@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Start Your AI Receptionist Demo{% endblock %}
+{% block title %}Create Your Website Chatbot Demo{% endblock %}
 {% block content %}
 <section class="signup-shell">
   <div class="signup-copy">
     <span class="mini-label">Start your demo</span>
-    <h1>Build your AI receptionist workspace.</h1>
-    <p>Create your account, choose your industry, and generate a starter assistant customized around your business type.</p>
+    <h1>Build your website chatbot.</h1>
+    <p>Create a private workspace, try the website chat, and see customer inquiries and conversations in your demo CRM.</p>
     {% if selected_template %}
       <div class="selected-card">
         <strong>{{ selected_template.name }} template selected</strong>
@@ -14,7 +14,7 @@
     {% endif %}
     <div class="selected-card subtle">
       <strong>{{ template_count }} industry templates loaded</strong>
-      <p>If you do not see your exact business type, choose the closest match. You can customize the assistant after signup.</p><small>Source: {{ template_source }}</small>
+      <p>If you do not see your exact business type, choose the closest match. You can customize the assistant after signup.</p>
     </div>
   </div>
 
@@ -37,7 +37,7 @@
       <p><label>Password</label>{{ form.password1 }}</p>
       <p><label>Confirm password</label>{{ form.password2 }}</p>
       {% if form.errors %}<div class="form-errors">{{ form.errors }}</div>{% endif %}
-      <button class="btn full">Create My Demo</button>
+      <button class="btn full">Create my chatbot demo</button>
     </form>
   </div>
 </section>

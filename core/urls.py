@@ -1,5 +1,5 @@
 from django.urls import path, include
-from . import views, demo_views
+from . import views, demo_views, booking_views
 urlpatterns = [
     path("healthz/", views.healthz, name="healthz"),
     path("robots.txt", views.robots_txt, name="robots_txt"),
@@ -15,6 +15,8 @@ urlpatterns = [
     path("demo/", views.demo, name="demo"),
     path("pricing/", views.pricing, name="pricing"),
     path("case-studies/", views.case_studies, name="case_studies"),
-    path("growth-assessment/", views.growth_assessment, name="growth_assessment"),
+    path("growth-assessment/", booking_views.assessment, name="growth_assessment"),
+    path("growth-assessment/confirmed/<str:token>/", booking_views.confirmation, name="office_confirmation"),
+    path("owner/calendar/", booking_views.owner_calendar, name="office_calendar"),
     path("request-consultation/", views.consultation_request, name="consultation_request"),
 ]

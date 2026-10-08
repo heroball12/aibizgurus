@@ -84,6 +84,22 @@ class Customer(Arguments):
         return clean_phone(value) if info.field_name == "phone" else clean_email(value)
 
 
+class ServiceIntake(Arguments):
+    vehicle: str | None = Field(default=None, min_length=3, max_length=120)
+    mileage: int | None = Field(default=None, ge=0, le=1000000)
+    services: list[Literal["maintenance", "oil", "tires", "brakes", "battery", "diagnostic", "other"]] | None = Field(default=None, max_length=7)
+    concern: str | None = Field(default=None, min_length=3, max_length=1000)
+    visit_type: Literal["undecided", "drop_off", "wait"] | None = None
+
+
+class OpenService(Arguments):
+    confirmed_by_customer: bool
+
+
+class ServiceStatus(Arguments):
+    pass
+
+
 class FinanceApplication(Arguments):
     stock: str | None = Field(default=None, max_length=30, description="The customer's chosen available stock, or null if still deciding.")
     confirmed_by_customer: bool = Field(description="True only when the customer asks for or accepts opening the fictional financing application.")
@@ -116,6 +132,9 @@ TOOL_MODELS = {
     "get_service_slots": (Slots, "Return available synthetic service intake/drop-off times. No completion-time guarantee."),
     "create_demo_sales_appointment": (SalesAppointment, "Book/replace a DEMO ONLY test drive after the customer chooses an offered slot. Writes only the session's fictional dealership CRM."),
     "create_demo_service_appointment": (ServiceAppointment, "Book/replace a DEMO ONLY service intake after the customer chooses an offered slot. No real calendar or outbound message."),
+    "update_service_intake": (ServiceIntake, "Save only customer-stated vehicle, mileage, requested services, symptoms and waiting/drop-off preference to this session's fictional service order. Unknown fields are null. Services must include all known requested categories. Not a diagnosis or repair authorization."),
+    "open_demo_service_intake": (OpenService, "Open a prefilled on-screen service intake form after the customer agrees. The customer can review details and choose an optional demo drop-off appointment. Do not submit the form for them."),
+    "get_demo_service_status": (ServiceStatus, "Read the current session's fictional service order, appointment, advisor, inspection notes and progress. Always use this before answering service status questions. Staff alone progress repair/approval states. Never invent work, prices or pickup times."),
     "update_customer": (Customer, "Remember customer-stated name, phone, email, financing preference, needs and buying timeline. Ask for contact details naturally, recommend fictional examples for this demo, and respect a decline. Never invent contact information. On already purchased or stop requests mark not in market / do not follow up."),
     "open_demo_finance_application": (FinanceApplication, "Open the on-screen fictional financing application after the customer agrees. Prefills known contact and selected vehicle. Only the customer can review and submit the form. No real credit application, credit check or lender connection."),
     "create_demo_trade_lead": (Trade, "Record known trade information, leave unknown fields null. Never return or invent an exact valuation."),
@@ -226,10 +245,17 @@ def _appointment(session, department, args):
             raise ValueError("That vehicle is not available for a demo test drive.")
         appointment["vehicle"] = vehicle
     else:
+        from .service import CUSTOMER_EDITABLE
+        order = session.state.get("service_order")
+        if order and order["status"] not in CUSTOMER_EDITABLE:
+            raise ValueError("This order is with the service team. Ask the advisor to review any appointment change.")
         appointment.update(vehicle_description=args["vehicle"], request=args["request"])
     previous = session.state["appointments"].get(department)
     session.state["appointments"][department] = appointment
     session.state.update(stage="appointment", temperature="appointment")
+    if department == "service":
+        from .service import attach_appointment
+        attach_appointment(session, appointment)
     if previous != appointment:
         session.state["crm_actions"].append({"action": "Demo appointment rescheduled" if previous else "Demo appointment booked", "description": f"{department.title()} · {slot['label']} · {appointment['confirmation']}"})
     return appointment
@@ -278,6 +304,21 @@ def execute(session, name, raw):
             return _appointment(session, "sales", args)
         if name == "create_demo_service_appointment":
             return _appointment(session, "service", args)
+        if name == "update_service_intake":
+            from .service import update_intake, public_order
+            if not any(v is not None for v in args.values()):
+                raise ValueError("Collect at least one service detail before creating an intake.")
+            update_intake(session, args)
+            return {"service_order": public_order(session), "synthetic": True}
+        if name == "open_demo_service_intake":
+            if not args["confirmed_by_customer"]:
+                raise ValueError("Ask whether the customer wants to open their demo service intake first.")
+            import uuid
+            state["service_open_request"] = uuid.uuid4().hex
+            return {"action": "open_service_intake", "note": "Explain the form is opening for the customer to review and submit. No real repair authorization."}
+        if name == "get_demo_service_status":
+            from .service import public_order
+            return {"service_order": public_order(session), "synthetic": True, "note": "Only this session's record is available. No record means no order has been captured yet."}
         if name == "update_customer":
             previous = dict(state["customer"])
             state["customer"].update({k: v for k, v in args.items() if v is not None})
@@ -289,6 +330,9 @@ def execute(session, name, raw):
                 state["stage"] = "discovery"
             if previous != state["customer"]:
                 state["crm_actions"].append({"action": "Customer preferences captured", "description": "Axel updated customer-stated needs and follow-up preferences."})
+                if state.get("service_order") and any(previous.get(k) != state["customer"].get(k) for k in ("name", "phone", "email")):
+                    from .service import record_event
+                    record_event(session, state["service_order"], "Service contact updated", "Axel saved customer-stated contact details for the fictional service advisor.")
             return state["customer"]
         if name == "open_demo_finance_application":
             if not args["confirmed_by_customer"]:
@@ -317,11 +361,12 @@ def execute(session, name, raw):
 
 
 def handoff(session):
+    from .service import public_order
     s = session.state
     return {"customer": s.get("customer", {}), "trade": s.get("trade", {}), "appointments": s.get("appointments", {}),
             "vehicles": [get_vehicle(session.revision.content, stock) for stock in s.get("vehicles", [])],
             "summary": s.get("summary", ""), "follow_up": s.get("follow_up", ""), "temperature": s.get("temperature", "new"),
-            "stage": s.get("stage", "ready"), "financing_application": s.get("financing_application"), "transcript": session.transcript, "synthetic": True}
+            "stage": s.get("stage", "ready"), "service_order": public_order(session), "financing_application": s.get("financing_application"), "transcript": session.transcript, "synthetic": True}
 
 
 @transaction.atomic
@@ -334,6 +379,8 @@ def sync_crm(session):
     lead = DemoCRMLead.objects.select_for_update().get(pk=lead.pk)
     snapshot = handoff(session)
     lead.customer_name = snapshot["customer"].get("name") or "Demo Customer"
+    if created and snapshot.get("service_order"):
+        lead.assigned_to = snapshot["service_order"]["advisor"]
     if created or lead.snapshot.get("stage") != snapshot["stage"]:
         lead.stage = snapshot["stage"]
     lead.snapshot = snapshot

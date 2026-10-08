@@ -55,7 +55,7 @@ def links_for(lead, sender, options):
             # A link lookup must not prevent an otherwise useful draft.
             links['demo'] = ''
     if options['include_assessment']:
-        links['assessment'] = sender['scheduling_url'] or safe_url(BOOKING_URL)
+        links['assessment'] = sender['scheduling_url'] or (base + reverse('growth_assessment') if base else safe_url(BOOKING_URL))
     return links
 
 def assemble(lead, user, options, services):

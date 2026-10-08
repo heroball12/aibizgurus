@@ -186,12 +186,17 @@ class ConciergeTests(TestCase):
             self.assertFalse(page['path'].startswith('//'))
         self.assertLessEqual(len(concierge.pages()),20)
 
-    def test_personality_uses_same_prices_as_site_and_fits_provider(self):
+    def test_personality_uses_custom_pricing_and_current_products_within_provider_limit(self):
         prompt=concierge.personality()
         self.assertLessEqual(len(prompt),10000)
         for plan in PRICING_PLANS:
-            self.assertIn(plan['setup'],prompt)
-            self.assertIn(plan['monthly'],prompt)
+            self.assertNotIn(plan['setup'],prompt)
+            self.assertNotIn(plan['monthly'],prompt)
+
+        self.assertIn('only AI Specialists discuss it during a Growth Assessment', prompt)
+        self.assertIn('exclusively website chatbots', prompt)
+        self.assertIn('41877 Enterprise Cir', prompt)
+        self.assertIn('in-person visits use the website calendar', prompt)
 
     def followup_data(self):
         return {'name':'Test Customer','email':'customer@example.com','business_name':'Example Company','industry':'Home services','message':'I want to improve follow-up.','consent':'on','submission_id':str(uuid.uuid4())}

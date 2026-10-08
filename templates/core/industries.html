@@ -1,36 +1,10 @@
-{% extends "base.html" %}
-{% block title %}Supported Industries | AI Business Gurus{% endblock %}
-{% block content %}
-<section class="pagehead clean-head">
-  <span class="mini-label">Supported industries</span>
-  <h1>Choose your business type.</h1>
-  <p>Select an industry to start a demo with the right template preloaded. If you do not see your exact category, request a consultation and we will map the workflow for you.</p>
-  <div class="industry-meta">
-    <strong>{{ industry_count }} supported templates</strong>
-    <small>Source: {{ industry_source }}</small>
-  </div>
-  <a class="btn ghost" href="{% url 'consultation_request' %}">Request a Custom Industry</a>
+{% extends "base.html" %}{% load static %}
+{% block title %}Website Chatbots for Your Industry | AI Business Gurus{% endblock %}
+{% block extra_head %}<script src="{% static 'js/chatbot-catalog.js' %}" defer></script>{% endblock %}
+{% block content %}<div class="chatbot-catalog">
+<section class="brand-section flagship-split"><div class="brand-section-copy"><span class="brand-kicker">ONE PRODUCT / WEBSITE CHAT AI</span><h1>Your website.<br><em>Ready to reply.</em></h1><p>See how website chatbots can help your business. Answer customer questions, collect inquiries, and keep the conversation in your own workspace.</p><a class="btn" href="#chatbotIndustries">Create your chatbot demo ↓</a><a class="brand-text-link" href="{% url 'demo' %}">Looking for an AI employee you can see and speak to? →</a></div>
+<div class="chatbot-preview" aria-label="Illustrative website chatbot conversation"><div class="chatbot-preview-bar"><span>✦</span><div><strong>Your business</strong><small>Website assistant · Example conversation</small></div><i></i></div><div class="chatbot-preview-messages"><p class="customer">Hi! Can you help me book a consultation?</p><p>Of course. What would you like help with?</p><p class="customer">I’m interested in your services.</p><p>I can help your team follow up. What’s your name and preferred contact information?</p><div class="chatbot-lead-preview"><span>↗</span><div><strong>Conversation → inquiry</strong><small>Review it in your demo workspace.</small></div></div></div><div class="chatbot-preview-input">Ask a question… <span>↑</span></div></div>
 </section>
-
-{% if groups %}
-  {% for category, items in groups.items %}
-  <section class="industry-list-section">
-    <h2>{{ category }}</h2>
-    <div class="industry-list">
-      {% for item in items %}
-        <a class="industry-list-item" href="{% url 'signup' %}?industry_slug={{ item.slug }}">
-          <span>{{ item.name }}</span>
-          <small>Start demo →</small>
-        </a>
-      {% endfor %}
-    </div>
-  </section>
-  {% endfor %}
-{% else %}
-  <section class="clean-panel">
-    <h2>No industries loaded yet.</h2>
-    <p>Run the seed command and refresh this page.</p>
-    <code>python manage.py seed_industries --clear</code>
-  </section>
-{% endif %}
-{% endblock %}
+<section class="brand-section" id="chatbotIndustries"><div class="brand-section-heading"><span class="brand-kicker">BUILD YOUR OWN DEMO</span><h2>Start with your business.</h2><p>Choose a template. Create a private account. Test the chat and review captured inquiries.</p></div><label class="catalog-search" for="chatbotSearch"><span>Find your industry</span><input id="chatbotSearch" type="search" placeholder="Try insurance, restaurant, real estate…" autocomplete="off"></label><p id="chatbotResults" class="brand-muted" aria-live="polite">{{ industry_count }} website chatbot templates</p>
+<div class="catalog-groups">{% for category, items in groups.items %}<details class="catalog-group" {% if forloop.first %}open{% endif %}><summary>{{ category }} <span>{{ items|length }} template{{ items|length|pluralize }}</span></summary><div class="industry-list">{% for item in items %}<a class="industry-list-item" data-industry="{{ item.name }} {{ category }}" href="{% url 'signup' %}?industry_slug={{ item.slug }}"><span>{{ item.name }}</span><small>Create chat demo ↗</small></a>{% endfor %}</div></details>{% empty %}<p>Call <a href="{{ company.phone_uri }}">{{ company.phone }}</a> and we’ll help set up your website chatbot.</p>{% endfor %}</div><p id="chatbotNoResults" hidden>No matching template yet. <a href="{% url 'consultation_request' %}">Tell us about your business →</a></p>
+</section><section class="brand-section brand-simple-steps"><div><b>01</b><h3>Make it yours.</h3><p>Add your business’s services, hours and FAQs.</p></div><div><b>02</b><h3>Try the conversation.</h3><p>Test the website chat with sample customer details.</p></div><div><b>03</b><h3>See the follow-through.</h3><p>Log in to review inquiries and saved conversations.</p></div></section></div>{% endblock %}

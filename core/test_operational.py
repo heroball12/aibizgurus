@@ -224,7 +224,7 @@ class OperationalTests(TestCase):
 
     @override_settings(LEAD_FINDER_ENABLE_PUBLIC_HTTP=False, LEAD_FINDER_ENABLE_FALLBACK_PROVIDER=True)
     def test_lead_finder_never_fills_with_fake_rows(self):
-        self.assertEqual([p.name for p in get_lead_providers()],["openstreetmap"])
+        self.assertEqual({p.name for p in get_lead_providers()}, {"openstreetmap"})
         batch = LeadGenerationBatch.objects.create(employee=self.user, industry="HVAC",location="San Diego, CA",quantity_requested=5)
         generate_leads_for_batch(batch.pk); batch.refresh_from_db()
         self.assertEqual(batch.status,"failed")
@@ -245,10 +245,10 @@ class OperationalTests(TestCase):
         self.assertNotIn('area["name"="San Diego, CA"]',query)
 
     def test_already_running_generation_is_not_run_twice(self):
-        batch=LeadGenerationBatch.objects.create(employee=self.user,industry="HVAC",quantity_requested=5,status="searching")
-        with patch("crm.lead_finder.get_lead_providers") as provider:
+        batch=LeadGenerationBatch.objects.create(employee=self.user,industry="HVAC",quantity_requested=5,status="searching",lease_expires_at=timezone.now() + timedelta(minutes=2))
+        with patch("crm.lead_finder.get_lead_providers", return_value=[MagicMock()]) as providers:
             generate_leads_for_batch(batch.pk)
-            provider.assert_not_called()
+            providers.return_value[0].search.assert_not_called()
 
     def test_staff_edit_without_password_keeps_existing_password(self):
         staff=User.objects.create_user(username="jamie@aibiz.guru",first_name="Jamie",role="employee",password="Original-Unique-2026!")

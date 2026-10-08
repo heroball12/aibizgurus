@@ -1,0 +1,46 @@
+/* Scoped to authenticated iPad presentation routes; public pages retain their layout. */
+.ex-ipad-signin .concierge-launcher,.ex-ipad-signin #teamNotificationCenter{display:none}
+.ex-ipad-login{min-height:90dvh;max-width:1400px;margin:auto;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:64px;padding:64px}
+.ex-ipad-login-art h1{font-size:clamp(34px,4vw,62px);line-height:1.12;letter-spacing:-2px;margin:24px 0}
+.ex-ipad-login-art em{font-style:normal;color:var(--ex-purple)}
+.ex-ipad-login-art p{color:var(--ex-muted);line-height:1.8}
+.ex-ipad-login-art img{width:100%;border-radius:20px;margin-top:28px;max-height:300px;object-fit:cover}
+.ex-ipad-login-form{background:linear-gradient(145deg,#221932,#19131d);padding:40px;border:1px solid var(--ex-border);border-radius:24px}
+.ex-ipad-login-form h2{font-size:34px;line-height:1.2;margin:20px 0}
+.ex-ipad-login-form p,.ex-ipad-login-form small{color:var(--ex-muted)}
+.ex-ipad-login-form label{display:block;font-size:14px;margin:22px 0 8px}
+.ex-ipad-login-form input{width:100%;padding:15px;border:1px solid #514060;border-radius:12px;background:#100c12;color:white;font-size:17px}
+.ex-ipad-login-form button{width:100%;margin:28px 0 20px;min-height:50px}
+.ex-ipad-login-form>a{color:var(--ex-purple);font-size:14px}
+.ex-ipad-login-form small{display:block;line-height:1.8;margin-top:32px}
+@media(max-width:900px){.ex-ipad-login{padding:32px;gap:28px}.ex-ipad-login-art img{display:none}}
+@media(max-width:650px){.ex-ipad-login{grid-template-columns:1fr;padding:24px}.ex-ipad-login-art{display:none}.ex-ipad-login-form{padding:28px}}
+.ex-ipad .ex-nav,.ex-ipad .ex-footer,.ex-ipad .ex-next,.ex-ipad .ex-hero,
+.ex-ipad #presentation,.ex-ipad #resetDemo,.ex-ipad #teamBell{display:none}
+.ex-ipad .ex-shell{max-width:none;padding:16px 20px 20px}
+.ex-ipad .ex-toolbar{margin:0 0 14px}
+.ex-ipad .ex-workspace{border-radius:20px;overflow:hidden}
+.ex-ipad button,.ex-ipad .ex-button,.ex-ipad select{min-height:44px;touch-action:manipulation}
+.ex-ipad input,.ex-ipad textarea,.ex-ipad select{font-size:16px}
+.ex-ipad .ex-dialog{max-height:calc(100dvh - 32px);width:min(920px,calc(100vw - 32px))}
+.ex-ipad .ex-crm{max-width:none;width:calc(100% - 40px);margin:20px}
+.ex-ipad .ex-crm-login{margin:36px auto}
+.ex-ipad .ex-portrait{width:90px;height:114px;flex-shrink:0}
+@media(min-width:850px) and (min-height:620px){
+  .ex-ipad .ex-workspace{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);height:calc(100dvh - 106px);min-height:460px}
+  .ex-ipad:has(#connectionNotice:not([hidden])) .ex-workspace{height:calc(100dvh - 168px)}
+  .ex-ipad .ex-conversation{min-height:0;display:flex;flex-direction:column;border-right:1px solid var(--ex-border)}
+  .ex-ipad .ex-messages{height:auto;min-height:90px;flex:1;overscroll-behavior:contain}
+  .ex-ipad .ex-inventory{min-height:0;overflow:auto;overscroll-behavior:contain;padding:22px}
+  .ex-ipad .ex-concierge{padding:16px;gap:12px}
+  .ex-ipad .ex-concierge h2{font-size:24px}
+  .ex-ipad .ex-mode{flex-direction:column}
+  .ex-ipad .ex-vehicle-cards{grid-template-columns:1fr}
+  .ex-ipad .ex-inventory-empty{min-height:220px}
+}
+@media(max-width:849px), (max-height:619px){
+  .ex-ipad .ex-workspace{grid-template-columns:1fr}
+  .ex-ipad .ex-messages{height:260px}
+  .ex-ipad .ex-shell{padding:12px}
+  .ex-ipad .ex-toolbar-actions{flex-wrap:wrap}
+}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}Sign in · Guru Drive{% endblock %}
+{% block body_class %}experience-page ex-ipad-signin{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/experience.css' %}"><link rel="stylesheet" href="{% static 'css/experience-ipad.css' %}">{% endblock %}
+{% block navigation %}{% endblock %}{% block footer %}{% endblock %}
+{% block content %}
+<section class="ex-ipad-login">
+  <div class="ex-ipad-login-art"><span class="ex-eyebrow">AI BUSINESS GURUS / PRIVATE PRESENTATIONS</span><h1>The conversation.<br><em>The entire journey.</em></h1><p>Meet Axel. Explore the showroom.<br>See every next step in the dealership CRM.</p><img src="{% static 'img/experience/showroom.jpg' %}" alt="Fictional Velocity Motors showroom"></div>
+  <div class="ex-ipad-login-form"><span class="ex-eyebrow">GURU DRIVE</span><h2>Your showroom<br>is ready.</h2><p>Sign in with your AI Business Gurus employee account.</p>
+    <form method="post">{% csrf_token %}
+      {% if form.errors %}<p class="ex-notice" role="alert">The username or password wasn't recognized. Please try again.</p>{% endif %}
+      <label for="id_username">Username</label><input id="id_username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" value="{{ form.username.value|default:'' }}" required>
+      <label for="id_password">Password</label><input id="id_password" name="password" type="password" autocomplete="current-password" required>
+      <button type="submit" class="ex-button ex-gold">Enter the showroom ↗</button>
+    </form>
+    <a href="{% url 'password_reset' %}">Forgot your password?</a>
+    <small>Private employee access · Internet required<br>Fictional dealership data. No real purchases or credit checks.</small>
+  </div>
+</section>
+{% endblock %}

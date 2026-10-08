@@ -1,27 +1,13 @@
-{% extends "base.html" %}
-{% block title %}Solutions | AI Business Gurus{% endblock %}
-{% block meta_description %}Explore AI Business Gurus solutions: AI Employees, AI Chatbots, Voice AI, automation, websites, marketing, CRM integrations, and AI consulting for revenue growth.{% endblock %}
+{% extends "base.html" %}{% load static %}
+{% block title %}AI Built Around Your Business | AI Business Gurus{% endblock %}
+{% block meta_description %}Meet your AI employee, try a website chatbot, or explore a custom workflow with an AI Specialist.{% endblock %}
 {% block content %}
-<section class="growth-page-hero">
-  <span class="mini-label">Solutions</span>
-  <h1>AI growth systems for every revenue bottleneck.</h1>
-  <p>AI Business Gurus combines AI Employees, industry chatbots, voice AI, automation, websites, marketing, CRM integrations, and consulting into practical workflows that help businesses make more money.</p>
-  <div class="actions">
-    <a class="btn" href="{% url 'growth_assessment' %}">Book Growth Assessment</a>
-    <a class="btn ghost" href="{% url 'demo' %}">Open Demo Center</a>
-  </div>
+<section class="brand-section flagship-split"><div><span class="brand-kicker">BUILT AROUND YOUR BUSINESS</span><h1>A better way<br><em>to get to work.</em></h1><p>Start with a conversation. Connect the tools and workflows that support your team.</p><a class="btn" href="{% url 'growth_assessment' %}">Find your next step ↗</a></div><img class="brand-rounded-image" src="{% static 'img/demo-neural-core.png' %}" alt="Purple and gold AI intelligence core"></section>
+<section class="brand-section brand-product-grid">
+<a class="brand-product-card primary" href="{% url 'demo' %}?mode=video#employeePanel"><img src="{% static 'img/guru-helmet.jpg' %}" alt="Guru, your AI employee" loading="lazy"><div><span class="brand-kicker">OUR FLAGSHIP</span><h3>See it. Speak to it.</h3><p>An AI employee built for customer conversations.</p><strong>Meet your AI employee ↗</strong></div></a>
+<a class="brand-product-card" href="{% url 'industries' %}"><img src="{% static 'img/demo-film-poster.png' %}" alt="An AI conversation workflow" loading="lazy"><div><span class="brand-kicker">WEBSITE CHATBOTS</span><h3>Ready to reply.</h3><p>Try a chat assistant with your own business details.</p><strong>Create a website chat demo ↗</strong></div></a>
+<a class="brand-product-card" href="{% url 'experience_home' %}"><img src="{% static 'img/experience/showroom.jpg' %}" alt="Velocity Motors fictional dealership" loading="lazy"><div><span class="brand-kicker">CONNECTED WORKFLOWS</span><h3>See the follow-through.</h3><p>Explore a fictional dealership and its connected CRM.</p><strong>Try the full demo ↗</strong></div></a>
 </section>
-
-<section class="growth-card-grid">
-  {% for solution in solutions %}
-    {% include "includes/solution_card.html" %}
-  {% endfor %}
-</section>
-
-<section class="luxury-cta">
-  <span>Not sure where to start?</span>
-  <h2>We’ll find the revenue leaks first.</h2>
-  <p>Book an AI Business Growth Assessment and we’ll map the highest-impact workflows for your business before recommending any technology.</p>
-  <a class="btn" href="{% url 'growth_assessment' %}">Find Hidden Revenue Opportunities</a>
-</section>
+<section class="brand-section"><span class="brand-kicker">WHAT ELSE CAN WE BUILD?</span><h2>The tools behind the experience.</h2><div class="catalog-groups">{% for solution in solutions %}{% if solution.slug != 'ai-employees' and solution.slug != 'ai-chatbots' %}<details class="catalog-group"><summary>{{ solution.name }}</summary><div class="brand-service-detail"><p>{{ solution.summary }}</p><a href="{% url 'solution_detail' solution.slug %}">Explore {{ solution.name }} ↗</a></div></details>{% endif %}{% endfor %}</div></section>
+<section class="brand-bottom-cta"><h2>Your business. Your build.</h2><p>An AI Specialist will help shape the implementation and custom pricing during your Growth Assessment.</p><a class="btn" href="{% url 'growth_assessment' %}">Book a Growth Assessment ↗</a></section>
 {% endblock %}

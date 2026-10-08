@@ -1,47 +1,32 @@
-{% extends "base.html" %}
-{% block extra_head %}
-<link rel="preconnect" href="https://assets.calendly.com">
-<link rel="preconnect" href="https://calendly.com">
-{% endblock %}
-{% block title %}AI Business Growth Assessment | AI Business Gurus{% endblock %}
-{% block meta_description %}Book an AI Business Growth Assessment to find hidden revenue opportunities through business review, lead-flow review, missed-opportunity analysis, AI recommendations, and customer journey review.{% endblock %}
+{% extends "base.html" %}{% load static %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/booking.css' %}?v=20261008b"><script src="{% static 'js/office-booking.js' %}" defer></script>{% endblock %}
+{% block title %}Book a Growth Assessment | AI Business Gurus{% endblock %}
+{% block meta_description %}Meet an AI Specialist on a video call. In-person visits are also available by appointment. Explore your business operations, AI opportunities and an implementation strategy with custom pricing.{% endblock %}
 {% block content %}
-<section class="assessment-hero">
-  <div>
-    <span class="mini-label">AI Business Growth Assessment</span>
-    <h1>Find the hidden revenue opportunities AI can unlock.</h1>
-    <p>Meet with an AI Specialist by video for 15–20 minutes. We review your business and current operations, identify where AI could help, and propose an implementation strategy with custom pricing based on your needs.</p>
-    <div class="assessment-list">
-      <span>Business Review</span>
-      <span>Lead Flow Review</span>
-      <span>Missed Opportunity Analysis</span>
-      <span>AI Recommendations</span>
-      <span>Customer Journey Review</span>
-      <span>15–20 Minute Video Growth Assessment</span>
-      <span>No Obligation</span>
-    </div>
+<div class="booking-shell">
+  <header class="booking-intro"><span class="mini-label">Your business. Your next chapter.</span><h1>A real conversation.<br><span>A clearer way forward.</span></h1><p>Meet an AI Specialist to review how your business works, identify where AI can help, and explore an implementation strategy with custom pricing built around your needs.</p></header>
+  <div class="booking-layout">
+    <aside class="booking-location"><span class="mini-label">Built around your business</span><h2>What we’ll<br>explore.</h2><ul class="booking-outcomes"><li>Your business and daily workflow</li><li>Practical opportunities for AI</li><li>A tailored implementation strategy</li></ul><p>Custom pricing is discussed with your AI Specialist during the assessment.</p><div class="booking-detail"><p>Questions before we meet?<br><a href="{{ company.phone_uri }}">{{ company.phone }}</a></p></div></aside>
+    <section class="booking-panel calendly-panel" id="calendar" aria-labelledby="booking-title">
+      <span class="mini-label">{% if mode == 'in-person' %}Office visit{% else %}Virtual · Video call{% endif %}</span><h2 id="booking-title">{% if mode == 'in-person' %}Meet at our Temecula office.{% else %}Book a Growth Assessment.{% endif %}</h2>
+      <nav class="booking-format-alternative" aria-label="Meeting format">{% if mode == 'in-person' %}<a href="{{ virtual_url }}#calendar">← Book a video call instead</a><address>{{ company.street }}<br>{{ company.city_state_zip }}</address>{% else %}<a href="{{ office_url }}#calendar">Prefer to meet in person?</a>{% endif %}</nav>
+      {% if mode == 'virtual' %}
+        <div class="booking-step"><span class="mini-label">Choose your time</span><p>Choose a time below. Calendly confirms the video meeting and sends your calendar invitation.</p><div class="calendly-inline-widget" data-url="{{ widget_url }}" aria-label="Calendly scheduler for your virtual Growth Assessment"></div><p><a href="{{ booking_url }}" target="_blank" rel="noopener">Open Calendly in a new tab ↗</a></p><noscript><p>Use the Calendly link above to book your virtual assessment.</p></noscript></div>
+        <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+      {% elif mode == 'in-person' %}
+        {% if schedule.enabled %}
+        <div class="booking-step"><span class="mini-label">Choose your office visit</span><p>{{ schedule.duration_minutes }} minutes together at our Temecula office. All times are <strong>Pacific time</strong>.</p>
+          <form method="get" action="{% url 'growth_assessment' %}#calendar" class="date-picker"><input type="hidden" name="mode" value="in-person"><input type="hidden" name="demo_ref" value="{{ demo_ref }}"><input type="hidden" name="ref" value="{{ ref }}"><label for="visitDate">Choose a date<input type="date" id="visitDate" name="date" value="{{ selected_day|date:'Y-m-d' }}" min="{{ today|date:'Y-m-d' }}" max="{{ last_day|date:'Y-m-d' }}" required></label><button class="btn ghost" type="submit">Show times</button></form>
+          <form method="post" class="form office-booking-form" data-office-booking>{% csrf_token %}<input type="hidden" name="action" value="book_in_person"><input type="hidden" name="date" value="{{ selected_day|date:'Y-m-d' }}"><input type="hidden" name="demo_ref" value="{{ demo_ref }}"><input type="hidden" name="ref" value="{{ ref }}">{{ office_form.submission_token }}{{ office_form.website_confirm }}
+            <div role="alert">{{ office_form.non_field_errors }}{{ office_form.starts_at.errors }}{{ office_form.submission_token.errors }}{{ office_form.website_confirm.errors }}</div>
+            <fieldset class="time-slots"><legend>{{ selected_day|date:"l, F j" }}</legend>{% for slot in slots %}<label><input type="radio" name="starts_at" value="{{ slot|date:'c' }}" required {% if office_form.starts_at.value == slot.isoformat %}checked{% endif %}><span>{{ slot|date:"g:i A" }}</span></label>{% empty %}<p class="booking-empty">No appointments available on this date. Choose another day or <a href="{{ company.phone_uri }}">call us</a>.</p>{% endfor %}</fieldset>
+            {% if slots %}<span class="mini-label">A little about you</span><div class="booking-fields">{% for field in office_fields %}<div {% if field.name == 'message' %}class="full"{% endif %}>{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}</div><p class="booking-note">You’re booking an in-person visit at {{ company.address }}. We’ll email your confirmation. To change or cancel, call {{ company.phone }}.</p><button class="btn" type="submit" data-book-submit>Confirm in-person appointment ↗</button><p data-book-status role="status" aria-live="polite"></p>{% endif %}
+          </form>
+        </div>
+        {% else %}<div class="booking-empty"><h3>Let’s arrange your visit.</h3><p>Online office scheduling is currently paused. Call <a href="{{ company.phone_uri }}">{{ company.phone }}</a> to arrange an in-person assessment, or choose virtual above.</p></div>{% endif %}
+      {% else %}<div class="booking-empty"><h3>Your office or ours.</h3><p>Choose in person to meet us in Temecula, or virtual to join a video call. Both start with your business and what you want to improve.</p></div>{% endif %}
+    </section>
   </div>
-  <section class="clean-panel assessment-form calendly-panel">
-    <span class="mini-label">Schedule online</span>
-    <h2>Book your Growth Assessment.</h2>
-    <p>Choose a time that works for you. Calendly will confirm the meeting and send the calendar invite.</p>
-    <div
-      class="calendly-inline-widget"
-      data-url="{{ booking_url }}?hide_gdpr_banner=1&primary_color=7c3aed"
-      aria-label="Calendly scheduler for your Growth Assessment"
-    ></div>
-    <noscript>
-      <p class="calendly-fallback">
-        JavaScript is required to load the scheduler.
-        <a href="{{ booking_url }}">Open Calendly to book your call.</a>
-      </p>
-    </noscript>
-    <p class="calendly-fallback">
-      Having trouble seeing the calendar?
-      <a href="{{ booking_url }}" target="_blank" rel="noopener">Open Calendly in a new tab.</a>
-    </p>
-  </section>
-</section>
-<section class="clean-panel narrow" id="assessment-request"><span class="mini-label">Prefer a follow-up?</span><h2>Tell us about your business.</h2><p>Send a request and our team will follow up. This does not reserve a calendar time.</p><form method="post" class="form">{% csrf_token %}{% if demo_ref %}<input type="hidden" name="demo_ref" value="{{ demo_ref }}">{% endif %}{{ form.as_p }}<button class="btn" type="submit">Request a growth assessment</button></form></section>
-<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+  <details class="booking-followup" id="assessment-request" {% if form.errors %}open{% endif %}><summary>Not ready to choose a time? Request a follow-up.</summary><p>Tell us about your business and we’ll follow up. This form does not reserve a calendar time.</p><form method="post" class="form">{% csrf_token %}<input type="hidden" name="demo_ref" value="{{ demo_ref }}">{{ form.as_p }}<button class="btn" type="submit">Request a growth assessment</button></form></details>
+</div>
 {% endblock %}

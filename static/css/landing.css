@@ -1,6 +1,6 @@
 /* AI Business Gurus landing v4 — minimal, visual, modern */
 :root{
-  --v4-bg:#050617;
+  --v4-bg:#100517;
   --v4-ink:#120d23;
   --v4-muted:#6f647e;
   --v4-purple:#6d28d9;
@@ -28,9 +28,9 @@ body.landing-page .nav{
   z-index:80;
   padding:14px clamp(18px,5vw,72px)!important;
   color:white!important;
-  background:rgba(5,6,23,.88)!important;
+  background:rgba(16,5,23,.88)!important;
   border-bottom:1px solid rgba(255,255,255,.1)!important;
-  box-shadow:0 18px 58px rgba(5,6,23,.24);
+  box-shadow:0 18px 58px rgba(16,5,23,.24);
   backdrop-filter:blur(24px);
 }
 
@@ -75,7 +75,7 @@ body.landing-page .navlinks .btn{
     radial-gradient(circle at 16% 84%,rgba(124,58,237,.72),transparent 31%),
     radial-gradient(circle at 82% 18%,rgba(217,70,239,.44),transparent 28%),
     radial-gradient(circle at 62% 100%,rgba(245,196,81,.16),transparent 30%),
-    linear-gradient(135deg,#050617 0%,#09031f 55%,#1c0646 100%);
+    linear-gradient(135deg,#100517 0%,#09031f 55%,#1c0646 100%);
   background-size:42px 42px,42px 42px,auto,auto,auto,auto;
 }
 
@@ -134,7 +134,7 @@ body.landing-page .navlinks .btn{
 .tiny-pill.light{
   color:var(--v4-purple);
   background:#f3e8ff;
-  border-color:#ddd6fe;
+  border-color:#eedbf9;
   box-shadow:none;
 }
 
@@ -242,7 +242,7 @@ body.landing-page .navlinks .btn{
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(180deg,transparent 45%,rgba(5,6,23,.84));
+  background:linear-gradient(180deg,transparent 45%,rgba(16,5,23,.84));
 }
 
 .feature-video-card strong{
@@ -353,7 +353,7 @@ body.landing-page .navlinks .btn{
 .stat-strip span{
   display:block;
   margin-top:7px;
-  color:#ddd6fe;
+  color:#eedbf9;
   font-size:13px;
   font-weight:850;
 }
@@ -441,7 +441,7 @@ body.landing-page .navlinks .btn{
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(180deg,transparent 35%,rgba(5,6,23,.92));
+  background:linear-gradient(180deg,transparent 35%,rgba(16,5,23,.92));
 }
 
 .media-tile:hover{
@@ -554,7 +554,7 @@ body.landing-page .navlinks .btn{
     linear-gradient(90deg,rgba(167,139,250,.045) 1px,transparent 1px),
     radial-gradient(circle at 88% 18%,rgba(168,85,247,.34),transparent 29%),
     radial-gradient(circle at 14% 100%,rgba(245,196,81,.15),transparent 24%),
-    linear-gradient(135deg,#050617,#140536 64%,#2e1065);
+    linear-gradient(135deg,#100517,#140536 64%,#2e1065);
   background-size:34px 34px,34px 34px,auto,auto,auto;
   border:1px solid rgba(245,196,81,.28);
   box-shadow:0 34px 110px rgba(21,8,45,.26);
@@ -593,7 +593,7 @@ body.landing-page .navlinks .btn{
   align-items:center;
   padding:0 14px;
   border-radius:16px;
-  color:#f5f3ff;
+  color:#faf5fd;
   background:rgba(255,255,255,.075);
   border:1px solid rgba(255,255,255,.12);
   font-weight:900;

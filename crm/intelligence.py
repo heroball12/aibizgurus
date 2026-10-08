@@ -268,7 +268,7 @@ def draft_follow_up_email(lead):
         f"Hi {contact},\n\n"
         f"{opener} {next_step}\n\n"
         f"For {business}, the most relevant starting point may be {service_angle}.\n\n"
-        "Would a 15–20 minute video Growth Assessment with an AI Specialist be useful? We’ll review how your business operates, identify where AI could help, and outline an implementation strategy with custom pricing.\n\n"
+        "Would a Growth Assessment, virtually or in person in Temecula, with an AI Specialist be useful? We’ll review how your business operates, identify where AI could help, and outline an implementation strategy with custom pricing.\n\n"
         "Best,\n"
         "AI Business Gurus"
     )

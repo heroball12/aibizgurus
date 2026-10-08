@@ -2,8 +2,8 @@
 {% block title %}Leads | AI Business Gurus{% endblock %}
 {% block content %}
 <section class="client-overview">
-  <div><span class="mini-label">Lead inbox</span><h1>Captured leads</h1><p>Review customer opportunities captured by web chat, SMS, and voice.</p></div>
-  <div class="actions"><a class="btn" href="{% url 'client_leads_export' %}">Export CSV</a><a class="btn ghost" href="{% url 'portal_home' %}">Dashboard</a></div>
+  <div><span class="mini-label">Lead inbox</span><h1>Captured leads</h1><p>{% if paid_active %}Review inquiries captured by your assistants.{% else %}Private demo inquiries from your website chatbot. Use sample details when testing.{% endif %}</p></div>
+  <div class="actions">{% if paid_active %}<a class="btn" href="{% url 'client_leads_export' %}">Export CSV</a>{% endif %}<a class="btn ghost" href="{% url 'portal_home' %}">Dashboard</a></div>
 </section>
 <section class="clean-panel">
   <div class="lead-list full">
@@ -13,7 +13,7 @@
         <span>{{ l.status|title }}</span>
       </div>
     {% empty %}
-      <div class="empty-state"><strong>No leads yet</strong><p>Leads will appear here once your assistant is active.</p></div>
+      <div class="empty-state"><strong>No leads yet</strong><p>Open your website chat demo and submit a sample inquiry to see it here.</p></div>
     {% endfor %}
   </div>
   {% if page_obj.paginator.num_pages > 1 %}

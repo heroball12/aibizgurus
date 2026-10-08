@@ -1,11 +1,13 @@
-from django.urls import path
+from django.urls import include, path
 from . import views
 urlpatterns = [
+    path("ipad/", include("core.experience.ipad_urls")),
     path("", views.automotive, name="experience_home"),
     path("session/", views.session_start, name="experience_session"),
     path("turn/", views.turn, name="experience_turn"),
     path("action/", views.action, name="experience_action"),
     path("financing/", views.finance, name="experience_finance"),
+    path("service/", views.service, name="experience_service"),
     path("transcribe/", views.transcribe, name="experience_transcribe"),
     path("speech/", views.speech, name="experience_speech"),
     path("crm/", views.dealership_crm, name="experience_crm"),

@@ -1,5 +1,5 @@
 COMPANY = 'AI Business Gurus builds AI, automation, custom software and technology solutions around how a business actually operates. Start with the business problem, support its team, and identify an appropriate solution.'
-ASSESSMENT = 'A complimentary 15–20 minute video Growth Assessment with an AI Specialist to understand current operations, identify bottlenecks and evaluate relevant AI/software opportunities and an implementation approach.'
+ASSESSMENT = 'A complimentary Growth Assessment with an AI Specialist, available virtually or in person in Temecula, to understand current operations, identify bottlenecks and evaluate relevant AI/software opportunities and an implementation approach.'
 TYPES = [
  ('cold', 'Cold email', 'No prior conversation or request for information may be implied. Introduce yourself, establish relevance without claiming an unobserved problem, and earn a conversation.', 'short'),
  ('decision_maker', 'Decision maker — requested information', 'A conversation with the decision maker occurred. Prioritize recent call notes and the specific request. Briefly acknowledge that conversation; do not turn this into a brochure.', 'standard'),

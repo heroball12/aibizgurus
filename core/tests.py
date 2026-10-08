@@ -132,7 +132,7 @@ class PlatformFlowTests(TestCase):
             response = self.client.get(reverse(name))
             self.assertEqual(response.status_code, 200, name)
 
-        assessment = self.client.get(reverse("growth_assessment"))
+        assessment = self.client.get(reverse("growth_assessment"), {"mode": "virtual"})
         self.assertContains(assessment, "https://calendly.com/james-aibiz/30min")
         self.assertContains(assessment, "calendly-inline-widget")
 
@@ -210,7 +210,7 @@ class PlatformFlowTests(TestCase):
 
     def test_demo_paid_routes_stay_visible_but_redirect_to_activation(self):
         self.client.force_login(self.user)
-        self.assertRedirects(self.client.get(reverse("client_leads")), reverse("billing_home"))
+        self.assertContains(self.client.get(reverse("client_leads")), "Private demo inquiries")
         response = self.client.get(reverse("client_conversations"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Demo conversations are visible")

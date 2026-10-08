@@ -89,6 +89,7 @@
   }
   async function selectIndustry(item, focus = false) {
     if (switching || !item || (selected?.slug === item.slug && focus)) return;
+    const keepVideo = !guided && !$('videoExperience').hidden;
     switching = true;
     try {
       if (!(await closeVideo())) return;
@@ -105,6 +106,7 @@
       const url = new URL(location.href); url.searchParams.set('industry',item.slug); if(!transferFor(item.slug))url.searchParams.delete('handoff'); history.replaceState(null,'',url);
       if (focus && matchMedia('(max-width: 650px)').matches) { $('employeePanel').scrollIntoView({behavior:'smooth',block:'start'}); $('employeePanel').focus({preventScroll:true}); }
     } finally { switching = false; }
+    if (keepVideo) await videoView();
   }
   async function videoView() {
     if (!selected || switching || videoFrame) return;
@@ -175,5 +177,5 @@
   for (const id of ['videoMode','meetVideo']) $(id).addEventListener('click',videoView);
   for (const id of ['textMode','backToText']) $(id).addEventListener('click', async () => { if (switching) return; switching = true; try { if (await closeVideo()) textView(); } finally { switching = false; } });
   const slug = new URLSearchParams(location.search).get('industry');
-  selectIndustry(industries.find(item => item.slug === slug || item.industry_slugs.includes(slug)) || industries.find(item => item.slug === 'food-hospitality') || industries[0]).then(()=>{if(guided && transferFor(selected.slug))videoView();});
+  selectIndustry(industries.find(item => item.slug === slug || item.industry_slugs.includes(slug)) || industries.find(item => item.slug === 'food-hospitality') || industries[0]).then(()=>{if((guided && transferFor(selected.slug)) || (!guided && new URLSearchParams(location.search).get('mode') !== 'text'))videoView();});
 })();

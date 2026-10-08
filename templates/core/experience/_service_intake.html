@@ -1,0 +1,17 @@
+<dialog id="serviceDialog" class="ex-dialog ex-finance ex-service-dialog" aria-labelledby="serviceDialogTitle">
+  <button class="ex-close" data-close aria-label="Close service intake">×</button><span class="ex-eyebrow">VELOCITY MOTORS / SERVICE INTAKE</span>
+  <h2 id="serviceDialogTitle">Your visit starts here.</h2><p>Use fictional details. What you share becomes your service advisor’s intake and demo service order.</p>
+  <div id="serviceError" class="ex-notice" role="alert" hidden></div>
+  <form id="serviceForm">
+    <fieldset><legend><span>01</span> You & your vehicle</legend><div class="ex-finance-grid">
+      {% for field in service_form %}{% if field.name == 'name' or field.name == 'phone' or field.name == 'email' or field.name == 'vehicle' or field.name == 'mileage' or field.name == 'visit_type' %}<div><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}</div>{% endif %}{% endfor %}
+    </div></fieldset>
+    <fieldset><legend><span>02</span> What brings you in?</legend><div class="ex-service-checks">{{ service_form.services }}</div><label for="{{ service_form.concern.id_for_label }}">{{ service_form.concern.label }}</label>{{ service_form.concern }}</fieldset>
+    <fieldset><legend><span>03</span> Choose an intake time <small>Optional — you can arrange this with Axel later.</small></legend>
+      <p id="serviceExistingVisit" class="ex-muted"></p><label for="serviceDay">Preferred date (Pacific time)</label><input id="serviceDay" type="date"><label for="serviceSlot">Available service times</label><select id="serviceSlot"><option value="">Save intake without a new appointment</option></select><p id="serviceSlotHint" class="ex-muted" role="status">Select a date to see demo intake times.</p>
+    </fieldset>
+    <label class="ex-finance-check">{{ service_form.demo_acknowledged }}<span>{{ service_form.demo_acknowledged.label }}</span></label>
+    <div class="ex-dialog-actions"><button type="submit" class="ex-button ex-gold" id="submitService">Save demo service intake ↗</button><button type="button" class="ex-button ex-quiet" data-close>Back to Axel</button></div>
+  </form>
+  <section id="serviceSuccess" class="ex-finance-success" hidden tabindex="-1" aria-live="polite"><span class="ex-orbit" aria-hidden="true">✓</span><h3>Your service team has the details.</h3><p id="serviceReference"></p><p>Open the service CRM to demonstrate check-in, advisor review, simulated customer approval and pickup.</p><div class="ex-dialog-actions"><a id="serviceCRM" class="ex-button ex-gold" href="#">See the service order ↗</a><button class="ex-button ex-quiet" data-close>Back to Axel</button></div></section>
+</dialog>

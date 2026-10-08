@@ -48,3 +48,4 @@ class ConsultationRequest(models.Model):
 from .demo_models import (DemoExperience, DemoRevision, DemoRepAccess, DemoSession,
                           DemoEvent, DemoShareLink, DemoConversion, DemoFeedback)  # noqa: E402,F401
 from .demo_models import DemoCRMLead, DemoCRMActivity  # noqa: E402,F401
+from .booking_models import OfficeSchedule, OfficeClosure, OfficeAppointment, OfficeBookingEmail  # noqa: E402,F401

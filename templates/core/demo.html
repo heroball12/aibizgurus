@@ -2,14 +2,13 @@
 {% block title %}Meet your AI team | AI Business Gurus Demo Center{% endblock %}
 {% block meta_description %}Choose your industry and meet an AI employee. Try an industry-specific conversation through chat or live video.{% endblock %}
 {% block body_class %}demo-page{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="{% static 'css/demo.css' %}"><script src="{% static 'js/demo.js' %}" defer></script>{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/demo.css' %}"><script src="{% static 'js/demo.js' %}?v=20261008" defer></script>{% endblock %}
 {% block content %}
 <div id="demoApp" class="demo-shell" data-chat-url="{% url 'demo_chat' %}">
   <header class="demo-intro">
-    <div><span class="demo-eyebrow"><i></i> AI EXPERIENCE CENTER</span><h1>Experience your<br><em>next AI employee.</em></h1><p>Don't just hear about AI. Talk to it. Choose your industry and see where the conversation goes.</p></div>
+    <div><span class="demo-eyebrow"><i></i> MEET YOUR AI EMPLOYEE</span><h1>Your next teammate.<br><em>Ready to meet you.</em></h1><p>Choose an industry. Meet an AI employee on video. Speak naturally or type your questions.</p></div>
     <a class="demo-guru-link" href="{% url 'concierge' %}?page=demo"><img src="{% static 'img/guru-helmet.jpg' %}" alt=""><span><small>WANT AN INTRODUCTION?</small><strong>Let Guru show you around <span aria-hidden="true">↗</span></strong></span></a>
   </header>
-  {% if automotive_experience %}<a class="demo-flagship" href="{% url 'experience_home' %}"><img src="{% static 'img/experience/showroom.jpg' %}" alt="Generated Velocity Motors showroom"><div><span class="demo-eyebrow">AUTOMOTIVE / THE FLAGSHIP EXPERIENCE</span><h2>Meet your next BDC teammate.</h2><p>Search vehicles. Plan a visit. Watch the customer appear in the dealership CRM.</p><strong>Enter Velocity Motors <span aria-hidden="true">↗</span></strong></div><span class="demo-flagship-badge">SPEAK OR TYPE</span></a>{% endif %}
   <div class="demo-workspace">
     <aside class="demo-picker" aria-labelledby="industryTitle">
       <div class="demo-picker-title"><span class="demo-eyebrow">01 / CHOOSE YOUR WORLD</span><h2 id="industryTitle">Choose your category<span>{{ industry_count }}</span></h2></div>
@@ -24,7 +23,7 @@
     </aside>
     <section class="demo-employee" id="employeePanel" aria-labelledby="employeeTitle" tabindex="-1">
       <div class="demo-employee-top"><span class="demo-eyebrow">02 / MEET YOUR AI EMPLOYEE</span><span class="demo-label">FICTIONAL BUSINESS DEMO</span></div>
-      <div class="demo-employee-heading"><div><p id="employeeCategory"></p><h2 id="employeeTitle"></h2><p id="employeeBusiness"></p></div><div class="demo-mode-switch" role="group" aria-label="Conversation mode"><button type="button" id="textMode" aria-pressed="true">Text chat</button><button type="button" id="videoMode" aria-pressed="false">Video & voice <span aria-hidden="true">↗</span></button></div></div>
+      <div class="demo-employee-heading"><div><p id="employeeCategory"></p><h2 id="employeeTitle"></h2><p id="employeeBusiness"></p></div><div class="demo-mode-switch" role="group" aria-label="Conversation mode"><button type="button" id="videoMode" aria-pressed="false">Meet on video <span aria-hidden="true">↗</span></button><button type="button" id="textMode" aria-pressed="true">Try text chat</button></div></div>
       <div id="textExperience" class="demo-text-experience">
         <div class="demo-character-stage"><img id="employeePortrait" alt="" fetchpriority="high"><div class="demo-character-lines" aria-hidden="true"></div><span class="demo-stage-tag">MEET <strong id="employeeName"></strong></span><div class="demo-character-copy"><span class="demo-eyebrow">BUILT FOR THIS BUSINESS</span><p id="employeeServices"></p><button type="button" id="meetVideo">Meet on video <span aria-hidden="true">↗</span></button></div></div>
         <div class="demo-chat">
@@ -38,11 +37,12 @@
       </div>
       <div id="videoExperience" class="demo-video-experience" hidden><p id="videoNotice" class="demo-video-notice" role="status"></p><div id="demoVideoMount"></div><button type="button" id="backToText" class="demo-browse">Return to text chat</button></div>
       <div class="demo-knowledge" id="employeeKnowledge" hidden><a id="employeeKnowledgeLink" target="_blank" rel="noopener">Cannabis knowledge &amp; sources ↗</a><span id="employeeKnowledgeDate"></span></div>
-      <div class="demo-next"><span><strong>Imagine this working for your business.</strong><small>Your brand. Your knowledge. Your next customer.</small></span><a href="{% url 'growth_assessment' %}">Book a growth consultation <span aria-hidden="true">↗</span></a></div>
+      <div class="demo-next"><span><strong>Imagine this working for your business.</strong><small>Your brand. Your knowledge. Your next customer.</small></span><a href="{% url 'growth_assessment' %}">Book a Growth Assessment <span aria-hidden="true">↗</span></a></div>
     </section>
   </div>
-  <noscript><p>Enable JavaScript to meet the demo employees. You can also <a href="{% url 'growth_assessment' %}">book a growth consultation</a>.</p></noscript>
-  <section class="demo-how"><div><span class="demo-eyebrow">FROM A QUESTION TO A NEXT STEP</span><h2>Let the conversation<br>do the work.</h2><p>Try a service question, a new customer inquiry, or an appointment request. See how an AI employee asks the right follow-up and helps a customer move forward.</p><a id="scenarioSignup" href="{% url 'signup' %}">Build an assistant for this industry ↗</a></div><details class="demo-film"><summary><img src="{% static 'img/demo-film-poster.png' %}" alt="AI workflow film preview" loading="lazy"><span>Watch the workflow film <b aria-hidden="true">▶</b></span></summary><video controls playsinline preload="none" poster="{% static 'img/demo-film-poster.png' %}"><source src="{% static 'video/demo-workflow.mp4' %}" type="video/mp4"><track src="{% static 'video/demo-workflow.vtt' %}" kind="captions" srclang="en" label="English"><a href="{% static 'video/demo-workflow.mp4' %}">Watch the demo film</a></video></details></section>
+  <noscript><p>Enable JavaScript to meet the demo employees. You can also <a href="{% url 'growth_assessment' %}">book a Growth Assessment</a>.</p></noscript>
+  {% if automotive_experience %}<a class="demo-flagship" href="{% url 'experience_home' %}"><img src="{% static 'img/experience/showroom.jpg' %}" alt="Generated Velocity Motors showroom"><div><span class="demo-eyebrow">AUTOMOTIVE / CONNECTED DEMO</span><h2>Meet your next BDC teammate.</h2><p>Search vehicles. Plan a visit. Watch the customer appear in the dealership CRM.</p><strong>Enter Velocity Motors <span aria-hidden="true">↗</span></strong></div><span class="demo-flagship-badge">SPEAK OR TYPE</span></a>{% endif %}
+  <section class="demo-how"><div><span class="demo-eyebrow">FROM A QUESTION TO A NEXT STEP</span><h2>Let the conversation<br>do the work.</h2><p>Try a service question, a new customer inquiry, or an appointment request. See how an AI employee asks the right follow-up and helps a customer move forward.</p><a id="scenarioSignup" href="{% url 'signup' %}">Create your own website chatbot ↗</a></div><details class="demo-film"><summary><img src="{% static 'img/demo-film-poster.png' %}" alt="AI workflow film preview" loading="lazy"><span>Watch the workflow film <b aria-hidden="true">▶</b></span></summary><video controls playsinline preload="none" poster="{% static 'img/demo-film-poster.png' %}"><source src="{% static 'video/demo-workflow.mp4' %}" type="video/mp4"><track src="{% static 'video/demo-workflow.vtt' %}" kind="captions" srclang="en" label="English"><a href="{% static 'video/demo-workflow.mp4' %}">Watch the demo film</a></video></details></section>
   <p class="demo-disclosure">Demo businesses are fictional. Use sample details. No real appointments, orders, payments, or service requests are created. Video and text chat are separate conversations.</p>
 </div>
 {{ demo_industries|json_script:'demo-industries' }}{{ demo_history|json_script:'demo-history' }}{{ demo_config|json_script:'demo-config' }}

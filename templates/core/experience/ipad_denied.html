@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Employee access required · Guru Drive{% endblock %}
+{% block content %}
+<section style="max-width:600px;margin:80px auto;padding:24px">
+  <h1>Employee access required</h1>
+  <p>Guru Drive is a private dealership presentation app. Sign in with an active employee account that has demo access.</p>
+  <form method="post" action="{% url 'experience_ipad:signout' %}">{% csrf_token %}<button type="submit">Sign in with another account</button></form>
+</section>
+{% endblock %}

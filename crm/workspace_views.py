@@ -12,16 +12,16 @@ from django.views.decorators.http import require_POST
 from audit.utils import log_activity
 from .forms import AssessmentForm, LeadIntelligenceForm, LeadNoteForm, SalesUpdateForm
 from .models import Lead, LeadActivity
-from .sales import STAGES, INACTIVE, ASSESSMENT_DESCRIPTION, BOOKING_URL, annotate_leads, due_filter, guide_url, playbook, stage_for
+from .sales import STAGES, INACTIVE, ASSESSMENT_DESCRIPTION, assessment_url, annotate_leads, due_filter, guide_url, playbook, stage_for
 from .views import employee_required, internal_leads_for_user, get_internal_lead_or_404, is_sales_manager, paginate, query_without_page
 
 
 def detail_context(lead, user=None):
-    from .calendly import booking_url
+    from .sales import assessment_url
     brief = lead.assessment_brief or {}
     return {
         "lead": lead, "safe_website": public_url(lead.website), "sales_stage": stage_for(lead)[1], "contact_blocked": lead.status in INACTIVE,
-        "playbook": playbook(lead), "guru_url": guide_url(lead), "booking_url": booking_url(lead, user),
+        "playbook": playbook(lead), "guru_url": guide_url(lead), "booking_url": assessment_url(lead, user),
         "sales_form": SalesUpdateForm(initial={"follow_up_date":lead.follow_up_date}, prefix="outcome"),
         "assessment_form": AssessmentForm(user=user, prefix="assessment", initial={**brief,"appointment_at":lead.appointment_at,"confirmed":bool(lead.appointment_at),"completed":lead.status in STAGES[4][2]}),
     }
@@ -57,7 +57,7 @@ def assessments(request):
     leads = internal_leads_for_user(request.user).filter(status__in=STAGES[3][2]+STAGES[4][2]).order_by("appointment_at","-created_at")
     page = paginate(request, leads, 20)
     annotate_leads(page.object_list)
-    return render(request,"crm/assessments.html",{"page_obj":page,"description":ASSESSMENT_DESCRIPTION,"booking_url":BOOKING_URL,"guru_url":guide_url(),"query_string":query_without_page(request)})
+    return render(request,"crm/assessments.html",{"page_obj":page,"description":ASSESSMENT_DESCRIPTION,"booking_url":assessment_url(),"guru_url":guide_url(),"query_string":query_without_page(request)})
 
 
 @employee_required

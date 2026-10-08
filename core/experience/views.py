@@ -24,8 +24,20 @@ from core.demo_profiles import resolve_profile
 from .access import manager, salesperson, browser_key, share_token, resolve_share, assessment_token
 from . import tools, engine
 from .financing import DemoFinanceForm, FINANCING_CHOICES, SAMPLE_PROFILES, open_application, submit_application
+from .service import DemoServiceForm, DemoServiceStaffForm, public_order, update_intake, update_staff, record_event, CUSTOMER_EDITABLE, STATUS_CHOICES
 
 logger = logging.getLogger(__name__)
+
+
+def experience_url(request, name):
+    return reverse("experience_ipad:" + name if getattr(request, "experience_ipad", False) else "experience_" + name)
+
+
+def presentation_context(request):
+    return {"ipad_app": getattr(request, "experience_ipad", False),
+            "ipad_config": {"home": reverse("experience_ipad:home"), "signout": reverse("experience_ipad:signout")},
+            "experience_home_url": experience_url(request, "home"),
+            "experience_guide_url": experience_url(request, "guide")}
 
 
 def payload(request):
@@ -51,6 +63,11 @@ def owned_session(request, pk):
     except (DemoSession.DoesNotExist, ValueError, TypeError, ValidationError):
         raise Http404()
     exp = session.revision.experience
+    # Private sessions stay private even if an old client calls a public API URL.
+    if session.source == "ipad" and not salesperson(request.user):
+        raise Http404()
+    if getattr(request, "experience_ipad", False) and session.source != "ipad":
+        raise Http404()
     if session.ended_at or session.expires_at <= timezone.now() or ((not exp.published or not exp.public_access) and not salesperson(request.user)):
         raise Http404()
     return session
@@ -58,6 +75,7 @@ def owned_session(request, pk):
 
 def public_state(session):
     return {"id": str(session.pk), "scenario": session.scenario, "state": {k: v for k, v in session.state.items() if k not in ("offered_slots", "last_request", "crm_actions")},
+            "service_order": public_order(session),
             "transcript": session.transcript, "turns": session.turns, "revision": session.revision.version,
             "finance_options": [{"stock": v["stock"], "label": f"{v['year']} {v['make']} {v['model']} · {v['stock']}"} for v in session.revision.content["inventory"] if v["status"] == "available"] if session.state.get("financing_application", {}).get("status") == "draft" else [],
             "assessment_url": reverse("growth_assessment") + "?demo_ref=" + assessment_token(session) + "#assessment-request"}
@@ -77,15 +95,16 @@ def automotive(request):
     initial = link.scenario if link else "vehicle-shopping"
     if initial not in {s["slug"] for s in scenarios}:
         initial = scenarios[0]["slug"] if scenarios else ""
-    config = {"base": reverse("experience_home"), "sessionUrl": reverse("experience_session"), "turnUrl": reverse("experience_turn"),
-              "voiceUrl": reverse("experience_transcribe"), "speechUrl": reverse("experience_speech"), "actionUrl": reverse("experience_action"),
-              "crmUrl": reverse("experience_crm"), "financeUrl": reverse("experience_finance"), "sampleProfiles": SAMPLE_PROFILES,
+    config = {"base": experience_url(request, "home"), "sessionUrl": experience_url(request, "session"), "turnUrl": experience_url(request, "turn"),
+              "voiceUrl": experience_url(request, "transcribe"), "speechUrl": experience_url(request, "speech"), "actionUrl": experience_url(request, "action"),
+              "crmUrl": experience_url(request, "crm"), "financeUrl": experience_url(request, "finance"), "serviceUrl": experience_url(request, "service"), "sampleProfiles": SAMPLE_PROFILES,
+              "ipadApp": getattr(request, "experience_ipad", False),
               "ready": bool(settings.PLATFORM_OPENAI_API_KEY), "salesperson": salesperson(request.user),
               "scenario": initial, "scenarios": [{k: s[k] for k in ("slug", "title", "label", "pain", "starter")} for s in scenarios],
               "ref": request.GET.get("ref", "") if link else ""}
-    return render(request, "core/experience/automotive.html", {"experience": exp, "demo_config": config,
+    return render(request, "core/experience/automotive.html", {**presentation_context(request), "experience": exp, "demo_config": config,
         "portrait": resolve_profile("automotive")["portrait"], "is_rep": salesperson(request.user), "is_manager": manager(request.user), "scenarios": scenarios,
-        "finance_form": DemoFinanceForm(content=exp.current_revision.content, prefix="finance")})
+        "finance_form": DemoFinanceForm(content=exp.current_revision.content, prefix="finance"), "service_form": DemoServiceForm(prefix="service")})
 
 
 @never_cache
@@ -108,7 +127,7 @@ def session_start(request):
         scenario = enabled[0]
     rep = request.user if salesperson(request.user) else link.rep if link else None
     session = DemoSession.objects.create(revision=exp.current_revision, browser_key=browser_key(request), rep=rep,
-        source="field" if salesperson(request.user) else "share" if link else "public", scenario=scenario,
+        source="ipad" if getattr(request, "experience_ipad", False) else "field" if salesperson(request.user) else "share" if link else "public", scenario=scenario,
         state=tools.initial_state(scenario), expires_at=timezone.now() + timedelta(hours=8 if salesperson(request.user) else 2))
     DemoEvent.objects.create(session=session, kind="started")
     return JsonResponse(public_state(session), status=201)
@@ -267,6 +286,70 @@ def finance(request):
 
 @never_cache
 @require_POST
+def service(request):
+    data = payload(request)
+    original = owned_session(request, data.get("session"))
+    if not consume_budget("experience-service", request_identity(request), limit=60, window=60):
+        return error("Please wait a moment before trying again.", "rate_limit", 429)
+    with transaction.atomic():
+        session = DemoSession.objects.select_for_update().select_related("revision__experience").get(pk=original.pk)
+        if session.ended_at or session.expires_at <= timezone.now():
+            raise Http404()
+        if session.busy_until and session.busy_until > timezone.now():
+            return error("Axel is finishing your last message. Please try again in a moment.", "busy", 409)
+        kind = data.get("action")
+        if kind == "open":
+            return JsonResponse(public_state(session))
+        if kind == "slots":
+            day = data.get("day")
+            if not isinstance(day, str) or len(day) > 20:
+                return error("Choose a date within the next 14 days.")
+            try:
+                result = tools.available_slots(session, "service", day)
+            except ValueError as exc:
+                return error(str(exc))
+            session.save(update_fields=["state", "updated_at"])
+            return JsonResponse(result)
+        if kind != "submit":
+            return error("Choose an available service action.")
+        order = session.state.get("service_order")
+        if order and order["status"] not in CUSTOMER_EDITABLE:
+            return error("The service team is already working this order. Ask the advisor to review changes.", "service_locked", 409)
+        if data.get("version") != (order.get("version", 0) if order else 0):
+            return error("Your service record changed. Close and reopen intake to review the latest details.", "conflict", 409)
+        fields = data.get("fields")
+        if not isinstance(fields, dict) or set(fields) - set(DemoServiceForm.base_fields):
+            return error("Use the displayed intake fields only.")
+        form = DemoServiceForm(fields)
+        if not form.is_valid():
+            return JsonResponse({"error": "Please check the intake fields.", "errors": form.errors.get_json_data()}, status=400)
+        # Validate the chosen slot before any intake or customer mutation.
+        slot_id = data.get("slot_id", "")
+        if not isinstance(slot_id, str):
+            return error("Choose one of the offered service times.")
+        slot = session.state.get("offered_slots", {}).get(slot_id) if slot_id else None
+        if slot_id and (not slot or slot["department"] != "service"):
+            return error("Choose one of the offered service times.")
+        cleaned = form.cleaned_data
+        update_intake(session, cleaned)
+        contact = {k: cleaned[k] for k in ("name", "phone", "email")}
+        if any(session.state["customer"].get(k, "") != v for k, v in contact.items()):
+            session.state["customer"].update(contact)
+            record_event(session, session.state["service_order"], "Service contact updated", "Customer-reviewed contact details saved with the fictional service intake.")
+        if slot:
+            tools._appointment(session, "service", {"slot_id": slot_id, "vehicle": cleaned["vehicle"],
+                "request": cleaned["concern"], "confirmed_by_customer": True})
+        elif session.state.get("appointments", {}).get("service"):
+            session.state["appointments"]["service"].update(vehicle_description=cleaned["vehicle"], request=cleaned["concern"])
+        session.protocol = []
+        tools.sync_crm(session)
+        session.save(update_fields=["state", "protocol", "updated_at"])
+        DemoEvent.objects.create(session=session, kind="service_intake_submitted")
+    return JsonResponse(public_state(session))
+
+
+@never_cache
+@require_POST
 def transcribe(request):
     """Raw bounded audio stays in memory; no Django file upload or media storage."""
     session = owned_session(request, request.GET.get("session"))
@@ -345,6 +428,28 @@ def dealership_crm(request):
             DemoEvent.objects.create(session=session, kind="crm_signed_in")
         elif request.POST.get("action") == "signout":
             request.session.pop(auth_key, None)
+        elif request.session.get(auth_key) and request.POST.get("action") == "service_update":
+            with transaction.atomic():
+                session = DemoSession.objects.select_for_update().select_related("revision__experience").get(pk=session.pk)
+                if session.ended_at or session.expires_at <= timezone.now():
+                    raise Http404()
+                order = session.state.get("service_order")
+                if session.busy_until and session.busy_until > timezone.now():
+                    messages.error(request, "Axel is finishing a message. Wait a moment before updating the service order.")
+                elif order:
+                    form = DemoServiceStaffForm(request.POST, order=order)
+                    if form.is_valid():
+                        try:
+                            update_staff(session, form.cleaned_data)
+                        except ValueError as exc:
+                            messages.error(request, str(exc))
+                        else:
+                            tools.sync_crm(session)
+                            session.save(update_fields=["state", "protocol", "updated_at"])
+                            messages.success(request, "Demo service order saved. Axel can now explain its latest status.")
+                    else:
+                        messages.error(request, "Check the service order fields and choose an available next step.")
+            return redirect(experience_url(request, "crm") + "?session=" + str(session.pk) + "#service")
         elif request.session.get(auth_key) and request.POST.get("action") == "update":
             lead = get_object_or_404(DemoCRMLead, session=session)
             stage = request.POST.get("stage")
@@ -357,16 +462,19 @@ def dealership_crm(request):
                     lead.save(update_fields=["stage", "staff_notes", "assigned_to", "updated_at"])
                     DemoCRMActivity.objects.create(lead=lead, action="Demo staff updated customer", description=f"Stage: {stage.replace('_', ' ')} · Assigned to {assigned}")
                 messages.success(request, "Fictional customer record updated. No real CRM was changed.")
-        return redirect(reverse("experience_crm") + "?session=" + str(session.pk))
+        return redirect(experience_url(request, "crm") + "?session=" + str(session.pk))
     logged_in = bool(request.session.get(auth_key))
     lead = DemoCRMLead.objects.filter(session=session).first() if logged_in else None
     if logged_in:
         DemoEvent.objects.create(session=session, kind="crm_viewed")
-    return render(request, "core/experience/crm.html", {"session": session, "demo_login": logged_in, "lead": lead,
+    order = public_order(session) if logged_in else None
+    return render(request, "core/experience/crm.html", {**presentation_context(request), "session": session, "demo_login": logged_in, "lead": lead,
+        "service_order": order, "service_steps": STATUS_CHOICES,
+        "service_staff_form": DemoServiceStaffForm(order=order, initial=order) if order else None,
         "handoff": tools.handoff(session) if logged_in else None,
         "purchase_plan": dict(FINANCING_CHOICES).get(session.state.get("customer", {}).get("financing_preference", ""), ""),
         "activity": lead.activity.order_by("-created_at")[:50] if lead else [],
-        "state_url": reverse("experience_crm_state") + "?session=" + str(session.pk)})
+        "state_url": experience_url(request, "crm_state") + "?session=" + str(session.pk)})
 
 
 @never_cache
@@ -384,7 +492,7 @@ def crm_state(request):
 def rep_guide(request):
     if not salesperson(request.user):
         raise Http404()
-    return render(request, "core/experience/guide.html")
+    return render(request, "core/experience/guide.html", presentation_context(request))
 
 
 def validate_content(content):

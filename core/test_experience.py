@@ -387,7 +387,7 @@ class ExperienceTests(TestCase):
         self.exp.current_revision=old;self.exp.save()
         call_command('seed_demo_center',stdout=StringIO())
         self.exp.refresh_from_db()
-        self.assertEqual(self.exp.current_revision.version,'velocity-2026.1.2')
+        self.assertEqual(self.exp.current_revision.version,'velocity-2026.1.3')
         custom=DemoRevision.objects.create(experience=self.exp,version='manager-custom',content=seed_content())
         self.exp.current_revision=custom;self.exp.save()
         call_command('seed_demo_center',stdout=StringIO())

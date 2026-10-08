@@ -11,10 +11,12 @@
   </div>
   <div class="actions">
     <a class="btn neon" href="{% url 'owner_activity_logs' %}">View Activity Logs</a>
+    <a class="btn neon" href="{% url 'office_calendar' %}">Office calendar{% if office_unread %} · {{ office_unread }} new{% endif %}</a>
     <a class="btn ghost" href="/admin/">Django Admin</a>
   </div>
 </section>
 {% if metric_window %}{% include 'audit/_employee_scoreboard.html' %}{% endif %}
+<section class="ops-panel"><div class="section-head"><div><span class="ops-label">In person · Temecula</span><h2>Upcoming office visits{% if office_unread %} · {{ office_unread }} new{% endif %}</h2></div><a href="{% url 'office_calendar' %}">Open owner calendar →</a></div>{% for appointment in office_upcoming %}<p><strong>{{ appointment.starts_at|date:"D, M j · g:i A" }} Pacific</strong> · {{ appointment.business_name }} · {{ appointment.name }} <a href="{% url 'office_calendar' %}?month={{ appointment.starts_at|date:'Y-m' }}#appointment-{{ appointment.pk }}">View booking →</a></p>{% empty %}<p>No upcoming office visits. Customers can choose in person when booking a Growth Assessment.</p>{% endfor %}</section>
 
 
 {% if not audit_ready %}

@@ -12,3 +12,12 @@ staticfiles/
 .local-artifacts/
 # Packaged video delivery; uploaded separately to durable storage.
 deliverables/
+
+# Native iPad build outputs and per-developer signing/UI state.
+ios/**/build/
+ios/**/DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcarchive/
+*.ipa
+ios/**/Local.xcconfig

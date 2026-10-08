@@ -30,8 +30,8 @@
     </div>
     <div class="arrival-copy">
       <span class="arrival-kicker">The future just clocked in.</span>
-      <h1 id="arrival-title">Your AI Assistant.<br><span>Has arrived.</span></h1>
-      <p>From the first conversation to the next opportunity. Put AI to work for your company.</p>
+      <h1 id="arrival-title">Meet your<br><span>AI employee.</span></h1>
+      <p>See it. Speak to it. Put a new kind of teammate to work.</p>
       <div class="arrival-actions">
         <a class="arrival-primary" href="{% url 'concierge' %}" {% if request.GET.guided != '1' %}data-meet-guru aria-controls="arrivalConcierge" aria-expanded="false"{% endif %}>Meet your AI employee <span aria-hidden="true">↗</span></a>
         <a class="arrival-secondary" href="{% url 'growth_assessment' %}">Book an assessment</a>
@@ -68,103 +68,16 @@
     {% endif %}
   </section>
 
-  <section class="logo-strip-v4" id="discover">
-    <span>Built for teams that need more leads, less busywork.</span>
-    <div>
-      <b>Home Services</b>
-      <b>Med Spas</b>
-      <b>Law Firms</b>
-      <b>Real Estate</b>
-      <b>Insurance</b>
-      <b>Retail</b>
-    </div>
+  <section class="brand-section flagship-split" id="discover">
+    <div class="brand-section-copy"><span class="brand-kicker">THE FLAGSHIP / AI EMPLOYEES</span><h2>More than a chatbot.<br>A face. A voice.<br><em>A next step.</em></h2><p>A conversation built around your business. See and speak with an AI employee, ask a real question, and explore what happens next.</p><a class="btn" href="{% url 'demo' %}?mode=video#employeePanel">Meet your AI employee ↗</a><a class="brand-text-link" href="{% url 'concierge' %}">Let Guru introduce you →</a></div>
+    {% include "core/_guru_product_film.html" %}
   </section>
-
-  <section class="media-wall">
-    <a class="media-tile wide" href="{% url 'ai_employees' %}">
-      <img src="{% static 'img/home-ai-receptionist.svg' %}" alt="AI employee visual">
-      <span>AI Employees</span>
-      <strong>Delegate the front desk.</strong>
-      <em>Explore →</em>
-    </a>
-    <a class="media-tile" href="{% url 'demo' %}">
-      <img src="{% static 'img/home-chatbot.svg' %}" alt="AI chatbot visual">
-      <span>Chatbots</span>
-      <strong>Instant answers.</strong>
-      <em>▶ Demo</em>
-    </a>
-    <a class="media-tile" href="{% url 'solutions' %}">
-      <img src="{% static 'img/home-voice-ai.svg' %}" alt="Voice AI visual">
-      <span>Voice AI</span>
-      <strong>Never miss a call.</strong>
-      <em>View →</em>
-    </a>
-    <a class="media-tile wide reverse" href="{% url 'growth_assessment' %}">
-      <img src="{% static 'img/home-growth-system.svg' %}" alt="Growth dashboard visual">
-      <span>Growth</span>
-      <strong>More conversations. More customers.</strong>
-      <em>Book assessment →</em>
-    </a>
-  </section>
-
-  <section class="minimal-steps">
-    <div>
-      <span class="tiny-pill light">How it works</span>
-      <h2>Pick. Preview. Publish.</h2>
-    </div>
-    <div class="step-row">
-      <article><span>01</span><strong>Choose an industry</strong></article>
-      <article><span>02</span><strong>Customize the assistant</strong></article>
-      <article><span>03</span><strong>Capture leads</strong></article>
-    </div>
-  </section>
-
-  <section class="cinematic-split">
-    <div class="cinematic-card">
-      <img src="{% static 'img/home-growth-system.svg' %}" alt="AI growth system dashboard">
-      <span class="play-button small">▶</span>
-    </div>
-    <div>
-      <span class="tiny-pill light">Live demo flow</span>
-      <h2>It feels custom because it starts custom.</h2>
-      <div class="micro-grid">
-        <span>Website chat</span>
-        <span>Lead capture</span>
-        <span>Saved transcripts</span>
-        <span>Client dashboard</span>
-      </div>
-      <a class="v4-btn primary" href="{% url 'demo' %}">Open Demo Center</a>
-    </div>
-  </section>
-
-  <section class="industry-v4">
-    <div class="section-topline">
-      <span class="tiny-pill light">Industries</span>
-      <a href="{% url 'industries' %}">View all {{ industry_count }} →</a>
-    </div>
-    <h2>Start with your world.</h2>
-    <div class="industry-v4-grid">
-      {% for item in industries|slice:":8" %}
-        <a href="{% url 'signup' %}?industry_slug={{ item.slug }}">
-          <span>{{ item.category|default:"Industry" }}</span>
-          <strong>{{ item.name }}</strong>
-        </a>
-      {% empty %}
-        <a href="{% url 'signup' %}">
-          <span>Demo</span>
-          <strong>Generic Local Service</strong>
-        </a>
-      {% endfor %}
-    </div>
-  </section>
-
-  <section class="final-v4-cta">
-    <img src="{% static 'img/ai-business-gurus-logo-nav.png' %}" alt="AI Business Gurus">
-    <div>
-      <span class="tiny-pill">Ready?</span>
-      <h2>Launch your AI demo.</h2>
-    </div>
-    <a class="v4-btn invert" href="{% url 'signup' %}">Start Free Demo</a>
-  </section>
+  <section class="brand-section"><div class="brand-section-heading"><span class="brand-kicker">ONE TEAM. DIFFERENT WAYS TO HELP.</span><h2>Start with the experience.</h2></div><div class="brand-product-grid">
+    <a class="brand-product-card primary" href="{% url 'demo' %}?mode=video#employeePanel"><img src="{% static 'img/demo-characters/chef.jpg' %}" alt="A mouthless AI employee in a chef’s uniform, with a violet visor" loading="lazy"><div><span class="brand-kicker">SEE + SPEAK</span><h3>AI employees</h3><p>Meet a teammate for your industry.</p><strong>Start a conversation ↗</strong></div></a>
+    <a class="brand-product-card" href="{% url 'industries' %}"><img src="{% static 'img/demo-film-poster.png' %}" alt="Purple and gold AI workflow visualization" loading="lazy"><div><span class="brand-kicker">YOUR WEBSITE, READY TO REPLY</span><h3>Website chatbots</h3><p>Answer questions. Capture inquiries. Try your own demo workspace.</p><strong>Explore website chat ↗</strong></div></a>
+    <a class="brand-product-card" href="{% url 'solutions' %}"><img src="{% static 'img/demo-neural-core.png' %}" alt="A glowing purple intelligence core" loading="lazy"><div><span class="brand-kicker">BUILT AROUND YOUR BUSINESS</span><h3>Custom AI &amp; automation</h3><p>Connect the workflow behind the conversation.</p><strong>Explore what we build ↗</strong></div></a>
+  </div></section>
+  <section class="brand-section brand-showcase"><img src="{% static 'img/experience/showroom.jpg' %}" alt="The fictional Velocity Motors showroom" loading="lazy"><div><span class="brand-kicker">TRY THE COMPLETE EXPERIENCE</span><h2>A conversation.<br>A customer.<br>A connected CRM.</h2><p>Meet Axel at our fictional dealership. Explore vehicles, book a demo visit, then see the customer and appointment in the demo CRM.</p><a class="btn" href="{% url 'experience_home' %}">Enter Velocity Motors ↗</a><small>Fictional business. Use sample details.</small></div></section>
+  <section class="brand-bottom-cta"><span class="brand-kicker">YOUR NEXT STEP</span><h2>Let’s explore what’s possible.</h2><p>Meet an AI Specialist on a video call to find the right next step for your business.</p><a class="btn" href="{% url 'growth_assessment' %}">Book a Growth Assessment ↗</a></section>
 </div>
 {% endblock %}

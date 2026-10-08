@@ -111,11 +111,10 @@ def integrations(request):
 @login_required
 def client_leads(request):
     client = get_client_for_user(request.user)
-    if not client or not client.is_paid_active:
-        messages.info(request, "Activate your account to open the production lead inbox.")
-        return redirect("billing_home")
+    if not client:
+        return redirect("portal_home")
     return render(request, "clients/client_leads.html", {
-        "client": client,
+        "client": client, "paid_active": client.is_paid_active,
         "page_obj": paginate(
             request,
             Lead.objects.filter(client=client, lead_type="client_customer").select_related("ai_instance").order_by("-created_at"),

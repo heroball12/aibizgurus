@@ -7,11 +7,12 @@
   <meta name="description" content="{% block meta_description %}AI Business Gurus builds AI Employees, AI Chatbots, Voice AI, automation, websites, and growth systems that help businesses recover missed revenue and scale faster.{% endblock %}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=22">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=23">
   <script src="{% static 'js/navigation.js' %}" defer></script>
   <link rel="stylesheet" href="{% static 'css/concierge-launcher.css' %}">
-  <script src="{% static 'js/concierge-launcher.js' %}" defer></script>
+  <script src="{% static 'js/concierge-launcher.js' %}?v=20261008" defer></script>
   {% block extra_head %}{% endblock %}
+  <link rel="stylesheet" href="{% static 'css/brand.css' %}?v=20261008">
 </head>
 <body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' or request.path|slice:':6' == '/team/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
 {% block navigation %}
@@ -22,29 +23,18 @@
   </a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mainNavLinks" aria-label="Open navigation">Menu <span aria-hidden="true">☰</span></button>
   <div class="navlinks" id="mainNavLinks">
+    <a href="{% url 'demo' %}" {% if request.resolver_match.url_name == 'demo' or request.resolver_match.url_name == 'ai_employees' %}aria-current="page"{% endif %}>Meet your AI employee</a>
+    <a href="{% url 'industries' %}" {% if request.resolver_match.url_name == 'industries' %}aria-current="page"{% endif %}>Website chatbots</a>
     {% if user.is_authenticated %}
+    <details class="brand-account"><summary>My workspace ▾</summary><div>
       {% if user.is_employee_or_admin %}
-        {% if user.is_owner %}<a href="{% url 'owner_dashboard' %}">Owner</a>{% endif %}
-        <a href="{% url 'ops_dashboard' %}">Ops</a><a href="{% url 'crm_home' %}">Sales Intelligence</a><a href="{% url 'lead_finder' %}">Lead Finder</a>
-        <a href="{% url 'training_home' %}">Training</a><a href="{% url 'staff_messages' %}">Chat</a><a href="{% url 'staff_time_clock' %}">Time Clock</a>
-      {% else %}
-        <a href="{% url 'portal_home' %}">Dashboard</a>
-      {% endif %}
-      <a href="{% url 'solutions' %}">Solutions</a>
-      <a href="{% url 'ai_employees' %}">AI Employees</a>
-      <a href="{% url 'industries' %}">Industries</a>
-      <a href="{% url 'demo' %}">Demo Center</a>
-      <a href="{% url 'pricing' %}">Pricing</a>
-      <a href="{% url 'password_change' %}">Password</a><form method="post" action="{% url 'logout' %}" class="nav-logout">{% csrf_token %}<button type="submit">Logout</button></form>
-    {% else %}
-      <a href="{% url 'solutions' %}">Solutions</a>
-      <a href="{% url 'ai_employees' %}">AI Employees</a>
-      <a href="{% url 'industries' %}">Industries</a>
-      <a href="{% url 'demo' %}">Demo Center</a>
-      <a href="{% url 'pricing' %}">Pricing</a>
-      <a href="{% url 'login' %}">Login</a>
-      <a class="btn small" href="{% url 'growth_assessment' %}">Book Growth Assessment</a>
-    {% endif %}
+      <a href="{% url 'crm_home' %}">Sales workspace</a><a href="{% url 'ops_dashboard' %}">Operations</a><a href="{% url 'training_home' %}">Training</a><a href="{% url 'staff_messages' %}">Team chat</a><a href="{% url 'staff_time_clock' %}">Time clock</a>
+      {% if user.is_owner %}<a href="{% url 'owner_dashboard' %}">Owner dashboard</a><a href="{% url 'office_calendar' %}">Office calendar</a>{% endif %}
+      {% else %}<a href="{% url 'portal_home' %}">Chatbot workspace</a><a href="{% url 'client_conversations' %}">Conversations</a><a href="{% url 'client_leads' %}">Lead inbox</a>{% endif %}
+      <a href="{% url 'password_change' %}">Change password</a><form method="post" action="{% url 'logout' %}" class="nav-logout">{% csrf_token %}<button type="submit">Sign out</button></form>
+    </div></details>
+    {% else %}<a href="{% url 'login' %}">Log in</a>{% endif %}
+    <a class="btn small" href="{% url 'growth_assessment' %}">Book an assessment ↗</a>
   </div>
 </nav>
 {% endblock %}
@@ -54,7 +44,7 @@
 <a class="concierge-launcher" href="{% url 'concierge' %}" aria-label="Open AI growth concierge"><span class="concierge-launcher-icon" aria-hidden="true">✦</span><span><strong>Meet your AI guide</strong><small>Explore. Ask. Grow.</small></span><span aria-hidden="true">↗</span></a>
 {% endif %}
 {% block team_widget %}{% endblock %}
-{% if user.is_authenticated and user.is_employee_or_admin %}{% include 'audit/_notifications.html' %}{% endif %}
+{% if user.is_authenticated and user.is_employee_or_admin and not ipad_app %}{% include 'audit/_notifications.html' %}{% endif %}
 {% block footer %}
 <footer class="site-footer">
   <div>
@@ -65,16 +55,24 @@
     <p>AI Employees, chatbots, voice AI, automation, websites, and growth systems for revenue-focused businesses.</p>
   </div>
   <div>
-    <strong>Platform</strong>
-    <a href="{% url 'solutions' %}">Solutions</a>
-    <a href="{% url 'ai_employees' %}">AI Employees</a>
-    <a href="{% url 'demo' %}">Demo Center</a>
+    <strong>Explore</strong>
+    <a href="{% url 'solutions' %}">Custom solutions</a>
+    <a href="{% url 'ai_employees' %}">AI employees</a>
+    <a href="{% url 'demo' %}">Meet the team</a>
   </div>
   <div>
     <strong>Growth</strong>
-    <a href="{% url 'pricing' %}">Pricing</a>
-    <a href="{% url 'case_studies' %}">Case Studies</a>
+    <a href="{% url 'pricing' %}">Your custom build</a>
+    <a href="{% url 'industries' %}">Website chatbots</a>
     <a href="{% url 'growth_assessment' %}">Growth Assessment</a>
+  </div>
+  <div id="contact">
+    <strong>Contact us</strong>
+    <a href="{{ company.phone_uri }}">{{ company.phone }}</a>
+    <address>{{ company.street }}<br>{{ company.city_state_zip }}</address>
+    <a href="{{ company.directions_url }}" target="_blank" rel="noopener">Get directions ↗</a>
+    <a href="{% url 'growth_assessment' %}?mode=in-person">Office visits by appointment →</a>
+    <p>Virtual consultations · Office visits by appointment.</p>
   </div>
 </footer>
 {% endblock %}

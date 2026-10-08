@@ -1,8 +1,8 @@
 """Deterministic, fictional data. No dealer feed, real VINs or customer records."""
 from copy import deepcopy
 
-VERSION = "velocity-2026.1.2"
-PROMPT_VERSION = "concierge-2"
+VERSION = "velocity-2026.1.3"
+PROMPT_VERSION = "concierge-3-service"
 BUSINESS = {
     "name": "Velocity Motors", "employee": "Axel", "tagline": "Your next chapter. Your next drive.",
     "address": "100 Demo Drive, Example City, CA 00000 (fictional — do not navigate)",
@@ -108,7 +108,7 @@ SCENARIOS = [
     ("after-hours", "11:47 PM. Still here.", "After-hours lead", "After-hours gaps", "Scenario clock is 11:47 PM; dealership staff are offline. Search current synthetic inventory, offer next-day slots and prepare a simulated morning BDC handoff. Never claim humans are online.", "Is that used F-150 still available? Can I come tomorrow?"),
     ("trade-in", "Make the next move", "Trade-in", "Incomplete trade leads", "Discover purchase interest and collect trade details conversationally. Explain appraisal verification, never fabricate a trade value.", "I have a 2022 Accord with about 60,000 miles to trade."),
     ("test-drive", "From interest to visit", "Test drive / appointment", "Appointment friction", "Find an available vehicle and offer returned sales slots. Create a synthetic appointment only after the customer chooses a slot. No external booking occurs.", "Can I test-drive a Palisade tomorrow afternoon?"),
-    ("service", "Service, simplified", "Service scheduling", "Service workload", "Collect vehicle, year, service request and preferred timing; offer synthetic service intake slots. Avoid diagnosis, exact cost or completion promises.", "I need brakes and an oil change for my 2021 Honda CR-V."),
+    ("service", "Service, simplified", "Service intake & repair orders", "Service workload", "Gather customer contact, vehicle/year, mileage if known, requested service, symptoms, waiting/drop-off preference and preferred timing. Use update_service_intake as details emerge. Offer the optional intake form and synthetic service slots. Explain that a linked service order appears in the fictional service CRM. Read saved order status with get_demo_service_status; staff demonstrate inspection, simulated approval and pickup. Avoid diagnosis, exact cost or completion promises.", "I need brakes and an oil change for my 2021 Honda CR-V."),
     ("missed-call", "A missed call, recovered", "Missed call", "Missed calls", "Simulate responding to a missed call; ask how to help and route to sales or service. This is an on-screen conversation, not a connected phone call or sent callback.", "I tried calling about a vehicle earlier. Can you help?"),
     ("reactivation", "A conversation reopened", "Database reactivation", "Untouched old leads", "Simulated old lead: fictional Marcus asked about an F-150 90 days ago. Ask whether still shopping. If already purchased or declines follow-up, mark no_longer_in_market/do_not_follow_up and stop selling. Adapt if needs change to an SUV; do not persist with the truck. No outbound message is sent.", "I'm still looking, but now I need an SUV instead of a truck."),
     ("financing", "Answers without pressure", "Financing application", "Finance uncertainty", "Ask about the preferred purchase plan. Explain the financing process and offer to open the fictional application; only open it after the customer agrees. The customer reviews sample financial data and submits it to the fictional CRM. No real applications, credit decisions, guaranteed approvals, binding APR or payment quotes.", "Can I bring my own financing, and do you take trades with a loan?"),

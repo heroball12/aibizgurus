@@ -58,6 +58,10 @@ def owner_dashboard(request):
         "audit_ready": audit_ready,
     }
     context.update(performance_context(request))
+    from core.models import OfficeAppointment
+    office = OfficeAppointment.objects.filter(status="confirmed", starts_at__gte=timezone.now())
+    context["office_unread"] = office.filter(owner_seen=False).count()
+    context["office_upcoming"] = office.order_by("starts_at")[:3]
     return render(request, "audit/owner_dashboard.html", context)
 
 @owner_required

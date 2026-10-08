@@ -282,33 +282,6 @@ from .rate_limits import consume_budget, request_identity
 
 
 @transaction.atomic
-def growth_assessment(request):
-    if request.method == "POST":
-        form = ConsultationRequestForm(request.POST)
-        if not consume_budget("consultation", request_identity(request), limit=5, window=3600):
-            form.add_error(None, "Too many requests. Please try again later or use the calendar above.")
-        if not form.errors and form.is_valid():
-            obj = form.save()
-            lead = Lead.objects.create(
-                lead_type="internal_sales",
-                name=obj.name,
-                business_name=obj.business_name,
-                phone=obj.phone,
-                email=obj.email,
-                industry=obj.industry,
-                source="AI Business Growth Assessment",
-                status="new",
-                notes=obj.message,
-            )
-            from .experience.access import attribute_assessment
-            attribute_assessment(request, obj, lead)
-            messages.success(request, "Assessment request received. We will review your growth opportunities and follow up shortly.")
-            return redirect("growth_assessment")
-    else:
-        form = ConsultationRequestForm()
-    return render(request, "core/growth_assessment.html", {"form": form, "booking_url": BOOKING_URL, "demo_ref": request.POST.get("demo_ref", "") or request.GET.get("demo_ref", "")})
-
-@transaction.atomic
 def consultation_request(request):
     if request.method == "POST":
         form = ConsultationRequestForm(request.POST)
