@@ -195,7 +195,9 @@ class ConciergeTests(TestCase):
 
         self.assertIn('only AI Specialists discuss it during a Growth Assessment', prompt)
         self.assertIn('exclusively website chatbots', prompt)
-        self.assertIn('41877 Enterprise Cir', prompt)
+        self.assertIn('Temecula, CA 92590', prompt)
+        self.assertNotIn('41877', prompt)
+        self.assertIn('after an in-person booking is confirmed', prompt)
         self.assertIn('in-person visits use the website calendar', prompt)
 
     def followup_data(self):

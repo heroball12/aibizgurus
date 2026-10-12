@@ -20,6 +20,7 @@ from . import booking
 from .booking_forms import OfficeBookingForm, OfficeClosureForm, OfficeScheduleForm
 from .booking_models import OfficeAppointment, OfficeBookingEmail, OfficeClosure, OfficeSchedule
 from .forms import ConsultationRequestForm
+from .company import OFFICE_LOCATION
 from .permissions import owner_required
 from .rate_limits import consume_budget, request_identity
 
@@ -110,7 +111,7 @@ def confirmation(request, token):
         response = HttpResponse(booking.ics(appointment), content_type="text/calendar; charset=utf-8")
         response["Content-Disposition"] = 'attachment; filename="growth-assessment.ics"'
     else:
-        response = render(request, "core/office_confirmation.html", {"appointment": appointment, "email_sent": appointment.emails.filter(kind=f"{appointment.status}_visitor", delivered_at__isnull=False).exists()})
+        response = render(request, "core/office_confirmation.html", {"appointment": appointment, "office_location": OFFICE_LOCATION, "email_sent": appointment.emails.filter(kind=f"{appointment.status}_visitor", delivered_at__isnull=False).exists()})
     response["Referrer-Policy"] = "no-referrer"
     response["X-Robots-Tag"] = "noindex, nofollow"
     return response

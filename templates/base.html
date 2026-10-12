@@ -69,8 +69,7 @@
   <div id="contact">
     <strong>Contact us</strong>
     <a href="{{ company.phone_uri }}">{{ company.phone }}</a>
-    <address>{{ company.street }}<br>{{ company.city_state_zip }}</address>
-    <a href="{{ company.directions_url }}" target="_blank" rel="noopener">Get directions ↗</a>
+    <address>{{ company.city_state_zip }}</address>
     <a href="{% url 'growth_assessment' %}?mode=in-person">Office visits by appointment →</a>
     <p>Virtual consultations · Office visits by appointment.</p>
   </div>

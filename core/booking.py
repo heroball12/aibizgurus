@@ -14,7 +14,7 @@ from django.utils import timezone
 from crm.models import Lead, LeadActivity, AssessmentBooking
 from crm.sales import INACTIVE
 from .booking_models import OfficeSchedule, OfficeClosure, OfficeAppointment, OfficeBookingEmail
-from .company import COMPANY
+from .company import COMPANY, OFFICE_LOCATION
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
 logger = logging.getLogger(__name__)
@@ -98,7 +98,7 @@ def reserve(request, data):
     attribute_assessment(request, consultation, lead)
     appointment = OfficeAppointment.objects.create(**details, submission_key=key, starts_at=start, ends_at=start + timedelta(minutes=config.duration_minutes), blocked_until=start + timedelta(minutes=config.duration_minutes + config.buffer_minutes), consultation=consultation, lead=lead)
     brief = dict(lead.assessment_brief or {})
-    brief.update({"office_appointment": str(appointment.pk), "meeting_format": "in_person", "location": COMPANY["address"], "meeting_url": ""})
+    brief.update({"office_appointment": str(appointment.pk), "meeting_format": "in_person", "location": OFFICE_LOCATION["address"], "meeting_url": ""})
     lead.appointment_at, lead.status, lead.assessment_brief = start, "appointment_scheduled", brief
     lead.follow_up_date = lead.next_follow_up_at = None
     lead.save(update_fields=["appointment_at", "status", "assessment_brief", "follow_up_date", "next_follow_up_at"])
@@ -139,7 +139,7 @@ def ics(appointment):
         return str(value).replace("\\", "\\\\").replace("\r", "").replace("\n", "\\n").replace(";", "\\;").replace(",", "\\,")
     def utc(value):
         return value.astimezone(dt_timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//AI Business Gurus//Office Bookings//EN", "METHOD:PUBLISH", "BEGIN:VEVENT", f"UID:{appointment.pk}@aibiz.guru", f"DTSTAMP:{utc(appointment.created_at)}", f"DTSTART:{utc(appointment.starts_at)}", f"DTEND:{utc(appointment.ends_at)}", "SUMMARY:In-person Growth Assessment — AI Business Gurus", "LOCATION:" + escape(COMPANY["address"]), "DESCRIPTION:" + escape(f"Meet an AI Specialist at our Temecula office. Questions or changes: {COMPANY['phone']}"), "STATUS:" + ("CANCELLED" if appointment.status == "canceled" else "CONFIRMED"), "SEQUENCE:" + ("1" if appointment.status == "canceled" else "0"), "END:VEVENT", "END:VCALENDAR"]
+    lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//AI Business Gurus//Office Bookings//EN", "METHOD:PUBLISH", "BEGIN:VEVENT", f"UID:{appointment.pk}@aibiz.guru", f"DTSTAMP:{utc(appointment.created_at)}", f"DTSTART:{utc(appointment.starts_at)}", f"DTEND:{utc(appointment.ends_at)}", "SUMMARY:In-person Growth Assessment — AI Business Gurus", "LOCATION:" + escape(OFFICE_LOCATION["address"]), "DESCRIPTION:" + escape(f"Meet an AI Specialist at our Temecula office. Questions or changes: {COMPANY['phone']}"), "STATUS:" + ("CANCELLED" if appointment.status == "canceled" else "CONFIRMED"), "SEQUENCE:" + ("1" if appointment.status == "canceled" else "0"), "END:VEVENT", "END:VCALENDAR"]
     # RFC 5545 folding uses octets, not characters; never split a UTF-8 character.
     folded = []
     for line in lines:
@@ -180,7 +180,7 @@ def deliver_emails(appointment_id=None, *, limit=20):
                     raise BookingError("Configure a delivery email backend and owner email to send booking notifications.")
                 when = appointment.starts_at.astimezone(PACIFIC).strftime("%A, %B %d at %I:%M %p %Z")
                 status = "canceled" if appointment.status == "canceled" else "confirmed"
-                body = f"Your in-person Growth Assessment is {status}.\n\n{when}\n{COMPANY['address']}\n\nName: {appointment.name}\nBusiness: {appointment.business_name}\nPhone: {appointment.phone}\nEmail: {appointment.email}\nIndustry: {appointment.industry}\n\n{appointment.message}\n\nQuestions or changes: {COMPANY['phone']}"
+                body = f"Your in-person Growth Assessment is {status}.\n\n{when}\n{OFFICE_LOCATION['address']}\n\nName: {appointment.name}\nBusiness: {appointment.business_name}\nPhone: {appointment.phone}\nEmail: {appointment.email}\nIndustry: {appointment.industry}\n\n{appointment.message}\n\nQuestions or changes: {COMPANY['phone']}"
                 if item.kind.endswith("owner"):
                     body += "\n\nOwner calendar: " + settings.PUBLIC_BASE_URL + reverse("office_calendar")
                 subject = f"In-person Growth Assessment {status} · {when}"
