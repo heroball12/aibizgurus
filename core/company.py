@@ -19,5 +19,7 @@ OFFICE_LOCATION = {
 
 def company_contact(request):
     from django.contrib.staticfiles import finders
+    from .marketing import zoominfo_enabled
     film = "video/guru-welcome.mp4"
-    return {"company": COMPANY, "guru_product_video": film if finders.find(film) else ""}
+    return {"company": COMPANY, "guru_product_video": film if finders.find(film) else "",
+            "zoominfo_enabled": zoominfo_enabled(request)}

@@ -13,6 +13,7 @@
   <script src="{% static 'js/concierge-launcher.js' %}?v=20261008" defer></script>
   {% block extra_head %}{% endblock %}
   <link rel="stylesheet" href="{% static 'css/brand.css' %}?v=20261008">
+  {% if zoominfo_enabled %}{% include 'core/_zoominfo.html' %}{% endif %}
 </head>
 <body class="{% block body_class %}{% if request.path|slice:':5' == '/ops/' or request.path|slice:':5' == '/crm/' or request.path|slice:':7' == '/owner/' or request.path|slice:':6' == '/team/' %}staff-mode{% else %}light-mode{% endif %}{% endblock %}">
 {% block navigation %}
