@@ -20,7 +20,7 @@ from django.utils import timezone
 from audit.utils import log_activity
 from core.rate_limits import consume_budget
 from .forms import LeadCSVUploadForm, LeadFinderForm, LeadForm, LeadIntelligenceForm, LeadNoteForm
-from .importers import import_lead_file, parse_csv_file
+from .importers import import_lead_file, parse_csv_file, parse_lead_file
 from .intelligence import csv_safe, draft_follow_up_email
 from .directory_locations import US_STATES, city_choices
 from .lead_finder import (
@@ -506,6 +506,7 @@ def lead_finder(request):
                 industry=form.cleaned_data["industry"],
                 location=form.cleaned_data["location"],
                 quantity=quantity,
+                exclude_major_chains=form.cleaned_data["exclude_major_chains"],
             )
             if quantity <= 20 and batch.status == "queued":
                 # The results page starts a CSRF-protected request so the user
@@ -524,6 +525,8 @@ def lead_finder(request):
             return redirect("lead_generation_batch_detail", pk=batch.pk)
     else:
         initial = {key: request.GET.get(key, "") for key in ["industry", "location", "state", "city", "quantity", "custom_industry"] if request.GET.get(key)}
+        if "exclude_major_chains" in request.GET:
+            initial["exclude_major_chains"] = request.GET["exclude_major_chains"] != "0"
         if initial.get("industry") and initial["industry"] not in dict(LeadFinderForm.base_fields["industry"].choices):
             initial["custom_industry"] = initial["industry"]
             initial["industry"] = "other"
@@ -588,7 +591,7 @@ def lead_generation_batch_detail(request, pk):
         "batch": batch,
         "batch_is_open": batch.is_open and not batch.is_sample,
         "run_here": batch.is_open and batch.quantity_requested <= 20 and not batch.is_sample,
-        "retry_query": urlencode({"industry": batch.industry, "location": batch.location, "quantity": min(batch.quantity_requested, 20)}),
+        "retry_query": urlencode({"industry": batch.industry, "location": batch.location, "quantity": min(batch.quantity_requested, 20), "exclude_major_chains": int(batch.exclude_major_chains)}),
         "page_obj": page_obj,
         "query_string": query_without_page(request),
         "staged_leads": page_obj,
@@ -802,6 +805,14 @@ def lead_upload(request):
         if form.is_valid():
             forced_assignee = None if is_sales_manager(request.user) else request.user
             try:
+                uploaded = form.cleaned_data["csv_file"]
+                parsed = parse_lead_file(uploaded, selected_sheet=form.cleaned_data.get("sheet_name", ""),
+                                         default_assigned_to=form.cleaned_data.get("default_assigned_to"), force_assigned_to=forced_assignee)
+                if not parsed.errors and "zoominfo" in parsed.source_formats:
+                    from .import_views import prepare_preview
+                    return prepare_preview(request, uploaded, parsed,
+                                           selected_sheet=form.cleaned_data.get("sheet_name", ""),
+                                           assigned_to=form.cleaned_data.get("default_assigned_to"))
                 lead_import, parsed = import_lead_file(
                     form.cleaned_data["csv_file"],
                     uploaded_by=request.user,
@@ -809,6 +820,7 @@ def lead_upload(request):
                     default_assigned_to=form.cleaned_data.get("default_assigned_to"),
                     force_assigned_to=forced_assignee,
                     protect_existing_assignees_for=forced_assignee,
+                    parsed=parsed,
                 )
             except Exception as exc:
                 logger.exception("Lead import failed for %s", getattr(form.cleaned_data["csv_file"], "name", "uploaded file"))
@@ -847,6 +859,7 @@ def lead_upload(request):
 @transaction.atomic
 def lead_detail(request, pk):
     from .workspace_views import detail_context
+    from .zoominfo_import import profile_context
     lead = get_internal_lead_or_404(request.user, pk)
     if request.method == "POST":
         action = request.POST.get("action", "add_note")
@@ -919,6 +932,7 @@ def lead_detail(request, pk):
         )
     return render(request, "crm/lead_detail.html", {
         **detail_context(lead, request.user),
+        **profile_context(lead),
         "lead": lead,
         "note_form": note_form,
         "intelligence_form": intelligence_form,

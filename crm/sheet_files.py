@@ -15,6 +15,10 @@ ET.register_namespace('', NS)
 ET.register_namespace('r', REL)
 
 
+class ZoomInfoExport(ValueError):
+    """Route rich exports through the lossless company/contact importer."""
+
+
 def letter(n):
     result = ''
     while n:
@@ -120,6 +124,9 @@ def read_file(uploaded, schema):
         else: raise ValueError('Use .xlsx or .csv. Save older .xls workbooks as .xlsx first.')
     except (zipfile.BadZipFile, KeyError, ET.ParseError, UnicodeDecodeError, RuntimeError, csv.Error):
         raise ValueError('This file could not be read. Save an unencrypted .xlsx or UTF-8 CSV and try again.')
+    from .zoominfo_import import is_zoominfo
+    if any(is_zoominfo(row) for row in table[:15]):
+        raise ZoomInfoExport()
     aliases = {csv_key(c['key']):c['key'] for c in schema}
     aliases.update({csv_key(c['label']):c['key'] for c in schema})
     aliases.update({'_crm_record':'_crm_record','source_url':'source_url','source_url_':'source_url'})

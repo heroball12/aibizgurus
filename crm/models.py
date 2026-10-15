@@ -58,7 +58,32 @@ CLASSIFICATION_SOURCE_CHOICES = [
     ("import", "Imported"),
 ]
 
+class Company(models.Model):
+    """A business shared by its contacts; access follows visible CRM leads."""
+
+    name = models.CharField(max_length=200)
+    match_key = models.CharField(max_length=64, unique=True, null=True, blank=True)
+    zoominfo_id = models.CharField(max_length=120, unique=True, null=True, blank=True)
+    industry = models.CharField(max_length=150, blank=True)
+    website = models.URLField(blank=True)
+    phone = models.CharField(max_length=80, blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=120, blank=True)
+    state = models.CharField(max_length=80, blank=True)
+    zip_code = models.CharField(max_length=20, blank=True)
+    country = models.CharField(max_length=120, blank=True)
+    source_data = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name", "pk"]
+
+    def __str__(self):
+        return self.name
+
+
 class Lead(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, blank=True, related_name="people")
     conversation = models.OneToOneField("assistant_ai.Conversation", null=True, blank=True, on_delete=models.SET_NULL, related_name="captured_lead")
     LEAD_TYPE_CHOICES = [("internal_sales","Internal Sales Lead"),("client_customer","Client Customer Lead")]
     STATUS_CHOICES = INTERNAL_STATUS_CHOICES
@@ -127,6 +152,81 @@ class Lead(models.Model):
 
     def __str__(self):
         return self.name or self.business_name or f"Lead {self.pk}"
+
+class LeadZoomInfoProfile(models.Model):
+    """Source data stays separate from the salesperson's working lead fields."""
+
+    lead = models.OneToOneField(Lead, on_delete=models.CASCADE, related_name="zoominfo_profile")
+    identity_key = models.CharField(max_length=160, unique=True)
+    contact_id = models.CharField(max_length=120, blank=True, db_index=True)
+    company_id = models.CharField(max_length=120, blank=True, db_index=True)
+    data = models.JSONField(default=dict)
+    imported_at = models.DateTimeField(auto_now=True)
+
+
+class LeadUploadPreview(models.Model):
+    """Private, short-lived upload used for a server-validated confirmation."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    original_filename = models.CharField(max_length=255)
+    content = models.BinaryField(default=bytes)
+    selected_sheet = models.CharField(max_length=150, blank=True)
+    assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="lead_upload_previews")
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    confirmed_import = models.ForeignKey("LeadImport", on_delete=models.SET_NULL, null=True, blank=True)
+
+
+class ZoomInfoSearch(models.Model):
+    """Private search snapshot; a single enrichment reservation prevents repeat charges."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    kind = models.CharField(max_length=20, choices=[("companies", "Companies"), ("people", "People"), ("intent", "Intent signals")])
+    criteria = models.JSONField(default=dict)
+    form_values = models.JSONField(default=dict)
+    exclude_major_chains = models.BooleanField(default=True)
+    results = models.JSONField(default=list)
+    page_number = models.PositiveIntegerField(default=1)
+    total_results = models.PositiveIntegerField(default=0)
+    has_next = models.BooleanField(default=False)
+    hidden_chains = models.PositiveIntegerField(default=0)
+    selected_ids = models.JSONField(default=list)
+    assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="zoominfo_assignments")
+    state = models.CharField(max_length=20, default="ready", choices=[
+        ("ready", "Ready"), ("enriching", "Getting details"), ("complete", "Details received"),
+        ("uncertain", "Check before retrying"), ("empty", "No full matches"),
+    ])
+    enrichment = models.JSONField(default=dict, blank=True)
+    error = models.CharField(max_length=500, blank=True)
+    error_details = models.JSONField(default=dict, blank=True)
+    preview = models.ForeignKey(LeadUploadPreview, null=True, blank=True, on_delete=models.SET_NULL)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class CompanyIntentSignal(models.Model):
+    """Company research signals, distinct from contact activity or sales qualification."""
+
+    source_key = models.CharField(max_length=64, unique=True)
+    provider_id = models.CharField(max_length=500)
+    zoominfo_company_id = models.CharField(max_length=120, db_index=True)
+    company_name = models.CharField(max_length=200)
+    website = models.URLField(blank=True)
+    topic = models.CharField(max_length=300)
+    category = models.CharField(max_length=300, blank=True)
+    signal_date = models.DateTimeField(db_index=True)
+    score = models.PositiveSmallIntegerField()
+    audience_strength = models.CharField(max_length=20, blank=True)
+    raw = models.JSONField(default=dict)
+    saved_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="saved_intent_signals", blank=True)
+    captured_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-signal_date", "-score", "pk"]
+        constraints = [models.CheckConstraint(condition=models.Q(score__lte=100), name="intent_score_max_100")]
+
 
 class StaffMailbox(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sales_mailbox")
@@ -233,6 +333,7 @@ class LeadGenerationBatch(models.Model):
     industry = models.CharField(max_length=150)
     location = models.CharField(max_length=180, blank=True)
     quantity_requested = models.PositiveIntegerField(default=0)
+    exclude_major_chains = models.BooleanField(default=True)
     quantity_generated = models.PositiveIntegerField(default=0)
     duplicates_removed = models.PositiveIntegerField(default=0)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="queued")

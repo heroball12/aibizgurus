@@ -25,6 +25,7 @@ from audit.utils import log_activity
 from core.models import RequestBudget
 from .models import Lead, LeadActivity, LeadGenerationBatch, LeadStaging
 from .directory_locations import city_and_state, resolve_city
+from .chain_detection import major_chain_name
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,7 @@ class DirectoryLead:
     address: str = ""
     email: str = ""
     business_verification: dict = field(default_factory=dict)
+    major_chain: str = ""
 
 
 def public_url(value):
@@ -320,7 +322,7 @@ class OpenStreetMapProvider(LeadProvider):
         query = f"[out:json][timeout:{query_timeout}][maxsize:33554432];({union});out tags 2000;"
         fallback = getattr(settings, "LEAD_FINDER_OVERPASS_FALLBACK_URL", "")
         cache_key = (
-            "lead-listings:v7:"
+            "lead-listings:v8:"
             + hashlib.sha256(
                 json.dumps(
                     [endpoint, fallback, filters, city.lower(), state]
@@ -409,6 +411,7 @@ class OpenStreetMapProvider(LeadProvider):
                     state=str(tags.get("addr:state") or "")[:80],
                     confidence_score=Decimal("0.82") if phone else Decimal("0.60"),
                     website=website,
+                    major_chain=major_chain_name(name, website, tags),
                     email=email,
                     source_url=source_url,
                     business_verification={
@@ -460,7 +463,7 @@ def get_lead_providers() -> list[LeadProvider]:
 
 @transaction.atomic
 def create_generation_batch(
-    *, employee, industry: str, location: str, quantity: int
+    *, employee, industry: str, location: str, quantity: int, exclude_major_chains: bool = True
 ) -> LeadGenerationBatch:
     lock = f"lead-search-create:{employee.pk}"
     RequestBudget.objects.get_or_create(
@@ -472,6 +475,7 @@ def create_generation_batch(
         industry__iexact=industry,
         location__iexact=location,
         quantity_requested=quantity,
+        exclude_major_chains=exclude_major_chains,
         status__in=["queued", "generating", "searching", "saving"],
         created_at__gte=timezone.now() - timedelta(minutes=3),
     ).first()
@@ -482,6 +486,7 @@ def create_generation_batch(
         industry=industry,
         location=location,
         quantity_requested=quantity,
+        exclude_major_chains=exclude_major_chains,
         status="queued",
         status_message="Queued for generation.",
     )
@@ -555,6 +560,8 @@ def _finish_batch(batch, *, error=None):
         batch.status_message = str(error)[:255] if isinstance(error, DirectoryError) else "Search could not finish. Any saved results are available below. Please retry shortly."
     elif batch.quantity_generated:
         batch.status_message = f"Found {batch.quantity_generated} new businesses. Check the available phone, email and website on each result."
+    elif summary.get("chains_excluded"):
+        batch.status_message = f"Excluded {summary['chains_excluded']} major-chain listings. No new prospects remain after filtering and duplicate checks. Try a nearby city or turn off Hide major chains."
     elif batch.duplicates_removed:
         batch.status_message = f"Found listings, but all {batch.duplicates_removed} matches are already in the CRM or saved results. Review your pipeline or choose another city."
     else:
@@ -655,7 +662,11 @@ def advance_lead_generation_batch(batch_id, providers=None):
     try:
         results = provider.search(industry=batch.industry, location=batch.location, limit=2000)
         candidates = []
+        chains_excluded = 0
         for result in results[:2000]:
+            if batch.exclude_major_chains and (result.major_chain or major_chain_name(result.business_name, result.website)):
+                chains_excluded += 1
+                continue
             record = asdict(result)
             record["confidence_score"] = str(result.confidence_score)
             candidates.append(record)
@@ -682,7 +693,8 @@ def advance_lead_generation_batch(batch_id, providers=None):
         if batch.run_token != token:
             return batch
         summary = dict(batch.provider_summary or {})
-        summary.update({provider.name: len(candidates), "directory": getattr(provider, "summary", {})})
+        summary.update({provider.name: len(candidates), "directory": getattr(provider, "summary", {}),
+                        "chains_excluded": chains_excluded})
         batch.provider_summary = summary
         batch.run_token = None
         batch.lease_expires_at = None

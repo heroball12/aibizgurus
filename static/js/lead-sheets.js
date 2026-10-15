@@ -132,7 +132,9 @@ if (typeof document !== 'undefined') (() => {
     const form=new FormData();form.append('file',file);busy=true;updateStatus('Opening file…');
     try{
       const response=await fetch(app.dataset.importUrl,{method:'POST',credentials:'same-origin',headers:{'X-CSRFToken':app.querySelector('[name=csrfmiddlewaretoken]').value},body:form});
-      const result=await response.json();if(!response.ok){showErrors(result);return;}load(result);dirty=true;history.replaceState(null,'',app.dataset.exportBase.replace('export/','new/'));notice(['File opened for review. Save to CRM applies the rows.',...(result.warnings||[])].join(' '));
+      const result=await response.json();if(!response.ok){showErrors(result);return;}
+      if(result.redirect_url){dirty=false;retryPayload=null;window.location.assign(result.redirect_url);return;}
+      load(result);dirty=true;history.replaceState(null,'',app.dataset.exportBase.replace('export/','new/'));notice(['File opened for review. Save to CRM applies the rows.',...(result.warnings||[])].join(' '));
     }catch(error){notice('Could not open this file. Check your connection and session, then try again.');}
     finally{busy=false;event.target.value='';updateStatus();}
   };

@@ -103,6 +103,7 @@ class ParsedLeadRow:
     data: dict
     raw: dict = field(default_factory=dict)
     duplicate_detected: bool = False
+    source_format: str = "generic"
 
 
 @dataclass
@@ -112,6 +113,8 @@ class ImportParseResult:
     sheet_names: list[str] = field(default_factory=list)
     skipped_count: int = 0
     duplicate_count: int = 0
+    source_formats: list[str] = field(default_factory=list)
+    source_headers: list[str] = field(default_factory=list)
 
 
 def csv_key(value):
@@ -238,19 +241,31 @@ def clean_email_cell(value):
 
 
 def normalize_rows_from_dicts(dict_rows, source_sheet="CSV", starting_row=2):
+    from .zoominfo_import import is_zoominfo, build_row
     result = ImportParseResult(sheet_names=[source_sheet])
     for offset, raw_row in enumerate(dict_rows):
         row_number = starting_row + offset
         if row_number > 2501:
             result.errors.append("Import is limited to 2,500 rows at a time.")
             break
+        if None in raw_row and raw_row[None]:
+            result.errors.append(f"Row {row_number}: more cells than column headers. Check CSV quoting.")
+            continue
         row = {csv_key(key): str(value or "").strip() for key, value in raw_row.items() if key is not None}
+        for header in raw_row:
+            if header is not None and header not in result.source_headers:
+                result.source_headers.append(header)
         if not any(row.values()):
             result.skipped_count += 1
             continue
-        parsed = build_parsed_row(row, row_number, source_sheet, result.errors)
+        if is_zoominfo(raw_row):
+            parsed = build_row(raw_row, row_number, source_sheet, result.errors)
+        else:
+            parsed = build_parsed_row(row, row_number, source_sheet, result.errors)
         if parsed:
             result.rows.append(parsed)
+            if parsed.source_format not in result.source_formats:
+                result.source_formats.append(parsed.source_format)
         else:
             result.skipped_count += 1
     return result
@@ -404,15 +419,23 @@ def parse_csv_file(uploaded_file):
     except UnicodeDecodeError:
         return ImportParseResult(errors=["CSV must be UTF-8 encoded."])
     try:
-        reader = csv.DictReader(io.StringIO(text))
+        reader = csv.DictReader(io.StringIO(text), strict=True)
+        headers = reader.fieldnames
     except csv.Error as exc:
         return ImportParseResult(errors=[f"CSV could not be read: {exc}"])
-    if not reader.fieldnames:
+    if not headers:
         return ImportParseResult(errors=["CSV must include a header row."])
     normalized_headers = [csv_key(header) for header in reader.fieldnames]
+    if len(normalized_headers) != len(set(normalized_headers)):
+        return ImportParseResult(errors=["CSV has duplicate column headers. Give each column a unique name so no data is lost."])
+    if any(not h for h in normalized_headers):
+        return ImportParseResult(errors=["Every CSV column needs a header so all values can be retained."])
     if not any(alias in normalized_headers for aliases in CSV_ALIASES.values() for alias in aliases):
         return ImportParseResult(errors=["CSV headers were not recognized. Use headers like business_name, phone, email, notes, status."])
-    result = normalize_rows_from_dicts(reader, source_sheet="CSV", starting_row=2)
+    try:
+        result = normalize_rows_from_dicts(reader, source_sheet="CSV", starting_row=2)
+    except csv.Error:
+        return ImportParseResult(errors=["CSV could not be read. Check quoted values or export the file again."])
     if not result.rows and not result.errors:
         result.errors.append("CSV did not contain any usable lead rows.")
     return result
@@ -497,7 +520,10 @@ def _read_xlsx_sheet(zf, path, shared_strings):
 
 
 def _find_header_row(rows):
+    from .zoominfo_import import is_zoominfo
     for index, row in enumerate(rows[:15]):
+        if is_zoominfo(row):
+            return index
         normalized = {csv_key(value) for value in row}
         matches = sum(1 for aliases in CSV_ALIASES.values() if any(alias in normalized for alias in aliases))
         if matches >= 1 and ("business_name" in normalized or "business" in normalized or "company" in normalized or "phone" in normalized or "notes" in normalized):
@@ -532,9 +558,16 @@ def parse_xlsx_file(uploaded_file, selected_sheet=""):
         if header_index is None:
             result.skipped_count += len(rows)
             continue
-        headers = [csv_key(value) for value in rows[header_index]]
+        headers = [str(value).strip() for value in rows[header_index]]
+        populated_headers = [csv_key(h) for h in headers if h]
+        if len(populated_headers) != len(set(populated_headers)):
+            result.errors.append(f"Sheet {sheet_name}: duplicate column headers would lose data.")
+            continue
         dict_rows = []
         for values in rows[header_index + 1:]:
+            if any(str(v).strip() for i, v in enumerate(values) if i >= len(headers) or not headers[i]):
+                result.errors.append(f"Sheet {sheet_name}: a populated column has no header.")
+                break
             row = {headers[i]: values[i] if i < len(values) else "" for i in range(len(headers)) if headers[i]}
             dict_rows.append(row)
         if not dict_rows:
@@ -544,11 +577,15 @@ def parse_xlsx_file(uploaded_file, selected_sheet=""):
         result.errors.extend(parsed.errors)
         result.skipped_count += parsed.skipped_count
         result.duplicate_count += parsed.duplicate_count
+        result.source_formats = list(dict.fromkeys(result.source_formats + parsed.source_formats))
+        result.source_headers = list(dict.fromkeys(result.source_headers + parsed.source_headers))
 
     if selected_sheet and not result.sheet_names:
         result.errors.append(f"Sheet '{selected_sheet}' was not found.")
     if not result.rows and not result.errors:
         result.errors.append("Excel workbook did not contain any importable lead rows.")
+    if len(result.rows) > 2500:
+        result.errors.append("Import is limited to 2,500 rows at a time across all sheets.")
     return result
 
 
@@ -604,10 +641,12 @@ def import_lead_file(
     default_assigned_to=None,
     force_assigned_to=None,
     protect_existing_assignees_for=None,
+    parsed=None,
 ):
+    from . import zoominfo_import
     original_filename = uploaded_file.name
     file_type = original_filename.rsplit(".", 1)[-1].lower() if "." in original_filename else "csv"
-    parsed = parse_lead_file(
+    parsed = parsed or parse_lead_file(
         uploaded_file,
         selected_sheet=selected_sheet,
         default_assigned_to=default_assigned_to,
@@ -634,6 +673,9 @@ def import_lead_file(
                 "sheets": parsed.sheet_names,
                 "duplicates": duplicate_count,
                 "classification": "rule-first with optional AI extension",
+                "source_formats": parsed.source_formats,
+                "source_headers": parsed.source_headers,
+                "source_column_count": len(parsed.source_headers),
             },
         )
         leads = []
@@ -646,7 +688,9 @@ def import_lead_file(
             row.data["source_file"] = original_filename[:Lead._meta.get_field("source_file").max_length]
             key = row.data.get("duplicate_key", "")
             existing = None
-            if key:
+            if row.source_format == "zoominfo":
+                existing = zoominfo_import.find_match(row, lock=True)
+            elif key:
                 existing = import_seen.get(key) or Lead.objects.filter(lead_type="internal_sales", duplicate_key=key).order_by("-created_at").first()
             if existing:
                 duplicate_count += 1
@@ -659,12 +703,17 @@ def import_lead_file(
                     protected_count += 1
                     continue
                 updated_count += 1
-                merge_imported_lead(existing, row.data)
+                if row.source_format == "zoominfo":
+                    zoominfo_import.merge_lead(existing, row.data)
+                else:
+                    merge_imported_lead(existing, row.data)
                 lead = existing
                 row.duplicate_detected = True
             else:
                 lead = Lead.objects.create(**row.data)
                 created_count += 1
+            if row.source_format == "zoominfo":
+                zoominfo_import.save_profile(lead, row)
             if key:
                 import_seen[key] = lead
             leads.append(lead)
@@ -675,7 +724,7 @@ def import_lead_file(
                 lead=lead,
                 user=uploaded_by,
                 raw_note=row.data.get("notes", ""),
-                cleaned_note=row.data.get("cleaned_notes", ""),
+                cleaned_note="ZoomInfo contact imported. Source details saved to the company and person profiles." if row.source_format == "zoominfo" else row.data.get("cleaned_notes", ""),
                 inferred_status=row.data.get("status", "new"),
                 lead_temperature=row.data.get("lead_temperature", "cold"),
                 confidence_score=row.data.get("classification_confidence", Decimal("0")),
@@ -687,7 +736,8 @@ def import_lead_file(
                 classification_source=row.data.get("classification_source", "rule"),
                 original_import=lead_import,
                 original_row_number=row.row_number,
-                metadata={"source_sheet": row.source_sheet, "duplicate_detected": row.duplicate_detected},
+                metadata={"source_sheet": row.source_sheet, "duplicate_detected": row.duplicate_detected,
+                          **({"source_format": "zoominfo", "source_data": row.raw} if row.source_format == "zoominfo" else {})},
             ))
         LeadActivity.objects.bulk_create(activities)
         lead_import.imported_count = created_count

@@ -1,6 +1,6 @@
 {% extends 'crm/base.html' %}{% load static %}
 {% block title %}Lead sheet | AI Business Gurus{% endblock %}
-{% block sales_head %}<link rel="stylesheet" href="{% static 'css/lead-sheets.css' %}"><script src="{% static 'js/lead-sheets.js' %}" defer></script>{% endblock %}
+{% block sales_head %}<link rel="stylesheet" href="{% static 'css/lead-sheets.css' %}"><script src="{% static 'js/lead-sheets.js' %}?v=20261012-zoominfo" defer></script>{% endblock %}
 {% block workspace %}
 <div id="leadSheetApp" data-save-url="{% url 'lead_sheet_save' %}" data-import-url="{% url 'lead_sheet_import' %}" data-export-base="{% url 'lead_sheet_export' %}">
 {% csrf_token %}{{ sheet_data|json_script:'leadSheetData' }}

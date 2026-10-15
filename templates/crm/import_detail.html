@@ -7,12 +7,15 @@
     <h1>{{ lead_import.original_filename }}</h1>
     <p>{{ lead_import.imported_count }} created · {{ lead_import.updated_count }} updated · {{ lead_import.review_count }} review · {{ lead_import.duplicate_count }} matched · {{ lead_import.created_at|date:"M j, Y g:i A" }}</p>
     <div class="sales-hero-actions">
+      {% if 'zoominfo' in lead_import.import_summary.source_formats %}<a class="btn neon" href="{% url 'crm_companies' %}">Companies &amp; people</a><a class="btn ghost" href="{% url 'lead_import_source' lead_import.pk %}">Download imported source data</a>{% endif %}
       <a class="btn neon" href="{% url 'lead_queue' 'review' %}">Open Review Queue</a>
       <a class="btn ghost" href="{% url 'lead_upload' %}">Import Another</a>
       <a class="btn ghost" href="{% url 'crm_home' %}">Dashboard</a>
     </div>
   </div>
 </section>
+
+{% if 'zoominfo' in lead_import.import_summary.source_formats %}<section class="sales-panel"><span class="ops-label">ZoomInfo import</span><h2>Company records and individual people, connected.</h2><p>All {{ lead_import.import_summary.source_column_count }} source columns are saved. Open a person to see their full ZoomInfo profile and their company’s other contacts. Existing CRM notes, assignments and sales progress were preserved.</p>{% if lead_import.import_summary.protected_duplicates_skipped %}<p>{{ lead_import.import_summary.protected_duplicates_skipped }} contact{{ lead_import.import_summary.protected_duplicates_skipped|pluralize }} already assigned to another employee were skipped.</p>{% endif %}</section>{% endif %}
 
 <section class="sales-metrics">
   <div class="sales-metric-card"><span>Total Rows</span><strong>{{ lead_import.row_count }}</strong><small>including skipped blanks</small></div>

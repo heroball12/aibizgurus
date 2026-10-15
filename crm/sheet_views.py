@@ -15,7 +15,7 @@ from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.cache import never_cache
 from audit.utils import log_activity
 from core.models import RequestBudget
-from .models import Lead, LeadSheet, LeadStaging, LeadActivity, LeadImport
+from .models import Company, Lead, LeadSheet, LeadStaging, LeadActivity, LeadImport
 from .lead_finder import normalize_phone, lead_dedupe_key
 from .sheet_schema import columns, values_for, version_for, clean_changes, BRIEF_FIELDS, MAX_ROWS, MAX_EXPORT_ROWS
 from .views import (employee_required, internal_leads_for_user, lead_staging_for_user, is_sales_manager,
@@ -38,9 +38,15 @@ def selection(request):
         return kind, qs.none()
     if kind == 'prospects':
         return kind, apply_staging_filters(qs, lead_finder_filter_values(request)).order_by('-created_at')
+    if source == 'pipeline':
+        from .pipeline_filters import pipeline_selection
+        return kind, pipeline_selection(request, qs)[2]
     qs = apply_lead_filters(qs, lead_filter_values(request))
     if source == 'lead':
         qs = qs.filter(pk=get_object_or_404(qs, pk=request.GET.get('record', '') if request.GET.get('record', '').isdigit() else 0).pk)
+    elif source == 'company':
+        company = get_object_or_404(Company.objects.filter(people__in=scoped(request.user, kind)).distinct(), pk=request.GET.get('record', '') if request.GET.get('record', '').isdigit() else 0)
+        qs = qs.filter(company=company)
     elif source == 'import':
         imports = LeadImport.objects.all()
         if not is_sales_manager(request.user):
@@ -56,12 +62,6 @@ def selection(request):
         elif queue == 'review': qs = qs.filter(needs_review=True)
         elif queue == 'followups': qs = qs.filter(Q(follow_up_date__lte=timezone.localdate()) | Q(status__in=['callback_requested','follow_up','email_requested','information_requested']))
         else: qs = qs.none()
-    elif source == 'pipeline':
-        stage = request.GET.get('stage', 'all')
-        if stage == 'due': qs = qs.exclude(status__in=INACTIVE).filter(due_filter())
-        else:
-            statuses = next((items for key, _, items in STAGES if key == stage), None)
-            if statuses is not None: qs = qs.filter(status__in=statuses)
     return kind, order_leads(qs, request.GET.get('sort', 'newest'))
 
 
@@ -288,11 +288,22 @@ def export(request, pk=None):
 @never_cache
 @require_POST
 def import_preview(request):
-    from .sheet_files import read_file
+    from .sheet_files import read_file, ZoomInfoExport
     try:
         uploaded = request.FILES.get('file')
         schema = columns(request.user)
-        rows, warnings = read_file(uploaded, schema)
+        try:
+            rows, warnings = read_file(uploaded, schema)
+        except ZoomInfoExport:
+            from .importers import parse_lead_file
+            from .import_views import prepare_preview
+            uploaded.seek(0)
+            forced = None if is_sales_manager(request.user) else request.user
+            parsed = parse_lead_file(uploaded, force_assigned_to=forced)
+            if parsed.errors:
+                raise ValueError(' '.join(parsed.errors[:3]))
+            response = prepare_preview(request, uploaded, parsed, assigned_to=forced)
+            return JsonResponse({'redirect_url': response.url})
         sheet = LeadSheet(owner=request.user,title=(uploaded.name.rsplit('.',1)[0] or 'Imported leads')[:150])
         refs, preview = {}, []
         kind = None

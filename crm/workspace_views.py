@@ -12,6 +12,7 @@ from django.views.decorators.http import require_POST
 from audit.utils import log_activity
 from .forms import AssessmentForm, LeadIntelligenceForm, LeadNoteForm, SalesUpdateForm
 from .models import Lead, LeadActivity
+from .pipeline_filters import pipeline_selection
 from .sales import STAGES, INACTIVE, ASSESSMENT_DESCRIPTION, assessment_url, annotate_leads, due_filter, guide_url, playbook, stage_for
 from .views import employee_required, internal_leads_for_user, get_internal_lead_or_404, is_sales_manager, paginate, query_without_page
 
@@ -30,25 +31,30 @@ def detail_context(lead, user=None):
 @employee_required
 def pipeline(request):
     base = internal_leads_for_user(request.user).select_related("assigned_to")
-    leads = base
-    stage = request.GET.get("stage", "all")
-    if stage not in {key for key, _, _ in STAGES} | {"all", "due"}:
-        stage = "all"
-    query = request.GET.get("q", "").strip()[:200]
-    if stage == "due":
-        leads = leads.exclude(status__in=INACTIVE).filter(due_filter())
-    else:
-        statuses = next((items for key, _, items in STAGES if key == stage), None)
-        if statuses is not None:
-            leads = leads.filter(status__in=statuses)
-    if query:
-        leads = leads.filter(Q(business_name__icontains=query)|Q(name__icontains=query)|Q(phone__icontains=query)|Q(email__icontains=query))
-    counts = base.aggregate(**{key:Count("pk",filter=Q(status__in=items)) for key,_,items in STAGES})
-    page = paginate(request, leads.order_by("-created_at"), 25)
+    form, filtered, leads, stage = pipeline_selection(request, base)
+    counts = filtered.aggregate(**{key:Count("pk",filter=Q(status__in=items)) for key,_,items in STAGES})
+    page = paginate(request, leads, 25)
     annotate_leads(page.object_list)
+    query = request.GET.copy()
+    query.pop("page", None)
+    def stage_url(key):
+        query["stage"] = key
+        return "?" + query.urlencode()
+    groups = [
+        ("Business & ownership", ["status", "temperature", "industry", "city", "state"]),
+        ("Next steps & contact details", ["follow_up", "appointment", "contacted", "phone", "email", "website", "needs_review"]),
+        ("Activity & date ranges", ["activity_from", "activity_to", "created_from", "created_to"]),
+        ("Lead source", ["lead_source", "source_file", "source_sheet"]),
+    ]
+    active_fields = [name for name in form.fields if name != "sort" and request.GET.get(name)]
     return render(request,"crm/pipeline.html",{
-        "page_obj":page,"stages":[{"key":key,"label":label,"count":counts[key]} for key,label,_ in STAGES],
-        "stage":stage,"q":query,"query_string":query_without_page(request),"guru_url":guide_url(),
+        "page_obj":page,"stages":[{"key":key,"label":label,"count":counts[key],"url":stage_url(key)} for key,label,_ in STAGES],
+        "all_stage_url":stage_url("all"), "due_stage_url":stage_url("due"),
+        "stage":stage,"query_string":query_without_page(request),"guru_url":guide_url(),
+        "pipeline_form":form, "pipeline_filter_groups":[(label, [form[name] for name in names]) for label, names in groups],
+        "advanced_filters_open": bool(form.errors or set(active_fields) - {"q", "assigned_to", "activity"}),
+        "active_filter_count":len(active_fields), "pipeline_metadata":True,
+        "can_manage_leads":is_sales_manager(request.user),
     })
 
 

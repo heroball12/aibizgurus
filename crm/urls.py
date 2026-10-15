@@ -4,7 +4,22 @@ from . import workspace_views
 from . import sheet_views
 from .email_generator import views as email_views
 from . import research_views, selling_views, calendar_views
+from . import import_views, company_views, zoominfo_views
 urlpatterns = [
+    path("zoominfo/", zoominfo_views.workspace, name="zoominfo_workspace"),
+    path("zoominfo/search/", zoominfo_views.search, name="zoominfo_search"),
+    path("zoominfo/topics/", zoominfo_views.load_topics, name="zoominfo_topics"),
+    path("zoominfo/check/", zoominfo_views.test_connection, name="zoominfo_check"),
+    path("zoominfo/searches/<uuid:pk>/", zoominfo_views.results, name="zoominfo_results"),
+    path("zoominfo/searches/<uuid:pk>/page/", zoominfo_views.change_page, name="zoominfo_page"),
+    path("zoominfo/searches/<uuid:pk>/details/", zoominfo_views.get_details, name="zoominfo_details"),
+    path("zoominfo/searches/<uuid:pk>/save-signal/", zoominfo_views.save_signal, name="zoominfo_save_signal"),
+    path("intent/", zoominfo_views.saved_signals, name="intent_signals"),
+    path("companies/", company_views.directory, name="crm_companies"),
+    path("companies/<int:pk>/", company_views.detail, name="crm_company"),
+    path("imports/preview/<uuid:pk>/", import_views.preview, name="lead_import_preview"),
+    path("imports/preview/<uuid:pk>/confirm/", import_views.confirm_import, name="lead_import_confirm"),
+    path("imports/<int:pk>/source/", import_views.source_export, name="lead_import_source"),
     path("assessments/connection/", calendar_views.manage, name="calendly_manage"),
     path("assessments/calendly/webhook/", calendar_views.webhook, name="calendly_webhook"),
     path("sell/", selling_views.guided_sell, name="guided_sell"),

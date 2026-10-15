@@ -1,0 +1,18 @@
+{% if api_error %}
+<section class="zi-api-error" role="alert" aria-labelledby="zoominfoErrorHeading">
+  <div class="zi-api-error-heading"><div><span class="sales-eyebrow">CONNECTION DIAGNOSTICS</span><h2 id="zoominfoErrorHeading">{{ api_error.message }}</h2></div>{% if api_error.status %}<span class="zi-api-tag">HTTP {{ api_error.status }}</span>{% endif %}</div>
+  <p class="zi-api-error-operation">{{ api_error.operation }}{% if api_error.occurred_at %} · <time datetime="{{ api_error.occurred_at|date:'c' }}">{{ api_error.occurred_at|date:"M j, g:i A T" }}</time>{% endif %}</p>
+  {% for issue in api_error.provider_errors %}
+  <div class="zi-api-provider-error">
+    {% if issue.code or issue.title %}<p><strong>{% if issue.code %}<code>{{ issue.code }}</code>{% endif %}{% if issue.title %} {{ issue.title }}{% endif %}</strong></p>{% endif %}
+    {% if issue.detail %}<p><span class="zi-api-small">ZoomInfo explanation</span>{{ issue.detail }}</p>{% endif %}
+    {% if issue.field %}<p><strong>Field:</strong> <code>{{ issue.field }}</code></p>{% endif %}
+    {% if issue.reference %}<p><strong>Error reference:</strong> <code>{{ issue.reference }}</code></p>{% endif %}
+  </div>
+  {% empty %}{% if api_error.status %}<p class="zi-api-small">ZoomInfo did not provide a readable error explanation. The HTTP status above is the response received.</p>{% endif %}{% endfor %}
+  {% if api_error.reference %}<p><strong>Request reference:</strong> <code>{{ api_error.reference }}</code></p>{% endif %}
+  {% if api_error.retry_after != None %}<p>ZoomInfo requested a wait of {{ api_error.retry_after }} seconds.</p>{% endif %}
+  {% if api_error.uncertain %}<p class="zi-api-error-next"><strong>Check usage before retrying.</strong> Contact details may have been processed. This search will not repeat the paid request; check ZoomInfo usage before starting another.</p>{% elif api_error.next_step %}<p class="zi-api-error-next"><strong>Next step:</strong> {{ api_error.next_step }}</p>{% endif %}
+  {% if run %}<p class="zi-api-small">The saved results below are from the earlier successful search.</p>{% endif %}
+</section>
+{% endif %}

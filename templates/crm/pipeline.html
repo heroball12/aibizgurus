@@ -1,5 +1,27 @@
 {% extends "crm/base.html" %}{% block title %}Pipeline | AI Business Gurus{% endblock %}{% block workspace %}
 <header class="sales-page-head"><div><span class="sales-eyebrow">BUILD THE RELATIONSHIP</span><h1>Your pipeline.</h1><p>Know where every conversation stands.</p></div><a class="btn neon" href="{% url 'lead_create' %}">+ Add a lead</a></header>
-<nav class="sales-stage-tabs" aria-label="Pipeline stages"><a href="?stage=all" {% if stage == 'all' %}aria-current="page"{% endif %}>All</a><a href="?stage=due" {% if stage == 'due' %}aria-current="page"{% endif %}>Follow-ups due</a>{% for item in stages %}<a href="?stage={{ item.key }}" {% if stage == item.key %}aria-current="page"{% endif %}>{{ item.label }} <span>{{ item.count }}</span></a>{% endfor %}</nav>
-<section class="sales-surface"><form class="sales-search-row" method="get"><input type="hidden" name="stage" value="{{ stage }}"><label class="sr-only" for="pipelineSearch">Search your pipeline</label><input id="pipelineSearch" name="q" type="search" value="{{ q }}" placeholder="Search a business or contact…"><button class="btn ghost">Search</button><span>{{ page_obj.paginator.count }} leads</span></form>{% include "crm/_pipeline_rows.html" with rows=page_obj %}{% include "crm/_pager.html" %}</section>
+<nav class="sales-stage-tabs" aria-label="Pipeline stages"><a href="{{ all_stage_url }}" {% if stage == 'all' %}aria-current="page"{% endif %}>All</a><a href="{{ due_stage_url }}" {% if stage == 'due' %}aria-current="page"{% endif %}>Follow-ups due</a>{% for item in stages %}<a href="{{ item.url }}" {% if stage == item.key %}aria-current="page"{% endif %}>{{ item.label }} <span>{{ item.count }}</span></a>{% endfor %}</nav>
+<form method="get" class="sales-surface pipeline-filter-panel">
+  <input type="hidden" name="stage" value="{{ stage }}">
+  {{ pipeline_form.non_field_errors }}
+  <div class="pipeline-filter-primary">
+    <div>{{ pipeline_form.q.label_tag }}{{ pipeline_form.q }}{{ pipeline_form.q.errors }}</div>
+    {% if can_manage_leads %}<div>{{ pipeline_form.assigned_to.label_tag }}{{ pipeline_form.assigned_to }}{{ pipeline_form.assigned_to.errors }}</div>{% endif %}
+    <div>{{ pipeline_form.activity.label_tag }}{{ pipeline_form.activity }}{{ pipeline_form.activity.errors }}</div>
+    <div>{{ pipeline_form.sort.label_tag }}{{ pipeline_form.sort }}{{ pipeline_form.sort.errors }}</div>
+  </div>
+  <details class="pipeline-more-filters" {% if advanced_filters_open %}open{% endif %}>
+    <summary>More filters{% if active_filter_count %} · {{ active_filter_count }} active{% endif %}</summary>
+    {% for label,fields in pipeline_filter_groups %}
+    <fieldset><legend>{{ label }}</legend><div class="pipeline-filter-grid">
+      {% for field in fields %}<div>{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}
+    </div></fieldset>
+    {% endfor %}
+    <p class="sales-muted">Last activity includes recorded calls, notes, lead updates and historical activity. Creating or importing a lead alone does not count. Inactivity uses the added date when there is no recorded work. Dates use your website’s time zone.</p>
+  </details>
+  <div class="pipeline-filter-actions"><button class="btn neon" type="submit">Apply filters</button><a class="btn ghost" href="{% url 'sales_pipeline' %}">Clear filters</a><span>{{ page_obj.paginator.count }} lead{{ page_obj.paginator.count|pluralize }}{% if active_filter_count %} {{ page_obj.paginator.count|pluralize:"matches,match" }} your filters{% endif %}</span></div>
+</form>
+<section class="sales-surface">
+{% if page_obj %}{% include "crm/_pipeline_rows.html" with rows=page_obj %}{% else %}<div class="sales-empty-state"><span>⌕</span><h3>No leads match this view.</h3><p>Adjust your filters or choose another stage.</p><a class="btn ghost" href="{% url 'sales_pipeline' %}">Clear filters</a></div>{% endif %}
+{% include "crm/_pager.html" %}</section>
 {% endblock %}

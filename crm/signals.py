@@ -8,3 +8,10 @@ from core.alerts import notify_lead_created
 def lead_created_alert(sender, instance, created, **kwargs):
     if created:
         transaction.on_commit(lambda: notify_lead_created(instance))
+
+
+@receiver(post_save, sender=Lead)
+def link_company(sender, instance, created, raw=False, **kwargs):
+    if not raw and created and instance.source != "ZoomInfo":
+        from .companies import attach_company
+        attach_company(instance)

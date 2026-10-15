@@ -67,6 +67,10 @@ class LeadFinderForm(forms.Form):
         widget=forms.Select(attrs={"data-finder-city": "true"}),
     )
     quantity = forms.ChoiceField(choices=[(str(value), str(value)) for value in LEAD_FINDER_QUANTITIES], initial="10")
+    exclude_major_chains = forms.BooleanField(
+        required=False, initial=True, label="Hide major chains",
+        help_text="Focus on local prospects. Excludes recognized national brands, including their franchises. Some chains may still appear.",
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -200,7 +204,7 @@ class LeadNoteForm(forms.ModelForm):
 class LeadCSVUploadForm(forms.Form):
     csv_file = forms.FileField(
         label="CSV or Excel file",
-        help_text="Upload a .csv or .xlsx file with headers like business_name, phone, email, industry, notes, status, assigned_to.",
+        help_text="ZoomInfo PERSON exports are detected automatically. CSV and Excel (.xlsx) sales trackers are also supported.",
     )
     sheet_name = forms.CharField(
         required=False,
