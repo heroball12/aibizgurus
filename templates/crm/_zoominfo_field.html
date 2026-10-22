@@ -1,0 +1,4 @@
+<div class="zi-api-field {% if field.name == 'exclude_major_chains' %}zi-api-check{% endif %}">
+{% if field.name == 'topics' %}<label for="topicFilter">Find a topic</label><input id="topicFilter" type="search" placeholder="Try AI, automation, customer service…" data-topic-filter autocomplete="off"><span class="zi-api-small" data-topic-count></span>{% endif %}
+{{ field.label_tag }}{{ field }}{{ field.errors }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+</div>

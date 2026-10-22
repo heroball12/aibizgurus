@@ -10,7 +10,7 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Case, Count, IntegerField, Q, Sum, Value, When
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -491,6 +491,17 @@ def crm_home(request):
 
 @employee_required
 def lead_finder(request):
+    from . import zoominfo_views
+    from .discovery import source_tabs
+    # Existing public-search forms/retry links keep their original provider.
+    legacy_public = request.method == "POST" or any(key in request.GET for key in ("location", "city", "quantity", "custom_industry", "page")) or any(key.startswith("finder_") for key in request.GET)
+    source = request.POST.get("source", "public") if request.method == "POST" else request.GET.get("source", "public" if legacy_public else "companies")
+    if source not in {"companies", "people", "public"}:
+        return HttpResponseBadRequest("Unknown lead source.")
+    if source != "public":
+        if request.method == "POST":
+            return zoominfo_views.search(request, kind_override=source)
+        return render(request, "crm/zoominfo.html", zoominfo_views.page_context(request, source))
     today = timezone.localdate()
     if request.method == "POST":
         form = LeadFinderForm(request.POST)
@@ -538,6 +549,7 @@ def lead_finder(request):
     open_batches = lead_batches_for_user(request.user).filter(status__in=OPEN_BATCH_STATUSES, created_at__gte=timezone.now()-timedelta(minutes=3)).order_by("-created_at")[:8]
     recent_batches = lead_batches_for_user(request.user).order_by("-created_at")[:8]
     return render(request, "crm/lead_finder.html", {
+        "finder_source": "public", "finder_tabs": source_tabs("public"),
         "form": form,
         "staged_leads": page_obj,
         "page_obj": page_obj,
@@ -584,14 +596,16 @@ def lead_generation_history(request):
 
 @employee_required
 def lead_generation_batch_detail(request, pk):
+    from .discovery import public_to_zoominfo
     batch = get_batch_or_404(request.user, pk)
     staged = lead_staging_for_user(request.user).filter(batch=batch).order_by("-created_at")
     page_obj = paginate(request, staged, 20)
     return render(request, "crm/lead_generation_batch_detail.html", {
         "batch": batch,
+        "zoominfo_handoff": public_to_zoominfo(batch),
         "batch_is_open": batch.is_open and not batch.is_sample,
         "run_here": batch.is_open and batch.quantity_requested <= 20 and not batch.is_sample,
-        "retry_query": urlencode({"industry": batch.industry, "location": batch.location, "quantity": min(batch.quantity_requested, 20), "exclude_major_chains": int(batch.exclude_major_chains)}),
+        "retry_query": urlencode({"source": "public", "industry": batch.industry, "location": batch.location, "quantity": min(batch.quantity_requested, 20), "exclude_major_chains": int(batch.exclude_major_chains)}),
         "page_obj": page_obj,
         "query_string": query_without_page(request),
         "staged_leads": page_obj,

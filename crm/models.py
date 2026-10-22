@@ -188,6 +188,7 @@ class ZoomInfoSearch(models.Model):
     exclude_major_chains = models.BooleanField(default=True)
     results = models.JSONField(default=list)
     page_number = models.PositiveIntegerField(default=1)
+    page_size = models.PositiveSmallIntegerField(default=25)
     total_results = models.PositiveIntegerField(default=0)
     has_next = models.BooleanField(default=False)
     hidden_chains = models.PositiveIntegerField(default=0)

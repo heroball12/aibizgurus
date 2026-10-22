@@ -15,6 +15,7 @@ from audit.utils import log_activity
 from core.rate_limits import consume_budget
 from . import zoominfo_api as api
 from .chain_detection import major_chain_name
+from .discovery import finder_url, source_tabs
 from .importers import parse_lead_file
 from .models import Company, CompanyIntentSignal, LeadUploadPreview, ZoomInfoSearch
 from .views import employee_required, internal_leads_for_user, is_sales_manager, paginate, query_without_page
@@ -37,12 +38,24 @@ def page_context(request, kind, *, form=None, run=None):
     topics = api.intent_topics() if kind == "intent" else []
     if run and kind == "intent" and not topics:
         topics = [(name, "") for name in run.criteria.get("topics", [])]
-    initial = run.form_values if run else {"company_id": api.valid_id(request.GET.get("company_id"))}
+    initial = dict(run.form_values) if run else {key: request.GET[key] for key in SearchForm.base_fields if key in request.GET}
+    if run and kind != "intent":
+        initial["page_size"] = run.page_size
+    if "exclude_major_chains" in initial and isinstance(initial["exclude_major_chains"], str):
+        initial["exclude_major_chains"] = initial["exclude_major_chains"] not in {"0", "false", ""}
     context = {"kind": kind, "form": form or SearchForm(kind=kind, topics=topics, initial=initial),
                "run": run, "configured": api.configured(), "topics_loaded": bool(topics),
                "is_manager": is_sales_manager(request.user), "assignment_form": AssignForm(user=request.user),
                "max_selection": api.MAX_SELECTION, "context_sheet_url": "",
                "recent_searches": ZoomInfoSearch.objects.filter(user=request.user).order_by("-created_at")[:6]}
+    if kind != "intent":
+        search_form = context["form"]
+        primary = ["industry", "state", "zip_code", "radius", "job_title", "contact_details", "page_size", "exclude_major_chains"]
+        advanced = [name for name in search_form.fields if name not in primary]
+        context.update(finder_source=kind, finder_tabs=source_tabs(kind, initial),
+                       primary_fields=[search_form[name] for name in primary if name in search_form.fields],
+                       advanced_fields=[search_form[name] for name in advanced],
+                       advanced_open=any(search_form[name].errors or (name != "sort_order" and search_form[name].value()) for name in advanced))
     if run:
         rows = [dict(r) for r in run.results]
         ids = {r.get("company_id") for r in rows if r.get("company_id")}
@@ -55,6 +68,14 @@ def page_context(request, kind, *, form=None, run=None):
                 row["date"] = api.signal_datetime(row.get("signal_date"))
         context.update(rows=rows, search_expired=run.created_at < timezone.now() - timedelta(hours=24),
                        next_page=run.page_number + 1, prev_page=run.page_number - 1)
+        if kind != "intent":
+            broader = []
+            if run.criteria.get("zipCode"):
+                values = {key: value for key, value in initial.items() if key not in {"zip_code", "radius"}}
+                broader.append({"label": "Search the whole state" if run.criteria.get("state") else "Search across the US", "url": finder_url(kind, values)})
+            if run.criteria.get("employeeRangeMax"):
+                broader.append({"label": "Include all company sizes", "url": finder_url(kind, {k: v for k, v in initial.items() if k != "max_employees"})})
+            context["broader_searches"] = broader
     pending = request.session.get("zoominfo_error", {})
     if pending.get("kind") == kind and pending.get("run_id") == (str(run.pk) if run else ""):
         context["api_error"] = request.session.pop("zoominfo_error")["details"]
@@ -92,14 +113,15 @@ def results(request, pk):
 
 
 def execute_search(request, kind, criteria, form_values, exclude, page=1):
-    rows, total, has_next = api.intent_search(criteria, page) if kind == "intent" else api.search(kind, criteria, page)
+    page_size = api.PAGE_SIZE if kind == "intent" else form_values.get("page_size", api.PAGE_SIZE)
+    rows, total, has_next = api.intent_search(criteria, page) if kind == "intent" else api.search(kind, criteria, page, page_size=page_size, sort=form_values.get("sort_order"))
     hidden = 0
     if exclude:
         filtered = [row for row in rows if not major_chain_name(name=row.get("company", ""), website=row.get("website", ""))]
         hidden, rows = len(rows) - len(filtered), filtered
     run = ZoomInfoSearch.objects.create(user=request.user, kind=kind, criteria=criteria, form_values=form_values,
                                        exclude_major_chains=exclude, results=rows, total_results=total,
-                                       page_number=page, has_next=has_next, hidden_chains=hidden)
+                                       page_number=page, page_size=page_size, has_next=has_next, hidden_chains=hidden)
     log_activity(user=request.user, request=request, action="other", model_label="crm.ZoomInfoSearch", object_id=run.pk,
                  message=f"Searched ZoomInfo {kind}.", metadata={"results": len(rows), "page": page})
     return redirect("zoominfo_results", pk=run.pk)
@@ -108,8 +130,8 @@ def execute_search(request, kind, criteria, form_values, exclude, page=1):
 @employee_required
 @never_cache
 @require_POST
-def search(request):
-    kind = request.POST.get("kind", "companies")
+def search(request, *, kind_override=None):
+    kind = kind_override or request.POST.get("kind", "companies")
     if kind not in KINDS:
         return HttpResponseBadRequest("Unknown search type.")
     form = SearchForm(request.POST, kind=kind, topics=api.intent_topics() if kind == "intent" else [])
@@ -141,7 +163,8 @@ def change_page(request, pk):
             raise api.ZoomInfoError("This search expired. Run a new search to see current results.")
         if limited(request):
             raise api.ZoomInfoError("Please wait a minute before requesting another page.")
-        return execute_search(request, run.kind, run.criteria, run.form_values, run.exclude_major_chains, page)
+        values = {**run.form_values, "page_size": run.page_size}
+        return execute_search(request, run.kind, run.criteria, values, run.exclude_major_chains, page)
     except api.ZoomInfoError as exc:
         report_error(request, exc, run.kind, run)
     return redirect("zoominfo_results", pk=run.pk)

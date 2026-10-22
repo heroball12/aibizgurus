@@ -1,0 +1,4 @@
+<header class="sales-page-head"><div><span class="sales-eyebrow">LEAD FINDER · SALES INTELLIGENCE</span><h1>Find your next conversation.</h1><p>Discover businesses. Reach the right people. Bring the best prospects into your CRM.</p></div><a class="btn ghost" href="{% url 'zoominfo_workspace' %}?kind=intent">Explore buying signals ↗</a></header>
+<nav class="finder-sources" aria-label="Lead sources">
+{% for tab in finder_tabs %}<a href="{{ tab.url }}" {% if tab.active %}aria-current="page"{% endif %}><strong>{{ tab.label }}</strong><small>{{ tab.description }}</small></a>{% endfor %}
+</nav>

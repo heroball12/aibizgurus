@@ -142,12 +142,20 @@ def valid_id(value):
     return value if re.fullmatch(r"[1-9][0-9]{0,17}", value) else ""
 
 
-def search(kind, criteria, page=1):
+def search(kind, criteria, page=1, *, page_size=PAGE_SIZE, sort=None):
     if kind not in {"companies", "people"}:
         raise ValueError("Invalid search kind")
+    if type(page_size) is not int or not 1 <= page_size <= 100:
+        raise ValueError("Invalid page size")
+    allowed_sorts = {"name", "-employeeCount", "-revenue"} if kind == "companies" else {"-relevance", "-contactAccuracyScore", "companyName"}
+    if sort and sort not in allowed_sorts:
+        raise ValueError("Invalid sort")
     entity = "companies" if kind == "companies" else "contacts"
     resource_type = "CompanySearch" if kind == "companies" else "ContactSearch"
-    payload = call("POST", f"/data/v1/{entity}/search", params={"page[number]": page, "page[size]": PAGE_SIZE},
+    params = {"page[number]": page, "page[size]": page_size}
+    if sort:
+        params["sort"] = sort
+    payload = call("POST", f"/data/v1/{entity}/search", params=params,
                    json={"data": {"type": resource_type, "attributes": criteria}})
     rows = []
     for item in resources(payload):
@@ -173,7 +181,7 @@ def search(kind, criteria, page=1):
     except (ValueError, TypeError, AttributeError):
         total = len(rows)
     links = payload.get("links") or {}
-    has_next = (isinstance(links, dict) and bool(links.get("next"))) or page * PAGE_SIZE < total
+    has_next = (isinstance(links, dict) and bool(links.get("next"))) or page * page_size < total
     return rows, total, has_next
 
 

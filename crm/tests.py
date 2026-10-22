@@ -124,7 +124,7 @@ class SalesWorkspaceTests(TestCase):
     def test_old_results_are_visible_and_saving_does_not_fake_a_call(self):
         row=self.make_staging()
         LeadStaging.objects.filter(pk=row.pk).update(created_at=timezone.now()-timedelta(days=7))
-        response=self.client.get(reverse('lead_finder'))
+        response=self.client.get(reverse('lead_finder'), {'source': 'public'})
         self.assertContains(response,'Cedar Cafe')
         self.assertContains(response,'Verify listing')
         saved=self.client.post(reverse('lead_staging_action',args=[row.pk,'save']))
@@ -151,7 +151,7 @@ class SalesWorkspaceTests(TestCase):
     def test_search_results_and_batches_are_paginated(self):
         row=self.make_staging()
         LeadStaging.objects.bulk_create([LeadStaging(batch=row.batch,created_by=self.rep,business_name=f'Example {n}',phone_number=f'619555{n:04d}',industry='Restaurant',dedupe_key=f'fixture{n}') for n in range(22)])
-        for url in [reverse('lead_finder'),reverse('lead_generation_batch_detail',args=[row.batch_id])]:
+        for url in [reverse('lead_finder')+'?source=public',reverse('lead_generation_batch_detail',args=[row.batch_id])]:
             response=self.client.get(url)
             self.assertEqual(len(response.context['page_obj']),20)
             self.assertEqual(response.context['page_obj'].paginator.count,23)
