@@ -36,6 +36,10 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python manage.py check
       - run: python manage.py makemigrations --check --dry-run
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test frontend/training/*.test.cjs
       - run: python manage.py test --noinput
       - run: python manage.py collectstatic --noinput
         env:

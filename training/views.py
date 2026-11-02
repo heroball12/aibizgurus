@@ -239,11 +239,6 @@ def quiz_submit(request, pk):
     quiz = getattr(version, "quiz", None)
     if not quiz:
         raise Http404()
-    if not consume_budget("training-quiz", str(request.user.pk), limit=20, window=3600):
-        return JsonResponse(
-            {"error": "Take time to review the explanations before another attempt."},
-            status=429,
-        )
     try:
         data = payload(request)
         attempt = services.submit_quiz(
@@ -258,6 +253,17 @@ def quiz_submit(request, pk):
                 "feedback": attempt.feedback,
             }
         )
+    except services.QuizAttemptLimit as exc:
+        response = JsonResponse(
+            {
+                "error": " ".join(exc.messages),
+                "code": "quiz_attempt_limit",
+                "retry_after": exc.retry_after,
+            },
+            status=429,
+        )
+        response["Retry-After"] = str(exc.retry_after)
+        return response
     except ValidationError as exc:
         return failure(exc)
 

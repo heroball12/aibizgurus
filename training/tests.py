@@ -8,6 +8,8 @@ from django.core.management import call_command
 from django.test import TestCase, Client, override_settings
 from django.urls import reverse
 from django.utils import timezone
+from core.models import RequestBudget
+from core.rate_limits import consume_budget
 from .models import *
 from . import services, proctor
 
@@ -713,6 +715,164 @@ class AcademyTests(TestCase):
         response = self.client.get(reverse("training_lesson", args=[self.version.pk]))
         self.assertNotContains(response, "Respect contact restrictions.")
         self.assertNotContains(response, "correct_index")
+
+    def test_lesson_browser_can_save_progress_and_submit_quiz_with_csrf(self):
+        self.publish()
+        browser = Client(enforce_csrf_checks=True)
+        browser.force_login(self.rep)
+        page = browser.get(reverse("training_lesson", args=[self.version.pk]))
+        self.assertEqual(page.status_code, 200)
+        headers = {"HTTP_X_CSRFTOKEN": browser.cookies["csrftoken"].value}
+        watch_session = str(uuid.uuid4())
+        progress = browser.post(
+            reverse("training_progress", args=[self.version.pk]),
+            data=json.dumps(
+                {"session": watch_session, "start": 0, "position": 0, "playing": False}
+            ),
+            content_type="application/json",
+            **headers,
+        )
+        self.assertEqual(progress.status_code, 200)
+        saved_progress = EmployeeProgress.objects.get(
+            employee=self.rep, version=self.version
+        )
+        saved_progress.last_ping = timezone.now() - timedelta(seconds=5)
+        saved_progress.save(update_fields=["last_ping"])
+        progress = browser.post(
+            reverse("training_progress", args=[self.version.pk]),
+            data=json.dumps(
+                {"session": watch_session, "start": 0, "position": 5, "playing": True}
+            ),
+            content_type="application/json",
+            **headers,
+        )
+        self.assertEqual(progress.status_code, 200)
+        saved_progress.refresh_from_db()
+        self.assertEqual(saved_progress.watched_ranges, [[0, 5]])
+        submitted = browser.post(
+            reverse("training_quiz", args=[self.version.pk]),
+            data=json.dumps({
+                "answers": {str(self.question.pk): 0},
+                "nonce": str(page.context["quiz_nonce"]),
+            }),
+            content_type="application/json",
+            **headers,
+        )
+        self.assertEqual(submitted.status_code, 200)
+        self.assertEqual(submitted.json()["score"], 100)
+        self.assertTrue(submitted.json()["passed"])
+        self.assertEqual(QuizAttempt.objects.filter(employee=self.rep).count(), 1)
+
+    def test_failed_quiz_requests_do_not_use_attempt_allowance(self):
+        self.publish()
+        url = reverse("training_quiz", args=[self.version.pk])
+        invalid = self.client.post(
+            url,
+            data=json.dumps({"answers": {}, "nonce": str(uuid.uuid4())}),
+            content_type="application/json",
+        )
+        self.assertEqual(invalid.status_code, 400)
+        self.assertFalse(RequestBudget.objects.exists())
+        with patch(
+            "training.services.QuizAttempt.objects.create",
+            side_effect=RuntimeError("temporary save failure"),
+        ):
+            with self.assertRaises(RuntimeError):
+                self.client.post(
+                    url,
+                    data=json.dumps({
+                        "answers": {str(self.question.pk): 0},
+                        "nonce": str(uuid.uuid4()),
+                    }),
+                    content_type="application/json",
+                )
+        self.assertFalse(RequestBudget.objects.exists())
+        self.assertFalse(QuizAttempt.objects.exists())
+
+    def test_quiz_limit_preserves_retries_and_does_not_block_other_modules(self):
+        self.publish()
+        url = reverse("training_quiz", args=[self.version.pk])
+        data = {"answers": {str(self.question.pk): 0}, "nonce": str(uuid.uuid4())}
+        first = self.client.post(url, data=json.dumps(data), content_type="application/json")
+        self.assertEqual(first.status_code, 200)
+        budget = RequestBudget.objects.get()
+        budget.count = 20
+        budget.save(update_fields=["count"])
+        retry = self.client.post(url, data=json.dumps(data), content_type="application/json")
+        self.assertEqual(retry.status_code, 200)
+        self.assertEqual(retry.json()["id"], first.json()["id"])
+        limited = self.client.post(
+            url,
+            data=json.dumps({**data, "nonce": str(uuid.uuid4())}),
+            content_type="application/json",
+        )
+        self.assertEqual(limited.status_code, 429)
+        self.assertEqual(limited.json()["code"], "quiz_attempt_limit")
+        self.assertEqual(int(limited["Retry-After"]), limited.json()["retry_after"])
+        self.assertIn("this module", limited.json()["error"])
+        self.assertEqual(QuizAttempt.objects.count(), 1)
+        module = Module.objects.create(
+            track=self.track, title="Next lesson", slug="next-lesson", position=2
+        )
+        version = ModuleVersion.objects.create(module=module)
+        quiz = Quiz.objects.create(version=version)
+        question = Question.objects.create(
+            quiz=quiz, prompt="Next question", choices=["Yes", "No"],
+            correct_index=0, explanation="Why",
+        )
+        # Only the publication state is relevant to this endpoint test.
+        ModuleVersion.objects.filter(pk=version.pk).update(status="published")
+        other = self.client.post(
+            reverse("training_quiz", args=[version.pk]),
+            data=json.dumps({
+                "answers": {str(question.pk): 0}, "nonce": str(uuid.uuid4()),
+            }),
+            content_type="application/json",
+        )
+        self.assertEqual(other.status_code, 200)
+        budget.refresh_from_db()
+        self.assertEqual(budget.count, 20)
+
+    def test_old_shared_quiz_lockout_does_not_block_repaired_submissions(self):
+        self.publish()
+        consume_budget("training-quiz", str(self.rep.pk), limit=20, window=3600)
+        RequestBudget.objects.update(count=20)
+        response = self.client.post(
+            reverse("training_quiz", args=[self.version.pk]),
+            data=json.dumps({
+                "answers": {str(self.question.pk): 0}, "nonce": str(uuid.uuid4()),
+            }),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["passed"])
+
+    def test_all_sixteen_core_module_quizzes_submit_through_authenticated_views(self):
+        call_command("seed_training", verbosity=0)
+        track = Track.objects.get(slug="core-sdr")
+        services.enroll(self.owner, self.rep, track)
+        versions = ModuleVersion.objects.filter(module__track=track)
+        # These isolated fixtures test grading, not the media publication workflow.
+        versions.update(status="published")
+        self.assertEqual(versions.count(), 16)
+        for version in versions.select_related("quiz"):
+            with self.subTest(module=version.module.position):
+                answers = {
+                    str(q.pk): q.correct_index for q in version.quiz.questions.all()
+                }
+                response = self.client.post(
+                    reverse("training_quiz", args=[version.pk]),
+                    data=json.dumps({
+                        "answers": answers,
+                        "nonce": str(uuid.uuid4()),
+                    }),
+                    content_type="application/json",
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json()["score"], 100)
+                self.assertTrue(response.json()["passed"])
+                self.assertEqual(len(response.json()["feedback"]), len(answers))
+        self.assertEqual(QuizAttempt.objects.filter(employee=self.rep).count(), 16)
 
     def test_csrf_and_post_only(self):
         self.publish()

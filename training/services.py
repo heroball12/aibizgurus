@@ -1,9 +1,12 @@
 import math
+import time
 import uuid
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import connection, transaction
 from django.utils import timezone
+from core.rate_limits import consume_budget
 from .models import (
     Module,
     ModuleVersion,
@@ -73,6 +76,17 @@ def watched(progress):
     return sum(end - start for start, end in progress.watched_ranges) if progress else 0
 
 
+class QuizAttemptLimit(ValidationError):
+    def __init__(self):
+        self.retry_after = 3600 - int(time.time()) % 3600
+        minutes = math.ceil(self.retry_after / 60)
+        super().__init__(
+            f"You have submitted 20 attempts for this module this hour. "
+            f"Try again in {minutes} minute{'s' if minutes != 1 else ''}. "
+            "Your answers are still selected; other modules remain available."
+        )
+
+
 def merge_ranges(ranges):
     output = []
     for start, end in sorted(ranges):
@@ -86,7 +100,8 @@ def merge_ranges(ranges):
 @transaction.atomic
 def heartbeat(user, version, data):
     require_learning(user, version)
-    type(user).objects.select_for_update().get(pk=user.pk)
+    # AuthenticationMiddleware supplies a SimpleLazyObject, not the model class.
+    get_user_model().objects.select_for_update().get(pk=user.pk)
     progress = (
         EmployeeProgress.objects.filter(employee=user, version=version)
         .order_by("-cycle")
@@ -144,7 +159,7 @@ def submit_quiz(user, quiz, answers, nonce):
     except (ValueError, TypeError):
         raise ValidationError("Reload the quiz before submitting.")
     # Per-employee lock makes double-click/retry safe even on different workers.
-    type(user).objects.select_for_update().get(pk=user.pk)
+    get_user_model().objects.select_for_update().get(pk=user.pk)
     old = QuizAttempt.objects.filter(employee=user, nonce=nonce).first()
     if old:
         if old.quiz_id != quiz.pk:
@@ -176,6 +191,12 @@ def submit_quiz(user, quiz, answers, nonce):
         )
     score = round(100 * correct / len(questions), 2)
     threshold = quiz.version.module.track.quiz_pass_percent
+    # Count only valid, new submissions for this quiz. A retry of a saved nonce
+    # returns above; any failed save rolls this reservation back with the attempt.
+    if not consume_budget(
+        "training-quiz", f"{user.pk}:{quiz.pk}", limit=20, window=3600
+    ):
+        raise QuizAttemptLimit()
     return QuizAttempt.objects.create(
         employee=user,
         quiz=quiz,
