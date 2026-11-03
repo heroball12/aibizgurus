@@ -1,8 +1,7 @@
 <div class="zi-api-enrich">
-  {{ assignment_form.as_p }}
   <p>Add selected {% if kind == 'companies' %}businesses{% else %}people{% endif %} to the CRM pipeline using the search details already available. No enrichment credits are used. Missing contact details stay blank; existing sales progress is preserved.</p>
   <div class="zi-api-actions">
-    <button class="btn neon" data-zi-add data-busy-label="Adding to your pipeline…" {% if search_expired %}disabled{% endif %}>Add to CRM / pipeline</button>
+    <button class="btn neon" data-zi-add data-busy-label="Adding to {% if is_manager %}the agent’s{% else %}your{% endif %} pipeline…" {% if search_expired %}disabled{% endif %}>{% if is_manager %}Add to agent’s pipeline{% else %}Add to CRM / pipeline{% endif %}</button>
     {% if kind == 'people' and run.state == 'ready' %}<button class="btn ghost" formaction="{% url 'zoominfo_details' run.pk %}" data-zi-enrich data-busy-label="Getting selected details…" {% if search_expired %}disabled{% endif %}>Get contact details &amp; preview</button>{% endif %}
   </div>
   {% if kind == 'people' and run.state == 'ready' %}<p>Optional contact details: choose up to {{ max_selection }} people. This can use up to one ZoomInfo enrichment credit per selected contact and opens a preview before updating CRM records.</p>{% endif %}

@@ -1,5 +1,19 @@
 (() => {
   const selection = document.querySelector('[data-zi-selection]');
+  const assignee = selection?.querySelector('[data-zi-assignee]');
+  const updateAssignment = () => {
+    if (!assignee) return;
+    const name = assignee.selectedOptions[0]?.textContent.trim();
+    const summary = selection.querySelector('[data-zi-assignment-summary]');
+    const link = selection.querySelector('[data-zi-pipeline-link]');
+    summary.textContent = assignee.value
+      ? `Selected results will be added to ${name}’s pipeline.`
+      : 'Choose an agent, select results, then add them directly to that agent’s pipeline.';
+    link.href = link.dataset.pipelineUrl + (assignee.value ? `?assigned_to=${encodeURIComponent(assignee.value)}` : '');
+    link.textContent = assignee.value ? 'View selected agent’s pipeline ↗' : 'Open pipeline ↗';
+  };
+  assignee?.addEventListener('change', updateAssignment);
+  updateAssignment();
   if (selection) {
     const limit = Number(selection.dataset.ziSelection);
     const boxes = [...selection.querySelectorAll('[data-zi-result]')];
@@ -20,6 +34,11 @@
       update();
     });
     selection.addEventListener('submit', event => {
+      if (assignee && !assignee.value) {
+        event.preventDefault();
+        selection.querySelector('[data-zi-status]').textContent = 'Choose an agent to receive these results.';
+        return;
+      }
       const count = boxes.filter(box => box.checked).length;
       const enriching = event.submitter?.hasAttribute('data-zi-enrich');
       const maximum = enriching ? Number(selection.dataset.ziEnrichmentLimit) : limit;
@@ -45,7 +64,8 @@
       }
       const status = form.querySelector('[data-zi-status]');
       if (status) status.textContent = button?.hasAttribute('data-zi-add')
-        ? 'Saving selected results to your CRM…' : 'Waiting for ZoomInfo. Please keep this page open.';
+        ? (assignee?.value ? `Saving selected results to ${assignee.selectedOptions[0].textContent.trim()}’s pipeline…` : 'Saving selected results to your CRM…')
+        : 'Waiting for ZoomInfo. Please keep this page open.';
       form.setAttribute('aria-busy', 'true');
     });
   });
@@ -58,6 +78,7 @@
         delete button.dataset.originalText;
       });
     });
+    updateAssignment();
   });
   // Keep the full provider catalog out of the visible list; retain selected topics across filters.
   const filter = document.querySelector('[data-topic-filter]');

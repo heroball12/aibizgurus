@@ -137,8 +137,64 @@ class SaveSearchResultsTests(TestCase):
 
     def test_managers_can_assign_selected_results(self):
         self.client.force_login(self.owner)
-        self.save(self.run_for(user=self.owner), assigned_to=self.other.pk)
-        self.assertEqual(Lead.objects.get().assigned_to, self.other)
+        self.other.first_name, self.other.last_name = "Riley", "Agent"
+        self.other.save()
+        run = self.run_for(user=self.owner)
+        page = self.client.get(reverse("zoominfo_results", args=[run.pk]))
+        self.assertContains(page, "Send results to an agent")
+        self.assertContains(page, "Riley Agent (save-other)")
+        self.assertContains(page, "Add to agent’s pipeline")
+        self.assertContains(page, 'name="assigned_to"', count=1)
+        response = self.save(run, assigned_to=self.other.pk)
+        self.assertRedirects(response, reverse("sales_pipeline") + f"?assigned_to={self.other.pk}", fetch_redirect_response=False)
+        pipeline = self.client.get(response.url)
+        self.assertContains(pipeline, "Added to Riley Agent&#x27;s pipeline")
+        lead = Lead.objects.get()
+        self.assertEqual(lead.assigned_to, self.other)
+        self.assertEqual(lead.company.owner, self.other)
+        self.client.force_login(self.other)
+        self.assertContains(self.client.get(reverse("sales_pipeline")), "Example Motors")
+        self.client.force_login(self.rep)
+        self.assertNotContains(self.client.get(reverse("sales_pipeline")), "Example Motors")
+
+    def test_owner_can_assign_people_and_repeated_saves_do_not_duplicate(self):
+        self.client.force_login(self.owner)
+        run = self.run_for("people", user=self.owner)
+        self.assertContains(self.client.get(reverse("zoominfo_results", args=[run.pk])), "Assign selected results to")
+        self.save(run, assigned_to=self.rep.pk)
+        self.save(run, assigned_to=self.rep.pk)
+        self.assertEqual(Lead.objects.count(), 1)
+        self.assertEqual(LeadImport.objects.count(), 1)
+        lead = Lead.objects.get()
+        self.assertEqual(lead.name, "Alex Rivera")
+        self.assertEqual(lead.assigned_to, self.rep)
+        self.assertEqual(lead.company.owner, self.rep)
+
+    def test_owner_must_choose_an_active_sales_agent(self):
+        User = get_user_model()
+        inactive = User.objects.create_user(username="inactive-agent", role="employee", is_active=False)
+        customer = User.objects.create_user(username="customer-account", role="client")
+        self.client.force_login(self.owner)
+        run = self.run_for(user=self.owner)
+        page = self.client.get(reverse("zoominfo_results", args=[run.pk]))
+        self.assertNotContains(page, "inactive-agent")
+        self.assertNotContains(page, "customer-account")
+        for assignee in ("", inactive.pk, customer.pk, "999999"):
+            response = self.save(run, assigned_to=assignee)
+            self.assertRedirects(response, reverse("zoominfo_results", args=[run.pk]))
+        self.assertFalse(Lead.objects.exists())
+        self.assertFalse(LeadImport.objects.exists())
+
+    def test_owner_assignment_does_not_transfer_a_company_claimed_since_search(self):
+        self.client.force_login(self.owner)
+        run = self.run_for(user=self.owner)
+        original = Lead.objects.create(business_name="Example Motors", website="https://example.test", assigned_to=self.rep)
+        self.save(run, assigned_to=self.other.pk)
+        self.assertEqual(Lead.objects.count(), 1)
+        original.refresh_from_db()
+        self.assertEqual(original.assigned_to, self.rep)
+        self.assertEqual(original.company.owner, self.rep)
+        self.assertEqual(LeadImport.objects.get().skipped_count, 1)
 
     def test_private_post_csrf_expiry_and_selection_boundaries(self):
         run = self.run_for()
