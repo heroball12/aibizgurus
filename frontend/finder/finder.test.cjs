@@ -16,9 +16,10 @@ const response = data => ({ok:true, status:200, redirected:false,json:async()=>d
 const settle = () => new Promise(resolve=>setImmediate(resolve));
 function harness({finder, batch, fetch}) {
   const timers = new Map(); let timerID=0, reloads=0;
+  const windowListeners = {};
   const context = {
     document:{hidden:false,querySelector: key=>key==='[data-finder-form]'?finder:batch,addEventListener(){}},
-    window:{addEventListener(){}},
+    window:{addEventListener:(name, fn)=>windowListeners[name]=fn},
     location:{origin:'http://localhost',reload:()=>reloads++},
     Option:class {constructor(label,value){this.label=label;this.value=value;}},
     URL, AbortController, AbortSignal:{timeout:()=>undefined}, FormData:class {}, fetch,
@@ -26,7 +27,7 @@ function harness({finder, batch, fetch}) {
     clearTimeout:id=>timers.delete(id),
   };
   vm.runInNewContext(source,context);
-  return {timers, reloads:()=>reloads, async next(){const [id,timer]=timers.entries().next().value;timers.delete(id);await timer.fn();await settle();}};
+  return {timers, windowListeners, reloads:()=>reloads, async next(){const [id,timer]=timers.entries().next().value;timers.delete(id);await timer.fn();await settle();}};
 }
 function form() {
   const state = new Element(), city = new Element({disabled:true}), button = new Element(), status = new Element(), retry = new Element();
@@ -55,6 +56,21 @@ test('a failed cities request exposes retry and never permits an invalid search'
   assert.equal(ui.retry.hidden,false);assert.equal(ui.city.disabled,true);assert.equal(ui.button.disabled,true);
   await ui.retry.fire('click');
   assert.equal(ui.city.disabled,false);assert.equal(ui.retry.hidden,true);
+});
+test('a browser-restored state loads its still-disabled city selector',async()=>{
+  const ui=form();ui.state.value='CA';
+  const h=harness({finder:ui.finder,fetch:async()=>response({state:'CA',cities:[{value:'San Diego',label:'San Diego'}]})});
+  h.windowListeners.pageshow();await settle();
+  assert.equal(ui.city.disabled,false);
+  ui.city.value='San Diego';ui.city.fire('change');
+  assert.equal(ui.button.disabled,false);
+});
+test('an empty city response offers recovery instead of an unusable dropdown',async()=>{
+  const ui=form();
+  harness({finder:ui.finder,fetch:async()=>response({state:'CA',cities:[]})});
+  ui.state.value='CA';await ui.state.fire('change');
+  assert.equal(ui.retry.hidden,false);assert.equal(ui.button.disabled,true);
+  assert.match(ui.status.textContent,/No cities were returned/);
 });
 function batchUI() {
   const button=new Element(), runForm=new Element({action:'/batch/1/run/'});

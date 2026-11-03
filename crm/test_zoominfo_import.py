@@ -123,7 +123,10 @@ class ZoomInfoImportTests(TestCase):
             notes="Employee notes", phone="7605550999", follow_up_date=now.date(), appointment_at=now,
             last_contact_at=now, value=Decimal("250.00"))
         raw = contact(**{"Direct Phone Number": "7605550123", "Employees": "22", "Recent Investors": ""})
-        self.imported([raw], default_assigned_to=self.other)
+        blocked = self.imported([raw], default_assigned_to=self.other)
+        self.assertEqual(blocked.skipped_count, 1)
+        self.assertEqual(blocked.import_summary["duplicate_rows"][0]["row"], 2)
+        self.imported([raw], default_assigned_to=self.rep)
         lead.refresh_from_db()
         self.assertEqual(lead.status, "do_not_contact")
         self.assertTrue(lead.archived)
@@ -230,7 +233,7 @@ class ZoomInfoImportTests(TestCase):
         before = LeadZoomInfoProfile.objects.get().data
         self.client.force_login(self.rep)
         response = self.client.post(reverse("lead_upload"), {"csv_file": upload([contact(**{"Employees": "99"})])})
-        self.assertContains(self.client.get(response.url), "Already assigned")
+        self.assertContains(self.client.get(response.url), "Duplicate company")
         draft = LeadUploadPreview.objects.get()
         self.client.post(reverse("lead_import_confirm", args=[draft.pk]))
         self.assertEqual(LeadZoomInfoProfile.objects.get().data, before)
@@ -253,7 +256,9 @@ class ZoomInfoImportTests(TestCase):
         self.assertContains(people, "Alex J Rivera")
         self.assertNotContains(people, "Private Rivera")
         self.client.force_login(self.owner)
-        self.assertContains(self.client.get(reverse("crm_company", args=[company.pk])), "Private Rivera")
+        self.assertNotContains(self.client.get(reverse("crm_company", args=[company.pk])), "Private Rivera")
+        self.assertEqual(Lead.objects.count(), 1)
+        self.assertEqual(company.owner, self.rep)
 
     def test_source_export_roundtrip_and_profile_escapes_html(self):
         raw = contact(**{"Future Column": "<script>alert(1)</script>"})

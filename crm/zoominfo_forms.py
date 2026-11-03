@@ -105,7 +105,7 @@ class SearchForm(forms.Form):
 
 
 class AssignForm(forms.Form):
-    assigned_to = forms.ModelChoiceField(queryset=sales_staff_queryset(), required=False, label="Assign imported people to", empty_label="Unassigned")
+    assigned_to = forms.ModelChoiceField(queryset=sales_staff_queryset(), required=False, label="Assign leads to", empty_label="Unassigned")
 
     def __init__(self, *args, user, **kwargs):
         super().__init__(*args, **kwargs)

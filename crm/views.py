@@ -82,7 +82,12 @@ def lead_staging_for_user(user):
     )
     if is_sales_manager(user):
         return qs
-    return qs.filter(created_by=user)
+    qs = qs.filter(created_by=user)
+    from .ownership import filter_owned_results
+    rows = list(qs.values("pk", "business_name", "website", "city", "state", "phone_number"))
+    available = {row["pk"] for row in filter_owned_results(rows, user, "public")}
+    hidden = [row["pk"] for row in rows if row["pk"] not in available]
+    return qs.exclude(pk__in=hidden)
 
 
 def get_staging_or_404(user, pk):
@@ -767,6 +772,12 @@ def lead_create(request):
             lead.ai_instance = None
             if not is_sales_manager(request.user):
                 lead.assigned_to = request.user
+            from .ownership import claim_company, lead_data, CompanyOwnedElsewhere
+            try:
+                lead.company = claim_company(lead_data(lead), lead.assigned_to)
+            except CompanyOwnedElsewhere as exc:
+                form.add_error(None, str(exc))
+                return render(request, "crm/lead_form.html", {"form": form})
             if lead.notes and not lead.cleaned_notes:
                 from .intelligence import classify_sales_note, duplicate_fingerprint
 
@@ -1141,6 +1152,8 @@ def export_leads(request):
 @transaction.atomic
 def lead_edit(request, pk):
     lead = get_internal_lead_or_404(request.user, pk)
+    from .ownership import claim_company, lead_data, CompanyOwnedElsewhere
+    previous_company_data = lead_data(lead)
     if request.method == "POST":
         form = LeadForm(request.POST, instance=lead, user=request.user, is_sales_manager=is_sales_manager(request.user))
         if form.is_valid():
@@ -1150,6 +1163,12 @@ def lead_edit(request, pk):
             updated.ai_instance = None
             if not is_sales_manager(request.user):
                 updated.assigned_to = request.user
+            if lead_data(updated) != previous_company_data:
+                try:
+                    updated.company = claim_company(lead_data(updated), updated.assigned_to)
+                except CompanyOwnedElsewhere as exc:
+                    form.add_error(None, str(exc))
+                    return render(request, "crm/lead_form.html", {"form": form, "lead": lead})
             updated.save()
             messages.success(request, "Lead updated.")
             return redirect("lead_detail", pk=lead.pk)

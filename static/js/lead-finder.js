@@ -33,6 +33,7 @@
         const data = await response.json();
         if (version !== cityRequest) return;
         if (data.state !== selectedState || !Array.isArray(data.cities)) throw new Error('Cities could not load. Try again.');
+        if (!data.cities.length) throw new Error('No cities were returned. Try loading cities again.');
         city.replaceChildren(new Option('Choose a city…', ''), ...data.cities.map(item => new Option(item.label, item.value)));
         city.disabled = false;
         status.textContent = 'Choose your city. Search covers a 20-mile-wide area; nearby towns may appear.';
@@ -59,6 +60,8 @@
     });
     window.addEventListener('pageshow', () => {
       submitting = false; finder.removeAttribute('aria-busy'); button.textContent = 'Find prospects ↗'; sync();
+      // Browsers can restore the state dropdown while the city is still disabled.
+      if(state.value && city.disabled && !loading) loadCities();
     });
     sync();
   }
@@ -80,7 +83,7 @@
     try {
       const response = await fetch(advancing ? runForm.action : batch.dataset.batchUrl, {
         method: advancing ? 'POST' : 'GET', body: advancing ? new FormData(runForm) : undefined,
-        credentials:'same-origin', headers:{Accept:'application/json'}, signal:AbortSignal.timeout(30000),
+        credentials:'same-origin', headers:{Accept:'application/json'}, signal:AbortSignal.timeout(45000),
       });
       if (response.redirected || response.status === 401 || response.status === 403) {
         stopped = true;

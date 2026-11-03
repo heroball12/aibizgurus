@@ -47,6 +47,8 @@ def identity(raw):
     contact_id = value(row, "ZoomInfo Contact ID")
     if contact_id:
         return "contact:" + contact_id
+    if value(row, "ZoomInfo Record Type") == "Company" and value(row, "ZoomInfo Company ID"):
+        return "company:" + value(row, "ZoomInfo Company ID")
     # Exports without IDs still distinguish people at the same business.
     email = value(row, "Email Address", "Email").casefold()
     company = value(row, "ZoomInfo Company ID", "Company Name").casefold()
@@ -113,6 +115,22 @@ def find_match(row, *, lock=False):
     profile = profiles.filter(lookup).first()
     if profile:
         return profile.lead
+    if value(normalized(row.raw), "ZoomInfo Record Type") == "Company":
+        from .companies import company_key
+        company_id = value(normalized(row.raw), "ZoomInfo Company ID")
+        data = row.data
+        key = company_key(data["business_name"], data["website"], data["city"], data["state"])
+        companies = Company.objects.filter(
+            Q(zoominfo_id=company_id) | Q(zoominfo_id__isnull=True, match_key=key)
+        )
+        candidates = Lead.objects.filter(
+            lead_type="internal_sales", company__in=companies,
+            point_of_contact="", contact_role="",
+        ).filter(Q(name="") | Q(name=data["business_name"]))
+        if lock:
+            candidates = candidates.select_for_update(of=("self",))
+        matches = list(candidates[:2])
+        return matches[0] if len(matches) == 1 else None
     email = row.data.get("email", "")
     if not email:
         return None
@@ -177,7 +195,7 @@ def save_profile(lead, row):
 
 
 def company_for(row):
-    from .companies import company_key
+    from .ownership import claim_company
     source = normalized(row.raw)
     company_id = value(source, "ZoomInfo Company ID")
     name = row.data.get("business_name", "")
@@ -187,18 +205,10 @@ def company_for(row):
               **{field: row.data.get(field, "") for field in ("industry", "website", "address", "city", "state", "zip_code")},
               "phone": value(source, "Company HQ Phone")[:80],
               "country": value(source, "Company Country")[:120]}
-    match_key = company_key(fields["name"], fields["website"], fields["city"], fields["state"])
-    company = Company.objects.filter(zoominfo_id=company_id).first() if company_id else None
-    if company is None:
-        company = Company.objects.filter(match_key=match_key).first()
-        if company and company_id and company.zoominfo_id not in (None, company_id):
-            company = None  # Different external IDs are different businesses.
-            match_key = None
-        if company is None:
-            if company_id:
-                company, _ = Company.objects.get_or_create(zoominfo_id=company_id, defaults={**fields, "match_key": match_key})
-            else:
-                company, _ = Company.objects.get_or_create(match_key=match_key, defaults=fields)
+    company = claim_company(
+        {**row.data, "company_phone": fields["phone"]}, row.data.get("assigned_to"),
+        provider_id=company_id,
+    )
     if company_id and not company.zoominfo_id:
         company.zoominfo_id = company_id
     for name, text in fields.items():

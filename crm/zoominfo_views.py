@@ -17,9 +17,10 @@ from . import zoominfo_api as api
 from .chain_detection import major_chain_name
 from .discovery import finder_url, source_tabs
 from .importers import parse_lead_file
-from .models import Company, CompanyIntentSignal, LeadUploadPreview, ZoomInfoSearch
+from .models import Company, CompanyIntentSignal, LeadUploadPreview, LeadZoomInfoProfile, ZoomInfoSearch
 from .views import employee_required, internal_leads_for_user, is_sales_manager, paginate, query_without_page
 from .zoominfo_forms import AssignForm, SearchForm
+from .ownership import filter_owned_results
 
 KINDS = {"companies", "people", "intent"}
 
@@ -57,11 +58,18 @@ def page_context(request, kind, *, form=None, run=None):
                        advanced_fields=[search_form[name] for name in advanced],
                        advanced_open=any(search_form[name].errors or (name != "sort_order" and search_form[name].value()) for name in advanced))
     if run:
-        rows = [dict(r) for r in run.results]
+        rows = filter_owned_results([dict(r) for r in run.results], request.user, kind)
+        context["ownership_hidden"] = len(run.results) - len(rows)
+        prefix = "company:" if kind == "companies" else "contact:"
+        saved_leads = dict(LeadZoomInfoProfile.objects.filter(
+            lead__in=internal_leads_for_user(request.user),
+            identity_key__in=[prefix + r["id"] for r in rows],
+        ).values_list("identity_key", "lead_id")) if kind != "intent" else {}
         ids = {r.get("company_id") for r in rows if r.get("company_id")}
         companies = {c.zoominfo_id: c.pk for c in visible_companies(request.user).filter(zoominfo_id__in=ids)}
         saved = set(CompanyIntentSignal.objects.filter(saved_by=request.user, source_key__in=[r["id"] for r in rows]).values_list("source_key", flat=True)) if kind == "intent" else set()
         for row in rows:
+            row["crm_lead"] = saved_leads.get(prefix + row["id"])
             row["crm_company"] = companies.get(row.get("company_id"))
             row["saved"] = row["id"] in saved
             if kind == "intent":
@@ -84,6 +92,40 @@ def page_context(request, kind, *, form=None, run=None):
     if context.get("api_error"):
         context["api_error"] = {**context["api_error"], "occurred_at": api.signal_datetime(context["api_error"].get("occurred_at"))}
     return context
+
+
+@employee_required
+@never_cache
+@require_POST
+def add_to_crm(request, pk):
+    from .zoominfo_save import save_results
+    run = get_object_or_404(ZoomInfoSearch, pk=pk, user=request.user, kind__in=["companies", "people"])
+    ids = list(dict.fromkeys(request.POST.getlist("selected")))
+    permitted = {row["id"] for row in run.results}
+    if not 1 <= len(ids) <= 100 or not set(ids) <= permitted:
+        messages.error(request, "Select between 1 and 100 results from this page to add to your pipeline.")
+        return redirect("zoominfo_results", pk=run.pk)
+    if run.created_at < timezone.now() - timedelta(hours=24):
+        messages.error(request, "This search expired. Run a new search before adding results.")
+        return redirect("zoominfo_results", pk=run.pk)
+    assignment = AssignForm(request.POST, user=request.user)
+    if not assignment.is_valid():
+        messages.error(request, "Choose an active employee for assignment.")
+        return redirect("zoominfo_results", pk=run.pk)
+    try:
+        imported, created = save_results(run, ids, user=request.user, assignee=assignment.assignee(), manager=is_sales_manager(request.user))
+    except ValueError as exc:
+        messages.error(request, str(exc))
+        return redirect("zoominfo_results", pk=run.pk)
+    if created:
+        log_activity(user=request.user, request=request, action="create", model_label="crm.LeadImport",
+                     object_id=imported.pk, message="Added selected ZoomInfo search results to the CRM pipeline.",
+                     metadata={"created": imported.imported_count, "matched": imported.updated_count})
+    skipped = imported.import_summary.get("protected_duplicates_skipped", 0)
+    messages.success(request, f"Added to CRM: {imported.imported_count} new, {imported.updated_count} existing matched. "
+                     + (f"{skipped} already assigned to another employee were skipped. " if skipped else "")
+                     + "Saved search details only; no enrichment credits used.")
+    return redirect("sales_pipeline")
 
 
 def report_error(request, exc, kind, run=None):
@@ -245,6 +287,9 @@ def get_details(request, pk):
         permitted = {r["id"] for r in run.results}
         if not 1 <= len(ids) <= api.MAX_SELECTION or not set(ids) <= permitted:
             raise api.ZoomInfoError(f"Select between 1 and {api.MAX_SELECTION} people from these results.")
+        available = {row["id"] for row in filter_owned_results(run.results, request.user, run.kind)}
+        if not set(ids) <= available:
+            raise api.ZoomInfoError("A selected company was already claimed by another agent. Reload these results; no contact details were purchased.")
         assignment = AssignForm(request.POST, user=request.user)
         if not assignment.is_valid():
             raise api.ZoomInfoError("Choose an active employee for assignment.")

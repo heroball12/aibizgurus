@@ -676,6 +676,7 @@ class PlatformFlowTests(TestCase):
         self.assertFalse(Lead.objects.filter(pk=lead.pk).exists())
         self.assertEqual(self.client.get(reverse("lead_detail", args=[lead.pk])).status_code, 404)
 
+    @override_settings(LEAD_FINDER_ENABLE_PUBLIC_HTTP=True, CELERY_BROKER_URL="")
     @patch("crm.lead_finder.get_lead_providers", lambda: [FixtureDirectoryProvider()])
     def test_lead_finder_immediate_generation_stages_and_mark_called_moves_to_crm(self):
         employee = User.objects.create_user(username="finder-sdr", password="OpsPass123!", role="employee", first_name="Finder")
@@ -731,7 +732,7 @@ class PlatformFlowTests(TestCase):
         self.assertEqual(activity.activity_type, "call")
         self.assertEqual(activity.metadata["lead_generation_batch_id"], batch.pk)
 
-    @override_settings(CELERY_BROKER_URL="")
+    @override_settings(LEAD_FINDER_ENABLE_PUBLIC_HTTP=True, CELERY_BROKER_URL="")
     @patch("crm.lead_finder.get_lead_providers", lambda: [FixtureDirectoryProvider()])
     def test_lead_finder_large_batch_queue_permissions_and_duplicate_safety(self):
         alice = User.objects.create_user(username="finder-alice", password="OpsPass123!", role="employee", first_name="Alice")
@@ -787,10 +788,12 @@ class PlatformFlowTests(TestCase):
         self.client.post(reverse("lead_generation_batch_run", args=[bob_batch.pk]))
         bob_batch.refresh_from_db()
         self.assertEqual(bob_batch.quantity_generated, 5)
-        self.assertGreaterEqual(bob_batch.duplicates_removed, 5)
+        self.assertEqual(bob_batch.duplicates_removed, 0)
         self.assertEqual(LeadStaging.objects.filter(created_by=bob, industry="Roofing").count(), 5)
         all_keys = list(LeadStaging.objects.filter(industry="Roofing").values_list("dedupe_key", flat=True))
-        self.assertEqual(len(all_keys), len(set(all_keys)))
+        # Searching does not claim ownership. Each agent can discover the same
+        # five businesses until one actually adds a business to the CRM.
+        self.assertEqual((len(all_keys), len(set(all_keys))), (10, 5))
 
     def test_staff_messaging_owner_oversight_and_group_messages(self):
         owner = User.objects.create_user(username="msg-owner", password="OwnerPass123!", role="owner")

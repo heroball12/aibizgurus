@@ -656,6 +656,8 @@ def import_lead_file(
         return None, parsed
 
     with transaction.atomic():
+        from .ownership import claim_company, CompanyOwnedElsewhere, lock_company_writes
+        lock_company_writes()
         duplicate_count = 0
         lead_import = LeadImport.objects.create(
             original_filename=original_filename[:255],
@@ -681,27 +683,48 @@ def import_lead_file(
         leads = []
         imported_rows = []
         protected_count = 0
+        duplicate_rows = []
         created_count = 0
         updated_count = 0
         import_seen = {}
         for row in parsed.rows:
-            row.data["source_file"] = original_filename[:Lead._meta.get_field("source_file").max_length]
             key = row.data.get("duplicate_key", "")
             existing = None
             if row.source_format == "zoominfo":
                 existing = zoominfo_import.find_match(row, lock=True)
             elif key:
                 existing = import_seen.get(key) or Lead.objects.filter(lead_type="internal_sales", duplicate_key=key).order_by("-created_at").first()
+            # Resolve contact conflicts before claiming any new company. A
+            # skipped upload must not reserve a company for the uploader.
+            if existing and existing.assigned_to_id and existing.assigned_to_id != getattr(row.data.get("assigned_to"), "pk", None):
+                duplicate_count += 1
+                protected_count += 1
+                duplicate_rows.append({"row": row.row_number, "sheet": row.source_sheet,
+                                       "business": row.data.get("business_name", ""),
+                                       "reason": "Duplicate record — already assigned to another agent; first owner kept."})
+                continue
+            company_data = dict(row.data)
+            company_id = ""
+            if row.source_format == "zoominfo":
+                source = zoominfo_import.normalized(row.raw)
+                company_id = zoominfo_import.value(source, "ZoomInfo Company ID")
+                company_data["company_phone"] = zoominfo_import.value(source, "Company HQ Phone")
+            elif not row.data.get("point_of_contact") and not row.data.get("contact_role"):
+                company_data["company_phone"] = row.data.get("phone", "")
+            try:
+                company = claim_company(company_data, row.data.get("assigned_to"), provider_id=company_id)
+            except CompanyOwnedElsewhere:
+                duplicate_count += 1
+                protected_count += 1
+                duplicate_rows.append({"row": row.row_number, "sheet": row.source_sheet,
+                                       "business": row.data.get("business_name", ""),
+                                       "reason": "Duplicate company — already owned by another agent; first owner kept."})
+                continue
+            if company:
+                row.data["company"] = company
+            row.data["source_file"] = original_filename[:Lead._meta.get_field("source_file").max_length]
             if existing:
                 duplicate_count += 1
-                preserve_assigned_to = (
-                    protect_existing_assignees_for is not None
-                    and existing.assigned_to_id
-                    and existing.assigned_to_id != protect_existing_assignees_for.pk
-                )
-                if preserve_assigned_to:
-                    protected_count += 1
-                    continue
                 updated_count += 1
                 if row.source_format == "zoominfo":
                     zoominfo_import.merge_lead(existing, row.data)
@@ -750,6 +773,7 @@ def import_lead_file(
             "updated": updated_count,
             "duplicates_matched": duplicate_count,
             "protected_duplicates_skipped": protected_count,
+            "duplicate_rows": duplicate_rows,
         }
         lead_import.save(update_fields=["imported_count", "updated_count", "duplicate_count", "skipped_count", "import_summary"])
     return lead_import, parsed

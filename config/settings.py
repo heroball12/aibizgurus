@@ -155,7 +155,7 @@ ZOOMINFO_CLIENT_ID = os.getenv("ZOOMINFO_CLIENT_ID", "").strip()
 ZOOMINFO_CLIENT_SECRET = os.getenv("ZOOMINFO_CLIENT_SECRET", "").strip()
 ZOOMINFO_ENABLED = env_bool("ZOOMINFO_ENABLED", default=True)
 
-LEAD_FINDER_PROVIDER_TIMEOUT = float(os.getenv("LEAD_FINDER_PROVIDER_TIMEOUT", "12"))
+LEAD_FINDER_PROVIDER_TIMEOUT = float(os.getenv("LEAD_FINDER_PROVIDER_TIMEOUT", "32"))
 LEAD_FINDER_OVERPASS_URL = os.getenv("LEAD_FINDER_OVERPASS_URL", "https://overpass-api.de/api/interpreter")
 LEAD_FINDER_OVERPASS_FALLBACK_URL = os.getenv("LEAD_FINDER_OVERPASS_FALLBACK_URL", "https://overpass.private.coffee/api/interpreter")
 

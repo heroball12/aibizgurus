@@ -2,20 +2,35 @@
   const selection = document.querySelector('[data-zi-selection]');
   if (selection) {
     const limit = Number(selection.dataset.ziSelection);
-    const boxes = [...selection.querySelectorAll('[data-zi-person]')];
+    const boxes = [...selection.querySelectorAll('[data-zi-result]')];
+    const selectAll = selection.querySelector('[data-zi-select-all]');
     const countLabel = selection.querySelector('[data-zi-selected-count]');
     const update = () => {
       const count = boxes.filter(box => box.checked).length;
-      countLabel.textContent = `${count} selected · up to ${count} enrichment credit${count === 1 ? '' : 's'}`;
-      boxes.forEach(box => { box.disabled = !box.checked && count >= limit; });
+      countLabel.textContent = `${count} selected · ${boxes.length} on this page`;
+      if(selectAll) {
+        selectAll.checked = boxes.length > 0 && count === boxes.length;
+        selectAll.indeterminate = count > 0 && count < boxes.length;
+        selectAll.disabled = boxes.length === 0;
+      }
     };
     boxes.forEach(box => box.addEventListener('change', update));
+    selectAll?.addEventListener('change', () => {
+      boxes.forEach((box, index) => {box.checked = selectAll.checked && index < limit;});
+      update();
+    });
     selection.addEventListener('submit', event => {
-      if (!boxes.some(box => box.checked)) {
+      const count = boxes.filter(box => box.checked).length;
+      const enriching = event.submitter?.hasAttribute('data-zi-enrich');
+      const maximum = enriching ? Number(selection.dataset.ziEnrichmentLimit) : limit;
+      if (!count || count > maximum) {
         event.preventDefault();
-        selection.querySelector('[data-zi-status]').textContent = 'Select at least one person to get details.';
+        selection.querySelector('[data-zi-status]').textContent = !count
+          ? 'Select at least one result first.'
+          : `Choose no more than ${maximum} ${enriching ? 'people for contact details' : 'results'}.`;
       }
     });
+    update();
   }
   document.querySelectorAll('[data-zi-submit]').forEach(form => {
     form.addEventListener('submit', event => {
@@ -29,7 +44,8 @@
         button.disabled = true;
       }
       const status = form.querySelector('[data-zi-status]');
-      if (status) status.textContent = 'Waiting for ZoomInfo. Please keep this page open.';
+      if (status) status.textContent = button?.hasAttribute('data-zi-add')
+        ? 'Saving selected results to your CRM…' : 'Waiting for ZoomInfo. Please keep this page open.';
       form.setAttribute('aria-busy', 'true');
     });
   });

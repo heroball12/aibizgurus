@@ -139,7 +139,8 @@ class LeadFinderRecoveryTests(TestCase):
         query = parse_qs(urlsplit(urlopen.call_args.args[0].full_url).query)["data"][0]
         self.assertIn("(32.68546,", query)
         self.assertNotIn("area[", query)
-        self.assertLessEqual(urlopen.call_args.kwargs["timeout"], 12)
+        self.assertGreaterEqual(urlopen.call_args.kwargs["timeout"], 30)
+        self.assertLessEqual(urlopen.call_args.kwargs["timeout"], 35)
         self.assertIn("[maxsize:33554432]", query)
         self.assertEqual(
             provider.search(industry="Restaurant", location="san diego, CA", limit=5),
@@ -494,8 +495,33 @@ class LeadFinderRecoveryTests(TestCase):
         provider.search.side_effect = DirectoryError("The directory is busy. Try again shortly.", "provider_timeout")
         failed = generate_leads_for_batch(self.batch().pk, providers=[provider])
         self.assertEqual(failed.status, "failed")
-        self.assertEqual(failed.provider_summary["error_code"], "provider_timeout")
+        self.assertEqual(failed.provider_summary["error_code"], "providers_unavailable")
+        self.assertEqual(failed.provider_summary["attempts"][0]["error_code"], "provider_timeout")
         self.assertNotIn("no usable", failed.status_message)
+
+    @patch("crm.lead_finder.request.urlopen")
+    def test_access_rejection_uses_backup_and_records_both_failures(self, urlopen):
+        from .lead_finder import advance_lead_generation_batch
+        urlopen.side_effect = HTTPError("https://directory.example", 406, "Rejected", {}, None)
+        first = advance_lead_generation_batch(self.batch().pk)
+        self.assertTrue(first.is_open)
+        self.assertEqual(first.provider_summary["attempts"][0]["error_code"], "access_denied")
+        second = advance_lead_generation_batch(first.pk)
+        self.assertEqual(second.status, "failed")
+        self.assertEqual(second.provider_summary["error_code"], "providers_unavailable")
+        self.assertEqual(len(second.provider_summary["attempts"]), 2)
+        self.assertIn("owner needs to check", second.status_message)
+        self.assertFalse(second.staged_leads.exists())
+
+    @override_settings(LEAD_FINDER_PROVIDER_TIMEOUT=12)
+    @patch("crm.lead_finder.request.urlopen")
+    def test_legacy_timeout_setting_still_allows_provider_queue_and_execution(self, urlopen):
+        from .lead_finder import LEASE_SECONDS
+        urlopen.return_value.__enter__.return_value = self.response([])
+        OpenStreetMapProvider().search(industry="Dentist", location="Miami, FL", limit=5)
+        timeout = urlopen.call_args.kwargs["timeout"]
+        self.assertGreater(timeout, 15 + 8)
+        self.assertLess(timeout, LEASE_SECONDS)
 
     @override_settings(CELERY_BROKER_URL="redis://example.invalid/0")
     @patch("crm.tasks.process_lead_generation_batch.delay")

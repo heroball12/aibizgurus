@@ -204,7 +204,7 @@ def persist(request, payload):
                 cell_errors['status'] = 'Record the confirmed Growth Assessment booking on the lead page first.'
             if 'follow_up_date' in cleaned:
                 record.next_follow_up_at = timezone.make_aware(datetime.combine(record.follow_up_date, time(9))) if record.follow_up_date else None
-        identity_changed = not record.pk or any(k in cleaned and str(cleaned[k]) != before.get(k, '') for k in ('business_name','phone','city','state'))
+        identity_changed = not record.pk or any(k in cleaned and str(cleaned[k]) != before.get(k, '') for k in ('business_name','website','phone','city','state'))
         changed = values_for(record, schema) != before or not record.pk
         errors.extend({'row':index, 'key':key, 'field':field, 'message':message} for field,message in cell_errors.items())
         pending.append((key,record,changed,identity_changed,changes,index))
@@ -218,6 +218,12 @@ def persist(request, payload):
             key_value = lead_dedupe_key(business_name=record.business_name, phone_number=record.phone_number if sheet.kind == 'prospects' else record.phone, city=record.city, state=record.state)
             if sheet.kind == 'leads': record.duplicate_key = key_value
             else: record.dedupe_key = key_value
+            if sheet.kind == 'leads' and identity_changed:
+                from .ownership import claim_company, lead_data, CompanyOwnedElsewhere
+                try:
+                    record.company = claim_company(lead_data(record), record.assigned_to)
+                except CompanyOwnedElsewhere as exc:
+                    raise SheetError(str(exc), [{'row':index,'key':key,'field':'business_name','message':str(exc)}])
             record.save()
             changes_count += 1
             if sheet.kind == 'leads':

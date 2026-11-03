@@ -1,0 +1,5 @@
+<div class="zi-selection-bar">
+  {% if not search_expired %}<label><input type="checkbox" data-zi-select-all> Select all on this page</label>{% endif %}
+  <strong data-zi-selected-count role="status">0 selected</strong>
+  <a href="{% url 'sales_pipeline' %}">Open pipeline ↗</a>
+</div>

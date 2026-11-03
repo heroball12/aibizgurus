@@ -18,6 +18,7 @@ from .intelligence import csv_safe
 from .models import LeadImport, LeadUploadPreview
 from .views import employee_required, is_sales_manager
 from .zoominfo_import import find_match, identity, normalized, value
+from .ownership import match_company
 
 
 def prepare_preview(request, uploaded, parsed, *, selected_sheet="", assigned_to=None):
@@ -49,6 +50,13 @@ def preview(request, pk):
     records, seen, companies = [], set(), set()
     counts = {"new": 0, "matched": 0, "protected": 0, "repeated": 0}
     for row in parsed.rows:
+        source = normalized(row.raw)
+        company = match_company({**row.data, "company_phone": value(source, "Company HQ Phone")}, value(source, "ZoomInfo Company ID"))
+        assignee = row.data.get("assigned_to")
+        if company and company.owner_id and company.owner_id != getattr(assignee, "pk", None):
+            records.append({"data": row.data, "outcome": "Duplicate company · first owner kept · skipped", "row": row.row_number})
+            counts["protected"] += 1
+            continue
         if row.source_format != "zoominfo":
             records.append({"data": row.data, "outcome": "Tracker row", "row": row.row_number})
             continue

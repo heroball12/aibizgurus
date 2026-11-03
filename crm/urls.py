@@ -13,6 +13,7 @@ urlpatterns = [
     path("zoominfo/searches/<uuid:pk>/", zoominfo_views.results, name="zoominfo_results"),
     path("zoominfo/searches/<uuid:pk>/page/", zoominfo_views.change_page, name="zoominfo_page"),
     path("zoominfo/searches/<uuid:pk>/details/", zoominfo_views.get_details, name="zoominfo_details"),
+    path("zoominfo/searches/<uuid:pk>/add/", zoominfo_views.add_to_crm, name="zoominfo_add_to_crm"),
     path("zoominfo/searches/<uuid:pk>/save-signal/", zoominfo_views.save_signal, name="zoominfo_save_signal"),
     path("intent/", zoominfo_views.saved_signals, name="intent_signals"),
     path("companies/", company_views.directory, name="crm_companies"),

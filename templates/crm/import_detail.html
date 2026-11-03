@@ -15,6 +15,8 @@
   </div>
 </section>
 
+{% if lead_import.import_summary.duplicate_rows %}<section class="sales-panel"><h2>Duplicates skipped · first owner kept</h2><p>These rows belong to companies or records already assigned to another agent. Ownership and CRM progress were preserved.</p><table><thead><tr><th>Sheet</th><th>Row</th><th>Business from your upload</th><th>Result</th></tr></thead><tbody>{% for row in lead_import.import_summary.duplicate_rows %}<tr><td>{{ row.sheet|default:"CSV" }}</td><td>{{ row.row }}</td><td>{{ row.business }}</td><td>{{ row.reason }}</td></tr>{% endfor %}</tbody></table></section>{% endif %}
+
 {% if 'zoominfo' in lead_import.import_summary.source_formats %}<section class="sales-panel"><span class="ops-label">ZoomInfo import</span><h2>Company records and individual people, connected.</h2><p>All {{ lead_import.import_summary.source_column_count }} source columns are saved. Open a person to see their full ZoomInfo profile and their company’s other contacts. Existing CRM notes, assignments and sales progress were preserved.</p>{% if lead_import.import_summary.protected_duplicates_skipped %}<p>{{ lead_import.import_summary.protected_duplicates_skipped }} contact{{ lead_import.import_summary.protected_duplicates_skipped|pluralize }} already assigned to another employee were skipped.</p>{% endif %}</section>{% endif %}
 
 <section class="sales-metrics">

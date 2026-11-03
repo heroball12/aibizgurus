@@ -39,7 +39,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test frontend/training/*.test.cjs
+      - run: node --test frontend/training/*.test.cjs frontend/finder/*.test.cjs
       - run: python manage.py test --noinput
       - run: python manage.py collectstatic --noinput
         env:

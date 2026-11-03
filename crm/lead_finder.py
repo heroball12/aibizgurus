@@ -216,8 +216,10 @@ class OpenStreetMapProvider(LeadProvider):
         cooldown = cache.get(cooldown_key)
         if cooldown:
             raise DirectoryError(
+                "The directory rejected this server's requests. Ask the owner to check the directory connection."
+                if cooldown == "access_denied" else
                 "The directory is cooling down after an outage or rate limit. Wait a minute and retry this search.",
-                "rate_limited" if cooldown == "rate_limited" else "cooldown",
+                cooldown if cooldown in {"rate_limited", "access_denied"} else "cooldown",
             )
         # Overpass supports GET for these short, read-only public queries.
         separator = "&" if "?" in endpoint else "?"
@@ -243,10 +245,15 @@ class OpenStreetMapProvider(LeadProvider):
         except error.HTTPError as exc:
             cache.set(
                 cooldown_key,
-                "rate_limited" if exc.code in {429, 406} else "unavailable",
+                "access_denied" if exc.code in {401, 403, 406} else "rate_limited" if exc.code == 429 else "unavailable",
                 60,
             )
-            if exc.code in {429, 406}:
+            if exc.code in {401, 403, 406}:
+                raise DirectoryError(
+                    "The public directory rejected this server's connection. This is a provider access problem, not an empty search. Ask the owner to check the configured directory service.",
+                    "access_denied",
+                ) from exc
+            if exc.code == 429:
                 raise DirectoryError(
                     "The directory is rate-limiting searches. Wait a minute, then retry. Your existing results are saved.",
                     "rate_limited",
@@ -299,11 +306,11 @@ class OpenStreetMapProvider(LeadProvider):
             raise DirectoryError(
                 "Choose an industry or enter a business keyword.", "industry"
             )
-        # Small explicit memory reservations are admitted more readily by
-        # shared Overpass instances. Don't occupy a web worker through a long
-        # public queue: the next persisted step can try the backup instead.
-        timeout = max(5, min(12, float(settings.LEAD_FINDER_PROVIDER_TIMEOUT)))
-        query_timeout = min(8, int(timeout) - 2)
+        # Overpass may queue a request for 15 seconds before running it. Allow
+        # that queue plus an 8-second query and transport overhead; the old
+        # 12-second cap cancelled requests before they could even be admitted.
+        timeout = max(30, min(35, float(settings.LEAD_FINDER_PROVIDER_TIMEOUT)))
+        query_timeout = 8
         endpoint = settings.LEAD_FINDER_OVERPASS_URL
         filters = self.filters_for(industry)
         # Local Census coordinates avoid slow remote area/relation lookups.
@@ -350,6 +357,7 @@ class OpenStreetMapProvider(LeadProvider):
                     "cooldown",
                     "rate_limited",
                     "invalid_response",
+                    "access_denied",
                 }:
                     raise
         if payload is None:
@@ -503,7 +511,7 @@ def set_batch_status(
 
 
 def duplicate_exists(
-    candidate: DirectoryLead, dedupe_key: str, *, exclude_staging_id=None
+    candidate: DirectoryLead, dedupe_key: str, *, exclude_staging_id=None, employee_id=None
 ) -> bool:
     if not dedupe_key:
         return True
@@ -512,9 +520,10 @@ def duplicate_exists(
         LeadStaging.objects.filter(dedupe_key=dedupe_key)
         .exclude(batch__provider_summary__has_key="fallback_directory")
         .exclude(pk=exclude_staging_id)
-        .exists()
     )
-    if existing_staging:
+    if employee_id is not None:
+        existing_staging = existing_staging.filter(created_by_id=employee_id)
+    if existing_staging.exists():
         return True
     matches = Q(duplicate_key=dedupe_key)
     if phone:
@@ -535,10 +544,11 @@ def duplicate_exists(
     return Lead.objects.filter(lead_type="internal_sales").filter(matches).exists()
 
 
-LEASE_SECONDS = 45
+LEASE_SECONDS = 60
 SAVE_CHUNK_SIZE = 100
 RETRYABLE_DIRECTORY_ERRORS = {
     "provider_unavailable", "provider_timeout", "cooldown", "rate_limited", "invalid_response",
+    "access_denied",
 }
 
 
@@ -602,7 +612,12 @@ def _save_candidate_chunk(batch):
             continue
         key = lead_dedupe_key(business_name=result.business_name, phone_number=result.phone_number,
                               city=result.city, state=result.state)
-        if duplicate_exists(result, key):
+        from .ownership import match_company
+        company = match_company({**raw, "company_phone": result.phone_number})
+        if company and company.owner_id and company.owner_id != batch.employee_id:
+            batch.duplicates_removed += 1
+            continue
+        if duplicate_exists(result, key, employee_id=batch.employee_id):
             batch.duplicates_removed += 1
             continue
         LeadStaging.objects.create(
@@ -676,10 +691,15 @@ def advance_lead_generation_batch(batch_id, providers=None):
             batch = LeadGenerationBatch.objects.select_for_update(of=("self",)).get(pk=batch_id)
             if batch.run_token != token:
                 return batch
+            summary = dict(batch.provider_summary or {})
+            provider_endpoint = getattr(provider, "endpoint", "")
+            summary.setdefault("attempts", []).append({
+                "provider": provider.name,
+                "host": parse.urlsplit(provider_endpoint).hostname if isinstance(provider_endpoint, str) else None,
+                "error_code": getattr(exc, "code", "search_failed"),
+            })
+            batch.provider_summary = summary
             if isinstance(exc, DirectoryError) and exc.code in RETRYABLE_DIRECTORY_ERRORS and index + 1 < len(providers):
-                summary = dict(batch.provider_summary or {})
-                summary.setdefault("attempts", []).append({"provider": provider.name, "error_code": exc.code})
-                batch.provider_summary = summary
                 batch.search_state = {**batch.search_state, "provider_index": index + 1}
                 batch.run_token = None
                 batch.lease_expires_at = None
@@ -687,6 +707,11 @@ def advance_lead_generation_batch(batch_id, providers=None):
                 batch.progress_percent = 30
                 batch.save()
                 return batch
+            if isinstance(exc, DirectoryError) and exc.code in RETRYABLE_DIRECTORY_ERRORS:
+                exc = DirectoryError(
+                    "Public listing providers are unavailable or rejecting this server. No results could be retrieved. Use ZoomInfo or import a list; the owner needs to check the directory connection.",
+                    "providers_unavailable",
+                )
             return _finish_batch(batch, error=exc)
     with transaction.atomic():
         batch = LeadGenerationBatch.objects.select_for_update(of=("self",)).get(pk=batch_id)
@@ -800,11 +825,18 @@ def convert_staging_to_crm_lead(
             city=staging.city,
             state=staging.state,
         )
-        if duplicate_exists(candidate, key, exclude_staging_id=staging.pk):
+        if duplicate_exists(candidate, key, exclude_staging_id=staging.pk, employee_id=employee.pk):
             raise ValueError(
                 "A matching business is already in the internal CRM or another search result. Review the existing record before outreach."
             )
+        from .ownership import claim_company
+        company = claim_company({
+            "business_name": staging.business_name, "website": staging.website,
+            "city": staging.city, "state": staging.state, "industry": staging.industry,
+            "company_phone": staging.phone_number, "address": staging.address,
+        }, employee)
         lead = Lead.objects.create(
+            company=company,
             lead_type="internal_sales",
             business_name=staging.business_name,
             industry=staging.industry,
