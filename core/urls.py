@@ -1,10 +1,13 @@
 from django.urls import path, include
+from django.views.generic import TemplateView
 from . import views, demo_views, booking_views
 urlpatterns = [
     path("healthz/", views.healthz, name="healthz"),
     path("robots.txt", views.robots_txt, name="robots_txt"),
     path("sitemap.xml", views.sitemap_xml, name="sitemap_xml"),
     path("", views.home, name="home"),
+    path("privacy-policy/", TemplateView.as_view(template_name="core/privacy_policy.html"), name="privacy_policy"),
+    path("terms-of-service/", TemplateView.as_view(template_name="core/terms_of_service.html"), name="terms_of_service"),
     path("solutions/", views.solutions, name="solutions"),
     path("solutions/<slug:slug>/", views.solution_detail, name="solution_detail"),
     path("ai-employees/", views.ai_employees, name="ai_employees"),

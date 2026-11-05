@@ -29,8 +29,16 @@ class ZoomInfoPlacementTests(SimpleTestCase):
             self.assertFalse(zoominfo_enabled(self.request(host=host)))
         self.assertFalse(zoominfo_enabled(self.request(authenticated=True)))
 
+    def test_browser_privacy_signals_suppress_public_tracking(self):
+        for header in ("HTTP_SEC_GPC", "HTTP_DNT"):
+            request = self.request()
+            request.META[header] = "1"
+            self.assertFalse(zoominfo_enabled(request))
+            self.assertNotIn("52bd8117e51791833995", render_to_string("base.html", request=request))
+
     def test_private_routes_and_booking_confirmation_have_no_tag_even_when_signed_out(self):
         for path in ("/accounts/login/", "/accounts/signup/", "/crm/", "/training/",
+                     "/privacy-policy/", "/terms-of-service/",
                      "/owner/calendar/", "/demo/automotive/crm/", "/growth-assessment/confirmed/example-token/"):
             request = self.request(path)
             self.assertFalse(zoominfo_enabled(request))

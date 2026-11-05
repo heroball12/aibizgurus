@@ -8,6 +8,8 @@ ZOOMINFO_PUBLIC_PAGES = frozenset({
 
 
 def zoominfo_enabled(request):
+    if request.headers.get("Sec-GPC") == "1" or request.headers.get("DNT") == "1":
+        return False
     match = getattr(request, "resolver_match", None)
     host = request.get_host().split(":", 1)[0].lower()
     return (host in {"aibiz.guru", "www.aibiz.guru"}

@@ -194,6 +194,8 @@ def sitemap_xml(request):
         "pricing",
         "case_studies",
         "growth_assessment",
+        "privacy_policy",
+        "terms_of_service",
     ]
     paths = [reverse(name) for name in url_names]
     for solution in SOLUTIONS:

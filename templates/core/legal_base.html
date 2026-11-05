@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% load static %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/legal.css' %}">{% endblock %}
+{% block content %}
+<article class="legal-page">
+  <header class="legal-header">
+    <span class="brand-kicker">AI BUSINESS GURUS · LEGAL</span>
+    <h1>{% block legal_title %}{% endblock %}</h1>
+    <p class="legal-date">Effective date: November 5, 2026 · Last updated: November 5, 2026</p>
+    <nav class="legal-nav" aria-label="Legal pages">
+      <a href="{% url 'privacy_policy' %}"{% if request.resolver_match.url_name == 'privacy_policy' %} aria-current="page"{% endif %}>Privacy Policy</a>
+      <a href="{% url 'terms_of_service' %}"{% if request.resolver_match.url_name == 'terms_of_service' %} aria-current="page"{% endif %}>Terms of Service</a>
+    </nav>
+  </header>
+  <div class="legal-content">{% block legal_content %}{% endblock %}</div>
+  <aside class="legal-contact" aria-label="Contact AI Business Gurus">
+    <h2>Questions? Contact us.</h2>
+    <p>AI Business Gurus<br>{{ company.city_state_zip }}</p>
+    <p><a href="mailto:support@aibiz.guru">support@aibiz.guru</a><br><a href="{{ company.phone_uri }}">{{ company.phone }}</a></p>
+  </aside>
+</article>
+{% endblock %}
