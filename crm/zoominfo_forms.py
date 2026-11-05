@@ -104,26 +104,14 @@ class SearchForm(forms.Form):
         return {k: v.isoformat() if hasattr(v, "isoformat") else v for k,v in self.cleaned_data.items()}
 
 
-class AgentChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, user):
-        name = user.get_full_name().strip()
-        return f"{name} ({user.username})" if name else user.username
-
-
 class AssignForm(forms.Form):
-    assigned_to = AgentChoiceField(queryset=sales_staff_queryset(), required=False, label="Assign leads to", empty_label="Unassigned")
+    assigned_to = forms.ModelChoiceField(queryset=sales_staff_queryset(), required=False, label="Assign leads to", empty_label="Unassigned")
 
-    def __init__(self, *args, user, require_assignee=False, **kwargs):
+    def __init__(self, *args, user, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
         if not is_sales_manager(user):
             self.fields.pop("assigned_to")
-        elif require_assignee:
-            field = self.fields["assigned_to"]
-            field.required = True
-            field.empty_label = "Choose an agent…"
-            field.label = "Assign selected results to"
-            field.widget.attrs.update({"data-zi-assignee": "true", "aria-describedby": "zi-assignment-summary"})
 
     def assignee(self):
         return self.cleaned_data.get("assigned_to") if is_sales_manager(self.user) else self.user

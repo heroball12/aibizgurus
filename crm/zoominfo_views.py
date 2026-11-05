@@ -1,6 +1,5 @@
 """Explicit ZoomInfo searches, credit-aware enrichment, and company Intent research."""
 from datetime import timedelta
-from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -8,7 +7,6 @@ from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
@@ -48,7 +46,7 @@ def page_context(request, kind, *, form=None, run=None):
         initial["exclude_major_chains"] = initial["exclude_major_chains"] not in {"0", "false", ""}
     context = {"kind": kind, "form": form or SearchForm(kind=kind, topics=topics, initial=initial),
                "run": run, "configured": api.configured(), "topics_loaded": bool(topics),
-               "is_manager": is_sales_manager(request.user), "assignment_form": AssignForm(user=request.user, require_assignee=True),
+               "is_manager": is_sales_manager(request.user), "assignment_form": AssignForm(user=request.user),
                "max_selection": api.MAX_SELECTION, "context_sheet_url": "",
                "recent_searches": ZoomInfoSearch.objects.filter(user=request.user).order_by("-created_at")[:6]}
     if kind != "intent":
@@ -110,28 +108,23 @@ def add_to_crm(request, pk):
     if run.created_at < timezone.now() - timedelta(hours=24):
         messages.error(request, "This search expired. Run a new search before adding results.")
         return redirect("zoominfo_results", pk=run.pk)
-    assignment = AssignForm(request.POST, user=request.user, require_assignee=True)
+    assignment = AssignForm(request.POST, user=request.user)
     if not assignment.is_valid():
         messages.error(request, "Choose an active employee for assignment.")
         return redirect("zoominfo_results", pk=run.pk)
-    assignee = assignment.assignee()
-    manager = is_sales_manager(request.user)
     try:
-        imported, created = save_results(run, ids, user=request.user, assignee=assignee, manager=manager)
+        imported, created = save_results(run, ids, user=request.user, assignee=assignment.assignee(), manager=is_sales_manager(request.user))
     except ValueError as exc:
         messages.error(request, str(exc))
         return redirect("zoominfo_results", pk=run.pk)
     if created:
         log_activity(user=request.user, request=request, action="create", model_label="crm.LeadImport",
                      object_id=imported.pk, message="Added selected ZoomInfo search results to the CRM pipeline.",
-                     metadata={"created": imported.imported_count, "matched": imported.updated_count, "assigned_to": assignee.pk})
+                     metadata={"created": imported.imported_count, "matched": imported.updated_count})
     skipped = imported.import_summary.get("protected_duplicates_skipped", 0)
-    destination = f"{assignee.get_full_name().strip() or assignee.username}'s pipeline" if manager else "CRM"
-    messages.success(request, f"Added to {destination}: {imported.imported_count} new, {imported.updated_count} existing matched. "
+    messages.success(request, f"Added to CRM: {imported.imported_count} new, {imported.updated_count} existing matched. "
                      + (f"{skipped} already assigned to another employee were skipped. " if skipped else "")
                      + "Saved search details only; no enrichment credits used.")
-    if manager:
-        return redirect(reverse("sales_pipeline") + "?" + urlencode({"assigned_to": assignee.pk}))
     return redirect("sales_pipeline")
 
 

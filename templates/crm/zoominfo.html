@@ -1,6 +1,6 @@
 {% extends "crm/base.html" %}{% load static tz %}
 {% block title %}{% if kind == "intent" %}ZoomInfo Intent{% else %}Lead Finder{% endif %} | Sales intelligence{% endblock %}
-{% block sales_head %}<link rel="stylesheet" href="{% static 'css/zoominfo.css' %}?v=20261103-agent-pipeline"><script src="{% static 'js/zoominfo.js' %}?v=20261103-agent-pipeline" defer></script>{% endblock %}
+{% block sales_head %}<link rel="stylesheet" href="{% static 'css/zoominfo.css' %}?v=20261103-save-results"><script src="{% static 'js/zoominfo.js' %}?v=20261103-save-results" defer></script>{% endblock %}
 {% block workspace %}
 {% if kind == 'intent' %}
 <header class="sales-page-head"><div><span class="sales-eyebrow">ZOOMINFO · INTENT SIGNALS</span><h1>Follow the signal.</h1><p>See which companies are researching topics relevant to your services.</p></div><a class="btn ghost" href="{% url 'intent_signals' %}">Saved intent signals ↗</a></header>

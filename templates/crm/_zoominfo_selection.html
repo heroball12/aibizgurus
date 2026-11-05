@@ -1,14 +1,5 @@
-{% if is_manager %}
-<div class="zi-assignment-panel">
-  <h3>Send results to an agent</h3>
-  {{ assignment_form.assigned_to.label_tag }}
-  {{ assignment_form.assigned_to }}
-  <p id="zi-assignment-summary" data-zi-assignment-summary role="status">Choose an agent, select results, then add them directly to that agent’s pipeline.</p>
-  <small>Companies already owned by another agent keep their first owner.</small>
-</div>
-{% endif %}
 <div class="zi-selection-bar">
   {% if not search_expired %}<label><input type="checkbox" data-zi-select-all> Select all on this page</label>{% endif %}
   <strong data-zi-selected-count role="status">0 selected</strong>
-  <a href="{% url 'sales_pipeline' %}" data-zi-pipeline-link data-pipeline-url="{% url 'sales_pipeline' %}">Open pipeline ↗</a>
+  <a href="{% url 'sales_pipeline' %}">Open pipeline ↗</a>
 </div>
